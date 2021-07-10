@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let test: Stmt = Parser::parse_code(code);
 
     if let Stmt::Print(message) = test {
-        println!("{}", message);
+        println!("{}", message.to_string());
     }
 
     Ok(())

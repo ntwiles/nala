@@ -4,9 +4,19 @@ use crate::ast;
 grammar;
 
 pub Stmt: ast::Stmt = {
-    "print" <StrLiteral> ";" => ast::Stmt::Print(<>),
+    "print" <Literal> ";" => ast::Stmt::Print(<>),
 };
 
+Literal: ast::Literal = {
+    <n:NumLiteral> => ast::Literal::Num(n),
+    <s:StrLiteral> => ast::Literal::String(s)
+}
+
+NumLiteral: i32 = {
+    r"[0-9]+" => i32::from_str(<>).unwrap(),
+}
+
 StrLiteral: String = {
-    r"'[a-zA-z0-9\s]*'" => String::from_str(<>).unwrap(),
+    <s:r"'[a-zA-z0-9\s]*'"> => 
+        String::from_str(&s[1..s.len() - 1]).unwrap(),
 };
