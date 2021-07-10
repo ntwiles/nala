@@ -1,0 +1,12 @@
+use std::str::FromStr;
+use crate::ast;
+
+grammar;
+
+pub Stmt: ast::Stmt = {
+    "print" <StrLiteral> ";" => ast::Stmt::Print(<>),
+};
+
+StrLiteral: String = {
+    r"'[a-zA-z0-9\s]*'" => String::from_str(<>).unwrap(),
+};

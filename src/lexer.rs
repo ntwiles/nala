@@ -4,6 +4,8 @@ use std::str::Chars;
 
 use crate::token::{Token, Token::*};
 
+// Note: For now this is being ignored in favor of LALRPOP's default tokenizer.
+
 pub struct Lexer;
 
 impl Lexer {
