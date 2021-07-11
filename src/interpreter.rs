@@ -22,11 +22,7 @@ fn evaluate_expr(expr: Expr) -> Literal {
 fn evaluate_oper(left: Literal, op_kind: OpKind, right: Literal) -> Literal {
     if let Literal::Num(left) = left {
         if let Literal::Num(right) = right {
-            if let OpKind::Add = op_kind {
-                Literal::Num(left + right)
-            } else {
-                unimplemented!();
-            }
+            Literal::Num(left + right)
         } else {
             unimplemented!();
         }
