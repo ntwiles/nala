@@ -4,7 +4,7 @@ pub enum Stmt {
 
 pub enum Expr {
     Term(Term),
-    Oper(Term, OpKind, Term),
+    Oper(Box<Expr>, OpKind, Term),
 }
 
 pub enum OpKind {

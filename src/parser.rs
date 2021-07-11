@@ -6,6 +6,7 @@ use grammar::StmtParser;
 
 use crate::ast::*;
 
+// TODO: Get rid of this struct.
 pub struct Parser;
 
 impl Parser {
@@ -51,10 +52,29 @@ mod tests {
     pub fn it_parses_print_statements_with_add_expressions() {
         let parsed = Parser::parse_code(String::from("print 2 + 3;"));
 
-        if let Stmt::Print(Expr::Oper(Term::Num(left), op_kind, Term::Num(right))) = parsed {
-            assert_eq!(left, 2);
+        if let Stmt::Print(Expr::Oper(left, op_kind, right)) = parsed {
+            // TODO: box_patterns feature may make this uncessecary when stable.
+            let left = *left;
+            assert!(matches!(left, Expr::Term(Term::Num(_))));
             assert!(matches!(op_kind, OpKind::Add));
-            assert_eq!(right, 3);
+            assert!(matches!(right, Term::Num(_)));
+        } else {
+            panic!();
+        }
+    }
+
+    #[test]
+    pub fn it_parses_print_statements_with_add_expressions_three_terms() {
+        let parsed = Parser::parse_code(String::from("print 2 + 3 + 4;"));
+
+        if let Stmt::Print(Expr::Oper(left, op_kind, right)) = parsed {
+            // TODO: box_patterns feature may make this uncessecary when stable.
+            let left = *left;
+            // TODO: box_patterns can also allow the first _ here to be replaced with
+            // a more precise pattern.
+            assert!(matches!(left, Expr::Oper(_, OpKind::Add, Term::Num(_))));
+            assert!(matches!(op_kind, OpKind::Add));
+            assert!(matches!(right, Term::Num(_)));
         } else {
             panic!();
         }
