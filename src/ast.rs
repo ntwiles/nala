@@ -3,24 +3,24 @@ pub enum Stmt {
 }
 
 pub enum Expr {
-    Literal(Literal),
-    Oper(Literal, OpKind, Literal),
+    Term(Term),
+    Oper(Term, OpKind, Term),
 }
 
 pub enum OpKind {
     Add,
 }
 
-pub enum Literal {
+pub enum Term {
     String(String),
     Num(i32),
 }
 
-impl Literal {
+impl Term {
     pub fn to_string(self) -> String {
         match self {
-            Literal::String(t) => t,
-            Literal::Num(n) => n.to_string(),
+            Term::String(t) => t,
+            Term::Num(n) => n.to_string(),
         }
     }
 }

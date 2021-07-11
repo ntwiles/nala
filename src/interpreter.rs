@@ -11,18 +11,17 @@ fn interpret_print(expr: Expr) {
     println!("{}", result.to_string());
 }
 
-// TODO: These types don't make sense. An expression doesn't evaluate to a literal.
-fn evaluate_expr(expr: Expr) -> Literal {
+fn evaluate_expr(expr: Expr) -> Term {
     match expr {
-        Expr::Literal(literal) => literal,
+        Expr::Term(term) => term,
         Expr::Oper(left, op_kind, right) => evaluate_oper(left, op_kind, right),
     }
 }
 
-fn evaluate_oper(left: Literal, op_kind: OpKind, right: Literal) -> Literal {
-    if let Literal::Num(left) = left {
-        if let Literal::Num(right) = right {
-            Literal::Num(left + right)
+fn evaluate_oper(left: Term, op_kind: OpKind, right: Term) -> Term {
+    if let Term::Num(left) = left {
+        if let Term::Num(right) = right {
+            Term::Num(left + right)
         } else {
             unimplemented!();
         }
