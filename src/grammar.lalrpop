@@ -8,7 +8,8 @@ pub Stmt: ast::Stmt = {
 };
 
 Expr: ast::Expr = {
-    <l:Literal> =>  ast::Expr::Literal(l)
+    <l:Literal> =>  ast::Expr::Literal(l),
+    <l:Literal> "+" <r:Literal> => ast::Expr::Oper(l, ast::OpKind::Add, r)
 };
 
 Literal: ast::Literal = {

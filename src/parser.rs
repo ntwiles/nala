@@ -46,4 +46,17 @@ mod tests {
             panic!();
         }
     }
+
+    #[test]
+    pub fn it_parses_print_statements_with_add_expressions() {
+        let parsed = Parser::parse_code(String::from("print 2 + 3;"));
+
+        if let Stmt::Print(Expr::Oper(Literal::Num(left), op_kind, Literal::Num(right))) = parsed {
+            assert_eq!(left, 2);
+            assert!(matches!(op_kind, OpKind::Add));
+            assert_eq!(right, 3);
+        } else {
+            panic!();
+        }
+    }
 }

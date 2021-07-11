@@ -4,14 +4,11 @@ pub enum Stmt {
 
 pub enum Expr {
     Literal(Literal),
+    Oper(Literal, OpKind, Literal),
 }
 
-// TODO: Remove me.
-impl Expr {
-    pub fn to_string(self) -> String {
-        let Expr::Literal(literal) = self;
-        literal.to_string()
-    }
+pub enum OpKind {
+    Add,
 }
 
 pub enum Literal {

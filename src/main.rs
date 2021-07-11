@@ -8,7 +8,7 @@ mod lexer;
 mod parser;
 mod token;
 
-use crate::ast::Stmt;
+use crate::ast::*;
 use parser::Parser;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -21,8 +21,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let test: Stmt = Parser::parse_code(code);
 
-    if let Stmt::Print(message) = test {
-        println!("{}", message.to_string());
+    if let Stmt::Print(expr) = test {
+        if let Expr::Literal(literal) = expr {
+            println!("{}", literal.to_string());
+        }
     }
 
     Ok(())
