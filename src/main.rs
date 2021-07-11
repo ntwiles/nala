@@ -3,12 +3,14 @@ use std::error::Error;
 use std::fs;
 
 mod ast;
+mod interpreter;
 #[allow(dead_code)]
 mod lexer;
 mod parser;
 mod token;
 
 use crate::ast::*;
+use interpreter::*;
 use parser::Parser;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -18,14 +20,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let code = fs::read_to_string(path).unwrap();
 
     println!("Parsing code: {}", code);
+    let parsed: Stmt = Parser::parse_code(code);
 
-    let test: Stmt = Parser::parse_code(code);
-
-    if let Stmt::Print(expr) = test {
-        if let Expr::Literal(literal) = expr {
-            println!("{}", literal.to_string());
-        }
-    }
+    println!("Interpreting.");
+    interpret(parsed);
 
     Ok(())
 }
