@@ -4,17 +4,21 @@ use crate::ast;
 grammar;
 
 pub Stmt: ast::Stmt = {
-    "print" <Literal> ";" => ast::Stmt::Print(<>),
+    "print" <Expr> ";" => ast::Stmt::Print(<>),
+};
+
+Expr: ast::Expr = {
+    <l:Literal> =>  ast::Expr::Literal(l)
 };
 
 Literal: ast::Literal = {
     <n:NumLiteral> => ast::Literal::Num(n),
     <s:StrLiteral> => ast::Literal::String(s)
-}
+};
 
 NumLiteral: i32 = {
     r"[0-9]+" => i32::from_str(<>).unwrap(),
-}
+};
 
 StrLiteral: String = {
     <s:r"'[a-zA-z0-9\s]*'"> => 

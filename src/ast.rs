@@ -1,5 +1,17 @@
 pub enum Stmt {
-    Print(Literal),
+    Print(Expr),
+}
+
+pub enum Expr {
+    Literal(Literal),
+}
+
+// TODO: Remove me.
+impl Expr {
+    pub fn to_string(self) -> String {
+        let Expr::Literal(literal) = self;
+        literal.to_string()
+    }
 }
 
 pub enum Literal {

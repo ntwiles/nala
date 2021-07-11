@@ -4,7 +4,7 @@ lalrpop_mod!(pub grammar);
 
 use grammar::StmtParser;
 
-use crate::ast::Stmt;
+use crate::ast::*;
 
 pub struct Parser;
 
@@ -18,19 +18,18 @@ impl Parser {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ast;
 
     #[test]
     pub fn it_identifies_print_statements() {
         let parsed = Parser::parse_code(String::from("print 'hello world';"));
-        assert!(matches!(parsed, ast::Stmt::Print(_)));
+        assert!(matches!(parsed, Stmt::Print(_)));
     }
 
     #[test]
     pub fn it_parses_print_statements_with_string_literals() {
         let parsed = Parser::parse_code(String::from("print 'hello world';"));
 
-        if let ast::Stmt::Print(ast::Literal::String(message)) = parsed {
+        if let Stmt::Print(Expr::Literal(Literal::String(message))) = parsed {
             assert_eq!(message, String::from("hello world"));
         } else {
             panic!();
@@ -41,7 +40,7 @@ mod tests {
     pub fn it_parses_print_statements_with_number_literals() {
         let parsed = Parser::parse_code(String::from("print 313;"));
 
-        if let ast::Stmt::Print(ast::Literal::Num(number)) = parsed {
+        if let Stmt::Print(Expr::Literal(Literal::Num(number))) = parsed {
             assert_eq!(number, 313);
         } else {
             panic!();
