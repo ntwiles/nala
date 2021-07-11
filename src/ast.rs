@@ -9,6 +9,7 @@ pub enum Expr {
 
 pub enum OpKind {
     Add,
+    Sub,
 }
 
 pub enum Term {

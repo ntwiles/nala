@@ -23,10 +23,9 @@ fn evaluate_oper(left: Box<Expr>, op_kind: OpKind, right: Term) -> Term {
 
     if let Term::Num(left) = left {
         if let Term::Num(right) = right {
-            if let OpKind::Add = op_kind {
-                Term::Num(left + right)
-            } else {
-                unimplemented!();
+            match op_kind {
+                OpKind::Add => Term::Num(left + right),
+                OpKind::Sub => Term::Num(left - right),
             }
         } else {
             unimplemented!();
@@ -41,7 +40,7 @@ mod tests {
     use super::*;
 
     #[test]
-    pub fn it_evaluates_addition_with_2_terms() {
+    pub fn it_evaluates_add_with_2_terms() {
         let left = Box::new(Expr::Term(Term::Num(7)));
         let right = Term::Num(4);
         let operation = Expr::Oper(left, OpKind::Add, right);
@@ -55,7 +54,7 @@ mod tests {
     }
 
     #[test]
-    pub fn it_evaluates_addition_with_3_terms() {
+    pub fn it_evaluates_add_with_3_terms() {
         let left = Expr::Term(Term::Num(3));
         let middle = Term::Num(5);
         let right = Term::Num(4);
@@ -65,6 +64,20 @@ mod tests {
 
         if let Term::Num(actual) = actual {
             assert_eq!(12, actual);
+        } else {
+            panic!();
+        }
+    }
+
+    #[test]
+    pub fn it_evaluates_sub() {
+        let left = Expr::Term(Term::Num(5));
+        let right = Term::Num(3);
+        let operation = Expr::Oper(Box::new(left), OpKind::Sub, right);
+        let actual = evaluate_expr(operation);
+
+        if let Term::Num(actual) = actual {
+            assert_eq!(2, actual);
         } else {
             panic!();
         }

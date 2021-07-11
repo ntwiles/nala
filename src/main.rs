@@ -22,7 +22,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Parsing code: {}", code);
     let parsed: Stmt = Parser::parse_code(code);
 
-    println!("Interpreting.");
     interpret(parsed);
 
     Ok(())

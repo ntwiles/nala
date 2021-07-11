@@ -8,8 +8,9 @@ pub Stmt: ast::Stmt = {
 };
 
 Expr: ast::Expr = {
-    <l:Term> =>  ast::Expr::Term(l),
-    <l:Expr> "+" <r:Term> => ast::Expr::Oper(Box::new(l), ast::OpKind::Add, r)
+    <l:Expr> "+" <r:Term> => ast::Expr::Oper(Box::new(l), ast::OpKind::Add, r),
+    <l:Expr> "-" <r:Term> => ast::Expr::Oper(Box::new(l), ast::OpKind::Sub, r),
+    <l:Term> =>  ast::Expr::Term(l)
 };
 
 Term: ast::Term = {
