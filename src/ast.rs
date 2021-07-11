@@ -1,6 +1,5 @@
 pub enum Stmt {
     Print(Literal),
-    Assign,
 }
 
 pub enum Literal {

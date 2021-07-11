@@ -1,4 +1,8 @@
-lalrpop_mod!(pub test); // synthesized by LALRPOP
+use lalrpop_util::lalrpop_mod;
+
+lalrpop_mod!(pub grammar);
+
+use grammar::StmtParser;
 
 use crate::ast::Stmt;
 
@@ -6,7 +10,7 @@ pub struct Parser;
 
 impl Parser {
     pub fn parse_code(code: String) -> Stmt {
-        let parser = grammar::StmtParser::new();
+        let parser = StmtParser::new();
         parser.parse(&code).unwrap()
     }
 }

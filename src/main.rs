@@ -1,8 +1,3 @@
-#[macro_use]
-extern crate lalrpop_util;
-
-lalrpop_mod!(pub test); // synthesized by LALRPOP
-
 use std::env;
 use std::error::Error;
 use std::fs;
