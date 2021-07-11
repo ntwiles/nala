@@ -1,9 +1,6 @@
 pub enum Stmt {
     Print(Literal),
-}
-
-pub enum Keyword {
-    Print,
+    Assign,
 }
 
 pub enum Literal {

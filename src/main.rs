@@ -8,6 +8,7 @@ use std::error::Error;
 use std::fs;
 
 mod ast;
+#[allow(dead_code)]
 mod lexer;
 mod parser;
 mod token;
