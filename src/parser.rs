@@ -6,7 +6,7 @@ pub struct Parser;
 
 impl Parser {
     pub fn parse_code(code: String) -> Stmt {
-        let parser = test::StmtParser::new();
+        let parser = grammar::StmtParser::new();
         parser.parse(&code).unwrap()
     }
 }
@@ -17,7 +17,7 @@ mod tests {
     use crate::ast;
 
     #[test]
-    pub fn it_parses_print_statements() {
+    pub fn it_identifies_print_statements() {
         let parsed = Parser::parse_code(String::from("print 'hello world';"));
         assert!(matches!(parsed, ast::Stmt::Print(_)));
     }
