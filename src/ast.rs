@@ -5,7 +5,7 @@ pub enum Program {
 
 pub enum Stmt {
     Print(Expr),
-    Declare(String),
+    Declare(String, Expr),
 }
 
 pub enum Expr {
@@ -21,6 +21,7 @@ pub enum Factor {
 }
 
 pub enum Term {
+    Symbol(String),
     String(String),
     Num(f32),
 }
@@ -33,9 +34,12 @@ pub enum OpKind {
 }
 
 impl Term {
-    pub fn to_string(self) -> String {
+    pub fn to_string(&self) -> String {
         match self {
-            Term::String(t) => t,
+            Term::Symbol(_) => {
+                panic!("Cannot know string representation of un-evaluated symbol.")
+            }
+            Term::String(t) => t.to_owned(),
             Term::Num(n) => n.to_string(),
         }
     }

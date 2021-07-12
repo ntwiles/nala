@@ -13,18 +13,23 @@ pub fn interpret_tree(program: Program, scope: &mut Scope) {
 
 fn interpret_stmt(stmt: Stmt, scope: &mut Scope) {
     match stmt {
-        Stmt::Print(expr) => interpret_print(expr),
-        Stmt::Declare(ident) => interpret_declare(ident, scope),
+        Stmt::Print(expr) => interpret_print(expr, scope),
+        Stmt::Declare(ident, expr) => interpret_declare(ident, expr, scope),
     }
 }
 
-fn interpret_print(expr: Expr) {
+fn interpret_print(expr: Expr, scope: &mut Scope) {
     let result = evaluate_expr(expr);
-    println!("{}", result.to_string());
+
+    if let Term::Symbol(ident) = result {
+        println!("{}", scope.get_value(ident).to_string());
+    } else {
+        println!("{}", result.to_string());
+    }
 }
 
-fn interpret_declare(ident: String, scope: &mut Scope) {
-    scope.add_binding(ident, None);
+fn interpret_declare(ident: String, expr: Expr, scope: &mut Scope) {
+    scope.add_binding(ident, evaluate_expr(expr));
 }
 
 fn evaluate_expr(expr: Expr) -> Term {
