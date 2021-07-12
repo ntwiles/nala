@@ -59,13 +59,13 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_add_with_2_terms() {
-        let left = Box::new(Expr::Factor(Factor::Term(Term::Num(7))));
-        let right = Factor::Term(Term::Num(4));
+        let left = Box::new(Expr::Factor(Factor::Term(Term::Num(7.0))));
+        let right = Factor::Term(Term::Num(4.0));
         let operation = Expr::Add(left, right);
         let actual = evaluate_expr(operation);
 
         if let Term::Num(actual) = actual {
-            assert_eq!(11, actual);
+            assert_eq!(11.0, actual);
         } else {
             panic!();
         }
@@ -73,15 +73,15 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_add_with_3_terms() {
-        let left = Expr::Factor(Factor::Term(Term::Num(3)));
-        let middle = Factor::Term(Term::Num(5));
-        let right = Factor::Term(Term::Num(4));
+        let left = Expr::Factor(Factor::Term(Term::Num(3.0)));
+        let middle = Factor::Term(Term::Num(5.0));
+        let right = Factor::Term(Term::Num(4.0));
         let operation_a = Expr::Add(Box::new(left), middle);
         let operation_b = Expr::Add(Box::new(operation_a), right);
         let actual = evaluate_expr(operation_b);
 
         if let Term::Num(actual) = actual {
-            assert_eq!(12, actual);
+            assert_eq!(12.0, actual);
         } else {
             panic!();
         }
@@ -89,13 +89,13 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_sub() {
-        let left = Expr::Factor(Factor::Term(Term::Num(5)));
-        let right = Factor::Term(Term::Num(3));
+        let left = Expr::Factor(Factor::Term(Term::Num(5.0)));
+        let right = Factor::Term(Term::Num(3.0));
         let operation = Expr::Sub(Box::new(left), right);
         let actual = evaluate_expr(operation);
 
         if let Term::Num(actual) = actual {
-            assert_eq!(2, actual);
+            assert_eq!(2.0, actual);
         } else {
             panic!();
         }
@@ -103,13 +103,13 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_mult() {
-        let left = Factor::Term(Term::Num(5));
-        let right = Term::Num(3);
+        let left = Factor::Term(Term::Num(5.0));
+        let right = Term::Num(3.0);
         let operation = Factor::Mult(Box::new(left), right);
         let actual = evaluate_factor(operation);
 
         if let Term::Num(actual) = actual {
-            assert_eq!(15, actual);
+            assert_eq!(15.0, actual);
         } else {
             panic!();
         }

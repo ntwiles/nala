@@ -15,7 +15,7 @@ pub enum Factor {
 
 pub enum Term {
     String(String),
-    Num(i32),
+    Num(f32),
 }
 
 pub enum OpKind {

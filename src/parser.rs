@@ -37,7 +37,7 @@ mod tests {
         let parsed = parse_code(String::from("print 313;"));
 
         if let Stmt::Print(Expr::Factor(Factor::Term(Term::Num(number)))) = parsed {
-            assert_eq!(number, 313);
+            assert_eq!(number, 313.0);
         } else {
             panic!();
         }

@@ -23,8 +23,8 @@ Term: ast::Term = {
     <s:Str> => ast::Term::String(s)
 };
 
-Num: i32 = {
-    r"[0-9]+" => i32::from_str(<>).unwrap(),
+Num: f32 = {
+    r"[0-9]+" => f32::from_str(<>).unwrap(),
 };
 
 Str: String = {
