@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Nathan Wiles <ntwiles@gmail.com>"]
 edition = "2018"
 
-[build-dependencies] # <-- We added this and everything after!
+[build-dependencies]
 lalrpop = "0.19.6"
 
 [dependencies]
