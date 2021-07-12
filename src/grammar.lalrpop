@@ -15,6 +15,7 @@ Expr: ast::Expr = {
 
 Factor: ast::Factor = {
     <l:Factor> "*" <r:Term>  => ast::Factor::Mult(Box::new(l), r),
+    <l:Factor> "/" <r:Term> => ast::Factor::Div(Box::new(l), r),
     <t:Term> => ast::Factor::Term(t)
 }
 

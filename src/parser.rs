@@ -86,4 +86,18 @@ mod tests {
             panic!();
         }
     }
+
+    #[test]
+    pub fn it_parses_print_statements_with_div_expressions() {
+        let parsed = parse_code(String::from("print 4 / 2;"));
+
+        if let Stmt::Print(Expr::Factor(Factor::Div(left, right))) = parsed {
+            // TODO: box_patterns feature may make this uncessecary when stable.
+            let left = *left;
+            assert!(matches!(left, Factor::Term(Term::Num(_))));
+            assert!(matches!(right, Term::Num(_)));
+        } else {
+            panic!();
+        }
+    }
 }

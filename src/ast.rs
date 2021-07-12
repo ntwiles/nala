@@ -10,6 +10,7 @@ pub enum Expr {
 
 pub enum Factor {
     Mult(Box<Factor>, Term),
+    Div(Box<Factor>, Term),
     Term(Term),
 }
 
@@ -22,6 +23,7 @@ pub enum OpKind {
     Add,
     Sub,
     Mult,
+    Div,
 }
 
 impl Term {

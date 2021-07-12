@@ -29,10 +29,8 @@ fn evaluate_expr(expr: Expr) -> Term {
 
 fn evaluate_factor(factor: Factor) -> Term {
     match factor {
-        Factor::Mult(left, right) => {
-            let left = evaluate_factor(*left);
-            evaluate_oper(left, OpKind::Mult, right)
-        }
+        Factor::Mult(left, right) => evaluate_oper(evaluate_factor(*left), OpKind::Mult, right),
+        Factor::Div(left, right) => evaluate_oper(evaluate_factor(*left), OpKind::Div, right),
         Factor::Term(term) => term,
     }
 }
@@ -44,12 +42,21 @@ fn evaluate_oper(left: Term, op_kind: OpKind, right: Term) -> Term {
                 OpKind::Add => Term::Num(left + right),
                 OpKind::Sub => Term::Num(left - right),
                 OpKind::Mult => Term::Num(left * right),
+                OpKind::Div => Term::Num(do_divide(left, right)),
             }
         } else {
             unimplemented!();
         }
     } else {
         unimplemented!();
+    }
+}
+
+fn do_divide(left: f32, right: f32) -> f32 {
+    if right != 0.0 {
+        left / right
+    } else {
+        panic!("Cannot divide by zero.")
     }
 }
 
@@ -113,5 +120,28 @@ mod tests {
         } else {
             panic!();
         }
+    }
+
+    #[test]
+    pub fn it_evaluates_div() {
+        let left = Factor::Term(Term::Num(5.0));
+        let right = Term::Num(2.0);
+        let operation = Factor::Div(Box::new(left), right);
+        let actual = evaluate_factor(operation);
+
+        if let Term::Num(actual) = actual {
+            assert_eq!(2.5, actual);
+        } else {
+            panic!();
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "Cannot divide by zero.")]
+    pub fn it_disallows_div_by_zero() {
+        let left = Factor::Term(Term::Num(5.0));
+        let right = Term::Num(0.0);
+        let operation = Factor::Div(Box::new(left), right);
+        let actual = evaluate_factor(operation);
     }
 }
