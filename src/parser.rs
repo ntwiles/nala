@@ -7,8 +7,7 @@ use grammar::ProgramParser;
 use crate::ast::*;
 
 pub fn parse_code(code: String) -> Program {
-    let parser = ProgramParser::new();
-    parser.parse(&code).unwrap()
+    ProgramParser::new().parse(&code).unwrap()
 }
 
 #[cfg(test)]
