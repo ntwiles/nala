@@ -11,7 +11,7 @@ mod token;
 
 use crate::ast::*;
 use interpreter::*;
-use parser::Parser;
+use parser::*;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
@@ -20,9 +20,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let code = fs::read_to_string(path).unwrap();
 
     println!("Parsing code: {}", code);
-    let parsed: Stmt = Parser::parse_code(code);
+    let parsed: Stmt = parse_code(code);
 
-    interpret(parsed);
+    interpret_tree(parsed);
 
     Ok(())
 }

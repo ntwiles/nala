@@ -1,6 +1,6 @@
 use crate::ast::*;
 
-pub fn interpret(parsed: Stmt) {
+pub fn interpret_tree(parsed: Stmt) {
     match parsed {
         Stmt::Print(expr) => interpret_print(expr),
     }
