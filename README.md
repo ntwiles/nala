@@ -14,7 +14,11 @@ Nala is (read: will be) an interpreted programming language with terse syntax de
 ## `print` keyword
 
 Output can be printed to the console with the following syntax:
-`print 'foo';`
+
+```
+print 'foo';
+```
+
 In this code snippet, whitespace is insignificant, strings are surrounded by single quotes ('), and the required trailing semicolon signifies the end of a statement.
 
 ```
@@ -27,5 +31,9 @@ The above shows support for chaining multiple statements, and also for complex a
 ## `const` keyword
 
 Variables can be declared with the following syntax:
-`const foo;`
+
+```
+const foo;
+```
+
 As with the above example, a trailing semicolon is required. The variable initially holds a null value. Assignment at the same time as declaration is not yet supported. Bindings are added to a lexical scope which in effect is global as there's not yet any method of creating new scopes.
