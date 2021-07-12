@@ -4,13 +4,14 @@ pub enum Stmt {
 
 // TODO: Consider scrapping OpKind and replacing Oper with Add and Sub.
 pub enum Expr {
-    Oper(Box<Expr>, OpKind, Factor),
+    Add(Box<Expr>, Factor),
+    Sub(Box<Expr>, Factor),
     Factor(Factor),
 }
 
 // TODO: Consider scrapping OpKind and replacing Oper with Mult and Div.
 pub enum Factor {
-    Oper(Box<Factor>, OpKind, Term),
+    Mult(Box<Factor>, Term),
     Term(Term),
 }
 

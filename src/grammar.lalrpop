@@ -8,13 +8,13 @@ pub Stmt: ast::Stmt = {
 };
 
 Expr: ast::Expr = {
-    <l:Expr> "+" <r:Factor> => ast::Expr::Oper(Box::new(l), ast::OpKind::Add, r),
-    <l:Expr> "-" <r:Factor> => ast::Expr::Oper(Box::new(l), ast::OpKind::Sub, r),
+    <l:Expr> "+" <r:Factor> => ast::Expr::Add(Box::new(l), r),
+    <l:Expr> "-" <r:Factor> => ast::Expr::Sub(Box::new(l), r),
     <f:Factor> =>  ast::Expr::Factor(f)
 };
 
 Factor: ast::Factor = {
-    <l:Factor> "*" <r:Term>  => ast::Factor::Oper(Box::new(l), ast::OpKind::Mult, r),
+    <l:Factor> "*" <r:Term>  => ast::Factor::Mult(Box::new(l), r),
     <t:Term> => ast::Factor::Term(t)
 }
 

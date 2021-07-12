@@ -52,11 +52,10 @@ mod tests {
     pub fn it_parses_print_statements_with_add_expressions() {
         let parsed = Parser::parse_code(String::from("print 2 + 3;"));
 
-        if let Stmt::Print(Expr::Oper(left, op_kind, right)) = parsed {
+        if let Stmt::Print(Expr::Add(left, right)) = parsed {
             // TODO: box_patterns feature may make this uncessecary when stable.
             let left = *left;
             assert!(matches!(left, Expr::Factor(Factor::Term(Term::Num(_)))));
-            assert!(matches!(op_kind, OpKind::Add));
             assert!(matches!(right, Factor::Term(Term::Num(_))));
         } else {
             panic!();
@@ -67,16 +66,12 @@ mod tests {
     pub fn it_parses_print_statements_with_add_expressions_three_terms() {
         let parsed = Parser::parse_code(String::from("print 2 + 3 + 4;"));
 
-        if let Stmt::Print(Expr::Oper(left, op_kind, right)) = parsed {
+        if let Stmt::Print(Expr::Add(left, right)) = parsed {
             // TODO: box_patterns feature may make this uncessecary when stable.
             let left = *left;
             // TODO: box_patterns can also allow the first _ here to be replaced with
             // a more precise pattern.
-            assert!(matches!(
-                left,
-                Expr::Oper(_, OpKind::Add, Factor::Term(Term::Num(_)))
-            ));
-            assert!(matches!(op_kind, OpKind::Add));
+            assert!(matches!(left, Expr::Add(_, Factor::Term(Term::Num(_)))));
             assert!(matches!(right, Factor::Term(Term::Num(_))));
         } else {
             panic!();
@@ -87,11 +82,10 @@ mod tests {
     pub fn it_parses_print_statements_with_mult_expressions() {
         let parsed = Parser::parse_code(String::from("print 2 * 4;"));
 
-        if let Stmt::Print(Expr::Factor(Factor::Oper(left, op_kind, right))) = parsed {
+        if let Stmt::Print(Expr::Factor(Factor::Mult(left, right))) = parsed {
             // TODO: box_patterns feature may make this uncessecary when stable.
             let left = *left;
             assert!(matches!(left, Factor::Term(Term::Num(_))));
-            assert!(matches!(op_kind, OpKind::Mult));
             assert!(matches!(right, Term::Num(_)));
         } else {
             panic!();

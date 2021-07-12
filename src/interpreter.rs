@@ -13,10 +13,15 @@ fn interpret_print(expr: Expr) {
 
 fn evaluate_expr(expr: Expr) -> Term {
     match expr {
-        Expr::Oper(left, op_kind, right) => {
+        Expr::Add(left, right) => {
             let left = evaluate_expr(*left);
             let right = evaluate_factor(right);
-            evaluate_oper(left, op_kind, right)
+            evaluate_oper(left, OpKind::Add, right)
+        }
+        Expr::Sub(left, right) => {
+            let left = evaluate_expr(*left);
+            let right = evaluate_factor(right);
+            evaluate_oper(left, OpKind::Sub, right)
         }
         Expr::Factor(factor) => evaluate_factor(factor),
     }
@@ -24,9 +29,9 @@ fn evaluate_expr(expr: Expr) -> Term {
 
 fn evaluate_factor(factor: Factor) -> Term {
     match factor {
-        Factor::Oper(left, op_kind, right) => {
+        Factor::Mult(left, right) => {
             let left = evaluate_factor(*left);
-            evaluate_oper(left, op_kind, right)
+            evaluate_oper(left, OpKind::Mult, right)
         }
         Factor::Term(term) => term,
     }
@@ -56,7 +61,7 @@ mod tests {
     pub fn it_evaluates_add_with_2_terms() {
         let left = Box::new(Expr::Factor(Factor::Term(Term::Num(7))));
         let right = Factor::Term(Term::Num(4));
-        let operation = Expr::Oper(left, OpKind::Add, right);
+        let operation = Expr::Add(left, right);
         let actual = evaluate_expr(operation);
 
         if let Term::Num(actual) = actual {
@@ -71,8 +76,8 @@ mod tests {
         let left = Expr::Factor(Factor::Term(Term::Num(3)));
         let middle = Factor::Term(Term::Num(5));
         let right = Factor::Term(Term::Num(4));
-        let operation_a = Expr::Oper(Box::new(left), OpKind::Add, middle);
-        let operation_b = Expr::Oper(Box::new(operation_a), OpKind::Add, right);
+        let operation_a = Expr::Add(Box::new(left), middle);
+        let operation_b = Expr::Add(Box::new(operation_a), right);
         let actual = evaluate_expr(operation_b);
 
         if let Term::Num(actual) = actual {
@@ -86,7 +91,7 @@ mod tests {
     pub fn it_evaluates_sub() {
         let left = Expr::Factor(Factor::Term(Term::Num(5)));
         let right = Factor::Term(Term::Num(3));
-        let operation = Expr::Oper(Box::new(left), OpKind::Sub, right);
+        let operation = Expr::Sub(Box::new(left), right);
         let actual = evaluate_expr(operation);
 
         if let Term::Num(actual) = actual {
@@ -98,10 +103,10 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_mult() {
-        let left = Expr::Factor(Factor::Term(Term::Num(5)));
-        let right = Factor::Term(Term::Num(3));
-        let operation = Expr::Oper(Box::new(left), OpKind::Mult, right);
-        let actual = evaluate_expr(operation);
+        let left = Factor::Term(Term::Num(5));
+        let right = Term::Num(3);
+        let operation = Factor::Mult(Box::new(left), right);
+        let actual = evaluate_factor(operation);
 
         if let Term::Num(actual) = actual {
             assert_eq!(15, actual);
