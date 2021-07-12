@@ -1,24 +1,30 @@
 use crate::ast::*;
+use crate::scope::Scope;
 
-pub fn interpret_tree(program: Program) {
+pub fn interpret_tree(program: Program, scope: &mut Scope) {
     match program {
-        Program::Stmt(stmt) => interpret_stmt(stmt),
+        Program::Stmt(stmt) => interpret_stmt(stmt, scope),
         Program::Stmts(prog, stmt) => {
-            interpret_tree(*prog);
-            interpret_stmt(stmt);
+            interpret_tree(*prog, scope);
+            interpret_stmt(stmt, scope);
         }
     }
 }
 
-fn interpret_stmt(stmt: Stmt) {
+fn interpret_stmt(stmt: Stmt, scope: &mut Scope) {
     match stmt {
         Stmt::Print(expr) => interpret_print(expr),
+        Stmt::Declare(ident) => interpret_declare(ident, scope),
     }
 }
 
 fn interpret_print(expr: Expr) {
     let result = evaluate_expr(expr);
     println!("{}", result.to_string());
+}
+
+fn interpret_declare(ident: String, scope: &mut Scope) {
+    scope.add_binding(ident, None);
 }
 
 fn evaluate_expr(expr: Expr) -> Term {

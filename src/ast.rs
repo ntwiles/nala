@@ -5,6 +5,7 @@ pub enum Program {
 
 pub enum Stmt {
     Print(Expr),
+    Declare(String),
 }
 
 pub enum Expr {

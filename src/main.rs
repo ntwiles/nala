@@ -7,11 +7,14 @@ mod interpreter;
 #[allow(dead_code)]
 mod lexer;
 mod parser;
+mod scope;
+#[allow(dead_code)]
 mod token;
 
 use crate::ast::*;
 use interpreter::*;
 use parser::*;
+use scope::Scope;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
@@ -21,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let parsed: Program = parse_code(code);
 
-    interpret_tree(parsed);
+    interpret_tree(parsed, &mut Scope::new(None));
 
     Ok(())
 }

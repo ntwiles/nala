@@ -10,6 +10,8 @@ pub Program: ast::Program = {
 
 Stmt: ast::Stmt = {
     "print" <Expr> ";" => ast::Stmt::Print(<>),
+    "const" <Symbol> ";" => ast::Stmt::Declare(<>),
+    // <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
 };
 
 Expr: ast::Expr = {
@@ -27,6 +29,10 @@ Factor: ast::Factor = {
 Term: ast::Term = {
     <n:Num> => ast::Term::Num(n),
     <s:Str> => ast::Term::String(s)
+};
+
+Symbol: String = {
+    <s:r"[a-zA-z]+"> => String::from_str(s).unwrap()
 };
 
 Num: f32 = {
