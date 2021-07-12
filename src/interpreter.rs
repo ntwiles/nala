@@ -1,7 +1,17 @@
 use crate::ast::*;
 
-pub fn interpret_tree(parsed: Stmt) {
-    match parsed {
+pub fn interpret_tree(program: Program) {
+    match program {
+        Program::Stmt(stmt) => interpret_stmt(stmt),
+        Program::Stmts(prog, stmt) => {
+            interpret_tree(*prog);
+            interpret_stmt(stmt);
+        }
+    }
+}
+
+fn interpret_stmt(stmt: Stmt) {
+    match stmt {
         Stmt::Print(expr) => interpret_print(expr),
     }
 }
@@ -142,6 +152,6 @@ mod tests {
         let left = Factor::Term(Term::Num(5.0));
         let right = Term::Num(0.0);
         let operation = Factor::Div(Box::new(left), right);
-        let actual = evaluate_factor(operation);
+        evaluate_factor(operation);
     }
 }

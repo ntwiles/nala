@@ -1,3 +1,8 @@
+pub enum Program {
+    Stmt(Stmt),
+    Stmts(Box<Program>, Stmt),
+}
+
 pub enum Stmt {
     Print(Expr),
 }

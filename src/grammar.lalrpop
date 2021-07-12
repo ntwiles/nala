@@ -3,7 +3,12 @@ use crate::ast;
 
 grammar;
 
-pub Stmt: ast::Stmt = {
+pub Program: ast::Program = {
+    <p:Program> <s:Stmt> => ast::Program::Stmts(Box::new(p), s),
+    <s:Stmt> => ast::Program::Stmt(s),
+};
+
+Stmt: ast::Stmt = {
     "print" <Expr> ";" => ast::Stmt::Print(<>),
 };
 
@@ -15,9 +20,9 @@ Expr: ast::Expr = {
 
 Factor: ast::Factor = {
     <l:Factor> "*" <r:Term>  => ast::Factor::Mult(Box::new(l), r),
-    <l:Factor> "/" <r:Term> => ast::Factor::Div(Box::new(l), r),
+    <l:Factor> "/" <r:Term> => ast::Factor::Div(Box::new(l), r), 
     <t:Term> => ast::Factor::Term(t)
-}
+};
 
 Term: ast::Term = {
     <n:Num> => ast::Term::Num(n),

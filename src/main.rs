@@ -19,8 +19,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let path = &args[1];
     let code = fs::read_to_string(path).unwrap();
 
-    println!("Parsing code: {}", code);
-    let parsed: Stmt = parse_code(code);
+    let parsed: Program = parse_code(code);
 
     interpret_tree(parsed);
 
