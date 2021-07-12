@@ -7,6 +7,7 @@ Nala is (read: will be) an interpreted programming language with terse syntax de
 - [x] Basic console output.
 - [x] Arithmetic operations.
 - [x] Lexical scope.
+- [ ] Conditional branching.
 - [ ] Functions
 
 # Documentation
