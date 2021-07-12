@@ -103,4 +103,24 @@ mod tests {
             panic!();
         }
     }
+
+    #[test]
+    pub fn it_parses_print_statements_with_identifiers() {
+        let parsed = parse_code(String::from("const foo = bar;"));
+
+        assert!(matches!(
+            parsed,
+            Program::Stmt(Stmt::Declare(String, Expr::Factor(Factor::Term(Term::Symbol(_))))),
+        ));
+    }
+
+    #[test]
+    pub fn it_parses_const_statements() {
+        let parsed = parse_code(String::from("const foo = 7;"));
+
+        assert!(matches!(
+            parsed,
+            Program::Stmt(Stmt::Declare(String, Expr::Factor(Factor::Term(Term::Num(_))))),
+        ));
+    }
 }
