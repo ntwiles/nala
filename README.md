@@ -22,19 +22,30 @@ print 'foo';
 
 In this code snippet, whitespace is insignificant, strings are surrounded by single quotes ('), and the required trailing semicolon signifies the end of a statement.
 
-```
-print 'hello world';
-print 10 * 2 / 4 + 5 - 3;
-```
-
-The above shows support for chaining multiple statements, and also for complex arithmetic operations which evaluate in the expected order.
-
 ## `const` keyword
 
 Variables can be declared with the following syntax:
 
 ```
-const foo;
+const foo = 7;
+print foo;
 ```
 
-As with the above example, a trailing semicolon is required. The variable initially holds a null value. Assignment at the same time as declaration is not yet supported. Bindings are added to a lexical scope which in effect is global as there's not yet any method of creating new scopes.
+As with the above example, a trailing semicolon is required after both statements. Bindings are added to a lexical scope which in effect is global as there's not yet any method of creating new scopes.
+
+## Expressions
+
+Arithmetic expressions can be performed between number types:
+
+```
+print 5 + 10 * 2 / 4 - 3;
+```
+
+Operations will evaluate in DOMA (Delimiter, Order, Multiplicatives, Additives) order, though at present only the following operators are implemented (`+`, `-`, `*`, `/`) and delimiter grouping is not yet supported.
+
+```
+const message = 'hello ' + 'world';
+print message;
+```
+
+The `+` operator can also be used between strings to perform concatenation.
