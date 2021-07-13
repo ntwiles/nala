@@ -33,6 +33,8 @@ print foo;
 
 As with the above example, a trailing semicolon is required after both statements. Bindings are added to a lexical scope which in effect is global as there's not yet any method of creating new scopes.
 
+Values declared with the `const` keyword are immutable (though further clarification to this may be needed when objects are implemented). A future `let` keyword will allow for mutable variables to be declared.
+
 ## Expressions
 
 Arithmetic expressions can be performed between number types:
