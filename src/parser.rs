@@ -110,7 +110,7 @@ mod tests {
 
         assert!(matches!(
             parsed,
-            Program::Stmt(Stmt::Declare(String, Expr::Factor(Factor::Term(Term::Symbol(_))))),
+            Program::Stmt(Stmt::Declare(_, Expr::Factor(Factor::Term(Term::Symbol(_))))),
         ));
     }
 
@@ -120,7 +120,7 @@ mod tests {
 
         assert!(matches!(
             parsed,
-            Program::Stmt(Stmt::Declare(String, Expr::Factor(Factor::Term(Term::Num(_))))),
+            Program::Stmt(Stmt::Declare(_, Expr::Factor(Factor::Term(Term::Num(_))))),
         ));
     }
 }
