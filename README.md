@@ -8,6 +8,7 @@ Nala is (read: will be) an interpreted, expression-oriented programming language
 - [x] Arithmetic operations.
 - [x] Lexical scope.
 - [ ] Conditional branching.
+- [ ] Basic console input.
 - [ ] Functions
 
 # Documentation
@@ -51,3 +52,9 @@ print message;
 ```
 
 The `+` operator can also be used between strings to perform concatenation.
+
+```
+const foo = "bar";
+print foo == "bar";
+print 7 == 8;
+```
