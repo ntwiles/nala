@@ -22,6 +22,7 @@ pub enum Factor {
 
 #[derive(Clone)]
 pub enum Term {
+    Bool(bool),
     Symbol(String),
     String(String),
     Num(f32),
@@ -43,6 +44,7 @@ impl Term {
             }
             Term::String(t) => t.to_owned(),
             Term::Num(n) => n.to_string(),
+            Term::Bool(b) => b.to_string(),
         }
     }
 }

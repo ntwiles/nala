@@ -77,6 +77,9 @@ fn evaluate_oper(left: Term, op_kind: OpKind, right: Term, scope: &mut Scope) ->
                 let right = scope.get_value(right.to_owned());
                 evaluate_oper(Term::Num(left), op_kind, right, scope)
             }
+            Term::Bool(_) => {
+                panic!("Cannot perform arithmetic operations between values of type Bool.")
+            }
         },
         Term::String(left) => match right {
             Term::Num(_) => panic!("Cannot perform operations between types Num and String."),
@@ -94,10 +97,16 @@ fn evaluate_oper(left: Term, op_kind: OpKind, right: Term, scope: &mut Scope) ->
                 let right = scope.get_value(right.to_owned());
                 evaluate_oper(Term::String(left), op_kind, right, scope)
             }
+            Term::Bool(_) => {
+                panic!("Cannot perform arithmetic operations between types Bool and String.")
+            }
         },
         Term::Symbol(left) => {
             let left = scope.get_value(left.to_owned());
             evaluate_oper(left, op_kind, right, scope)
+        }
+        Term::Bool(_) => {
+            panic!("Cannot perform arithmetic operations between values of type Bool.")
         }
     }
 }
