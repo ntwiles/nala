@@ -79,7 +79,7 @@ fn evaluate_oper(left: Term, op_kind: OpKind, right: Term, scope: &mut Scope) ->
             }
         },
         Term::String(left) => match right {
-            Term::Num(_) => panic!("Cannot perform operations types Num and String."),
+            Term::Num(_) => panic!("Cannot perform operations between types Num and String."),
             Term::String(right) => {
                 if let OpKind::Add = op_kind {
                     Term::String(left + &right)
