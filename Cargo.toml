@@ -4,6 +4,14 @@ version = "0.1.0"
 authors = ["Nathan Wiles <ntwiles@gmail.com>"]
 edition = "2018"
 
+[lib]
+name = "library"
+path = "src/lib.rs"
+
+[[bin]]
+name = "nala_rust"
+path = "src/main.rs"
+
 [build-dependencies]
 lalrpop = "0.19.6"
 
