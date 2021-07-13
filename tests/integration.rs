@@ -11,10 +11,6 @@ fn test_run_all_examples() {
         if let Ok(file) = file {
             let file_name = file.path().display().to_string();
             let result = assert_example_does_not_throw(&file_name);
-
-            if let Err(_) = result {
-                panic!("Failed when running example file: {}", file_name);
-            }
         }
     }
 }
