@@ -17,9 +17,6 @@ fn test_run_all_examples() {
 fn assert_example_does_not_throw(path: &str) {
     let code = fs::read_to_string(path).unwrap();
 
-    if let Ok(parsed) = parse_code(code) {
-        interpret_tree(parsed, &mut Scope::new(None));
-    } else {
-        panic!("Failed to parse example code in: {}", path);
-    }
+    let parsed = parse_code(code);
+    interpret_tree(parsed, &mut Scope::new(None));
 }

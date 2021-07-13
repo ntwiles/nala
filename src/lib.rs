@@ -17,10 +17,6 @@ use scope::Scope;
 pub fn main(path: &str) -> Result<(), Box<dyn Error>> {
     let code = fs::read_to_string(path).unwrap();
     let parsed = parse_code(code);
-
-    if let Ok(parsed) = parsed {
-        interpret_tree(parsed, &mut Scope::new(None));
-    }
-
+    interpret_tree(parsed, &mut Scope::new(None));
     Ok(())
 }

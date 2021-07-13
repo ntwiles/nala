@@ -34,17 +34,28 @@ fn interpret_declare(ident: String, expr: Expr, scope: &mut Scope) {
 
 fn evaluate_expr(expr: Expr, scope: &mut Scope) -> Term {
     match expr {
-        Expr::Add(left, right) => {
+        Expr::Equal(left, right) => {
             let left = evaluate_expr(*left, scope);
+            let right = evaluate_addend(right, scope);
+            evaluate_equals(left, right, scope)
+        }
+        Expr::Addend(addend) => evaluate_addend(addend, scope),
+    }
+}
+
+fn evaluate_addend(addend: Addend, scope: &mut Scope) -> Term {
+    match addend {
+        Addend::Add(left, right) => {
+            let left = evaluate_addend(*left, scope);
             let right = evaluate_factor(right, scope);
             evaluate_oper(left, OpKind::Add, right, scope)
         }
-        Expr::Sub(left, right) => {
-            let left = evaluate_expr(*left, scope);
+        Addend::Sub(left, right) => {
+            let left = evaluate_addend(*left, scope);
             let right = evaluate_factor(right, scope);
             evaluate_oper(left, OpKind::Sub, right, scope)
         }
-        Expr::Factor(factor) => evaluate_factor(factor, scope),
+        Addend::Factor(factor) => evaluate_factor(factor, scope),
     }
 }
 
@@ -57,6 +68,44 @@ fn evaluate_factor(factor: Factor, scope: &mut Scope) -> Term {
             evaluate_oper(evaluate_factor(*left, scope), OpKind::Div, right, scope)
         }
         Factor::Term(term) => term,
+    }
+}
+
+fn evaluate_equals(left: Term, right: Term, scope: &mut Scope) -> Term {
+    match left {
+        Term::Num(left) => match right {
+            Term::Num(right) => Term::Bool(left == right),
+            Term::String(_) => panic!("Cannot perform comparisons between types Num and String."),
+            Term::Symbol(right) => {
+                let right = scope.get_value(right.to_owned());
+                evaluate_equals(Term::Num(left), right, scope)
+            }
+            Term::Bool(_) => panic!("Cannot perform comparisons between types Num and Bool."),
+        },
+        Term::String(left) => match right {
+            Term::Num(_) => panic!("Cannot perform comparisons between types String and Num."),
+            Term::String(right) => Term::Bool(left == right),
+            Term::Symbol(right) => {
+                let right = scope.get_value(right.to_owned());
+                evaluate_equals(Term::String(left), right, scope)
+            }
+            Term::Bool(_) => {
+                panic!("Cannot perform comparisons between types String and Bool.")
+            }
+        },
+        Term::Symbol(left) => {
+            let left = scope.get_value(left.to_owned());
+            evaluate_equals(left, right, scope)
+        }
+        Term::Bool(left) => match right {
+            Term::Num(_) => panic!("Cannot perform comparisons between types Bool and Num."),
+            Term::String(_) => panic!("Cannot perform comparisons between types Bool and String."),
+            Term::Symbol(right) => {
+                let right = scope.get_value(right.to_owned());
+                evaluate_equals(Term::Bool(left), right, scope)
+            }
+            Term::Bool(right) => Term::Bool(left == right),
+        },
     }
 }
 
@@ -125,10 +174,10 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_add_with_2_terms() {
-        let left = Box::new(Expr::Factor(Factor::Term(Term::Num(7.0))));
+        let left = Box::new(Addend::Factor(Factor::Term(Term::Num(7.0))));
         let right = Factor::Term(Term::Num(4.0));
-        let operation = Expr::Add(left, right);
-        let actual = evaluate_expr(operation, &mut Scope::new(None));
+        let operation = Addend::Add(left, right);
+        let actual = evaluate_addend(operation, &mut Scope::new(None));
 
         if let Term::Num(actual) = actual {
             assert_eq!(11.0, actual);
@@ -139,12 +188,12 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_add_with_3_terms() {
-        let left = Expr::Factor(Factor::Term(Term::Num(3.0)));
+        let left = Addend::Factor(Factor::Term(Term::Num(3.0)));
         let middle = Factor::Term(Term::Num(5.0));
         let right = Factor::Term(Term::Num(4.0));
-        let operation_a = Expr::Add(Box::new(left), middle);
-        let operation_b = Expr::Add(Box::new(operation_a), right);
-        let actual = evaluate_expr(operation_b, &mut Scope::new(None));
+        let operation_a = Addend::Add(Box::new(left), middle);
+        let operation_b = Addend::Add(Box::new(operation_a), right);
+        let actual = evaluate_addend(operation_b, &mut Scope::new(None));
 
         if let Term::Num(actual) = actual {
             assert_eq!(12.0, actual);
@@ -155,10 +204,10 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_sub() {
-        let left = Expr::Factor(Factor::Term(Term::Num(5.0)));
+        let left = Addend::Factor(Factor::Term(Term::Num(5.0)));
         let right = Factor::Term(Term::Num(3.0));
-        let operation = Expr::Sub(Box::new(left), right);
-        let actual = evaluate_expr(operation, &mut Scope::new(None));
+        let operation = Addend::Sub(Box::new(left), right);
+        let actual = evaluate_addend(operation, &mut Scope::new(None));
 
         if let Term::Num(actual) = actual {
             assert_eq!(2.0, actual);

@@ -9,8 +9,13 @@ pub enum Stmt {
 }
 
 pub enum Expr {
-    Add(Box<Expr>, Factor),
-    Sub(Box<Expr>, Factor),
+    Equal(Box<Expr>, Addend),
+    Addend(Addend),
+}
+
+pub enum Addend {
+    Add(Box<Addend>, Factor),
+    Sub(Box<Addend>, Factor),
     Factor(Factor),
 }
 

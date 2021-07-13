@@ -14,9 +14,14 @@ Stmt: ast::Stmt = {
 };
 
 Expr: ast::Expr = {
-    <l:Expr> "+" <r:Factor> => ast::Expr::Add(Box::new(l), r),
-    <l:Expr> "-" <r:Factor> => ast::Expr::Sub(Box::new(l), r),
-    <f:Factor> =>  ast::Expr::Factor(f)
+    <l:Expr> "==" <r:Addend> => ast::Expr::Equal(Box::new(l), r),
+    <a:Addend> => ast::Expr::Addend(a)
+}
+
+Addend: ast::Addend = {
+    <l:Addend> "+" <r:Factor> => ast::Addend::Add(Box::new(l), r),
+    <l:Addend> "-" <r:Factor> => ast::Addend::Sub(Box::new(l), r),
+    <f:Factor> =>  ast::Addend::Factor(f)
 };
 
 Factor: ast::Factor = {
