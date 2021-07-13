@@ -41,7 +41,7 @@ Arithmetic expressions can be performed between number types:
 print 5 + 10 * 2 / 4 - 3;
 ```
 
-Operations will evaluate in DOMA (Delimiter, Order, Multiplicatives, Additives) order, though at present only the following operators are implemented (`+`, `-`, `*`, `/`) and delimiter grouping is not yet supported.
+Operations will evaluate in DOMA (Delimiter, Order, Multiplicatives, Additives) order, though at present only the following arithmetic operators are implemented (`+`, `-`, `*`, `/`) and delimiter grouping is not yet supported.
 
 ```
 const message = 'hello ' + 'world';
