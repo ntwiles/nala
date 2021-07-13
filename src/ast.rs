@@ -27,6 +27,7 @@ pub enum Term {
     Num(f32),
 }
 
+#[derive(Debug)]
 pub enum OpKind {
     Add,
     Sub,

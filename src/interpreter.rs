@@ -71,14 +71,30 @@ fn evaluate_oper(left: Term, op_kind: OpKind, right: Term, scope: &mut Scope) ->
                 OpKind::Div => Term::Num(do_divide(left, right)),
             },
             Term::String(_) => {
-                panic!("Cannot perform operations between type Num and type String.")
+                panic!("Cannot perform operations between types Num and String.")
             }
             Term::Symbol(right) => {
                 let right = scope.get_value(right.to_owned());
                 evaluate_oper(Term::Num(left), op_kind, right, scope)
             }
         },
-        Term::String(_) => unimplemented!(),
+        Term::String(left) => match right {
+            Term::Num(_) => panic!("Cannot perform operations types Num and String."),
+            Term::String(right) => {
+                if let OpKind::Add = op_kind {
+                    Term::String(left + &right)
+                } else {
+                    panic!(
+                        "Operation not supported between values of type String: {:?}",
+                        op_kind
+                    )
+                }
+            }
+            Term::Symbol(right) => {
+                let right = scope.get_value(right.to_owned());
+                evaluate_oper(Term::String(left), op_kind, right, scope)
+            }
+        },
         Term::Symbol(left) => {
             let left = scope.get_value(left.to_owned());
             evaluate_oper(left, op_kind, right, scope)
