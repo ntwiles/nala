@@ -19,9 +19,9 @@ impl Scope {
         self.bindings.insert(ident, value);
     }
 
-    pub fn get_value(self: &Self, ident: String) -> &ast::Term {
+    pub fn get_value(self: &Self, ident: String) -> ast::Term {
         if let Some(value) = self.bindings.get(&ident) {
-            value
+            value.clone()
         } else if let Some(parent) = &*self.parent {
             parent.get_value(ident)
         } else {

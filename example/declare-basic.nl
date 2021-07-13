@@ -1,3 +1,2 @@
-const test = 5 * 7;
-print test;
-print test;
+const foo = 4 * 7;
+print foo;

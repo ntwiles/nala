@@ -20,6 +20,7 @@ pub enum Factor {
     Term(Term),
 }
 
+#[derive(Clone)]
 pub enum Term {
     Symbol(String),
     String(String),
