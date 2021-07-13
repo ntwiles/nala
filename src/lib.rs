@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::fs;
 
-pub mod ast;
+mod ast;
 pub mod interpreter;
 #[allow(dead_code)]
 mod lexer;
