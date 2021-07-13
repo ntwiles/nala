@@ -1,2 +1,2 @@
 const foo = 4;
-print foo * 7;
+print 7 * foo;

@@ -60,23 +60,25 @@ fn evaluate_factor(factor: Factor, scope: &mut Scope) -> Term {
     }
 }
 
+// TODO: Can this be simplified?
 fn evaluate_oper(left: Term, op_kind: OpKind, right: Term, scope: &mut Scope) -> Term {
     match left {
-        Term::Num(left) => {
-            if let Term::Num(right) = right {
-                match op_kind {
-                    OpKind::Add => Term::Num(left + right),
-                    OpKind::Sub => Term::Num(left - right),
-                    OpKind::Mult => Term::Num(left * right),
-                    OpKind::Div => Term::Num(do_divide(left, right)),
-                }
-            } else {
-                unimplemented!();
+        Term::Num(left) => match right {
+            Term::Num(right) => match op_kind {
+                OpKind::Add => Term::Num(left + right),
+                OpKind::Sub => Term::Num(left - right),
+                OpKind::Mult => Term::Num(left * right),
+                OpKind::Div => Term::Num(do_divide(left, right)),
+            },
+            Term::String(_) => {
+                panic!("Cannot perform operations between type Num and type String.")
             }
-        }
-        Term::String(_) => {
-            unimplemented!()
-        }
+            Term::Symbol(right) => {
+                let right = scope.get_value(right.to_owned());
+                evaluate_oper(Term::Num(left), op_kind, right, scope)
+            }
+        },
+        Term::String(_) => unimplemented!(),
         Term::Symbol(left) => {
             let left = scope.get_value(left.to_owned());
             evaluate_oper(left, op_kind, right, scope)
