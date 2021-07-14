@@ -61,7 +61,7 @@ print 7 == 8;
 
 ## `if` keyword
 
-The most basic of conditional branching is implemented in nala, as with most other languages, with `if` statements, and the syntax should be familiar to everyone:
+The most basic of conditional branching is implemented in nala, as with most other languages, with `if` statements. The syntax should be familiar to everyone:
 
 ```
 if (2 == 2) {
