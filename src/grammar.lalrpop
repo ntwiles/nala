@@ -4,8 +4,17 @@ use crate::ast;
 grammar;
 
 pub Program: ast::Program = {
-    <p:Program> <s:Stmt> => ast::Program::Stmts(Box::new(p), s),
-    <s:Stmt> => ast::Program::Stmt(s),
+    <b:Block> => ast::Program::Block(b),
+    <s:Stmts> => ast::Program::Stmts(s)
+}
+
+Block: ast::Block = {
+    "{" <s:Stmts> "}" => ast::Block { stmts: s }
+}
+
+pub Stmts: ast::Stmts = {
+    <p:Stmts> <s:Stmt> => ast::Stmts::Stmts(Box::new(p), s),
+    <s:Stmt> => ast::Stmts::Stmt(s),
 };
 
 Stmt: ast::Stmt = {

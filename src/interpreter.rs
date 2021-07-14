@@ -2,11 +2,18 @@ use crate::{ast::*, scope::Scope};
 
 pub fn interpret_tree(program: Program, scope: &mut Scope) {
     match program {
-        Program::Stmt(stmt) => interpret_stmt(stmt, scope),
-        Program::Stmts(prog, stmt) => {
-            interpret_tree(*prog, scope);
+        Program::Block(block) => interpret_stmts(block.stmts, scope),
+        Program::Stmts(stmts) => interpret_stmts(stmts, scope),
+    }
+}
+
+fn interpret_stmts(stmts: Stmts, scope: &mut Scope) {
+    match stmts {
+        Stmts::Stmts(stmts, stmt) => {
+            interpret_stmts(*stmts, scope);
             interpret_stmt(stmt, scope);
         }
+        Stmts::Stmt(stmt) => interpret_stmt(stmt, scope),
     }
 }
 

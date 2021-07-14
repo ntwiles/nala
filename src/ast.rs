@@ -1,6 +1,15 @@
 pub enum Program {
+    Block(Block),
+    Stmts(Stmts),
+}
+
+pub struct Block {
+    pub stmts: Stmts,
+}
+
+pub enum Stmts {
+    Stmts(Box<Stmts>, Stmt),
     Stmt(Stmt),
-    Stmts(Box<Program>, Stmt),
 }
 
 pub enum Stmt {
