@@ -7,7 +7,7 @@ Nala is (read: will be) an interpreted, expression-oriented programming language
 - [x] Basic console output.
 - [x] Arithmetic operations.
 - [x] Lexical scope.
-- [ ] Conditional branching.
+- [x] Conditional branching.
 - [ ] Basic console input.
 - [ ] Functions
 
@@ -57,4 +57,18 @@ The `+` operator can also be used between strings to perform concatenation.
 const foo = "bar";
 print foo == "bar";
 print 7 == 8;
+```
+
+## `if` keyword
+
+The most basic of conditional branching is implemented in nala, as with most other languages, with `if` statements, and the syntax should be familiar to everyone:
+
+```
+if (2 == 2) {
+    print 'should print';
+}
+
+if (2 == 3) {
+    print 'should not print';
+}
 ```
