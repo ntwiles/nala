@@ -4,22 +4,23 @@ use crate::ast;
 grammar;
 
 pub Program: ast::Program = {
-    <b:Block> => ast::Program::Block(b),
-    <s:Stmts> => ast::Program::Stmts(s)
-}
+    <Block> => ast::Program::Block(<>),
+    <Stmts> => ast::Program::Stmts(<>)
+} 
 
 Block: ast::Block = {
-    "{" <s:Stmts> "}" => ast::Block { stmts: s }
+    "{" <Stmts> "}" => ast::Block { stmts: <> }
 }
 
 pub Stmts: ast::Stmts = {
-    <p:Stmts> <s:Stmt> => ast::Stmts::Stmts(Box::new(p), s),
-    <s:Stmt> => ast::Stmts::Stmt(s),
+    <ss:Stmts> <s:Stmt> => ast::Stmts::Stmts(Box::new(ss), s),
+    <Stmt> => ast::Stmts::Stmt(<>),
 };
 
 Stmt: ast::Stmt = {
     "print" <Expr> ";" => ast::Stmt::Print(<>),
     "const" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e),
+    "if" "(" <e:Expr> ")" <b:Block> => ast::Stmt::If(e, Box::new(b))
 };
 
 Expr: ast::Expr = {

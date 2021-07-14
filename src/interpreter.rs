@@ -21,6 +21,7 @@ fn interpret_stmt(stmt: Stmt, scope: &mut Scope) {
     match stmt {
         Stmt::Print(expr) => interpret_print(expr, scope),
         Stmt::Declare(ident, expr) => interpret_declare(ident, expr, scope),
+        Stmt::If(cond, block) => interpret_if(cond, *block, scope),
     }
 }
 
@@ -37,6 +38,18 @@ fn interpret_print(expr: Expr, scope: &mut Scope) {
 fn interpret_declare(ident: String, expr: Expr, scope: &mut Scope) {
     let value = evaluate_expr(expr, scope);
     scope.add_binding(ident, value);
+}
+
+fn interpret_if(cond: Expr, block: Block, scope: &mut Scope) {
+    let resolved = evaluate_expr(cond, scope);
+
+    if let Term::Bool(bool) = resolved {
+        if bool {
+            interpret_stmts(block.stmts, scope)
+        }
+    } else {
+        panic!("Cannot use non-boolean expressions inside 'if' conditions.")
+    }
 }
 
 fn evaluate_expr(expr: Expr, scope: &mut Scope) -> Term {
