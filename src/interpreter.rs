@@ -1,104 +1,126 @@
-use crate::{ast::*, scope::Scope};
+use crate::{
+    ast::*,
+    scope::{ScopeId, Scopes},
+};
 
-pub fn interpret_tree(program: Program, scope: &mut Scope) {
+pub fn interpret_tree(program: Program) {
+    let mut scopes = Scopes::new();
+    let top_scope = scopes.new_scope(None);
     match program {
-        Program::Block(block) => interpret_stmts(block.stmts, scope),
-        Program::Stmts(stmts) => interpret_stmts(stmts, scope),
+        Program::Block(block) => interpret_block(block, &mut scopes, top_scope),
+        Program::Stmts(stmts) => interpret_stmts(stmts, &mut scopes, top_scope),
     }
 }
 
-fn interpret_stmts(stmts: Stmts, scope: &mut Scope) {
+fn interpret_block(block: Block, scopes: &mut Scopes, current_scope: ScopeId) {
+    let block_scope = scopes.new_scope(Some(current_scope));
+    interpret_stmts(block.stmts, scopes, block_scope);
+}
+
+fn interpret_stmts(stmts: Stmts, scopes: &mut Scopes, current_scope: ScopeId) {
     match stmts {
         Stmts::Stmts(stmts, stmt) => {
-            interpret_stmts(*stmts, scope);
-            interpret_stmt(stmt, scope);
+            interpret_stmts(*stmts, scopes, current_scope);
+            interpret_stmt(stmt, scopes, current_scope);
         }
-        Stmts::Stmt(stmt) => interpret_stmt(stmt, scope),
+        Stmts::Stmt(stmt) => interpret_stmt(stmt, scopes, current_scope),
     }
 }
 
-fn interpret_stmt(stmt: Stmt, scope: &mut Scope) {
+fn interpret_stmt(stmt: Stmt, scopes: &mut Scopes, current_scope: ScopeId) {
     match stmt {
-        Stmt::Print(expr) => interpret_print(expr, scope),
-        Stmt::Declare(ident, expr) => interpret_declare(ident, expr, scope),
-        Stmt::If(cond, block) => interpret_if(cond, *block, scope),
+        Stmt::Print(expr) => interpret_print(expr, scopes, current_scope),
+        Stmt::Declare(ident, expr) => interpret_declare(ident, expr, scopes, current_scope),
+        Stmt::If(cond, block) => interpret_if(cond, *block, scopes, current_scope),
     }
 }
 
-fn interpret_print(expr: Expr, scope: &mut Scope) {
-    let result = evaluate_expr(expr, scope);
+fn interpret_print(expr: Expr, scopes: &mut Scopes, current_scope: ScopeId) {
+    let result = evaluate_expr(expr, scopes, current_scope);
 
     if let Term::Symbol(ident) = result {
-        println!("{}", scope.get_value(ident).to_string());
+        println!("{}", scopes.get_value(&ident, current_scope).to_string());
     } else {
         println!("{}", result.to_string());
     }
 }
 
-fn interpret_declare(ident: String, expr: Expr, scope: &mut Scope) {
-    let value = evaluate_expr(expr, scope);
-    scope.add_binding(ident, value);
+fn interpret_declare(ident: String, expr: Expr, scopes: &mut Scopes, current_scope: ScopeId) {
+    if scopes.binding_exists_local(&ident, current_scope) {
+        panic!("Binding for {} already exists in local scope.", ident);
+    } else {
+        let value = evaluate_expr(expr, scopes, current_scope);
+        scopes.add_binding(&ident, current_scope, value);
+    }
 }
 
-fn interpret_if(cond: Expr, block: Block, scope: &mut Scope) {
-    let resolved = evaluate_expr(cond, scope);
+fn interpret_if(cond: Expr, block: Block, scopes: &mut Scopes, current_scope: ScopeId) {
+    let resolved = evaluate_expr(cond, scopes, current_scope);
 
     if let Term::Bool(bool) = resolved {
         if bool {
-            interpret_stmts(block.stmts, scope)
+            interpret_block(block, scopes, current_scope)
         }
     } else {
         panic!("Cannot use non-boolean expressions inside 'if' conditions.")
     }
 }
 
-fn evaluate_expr(expr: Expr, scope: &mut Scope) -> Term {
+fn evaluate_expr(expr: Expr, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
     match expr {
         Expr::Equal(left, right) => {
-            let left = evaluate_expr(*left, scope);
-            let right = evaluate_addend(right, scope);
-            evaluate_equals(left, right, scope)
+            let left = evaluate_expr(*left, scopes, current_scope);
+            let right = evaluate_addend(right, scopes, current_scope);
+            evaluate_equals(left, right, scopes, current_scope)
         }
-        Expr::Addend(addend) => evaluate_addend(addend, scope),
+        Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope),
     }
 }
 
-fn evaluate_addend(addend: Addend, scope: &mut Scope) -> Term {
+fn evaluate_addend(addend: Addend, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
     match addend {
         Addend::Add(left, right) => {
-            let left = evaluate_addend(*left, scope);
-            let right = evaluate_factor(right, scope);
-            evaluate_oper(left, OpKind::Add, right, scope)
+            let left = evaluate_addend(*left, scopes, current_scope);
+            let right = evaluate_factor(right, scopes, current_scope);
+            evaluate_oper(left, OpKind::Add, right, scopes, current_scope)
         }
         Addend::Sub(left, right) => {
-            let left = evaluate_addend(*left, scope);
-            let right = evaluate_factor(right, scope);
-            evaluate_oper(left, OpKind::Sub, right, scope)
+            let left = evaluate_addend(*left, scopes, current_scope);
+            let right = evaluate_factor(right, scopes, current_scope);
+            evaluate_oper(left, OpKind::Sub, right, scopes, current_scope)
         }
-        Addend::Factor(factor) => evaluate_factor(factor, scope),
+        Addend::Factor(factor) => evaluate_factor(factor, scopes, current_scope),
     }
 }
 
-fn evaluate_factor(factor: Factor, scope: &mut Scope) -> Term {
+fn evaluate_factor(factor: Factor, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
     match factor {
-        Factor::Mult(left, right) => {
-            evaluate_oper(evaluate_factor(*left, scope), OpKind::Mult, right, scope)
-        }
-        Factor::Div(left, right) => {
-            evaluate_oper(evaluate_factor(*left, scope), OpKind::Div, right, scope)
-        }
+        Factor::Mult(left, right) => evaluate_oper(
+            evaluate_factor(*left, scopes, current_scope),
+            OpKind::Mult,
+            right,
+            scopes,
+            current_scope,
+        ),
+        Factor::Div(left, right) => evaluate_oper(
+            evaluate_factor(*left, scopes, current_scope),
+            OpKind::Div,
+            right,
+            scopes,
+            current_scope,
+        ),
         Factor::Term(term) => term,
     }
 }
 
-fn evaluate_equals(left: Term, right: Term, scope: &mut Scope) -> Term {
+fn evaluate_equals(left: Term, right: Term, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
     match left {
         Term::Num(left) => match right {
             Term::Num(right) => Term::Bool(left == right),
             Term::String(_) => panic!("Cannot perform comparisons between types Num and String."),
             Term::Symbol(right) => {
-                let right = scope.get_value(right.to_owned());
-                evaluate_equals(Term::Num(left), right, scope)
+                let right = scopes.get_value(&right, current_scope);
+                evaluate_equals(Term::Num(left), right, scopes, current_scope)
             }
             Term::Bool(_) => panic!("Cannot perform comparisons between types Num and Bool."),
         },
@@ -106,23 +128,23 @@ fn evaluate_equals(left: Term, right: Term, scope: &mut Scope) -> Term {
             Term::Num(_) => panic!("Cannot perform comparisons between types String and Num."),
             Term::String(right) => Term::Bool(left == right),
             Term::Symbol(right) => {
-                let right = scope.get_value(right.to_owned());
-                evaluate_equals(Term::String(left), right, scope)
+                let right = scopes.get_value(&right, current_scope);
+                evaluate_equals(Term::String(left), right, scopes, current_scope)
             }
             Term::Bool(_) => {
                 panic!("Cannot perform comparisons between types String and Bool.")
             }
         },
         Term::Symbol(left) => {
-            let left = scope.get_value(left.to_owned());
-            evaluate_equals(left, right, scope)
+            let left = scopes.get_value(&left, current_scope);
+            evaluate_equals(left, right, scopes, current_scope)
         }
         Term::Bool(left) => match right {
             Term::Num(_) => panic!("Cannot perform comparisons between types Bool and Num."),
             Term::String(_) => panic!("Cannot perform comparisons between types Bool and String."),
             Term::Symbol(right) => {
-                let right = scope.get_value(right.to_owned());
-                evaluate_equals(Term::Bool(left), right, scope)
+                let right = scopes.get_value(&right, current_scope);
+                evaluate_equals(Term::Bool(left), right, scopes, current_scope)
             }
             Term::Bool(right) => Term::Bool(left == right),
         },
@@ -130,7 +152,13 @@ fn evaluate_equals(left: Term, right: Term, scope: &mut Scope) -> Term {
 }
 
 // TODO: Can this be simplified?
-fn evaluate_oper(left: Term, op_kind: OpKind, right: Term, scope: &mut Scope) -> Term {
+fn evaluate_oper(
+    left: Term,
+    op_kind: OpKind,
+    right: Term,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+) -> Term {
     match left {
         Term::Num(left) => match right {
             Term::Num(right) => match op_kind {
@@ -143,8 +171,8 @@ fn evaluate_oper(left: Term, op_kind: OpKind, right: Term, scope: &mut Scope) ->
                 panic!("Cannot perform operations between types Num and String.")
             }
             Term::Symbol(right) => {
-                let right = scope.get_value(right.to_owned());
-                evaluate_oper(Term::Num(left), op_kind, right, scope)
+                let right = scopes.get_value(&right, current_scope);
+                evaluate_oper(Term::Num(left), op_kind, right, scopes, current_scope)
             }
             Term::Bool(_) => {
                 panic!("Cannot perform arithmetic operations between values of type Bool.")
@@ -163,16 +191,16 @@ fn evaluate_oper(left: Term, op_kind: OpKind, right: Term, scope: &mut Scope) ->
                 }
             }
             Term::Symbol(right) => {
-                let right = scope.get_value(right.to_owned());
-                evaluate_oper(Term::String(left), op_kind, right, scope)
+                let right = scopes.get_value(&right, current_scope);
+                evaluate_oper(Term::String(left), op_kind, right, scopes, current_scope)
             }
             Term::Bool(_) => {
                 panic!("Cannot perform arithmetic operations between types Bool and String.")
             }
         },
         Term::Symbol(left) => {
-            let left = scope.get_value(left.to_owned());
-            evaluate_oper(left, op_kind, right, scope)
+            let left = scopes.get_value(&left, current_scope);
+            evaluate_oper(left, op_kind, right, scopes, current_scope)
         }
         Term::Bool(_) => {
             panic!("Cannot perform arithmetic operations between values of type Bool.")
@@ -197,7 +225,9 @@ mod tests {
         let left = Box::new(Addend::Factor(Factor::Term(Term::Num(7.0))));
         let right = Factor::Term(Term::Num(4.0));
         let operation = Addend::Add(left, right);
-        let actual = evaluate_addend(operation, &mut Scope::new(None));
+        let mut scopes = Scopes::new();
+        let top_scope = scopes.new_scope(None);
+        let actual = evaluate_addend(operation, &mut scopes, top_scope);
 
         if let Term::Num(actual) = actual {
             assert_eq!(11.0, actual);
@@ -213,7 +243,9 @@ mod tests {
         let right = Factor::Term(Term::Num(4.0));
         let operation_a = Addend::Add(Box::new(left), middle);
         let operation_b = Addend::Add(Box::new(operation_a), right);
-        let actual = evaluate_addend(operation_b, &mut Scope::new(None));
+        let mut scopes = Scopes::new();
+        let top_scope = scopes.new_scope(None);
+        let actual = evaluate_addend(operation_b, &mut scopes, top_scope);
 
         if let Term::Num(actual) = actual {
             assert_eq!(12.0, actual);
@@ -227,7 +259,9 @@ mod tests {
         let left = Addend::Factor(Factor::Term(Term::Num(5.0)));
         let right = Factor::Term(Term::Num(3.0));
         let operation = Addend::Sub(Box::new(left), right);
-        let actual = evaluate_addend(operation, &mut Scope::new(None));
+        let mut scopes = Scopes::new();
+        let top_scope = scopes.new_scope(None);
+        let actual = evaluate_addend(operation, &mut scopes, top_scope);
 
         if let Term::Num(actual) = actual {
             assert_eq!(2.0, actual);
@@ -241,7 +275,9 @@ mod tests {
         let left = Factor::Term(Term::Num(5.0));
         let right = Term::Num(3.0);
         let operation = Factor::Mult(Box::new(left), right);
-        let actual = evaluate_factor(operation, &mut Scope::new(None));
+        let mut scopes = Scopes::new();
+        let top_scope = scopes.new_scope(None);
+        let actual = evaluate_factor(operation, &mut scopes, top_scope);
 
         if let Term::Num(actual) = actual {
             assert_eq!(15.0, actual);
@@ -255,7 +291,9 @@ mod tests {
         let left = Factor::Term(Term::Num(5.0));
         let right = Term::Num(2.0);
         let operation = Factor::Div(Box::new(left), right);
-        let actual = evaluate_factor(operation, &mut Scope::new(None));
+        let mut scopes = Scopes::new();
+        let top_scope = scopes.new_scope(None);
+        let actual = evaluate_factor(operation, &mut scopes, top_scope);
 
         if let Term::Num(actual) = actual {
             assert_eq!(2.5, actual);
@@ -270,6 +308,8 @@ mod tests {
         let left = Factor::Term(Term::Num(5.0));
         let right = Term::Num(0.0);
         let operation = Factor::Div(Box::new(left), right);
-        evaluate_factor(operation, &mut Scope::new(None));
+        let mut scopes = Scopes::new();
+        let top_scope = scopes.new_scope(None);
+        evaluate_factor(operation, &mut scopes, top_scope);
     }
 }
