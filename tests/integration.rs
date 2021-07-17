@@ -1,21 +1,34 @@
-use std::fs;
+use library::{interpreter::interpret_tree, io_context::TestContext, parser::parse_code};
 
-use library::{interpreter::interpret_tree, parser::parse_code, scope::Scope};
+use std::fs;
 
 #[test]
 fn test_run_all_examples() {
-    let files = fs::read_dir("example").unwrap();
+    let inputs = [
+        ("block-parent-scopes", vec!["7", "7"]),
+        ("block-shadowing", vec!["bar", "7"]),
+        ("bool-branching", vec!["should print"]),
+        ("bool-expression", vec!["true", "false"]),
+        ("declare-and-multiply", vec!["28"]),
+        ("declare-basic", vec!["28"]),
+        ("print-expression", vec!["7"]),
+        ("print-hello-world", vec!["hello world"]),
+        ("print-multiple", vec!["hello world", "7"]),
+        ("print-number", vec!["311"]),
+        ("print-string-concat-vars", vec!["hello world"]),
+        ("print-string-concat", vec!["hello world"]),
+    ];
 
-    for file in files {
-        if let Ok(file) = file {
-            let file_name = file.path().display().to_string();
-            assert_example_does_not_throw(&file_name);
-        }
+    for (input, expected) in inputs {
+        let file_name = format!("example/{}.nl", input);
+        let mut test_context = TestContext::new();
+        assert_example_does_not_throw(&file_name, &mut test_context);
+        assert_eq!(test_context.get_output(), &expected);
     }
 }
 
-fn assert_example_does_not_throw(path: &str) {
+fn assert_example_does_not_throw(path: &str, test_context: &mut TestContext) {
     let code = fs::read_to_string(path).unwrap();
     let parsed = parse_code(code);
-    interpret_tree(parsed);
+    interpret_tree(parsed, test_context);
 }

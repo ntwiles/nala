@@ -1,47 +1,68 @@
 use crate::{
     ast::*,
+    io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
 
-pub fn interpret_tree(program: Program) {
+pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
     let mut scopes = Scopes::new();
     let top_scope = scopes.new_scope(None);
     match program {
-        Program::Block(block) => interpret_block(block, &mut scopes, top_scope),
-        Program::Stmts(stmts) => interpret_stmts(stmts, &mut scopes, top_scope),
+        Program::Block(block) => interpret_block(block, &mut scopes, top_scope, context),
+        Program::Stmts(stmts) => interpret_stmts(stmts, &mut scopes, top_scope, context),
     }
 }
 
-fn interpret_block(block: Block, scopes: &mut Scopes, current_scope: ScopeId) {
+fn interpret_block(
+    block: Block,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) {
     let block_scope = scopes.new_scope(Some(current_scope));
-    interpret_stmts(block.stmts, scopes, block_scope);
+    interpret_stmts(block.stmts, scopes, block_scope, context);
 }
 
-fn interpret_stmts(stmts: Stmts, scopes: &mut Scopes, current_scope: ScopeId) {
+fn interpret_stmts(
+    stmts: Stmts,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) {
     match stmts {
         Stmts::Stmts(stmts, stmt) => {
-            interpret_stmts(*stmts, scopes, current_scope);
-            interpret_stmt(stmt, scopes, current_scope);
+            interpret_stmts(*stmts, scopes, current_scope, context);
+            interpret_stmt(stmt, scopes, current_scope, context);
         }
-        Stmts::Stmt(stmt) => interpret_stmt(stmt, scopes, current_scope),
+        Stmts::Stmt(stmt) => interpret_stmt(stmt, scopes, current_scope, context),
     }
 }
 
-fn interpret_stmt(stmt: Stmt, scopes: &mut Scopes, current_scope: ScopeId) {
+fn interpret_stmt(
+    stmt: Stmt,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) {
     match stmt {
-        Stmt::Print(expr) => interpret_print(expr, scopes, current_scope),
+        Stmt::Print(expr) => interpret_print(expr, scopes, current_scope, context),
         Stmt::Declare(ident, expr) => interpret_declare(ident, expr, scopes, current_scope),
-        Stmt::If(cond, block) => interpret_if(cond, *block, scopes, current_scope),
+        Stmt::If(cond, block) => interpret_if(cond, *block, scopes, current_scope, context),
     }
 }
 
-fn interpret_print(expr: Expr, scopes: &mut Scopes, current_scope: ScopeId) {
+fn interpret_print(
+    expr: Expr,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) {
     let result = evaluate_expr(expr, scopes, current_scope);
 
     if let Term::Symbol(ident) = result {
-        println!("{}", scopes.get_value(&ident, current_scope).to_string());
+        context.print(&scopes.get_value(&ident, current_scope).to_string());
     } else {
-        println!("{}", result.to_string());
+        context.print(&result.to_string());
     }
 }
 
@@ -54,12 +75,18 @@ fn interpret_declare(ident: String, expr: Expr, scopes: &mut Scopes, current_sco
     }
 }
 
-fn interpret_if(cond: Expr, block: Block, scopes: &mut Scopes, current_scope: ScopeId) {
+fn interpret_if(
+    cond: Expr,
+    block: Block,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) {
     let resolved = evaluate_expr(cond, scopes, current_scope);
 
     if let Term::Bool(bool) = resolved {
         if bool {
-            interpret_block(block, scopes, current_scope)
+            interpret_block(block, scopes, current_scope, context)
         }
     } else {
         panic!("Cannot use non-boolean expressions inside 'if' conditions.")
