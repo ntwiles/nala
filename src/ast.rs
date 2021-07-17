@@ -14,6 +14,7 @@ pub enum Stmts {
 
 pub enum Stmt {
     Print(Expr),
+    Read(String),
     Declare(String, Expr),
     If(Expr, Box<Block>),
 }

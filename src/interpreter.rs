@@ -46,6 +46,7 @@ fn interpret_stmt(
 ) {
     match stmt {
         Stmt::Print(expr) => interpret_print(expr, scopes, current_scope, context),
+        Stmt::Read(ident) => interpret_read(ident, scopes, current_scope, context),
         Stmt::Declare(ident, expr) => interpret_declare(ident, expr, scopes, current_scope),
         Stmt::If(cond, block) => interpret_if(cond, *block, scopes, current_scope, context),
     }
@@ -64,6 +65,16 @@ fn interpret_print(
     } else {
         context.print(&result.to_string());
     }
+}
+
+fn interpret_read(
+    ident: String,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) {
+    let value = context.read();
+    scopes.add_binding(&ident, current_scope, Term::String(value))
 }
 
 fn interpret_declare(ident: String, expr: Expr, scopes: &mut Scopes, current_scope: ScopeId) {

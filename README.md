@@ -4,12 +4,11 @@ Nala is (read: will be) an interpreted, expression-oriented programming language
 
 # Features
 
-- [x] Basic console output.
+- [x] Basic console i/o.
 - [x] Arithmetic operations.
 - [x] Lexical scope.
 - [x] Conditional branching.
-- [ ] Basic console input.
-- [ ] Functions
+- [ ] Loops and functions.
 
 # Documentation
 
