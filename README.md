@@ -32,7 +32,7 @@ const foo = 7;
 print foo;
 ```
 
-As with the above example, a trailing semicolon is required after both statements. Bindings are added to a lexical scope which in effect is global as there's not yet any method of creating new scopes.
+As with the above example, a trailing semicolon is required after both statements.
 
 Values declared with the `const` keyword are immutable (though further clarification to this may be needed when objects are implemented). A future `let` keyword will allow for mutable variables to be declared.
 
@@ -71,4 +71,31 @@ if (2 == 2) {
 if (2 == 3) {
     print 'should not print';
 }
+```
+
+## Scope
+
+Lexical scope works as it does in most languages and should be intuitive. Blocks create new scopes in which local bindings can be created The following will throw a runtime error at execution of the last line:
+
+```
+if (2 == 2) {
+    const foo = 'bar';
+}
+
+print foo;
+```
+
+### Shadowing
+
+Identifiers can be 'shadowed' in lower scopes by re-using names. The following is valid and will print first `hello`, then `world`:
+
+```
+const foo = 'world';
+
+if (2 == 2) {
+    const foo = 'hello';
+    print foo;
+}
+
+print foo;
 ```
