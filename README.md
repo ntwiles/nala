@@ -98,3 +98,13 @@ if (2 == 2) {
 
 print foo;
 ```
+
+## `read` keyword
+
+The `read` keyword is a method by which a new constant variable can be declared and initialized with user input:
+
+```
+print 'Please enter your name'
+read name;
+print 'Hello ' + name;
+```
