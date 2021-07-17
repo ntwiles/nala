@@ -44,14 +44,23 @@ impl Scopes {
         ScopeId { index: next_index }
     }
 
-    // TODO: Better error reporting than unwrap offers.
+    fn get_maybe_value(self: &Self, ident: &str, current_scope: ScopeId) -> Option<ast::Term> {
+        let scope = self.scopes.get(current_scope.index).unwrap();
+
+        match scope.get_value(&ident) {
+            Some(value) => Some(value.clone()),
+            None => match scope.parent {
+                Some(parent_scope) => Some(self.get_value(ident, parent_scope)),
+                None => None,
+            },
+        }
+    }
+
     pub fn get_value(self: &Self, ident: &str, current_scope: ScopeId) -> ast::Term {
-        self.scopes
-            .get(current_scope.index)
-            .unwrap()
-            .get_value(&ident)
-            .unwrap()
-            .clone()
+        match self.get_maybe_value(ident, current_scope) {
+            Some(value) => value,
+            None => panic!("Identifier '{}' was not found in this scope.", ident),
+        }
     }
 
     pub fn add_binding(self: &mut Self, ident: &str, current_scope: ScopeId, value: ast::Term) {
