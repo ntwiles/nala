@@ -17,6 +17,7 @@ fn test_run_examples() {
         ("print-number", vec!["311"]),
         ("print-string-concat-vars", vec!["hello world"]),
         ("print-string-concat", vec!["hello world"]),
+        ("string-special-chars", vec!["!@#$%^&*()_+-=;:\""]),
     ];
 
     for (file, expected) in test_data {
@@ -32,7 +33,7 @@ fn test_run_input_examples() {
     let test_data = [(
         "input-basic",
         vec!["Nathan"],
-        vec!["Please enter your name", "Hello Nathan"],
+        vec!["Please enter your name:", "Hello, Nathan"],
     )];
 
     for (file, inputs, expected) in test_data {

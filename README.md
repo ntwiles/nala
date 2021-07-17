@@ -8,7 +8,8 @@ Nala is (read: will be) an interpreted, expression-oriented programming language
 - [x] Arithmetic operations.
 - [x] Lexical scope.
 - [x] Conditional branching.
-- [ ] Loops and functions.
+- [ ] Basic loops
+- [ ] Functions.
 
 # Documentation
 

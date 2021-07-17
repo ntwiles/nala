@@ -56,6 +56,6 @@ Num: f32 = {
 };
 
 Str: String = {
-    <s:r"'[a-zA-z0-9\s]*'"> => 
+    <s:r"'[^']*'"> => 
         String::from_str(&s[1..s.len() - 1]).unwrap(),
 };

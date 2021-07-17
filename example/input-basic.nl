@@ -1,4 +1,4 @@
 
-print 'Please enter your name';
+print 'Please enter your name:';
 read input;
-print 'Hello ' + input;
+print 'Hello, ' + input;
