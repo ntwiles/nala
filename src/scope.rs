@@ -4,23 +4,27 @@ use crate::ast;
 
 pub struct Scope {
     parent: Option<ScopeId>,
-    bindings: HashMap<String, ast::Term>,
+    bindings: HashMap<String, (ast::Term, bool)>,
 }
 
 impl Scope {
     pub fn new(parent: Option<ScopeId>) -> Scope {
         Scope {
             parent,
-            bindings: HashMap::<String, ast::Term>::new(),
+            bindings: HashMap::<String, (ast::Term, bool)>::new(),
         }
     }
 
-    pub fn add_binding(self: &mut Self, ident: &str, value: ast::Term) {
-        self.bindings.insert(ident.to_owned(), value);
+    pub fn add_binding(self: &mut Self, ident: &str, value: ast::Term, is_mutable: bool) {
+        self.bindings.insert(ident.to_owned(), (value, is_mutable));
     }
 
-    pub fn get_value(self: &Self, ident: &str) -> Option<&ast::Term> {
-        self.bindings.get(ident)
+    pub fn get_value(self: &Self, ident: &str) -> Option<ast::Term> {
+        if let Some((value, _)) = self.bindings.get(ident) {
+            Some(value.clone())
+        } else {
+            None
+        }
     }
 }
 
@@ -48,7 +52,7 @@ impl Scopes {
         let scope = self.scopes.get(current_scope.index).unwrap();
 
         match scope.get_value(&ident) {
-            Some(value) => Some(value.clone()),
+            Some(value) => Some(value),
             None => match scope.parent {
                 Some(parent_scope) => Some(self.get_value(ident, parent_scope)),
                 None => None,
@@ -63,9 +67,15 @@ impl Scopes {
         }
     }
 
-    pub fn add_binding(self: &mut Self, ident: &str, current_scope: ScopeId, value: ast::Term) {
+    pub fn add_binding(
+        self: &mut Self,
+        ident: &str,
+        current_scope: ScopeId,
+        value: ast::Term,
+        is_mutable: bool,
+    ) {
         let scope = self.scopes.get_mut(current_scope.index).unwrap();
-        scope.add_binding(ident, value);
+        scope.add_binding(ident, value, is_mutable);
     }
 
     pub fn binding_exists_local(self: &Self, ident: &str, current_scope: ScopeId) -> bool {

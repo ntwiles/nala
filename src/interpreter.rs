@@ -74,7 +74,7 @@ fn interpret_read(
     context: &mut impl IoContext,
 ) {
     let value = context.read();
-    scopes.add_binding(&ident, current_scope, Term::String(value))
+    scopes.add_binding(&ident, current_scope, Term::String(value), false)
 }
 
 fn interpret_declare(ident: String, expr: Expr, scopes: &mut Scopes, current_scope: ScopeId) {
@@ -82,7 +82,7 @@ fn interpret_declare(ident: String, expr: Expr, scopes: &mut Scopes, current_sco
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
         let value = evaluate_expr(expr, scopes, current_scope);
-        scopes.add_binding(&ident, current_scope, value);
+        scopes.add_binding(&ident, current_scope, value, false);
     }
 }
 
