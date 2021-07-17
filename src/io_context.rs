@@ -18,25 +18,33 @@ impl IoContext for ConsoleContext {
 }
 
 pub struct TestContext {
-    output: Vec<String>,
+    outputs: Vec<String>,
+    inputs: Vec<String>,
 }
 
 impl TestContext {
     pub fn new() -> TestContext {
-        TestContext { output: vec![] }
+        TestContext {
+            outputs: vec![],
+            inputs: vec![],
+        }
     }
 
     pub fn get_output(self: &mut Self) -> &Vec<String> {
-        &self.output
+        &self.outputs
+    }
+
+    pub fn mock_inputs(self: &mut Self, inputs: Vec<&str>) {
+        self.inputs = inputs.iter().map(|s| s.to_string()).collect()
     }
 }
 
 impl IoContext for TestContext {
     fn print(self: &mut Self, message: &str) {
-        self.output.push(message.to_owned())
+        self.outputs.push(message.to_owned())
     }
 
     fn read(self: &mut Self) -> String {
-        unimplemented!()
+        self.inputs.pop().unwrap()
     }
 }

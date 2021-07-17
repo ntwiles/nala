@@ -3,8 +3,8 @@ use library::{interpreter::interpret_tree, io_context::TestContext, parser::pars
 use std::fs;
 
 #[test]
-fn test_run_all_examples() {
-    let inputs = [
+fn test_run_examples() {
+    let test_data = [
         ("block-parent-scopes", vec!["7", "7"]),
         ("block-shadowing", vec!["bar", "7"]),
         ("bool-branching", vec!["should print"]),
@@ -19,9 +19,26 @@ fn test_run_all_examples() {
         ("print-string-concat", vec!["hello world"]),
     ];
 
-    for (input, expected) in inputs {
-        let file_name = format!("example/{}.nl", input);
+    for (file, expected) in test_data {
+        let file_name = format!("example/{}.nl", file);
         let mut test_context = TestContext::new();
+        assert_example_does_not_throw(&file_name, &mut test_context);
+        assert_eq!(test_context.get_output(), &expected);
+    }
+}
+
+#[test]
+fn test_run_input_examples() {
+    let test_data = [(
+        "input-basic",
+        vec!["Nathan"],
+        vec!["Please enter your name", "Hello Nathan"],
+    )];
+
+    for (file, inputs, expected) in test_data {
+        let file_name = format!("example/{}.nl", file);
+        let mut test_context = TestContext::new();
+        test_context.mock_inputs(inputs);
         assert_example_does_not_throw(&file_name, &mut test_context);
         assert_eq!(test_context.get_output(), &expected);
     }
