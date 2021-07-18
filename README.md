@@ -47,6 +47,13 @@ foo = 8;
 print foo;
 ```
 
+Both mutable and immutable variables must be initialized with value. The following is not valid nala:
+
+```
+mut foo;
+foo = 7;
+```
+
 ## Expressions
 
 Arithmetic expressions can be performed between number types:
