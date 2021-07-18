@@ -47,7 +47,10 @@ fn interpret_stmt(
     match stmt {
         Stmt::Print(expr) => interpret_print(expr, scopes, current_scope, context),
         Stmt::Read(ident) => interpret_read(ident, scopes, current_scope, context),
-        Stmt::Declare(ident, expr) => interpret_declare(ident, expr, scopes, current_scope),
+        Stmt::Declare(ident, expr, is_mutable) => {
+            interpret_declare(ident, expr, scopes, current_scope, is_mutable)
+        }
+        Stmt::Assign(ident, expr) => interpret_assign(ident, expr, scopes, current_scope),
         Stmt::If(cond, block) => interpret_if(cond, *block, scopes, current_scope, context),
     }
 }
@@ -77,12 +80,27 @@ fn interpret_read(
     scopes.add_binding(&ident, current_scope, Term::String(value), false)
 }
 
-fn interpret_declare(ident: String, expr: Expr, scopes: &mut Scopes, current_scope: ScopeId) {
+fn interpret_declare(
+    ident: String,
+    expr: Expr,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    is_mutable: bool,
+) {
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
         let value = evaluate_expr(expr, scopes, current_scope);
-        scopes.add_binding(&ident, current_scope, value, false);
+        scopes.add_binding(&ident, current_scope, value, is_mutable);
+    }
+}
+
+fn interpret_assign(ident: String, expr: Expr, scopes: &mut Scopes, current_scope: ScopeId) {
+    if scopes.binding_exists(&ident, current_scope) {
+        let value = evaluate_expr(expr, scopes, current_scope);
+        scopes.mutate_value(&ident, current_scope, value);
+    } else {
+        panic!("Unknown identifier `{}`", ident);
     }
 }
 

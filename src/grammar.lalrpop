@@ -20,8 +20,10 @@ pub Stmts: ast::Stmts = {
 Stmt: ast::Stmt = {
     "print" <Expr> ";" => ast::Stmt::Print(<>),
     "read" <s:Symbol> ";" => ast::Stmt::Read(<>),
-    "const" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e),
-    "if" "(" <e:Expr> ")" <b:Block> => ast::Stmt::If(e, Box::new(b))
+    "const" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, false),
+    "mut" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, true),
+    "if" "(" <e:Expr> ")" <b:Block> => ast::Stmt::If(e, Box::new(b)),
+    <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
 };
 
 Expr: ast::Expr = {

@@ -25,7 +25,7 @@ In this code snippet, whitespace is insignificant, strings are surrounded by sin
 
 ## `const` keyword
 
-Variables can be declared with the following syntax:
+Constant variables can be declared with the following syntax:
 
 ```
 const foo = 7;
@@ -34,7 +34,18 @@ print foo;
 
 As with the above example, a trailing semicolon is required after both statements.
 
-Values declared with the `const` keyword are immutable (though further clarification to this may be needed when objects are implemented). A future `let` keyword will allow for mutable variables to be declared.
+Values declared with the `const` keyword are immutable (though further clarification to this may be needed when objects are implemented).
+
+## `mut` keyword
+
+Mutable variables are declared similarly:
+
+```
+mut foo = 7;
+print foo;
+foo = 8;
+print foo;
+```
 
 ## Expressions
 

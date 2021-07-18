@@ -124,11 +124,11 @@ mod tests {
 
         assert!(matches!(
             parsed,
-            Ok(
-                Stmts::Stmt(
-                    Stmt::Declare(_, Expr::Addend(Addend::Factor(Factor::Term(Term::Symbol(_))))),
-                ),
-            ),
+            Ok(Stmts::Stmt(Stmt::Declare(
+                _,
+                Expr::Addend(Addend::Factor(Factor::Term(Term::Symbol(_)))),
+                false
+            ),),),
         ));
     }
 
@@ -138,11 +138,11 @@ mod tests {
 
         assert!(matches!(
             parsed,
-            Ok(
-                Stmts::Stmt(
-                    Stmt::Declare(_, Expr::Addend(Addend::Factor(Factor::Term(Term::Num(_))))),
-                ),
-            ),
+            Ok(Stmts::Stmt(Stmt::Declare(
+                _,
+                Expr::Addend(Addend::Factor(Factor::Term(Term::Num(_)))),
+                false
+            ),),),
         ));
     }
 }

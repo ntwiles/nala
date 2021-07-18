@@ -19,9 +19,9 @@ impl Scope {
         self.bindings.insert(ident.to_owned(), (value, is_mutable));
     }
 
-    pub fn get_value(self: &Self, ident: &str) -> Option<ast::Term> {
-        if let Some((value, _)) = self.bindings.get(ident) {
-            Some(value.clone())
+    pub fn get_binding(self: &Self, ident: &str) -> Option<(ast::Term, bool)> {
+        if let Some(binding) = self.bindings.get(ident) {
+            Some(binding.clone())
         } else {
             None
         }
@@ -51,8 +51,8 @@ impl Scopes {
     fn get_maybe_value(self: &Self, ident: &str, current_scope: ScopeId) -> Option<ast::Term> {
         let scope = self.scopes.get(current_scope.index).unwrap();
 
-        match scope.get_value(&ident) {
-            Some(value) => Some(value),
+        match scope.get_binding(&ident) {
+            Some((value, _)) => Some(value),
             None => match scope.parent {
                 Some(parent_scope) => Some(self.get_value(ident, parent_scope)),
                 None => None,
@@ -60,10 +60,46 @@ impl Scopes {
         }
     }
 
-    pub fn get_value(self: &Self, ident: &str, current_scope: ScopeId) -> ast::Term {
-        match self.get_maybe_value(ident, current_scope) {
+    pub fn get_value(self: &Self, ident: &str, starting_scope: ScopeId) -> ast::Term {
+        match self.get_maybe_value(ident, starting_scope) {
             Some(value) => value,
             None => panic!("Identifier '{}' was not found in this scope.", ident),
+        }
+    }
+
+    fn find_scope_with_binding(
+        self: &mut Self,
+        ident: &str,
+        current_scope_id: ScopeId,
+    ) -> Option<&mut Scope> {
+        if self.binding_exists_local(ident, current_scope_id) {
+            Some(self.scopes.get_mut(current_scope_id.index).unwrap())
+        } else {
+            let parent = self.scopes.get_mut(current_scope_id.index).unwrap().parent;
+
+            if let Some(parent) = parent {
+                self.find_scope_with_binding(ident, parent)
+            } else {
+                None
+            }
+        }
+    }
+
+    pub fn mutate_value(
+        self: &mut Self,
+        ident: &str,
+        current_scope: ScopeId,
+        new_value: ast::Term,
+    ) {
+        let scope = self.find_scope_with_binding(ident, current_scope);
+
+        if let Some(scope) = scope {
+            let (_, is_mutable) = scope.get_binding(ident).unwrap();
+            if is_mutable {
+                scope.add_binding(ident, new_value, true)
+            } else {
+                panic!("Cannot re-assign to immutable binding {}", &ident)
+            }
         }
     }
 
@@ -78,11 +114,15 @@ impl Scopes {
         scope.add_binding(ident, value, is_mutable);
     }
 
+    pub fn binding_exists(self: &Self, ident: &str, current_scope: ScopeId) -> bool {
+        self.get_maybe_value(ident, current_scope).is_some()
+    }
+
     pub fn binding_exists_local(self: &Self, ident: &str, current_scope: ScopeId) -> bool {
         self.scopes
             .get(current_scope.index)
             .unwrap()
-            .get_value(&ident)
+            .get_binding(&ident)
             .is_some()
     }
 }

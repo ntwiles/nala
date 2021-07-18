@@ -11,6 +11,7 @@ fn test_run_examples() {
         ("bool-expression", vec!["true", "false"]),
         ("declare-and-multiply", vec!["28"]),
         ("declare-basic", vec!["28"]),
+        ("declare-mutable", vec!["7", "8"]),
         ("print-expression", vec!["7"]),
         ("print-hello-world", vec!["hello world"]),
         ("print-multiple", vec!["hello world", "7"]),
