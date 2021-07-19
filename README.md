@@ -8,7 +8,7 @@ Nala is (read: will be) an interpreted, expression-oriented programming language
 - [x] Arithmetic operations.
 - [x] Lexical scope.
 - [x] Conditional branching.
-- [ ] Basic loops
+- [ ] Arrays and loops.
 - [ ] Functions.
 
 # Documentation
@@ -127,3 +127,20 @@ print 'Please enter your name'
 read name;
 print 'Hello ' + name;
 ```
+
+## Arrays
+
+Arrays are in the process of being implemented. They will be able to be initialized with the following literal syntax:
+
+```
+const array = [5, 4, 2, 8];
+```
+
+Values can be accessed by index with the following syntax:
+
+```
+print array [0];
+```
+
+You may notice extra whitespace between `array` and `[0]`. This is not done by design, but is a temporary artifact of how the language grammar is written using LALRPOP,
+and may require using a custom lexer.
