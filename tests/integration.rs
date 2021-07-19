@@ -5,6 +5,7 @@ use std::fs;
 #[test]
 fn test_run_examples() {
     let test_data = [
+        ("array-index", vec!["11"]),
         ("block-parent-scopes", vec!["7", "7"]),
         ("block-shadowing", vec!["bar", "7"]),
         ("bool-branching", vec!["should print"]),

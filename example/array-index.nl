@@ -1,4 +1,3 @@
 
-
 const array = [5 + 6];
-print array;
+print array [0];

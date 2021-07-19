@@ -1,3 +1,5 @@
+use std::usize;
+
 use crate::{
     ast::*,
     io_context::IoContext,
@@ -130,17 +132,36 @@ fn evaluate_expr(expr: &Expr, scopes: &mut Scopes, current_scope: ScopeId) -> Te
             evaluate_equals(left, right, scopes, current_scope)
         }
         Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope),
-        Expr::Array(elems) => evaulate_array(elems, scopes, current_scope),
+        Expr::Array(elems) => evaluate_array(elems, scopes, current_scope),
+        Expr::Index(ident, expr) => evaluate_index(ident, expr, scopes, current_scope),
     }
 }
 
-fn evaulate_array(elems: &Vec<Expr>, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+fn evaluate_array(elems: &Vec<Expr>, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
     let terms = elems
         .iter()
         .map(|elem| evaluate_expr(elem, scopes, current_scope))
         .collect();
 
     Term::Array(terms)
+}
+
+fn evaluate_index(ident: &str, expr: &Expr, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+    let index = evaluate_expr(expr, scopes, current_scope);
+
+    if let Term::Num(index) = index {
+        let array = scopes.get_value(ident, current_scope);
+        // TODO: Check that this cast is safe first.
+        let index = index as usize;
+
+        if let Term::Array(array) = array {
+            array.get(index).unwrap().clone()
+        } else {
+            panic!("Cannot index into a value which is not an array.");
+        }
+    } else {
+        panic!("Cannot index using non-numeric value.");
+    }
 }
 
 fn evaluate_addend(addend: &Addend, scopes: &mut Scopes, current_scope: ScopeId) -> Term {

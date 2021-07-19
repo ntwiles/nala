@@ -24,6 +24,7 @@ pub enum Expr {
     Equal(Box<Expr>, Addend),
     Addend(Addend),
     Array(Vec<Expr>),
+    Index(String, Box<Expr>),
 }
 
 pub enum Addend {
