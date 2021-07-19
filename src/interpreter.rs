@@ -61,7 +61,7 @@ fn interpret_print(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) {
-    let result = evaluate_expr(expr, scopes, current_scope);
+    let result = evaluate_expr(&expr, scopes, current_scope);
 
     if let Term::Symbol(ident) = result {
         context.print(&scopes.get_value(&ident, current_scope).to_string());
@@ -90,14 +90,14 @@ fn interpret_declare(
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
-        let value = evaluate_expr(expr, scopes, current_scope);
+        let value = evaluate_expr(&expr, scopes, current_scope);
         scopes.add_binding(&ident, current_scope, value, is_mutable);
     }
 }
 
 fn interpret_assign(ident: String, expr: Expr, scopes: &mut Scopes, current_scope: ScopeId) {
     if scopes.binding_exists(&ident, current_scope) {
-        let value = evaluate_expr(expr, scopes, current_scope);
+        let value = evaluate_expr(&expr, scopes, current_scope);
         scopes.mutate_value(&ident, current_scope, value);
     } else {
         panic!("Unknown identifier `{}`", ident);
@@ -111,7 +111,7 @@ fn interpret_if(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) {
-    let resolved = evaluate_expr(cond, scopes, current_scope);
+    let resolved = evaluate_expr(&cond, scopes, current_scope);
 
     if let Term::Bool(bool) = resolved {
         if bool {
@@ -122,26 +122,36 @@ fn interpret_if(
     }
 }
 
-fn evaluate_expr(expr: Expr, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+fn evaluate_expr(expr: &Expr, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
     match expr {
         Expr::Equal(left, right) => {
-            let left = evaluate_expr(*left, scopes, current_scope);
+            let left = evaluate_expr(left, scopes, current_scope);
             let right = evaluate_addend(right, scopes, current_scope);
             evaluate_equals(left, right, scopes, current_scope)
         }
         Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope),
+        Expr::Array(elems) => evaulate_array(elems, scopes, current_scope),
     }
 }
 
-fn evaluate_addend(addend: Addend, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+fn evaulate_array(elems: &Vec<Expr>, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+    let terms = elems
+        .iter()
+        .map(|elem| evaluate_expr(elem, scopes, current_scope))
+        .collect();
+
+    Term::Array(terms)
+}
+
+fn evaluate_addend(addend: &Addend, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
     match addend {
         Addend::Add(left, right) => {
-            let left = evaluate_addend(*left, scopes, current_scope);
+            let left = evaluate_addend(left, scopes, current_scope);
             let right = evaluate_factor(right, scopes, current_scope);
             evaluate_oper(left, OpKind::Add, right, scopes, current_scope)
         }
         Addend::Sub(left, right) => {
-            let left = evaluate_addend(*left, scopes, current_scope);
+            let left = evaluate_addend(left, scopes, current_scope);
             let right = evaluate_factor(right, scopes, current_scope);
             evaluate_oper(left, OpKind::Sub, right, scopes, current_scope)
         }
@@ -149,23 +159,23 @@ fn evaluate_addend(addend: Addend, scopes: &mut Scopes, current_scope: ScopeId) 
     }
 }
 
-fn evaluate_factor(factor: Factor, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+fn evaluate_factor(factor: &Factor, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
     match factor {
         Factor::Mult(left, right) => evaluate_oper(
-            evaluate_factor(*left, scopes, current_scope),
+            evaluate_factor(left, scopes, current_scope),
             OpKind::Mult,
-            right,
+            right.clone(),
             scopes,
             current_scope,
         ),
         Factor::Div(left, right) => evaluate_oper(
-            evaluate_factor(*left, scopes, current_scope),
+            evaluate_factor(left, scopes, current_scope),
             OpKind::Div,
-            right,
+            right.clone(),
             scopes,
             current_scope,
         ),
-        Factor::Term(term) => term,
+        Factor::Term(term) => term.clone(),
     }
 }
 
@@ -179,6 +189,7 @@ fn evaluate_equals(left: Term, right: Term, scopes: &mut Scopes, current_scope: 
                 evaluate_equals(Term::Num(left), right, scopes, current_scope)
             }
             Term::Bool(_) => panic!("Cannot perform comparisons between types Num and Bool."),
+            Term::Array(_) => panic!("Cannot perform comparisons between types Num and Array."),
         },
         Term::String(left) => match right {
             Term::Num(_) => panic!("Cannot perform comparisons between types String and Num."),
@@ -187,9 +198,8 @@ fn evaluate_equals(left: Term, right: Term, scopes: &mut Scopes, current_scope: 
                 let right = scopes.get_value(&right, current_scope);
                 evaluate_equals(Term::String(left), right, scopes, current_scope)
             }
-            Term::Bool(_) => {
-                panic!("Cannot perform comparisons between types String and Bool.")
-            }
+            Term::Bool(_) => panic!("Cannot perform comparisons between types String and Bool."),
+            Term::Array(_) => panic!("Cannot perform comparisons between types String and Array."),
         },
         Term::Symbol(left) => {
             let left = scopes.get_value(&left, current_scope);
@@ -203,7 +213,9 @@ fn evaluate_equals(left: Term, right: Term, scopes: &mut Scopes, current_scope: 
                 evaluate_equals(Term::Bool(left), right, scopes, current_scope)
             }
             Term::Bool(right) => Term::Bool(left == right),
+            Term::Array(_) => panic!("Cannot perform comparisons between types Bool and Array."),
         },
+        Term::Array(_) => panic!("Cannot perform comparions against values of type Array."),
     }
 }
 
@@ -223,15 +235,16 @@ fn evaluate_oper(
                 OpKind::Mult => Term::Num(left * right),
                 OpKind::Div => Term::Num(do_divide(left, right)),
             },
-            Term::String(_) => {
-                panic!("Cannot perform operations between types Num and String.")
-            }
+            Term::String(_) => panic!("Cannot perform operations between types Num and String."),
             Term::Symbol(right) => {
                 let right = scopes.get_value(&right, current_scope);
                 evaluate_oper(Term::Num(left), op_kind, right, scopes, current_scope)
             }
             Term::Bool(_) => {
-                panic!("Cannot perform arithmetic operations between values of type Bool.")
+                panic!("Cannot perform arithmetic operations between types of Num and Bool.")
+            }
+            Term::Array(_) => {
+                panic!("Cannot perform arithmetic operations between types Num and Array.")
             }
         },
         Term::String(left) => match right {
@@ -253,6 +266,9 @@ fn evaluate_oper(
             Term::Bool(_) => {
                 panic!("Cannot perform arithmetic operations between types Bool and String.")
             }
+            Term::Array(_) => {
+                panic!("Cannot perform arithmetic operations between types Bool and Array.")
+            }
         },
         Term::Symbol(left) => {
             let left = scopes.get_value(&left, current_scope);
@@ -260,6 +276,9 @@ fn evaluate_oper(
         }
         Term::Bool(_) => {
             panic!("Cannot perform arithmetic operations between values of type Bool.")
+        }
+        Term::Array(_) => {
+            panic!("Cannot perform arithmetic operations between values of type Array.")
         }
     }
 }
@@ -283,7 +302,7 @@ mod tests {
         let operation = Addend::Add(left, right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_addend(operation, &mut scopes, top_scope);
+        let actual = evaluate_addend(&operation, &mut scopes, top_scope);
 
         if let Term::Num(actual) = actual {
             assert_eq!(11.0, actual);
@@ -301,7 +320,7 @@ mod tests {
         let operation_b = Addend::Add(Box::new(operation_a), right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_addend(operation_b, &mut scopes, top_scope);
+        let actual = evaluate_addend(&operation_b, &mut scopes, top_scope);
 
         if let Term::Num(actual) = actual {
             assert_eq!(12.0, actual);
@@ -317,7 +336,7 @@ mod tests {
         let operation = Addend::Sub(Box::new(left), right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_addend(operation, &mut scopes, top_scope);
+        let actual = evaluate_addend(&operation, &mut scopes, top_scope);
 
         if let Term::Num(actual) = actual {
             assert_eq!(2.0, actual);
@@ -333,7 +352,7 @@ mod tests {
         let operation = Factor::Mult(Box::new(left), right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_factor(operation, &mut scopes, top_scope);
+        let actual = evaluate_factor(&operation, &mut scopes, top_scope);
 
         if let Term::Num(actual) = actual {
             assert_eq!(15.0, actual);
@@ -349,7 +368,7 @@ mod tests {
         let operation = Factor::Div(Box::new(left), right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_factor(operation, &mut scopes, top_scope);
+        let actual = evaluate_factor(&operation, &mut scopes, top_scope);
 
         if let Term::Num(actual) = actual {
             assert_eq!(2.5, actual);
@@ -366,6 +385,6 @@ mod tests {
         let operation = Factor::Div(Box::new(left), right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        evaluate_factor(operation, &mut scopes, top_scope);
+        evaluate_factor(&operation, &mut scopes, top_scope);
     }
 }

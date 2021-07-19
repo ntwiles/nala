@@ -23,6 +23,7 @@ pub enum Stmt {
 pub enum Expr {
     Equal(Box<Expr>, Addend),
     Addend(Addend),
+    Array(Vec<Expr>),
 }
 
 pub enum Addend {
@@ -43,6 +44,7 @@ pub enum Term {
     Symbol(String),
     String(String),
     Num(f32),
+    Array(Vec<Term>),
 }
 
 #[derive(Debug)]
@@ -62,6 +64,7 @@ impl Term {
             Term::String(t) => t.to_owned(),
             Term::Num(n) => n.to_string(),
             Term::Bool(b) => b.to_string(),
+            Term::Array(a) => String::from(format!("[{}]", a.len())),
         }
     }
 }

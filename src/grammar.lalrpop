@@ -26,10 +26,16 @@ Stmt: ast::Stmt = {
     <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
 };
 
+
 Expr: ast::Expr = {
     <l:Expr> "==" <r:Addend> => ast::Expr::Equal(Box::new(l), r),
-    <a:Addend> => ast::Expr::Addend(a)
-}
+    Addend => ast::Expr::Addend(<>),
+    Array => ast::Expr::Array(<>),
+};
+
+Array: Vec<ast::Expr> = {
+    "[" <e:Expr> "]" => vec![e],
+};
 
 Addend: ast::Addend = {
     <l:Addend> "+" <r:Factor> => ast::Addend::Add(Box::new(l), r),
