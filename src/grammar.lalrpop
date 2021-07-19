@@ -14,7 +14,7 @@ Block: ast::Block = {
 
 pub Stmts: ast::Stmts = {
     <ss:Stmts> <s:Stmt> => ast::Stmts::Stmts(Box::new(ss), s),
-    <Stmt> => ast::Stmts::Stmt(<>),
+    Stmt => ast::Stmts::Stmt(<>),
 };
 
 Stmt: ast::Stmt = {
@@ -40,23 +40,23 @@ Array: Vec<ast::Expr> = {
 Addend: ast::Addend = {
     <l:Addend> "+" <r:Factor> => ast::Addend::Add(Box::new(l), r),
     <l:Addend> "-" <r:Factor> => ast::Addend::Sub(Box::new(l), r),
-    <f:Factor> =>  ast::Addend::Factor(f)
+    Factor =>  ast::Addend::Factor(<>)
 };
 
 Factor: ast::Factor = {
     <l:Factor> "*" <r:Term>  => ast::Factor::Mult(Box::new(l), r),
     <l:Factor> "/" <r:Term> => ast::Factor::Div(Box::new(l), r), 
-    <t:Term> => ast::Factor::Term(t)
+    Term => ast::Factor::Term(<>)
 };
 
 Term: ast::Term = {
-    <s:Symbol> => ast::Term::Symbol(s),
-    <n:Num> => ast::Term::Num(n),
-    <s:Str> => ast::Term::String(s)
+    Symbol => ast::Term::Symbol(<>),
+    Num => ast::Term::Num(<>),
+    Str => ast::Term::String(<>)
 };
 
 Symbol: String = {
-    <s:r"[a-zA-z]+"> => String::from_str(s).unwrap()
+    r"[a-zA-z]+" => String::from_str(<>).unwrap()
 };
 
 Num: f32 = {
@@ -64,6 +64,5 @@ Num: f32 = {
 };
 
 Str: String = {
-    <s:r"'[^']*'"> => 
-        String::from_str(&s[1..s.len() - 1]).unwrap(),
+    r"'[^']*'" => String::from_str(&<>[1..<>.len() - 1]).unwrap(),
 };
