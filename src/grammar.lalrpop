@@ -34,7 +34,7 @@ Expr: ast::Expr = {
 };
 
 Array: Vec<ast::Expr> = {
-    "[" <e:Expr> "]" => vec![e],
+    "[" <Expr> "]" => vec![<>],
 };
 
 Addend: ast::Addend = {
