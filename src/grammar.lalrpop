@@ -31,14 +31,17 @@ Expr: ast::Expr = {
     <l:Expr> "==" <r:Addend> => ast::Expr::Equal(Box::new(l), r),
     Addend => ast::Expr::Addend(<>),
     Array => ast::Expr::Array(<>),
-    // TODO: This always matches `foo [0]` and never `foo[0]`. This needs to be fixed,
-    // probably with a custom lexer.
-    <s:Symbol> "[" <e:Expr> "]" => ast::Expr::Index(s, Box::new(e)),
+    <s:IndexedSymbol> <e:Expr> "]" => ast::Expr::Index(s, Box::new(e)),
 };
 
-Array: Vec<ast::Expr> = {
-    "[" <Expr> "]" => vec![<>],
+Array: ast::Array = {
+    "[" <Elems> "]" => ast::Array { elems: Box::new(<>) } 
 };
+
+Elems: ast::Elems = {
+    <ee:Elems> "," <e:Expr> => ast::Elems::Elems(Box::new(ee), e),
+    <Expr> => ast::Elems::Expr(<>)
+}
 
 Addend: ast::Addend = {
     <l:Addend> "+" <r:Factor> => ast::Addend::Add(Box::new(l), r),
@@ -58,8 +61,16 @@ Term: ast::Term = {
     Str => ast::Term::String(<>)
 };
 
+IndexedSymbol: String = {
+    r"[a-zA-Z]+\[" => {
+        let mut chars = <>.chars();
+        chars.next_back();
+        String::from(chars.as_str())
+    }
+}
+
 Symbol: String = {
-    r"[a-zA-z]+" => String::from_str(<>).unwrap()
+    r"[a-zA-Z]+" => String::from_str(<>).unwrap()
 };
 
 Num: f32 = {

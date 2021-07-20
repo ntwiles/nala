@@ -20,10 +20,19 @@ pub enum Stmt {
     If(Expr, Box<Block>),
 }
 
+pub struct Array {
+    pub elems: Box<Elems>,
+}
+
+pub enum Elems {
+    Elems(Box<Elems>, Expr),
+    Expr(Expr),
+}
+
 pub enum Expr {
     Equal(Box<Expr>, Addend),
     Addend(Addend),
-    Array(Vec<Expr>),
+    Array(Array),
     Index(String, Box<Expr>),
 }
 

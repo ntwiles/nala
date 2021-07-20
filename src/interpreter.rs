@@ -137,13 +137,21 @@ fn evaluate_expr(expr: &Expr, scopes: &mut Scopes, current_scope: ScopeId) -> Te
     }
 }
 
-fn evaluate_array(elems: &Vec<Expr>, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
-    let terms = elems
-        .iter()
-        .map(|elem| evaluate_expr(elem, scopes, current_scope))
-        .collect();
-
+fn evaluate_array(array: &Array, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+    let elems = &*array.elems;
+    let terms = evaluate_elems(elems, scopes, current_scope);
     Term::Array(terms)
+}
+
+fn evaluate_elems(elems: &Elems, scopes: &mut Scopes, current_scope: ScopeId) -> Vec<Term> {
+    match elems {
+        Elems::Elems(elems, expr) => {
+            let mut elems = evaluate_elems(elems, scopes, current_scope);
+            elems.push(evaluate_expr(&expr, scopes, current_scope));
+            elems
+        }
+        Elems::Expr(expr) => vec![evaluate_expr(&expr, scopes, current_scope)],
+    }
 }
 
 fn evaluate_index(ident: &str, expr: &Expr, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
