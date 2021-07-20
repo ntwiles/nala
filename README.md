@@ -139,9 +139,5 @@ const array = [5, 4, 2, 8];
 Values can be accessed by index with the following syntax:
 
 ```
-print array [0];
+print array[0];
 ```
-
-Most will notice extra whitespace between `array` and `[0]`. This must be done, and at present the following will be invalid nala: `array[0]`.
-
-This is not by design, but is a temporary artifact of how the language grammar is written using LALRPOP. This can probably be fixed by moving to a custom lexer, which LALRPOP supports.
