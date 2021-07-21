@@ -17,17 +17,21 @@ pub enum Stmt {
     Declare(String, Expr, bool),
     Assign(String, Expr),
     If(Expr, Box<Block>),
+    For(String, Expr, Box<Block>),
 }
 
+#[derive(Debug)]
 pub struct Array {
     pub elems: Box<Elems>,
 }
 
+#[derive(Debug)]
 pub enum Elems {
     Elems(Box<Elems>, Expr),
     Expr(Expr),
 }
 
+#[derive(Debug)]
 pub enum Expr {
     Eq(Box<Expr>, Addend),
     Gt(Box<Expr>, Addend),
@@ -39,19 +43,21 @@ pub enum Expr {
     ReadNum,
 }
 
+#[derive(Debug)]
 pub enum Addend {
     Add(Box<Addend>, Factor),
     Sub(Box<Addend>, Factor),
     Factor(Factor),
 }
 
+#[derive(Debug)]
 pub enum Factor {
     Mult(Box<Factor>, Term),
     Div(Box<Factor>, Term),
     Term(Term),
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub enum Term {
     Bool(bool),
     Symbol(String),

@@ -155,12 +155,10 @@ Arrays are in the process of being implemented. They will be able to be initiali
 
 ```
 const array = [5, 4, 2, 8];
-
 ```
 
 Values can be accessed by index with the following syntax:
 
 ```
 print array[0];
-
 ```

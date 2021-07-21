@@ -10,30 +10,30 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
     let mut scopes = Scopes::new();
     let top_scope = scopes.new_scope(None);
     match program {
-        Program::Block(block) => interpret_block(block, &mut scopes, top_scope, context),
-        Program::Stmts(stmts) => interpret_stmts(stmts, &mut scopes, top_scope, context),
+        Program::Block(block) => interpret_block(&block, &mut scopes, top_scope, context),
+        Program::Stmts(stmts) => interpret_stmts(&stmts, &mut scopes, top_scope, context),
     }
 }
 
 fn interpret_block(
-    block: Block,
+    block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) {
     let block_scope = scopes.new_scope(Some(current_scope));
-    interpret_stmts(block.stmts, scopes, block_scope, context);
+    interpret_stmts(&block.stmts, scopes, block_scope, context);
 }
 
 fn interpret_stmts(
-    stmts: Stmts,
+    stmts: &Stmts,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) {
     match stmts {
         Stmts::Stmts(stmts, stmt) => {
-            interpret_stmts(*stmts, scopes, current_scope, context);
+            interpret_stmts(&*stmts, scopes, current_scope, context);
             interpret_stmt(stmt, scopes, current_scope, context);
         }
         Stmts::Stmt(stmt) => interpret_stmt(stmt, scopes, current_scope, context),
@@ -41,23 +41,31 @@ fn interpret_stmts(
 }
 
 fn interpret_stmt(
-    stmt: Stmt,
+    stmt: &Stmt,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) {
     match stmt {
         Stmt::Print(expr) => interpret_print(expr, scopes, current_scope, context),
-        Stmt::Declare(ident, expr, is_mutable) => {
-            interpret_declare(ident, expr, scopes, current_scope, context, is_mutable)
-        }
+        Stmt::Declare(ident, expr, is_mutable) => interpret_declare(
+            ident,
+            expr,
+            scopes,
+            current_scope,
+            context,
+            is_mutable.clone(),
+        ),
         Stmt::Assign(ident, expr) => interpret_assign(ident, expr, scopes, current_scope, context),
-        Stmt::If(cond, block) => interpret_if(cond, *block, scopes, current_scope, context),
+        Stmt::If(cond, block) => interpret_if(cond, block, scopes, current_scope, context),
+        Stmt::For(ident, expr, block) => {
+            interpret_for(ident, &expr, block, scopes, current_scope, context)
+        }
     }
 }
 
 fn interpret_print(
-    expr: Expr,
+    expr: &Expr,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
@@ -72,8 +80,8 @@ fn interpret_print(
 }
 
 fn interpret_declare(
-    ident: String,
-    expr: Expr,
+    ident: &String,
+    expr: &Expr,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
@@ -88,8 +96,8 @@ fn interpret_declare(
 }
 
 fn interpret_assign(
-    ident: String,
-    expr: Expr,
+    ident: &String,
+    expr: &Expr,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
@@ -103,8 +111,8 @@ fn interpret_assign(
 }
 
 fn interpret_if(
-    cond: Expr,
-    block: Block,
+    cond: &Expr,
+    block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
@@ -113,10 +121,33 @@ fn interpret_if(
 
     if let Term::Bool(bool) = resolved {
         if bool {
-            interpret_block(block, scopes, current_scope, context)
+            interpret_block(&block, scopes, current_scope, context)
         }
     } else {
         panic!("Cannot use non-boolean expressions inside 'if' conditions.")
+    }
+}
+
+fn interpret_for(
+    ident: &String,
+    expr: &Expr,
+    block: &Block,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) {
+    let resolved = evaluate_expr(expr, scopes, current_scope, context);
+    if let Term::Array(array) = resolved {
+        for (_, item) in array.iter().enumerate() {
+            let block_scope = scopes.new_scope(Some(current_scope));
+            scopes.add_binding(ident, block_scope, item.clone(), false);
+            interpret_block(&block, scopes, block_scope, context);
+        }
+    } else {
+        panic!(
+            "Cannot iterate over values of non-Array types. Found '{}' of type {:?}",
+            ident, resolved
+        )
     }
 }
 
@@ -248,7 +279,13 @@ fn evaluate_factor(factor: &Factor, scopes: &mut Scopes, current_scope: ScopeId)
             scopes,
             current_scope,
         ),
-        Factor::Term(term) => term.clone(),
+        Factor::Term(term) => {
+            if let Term::Symbol(ident) = term {
+                scopes.get_value(ident, current_scope)
+            } else {
+                term.clone()
+            }
+        }
     }
 }
 
