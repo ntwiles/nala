@@ -14,7 +14,6 @@ pub enum Stmts {
 
 pub enum Stmt {
     Print(Expr),
-    Read(String),
     Declare(String, Expr, bool),
     Assign(String, Expr),
     If(Expr, Box<Block>),
@@ -34,6 +33,7 @@ pub enum Expr {
     Addend(Addend),
     Array(Array),
     Index(String, Box<Expr>),
+    Read,
 }
 
 pub enum Addend {

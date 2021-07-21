@@ -1,4 +1,4 @@
 
 print 'Please enter your name:';
-read input;
+const input = read;
 print 'Hello, ' + input;

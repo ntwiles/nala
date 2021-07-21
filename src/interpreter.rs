@@ -48,11 +48,10 @@ fn interpret_stmt(
 ) {
     match stmt {
         Stmt::Print(expr) => interpret_print(expr, scopes, current_scope, context),
-        Stmt::Read(ident) => interpret_read(ident, scopes, current_scope, context),
         Stmt::Declare(ident, expr, is_mutable) => {
-            interpret_declare(ident, expr, scopes, current_scope, is_mutable)
+            interpret_declare(ident, expr, scopes, current_scope, context, is_mutable)
         }
-        Stmt::Assign(ident, expr) => interpret_assign(ident, expr, scopes, current_scope),
+        Stmt::Assign(ident, expr) => interpret_assign(ident, expr, scopes, current_scope, context),
         Stmt::If(cond, block) => interpret_if(cond, *block, scopes, current_scope, context),
     }
 }
@@ -63,7 +62,7 @@ fn interpret_print(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) {
-    let result = evaluate_expr(&expr, scopes, current_scope);
+    let result = evaluate_expr(&expr, scopes, current_scope, context);
 
     if let Term::Symbol(ident) = result {
         context.print(&scopes.get_value(&ident, current_scope).to_string());
@@ -72,34 +71,31 @@ fn interpret_print(
     }
 }
 
-fn interpret_read(
-    ident: String,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-    context: &mut impl IoContext,
-) {
-    let value = context.read();
-    scopes.add_binding(&ident, current_scope, Term::String(value), false)
-}
-
 fn interpret_declare(
     ident: String,
     expr: Expr,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    context: &mut impl IoContext,
     is_mutable: bool,
 ) {
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
-        let value = evaluate_expr(&expr, scopes, current_scope);
+        let value = evaluate_expr(&expr, scopes, current_scope, context);
         scopes.add_binding(&ident, current_scope, value, is_mutable);
     }
 }
 
-fn interpret_assign(ident: String, expr: Expr, scopes: &mut Scopes, current_scope: ScopeId) {
+fn interpret_assign(
+    ident: String,
+    expr: Expr,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) {
     if scopes.binding_exists(&ident, current_scope) {
-        let value = evaluate_expr(&expr, scopes, current_scope);
+        let value = evaluate_expr(&expr, scopes, current_scope, context);
         scopes.mutate_value(&ident, current_scope, value);
     } else {
         panic!("Unknown identifier `{}`", ident);
@@ -113,7 +109,7 @@ fn interpret_if(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) {
-    let resolved = evaluate_expr(&cond, scopes, current_scope);
+    let resolved = evaluate_expr(&cond, scopes, current_scope, context);
 
     if let Term::Bool(bool) = resolved {
         if bool {
@@ -124,38 +120,68 @@ fn interpret_if(
     }
 }
 
-fn evaluate_expr(expr: &Expr, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+fn evaluate_expr(
+    expr: &Expr,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) -> Term {
     match expr {
         Expr::Equal(left, right) => {
-            let left = evaluate_expr(left, scopes, current_scope);
+            let left = evaluate_expr(left, scopes, current_scope, context);
             let right = evaluate_addend(right, scopes, current_scope);
             evaluate_equals(left, right, scopes, current_scope)
         }
         Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope),
-        Expr::Array(elems) => evaluate_array(elems, scopes, current_scope),
-        Expr::Index(ident, expr) => evaluate_index(ident, expr, scopes, current_scope),
+        Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
+        Expr::Index(ident, expr) => evaluate_index(ident, expr, scopes, current_scope, context),
+        Expr::Read => evaluate_read(scopes, current_scope, context),
     }
 }
 
-fn evaluate_array(array: &Array, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+fn evaluate_read(
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) -> Term {
+    Term::String(context.read())
+}
+
+fn evaluate_array(
+    array: &Array,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) -> Term {
     let elems = &*array.elems;
-    let terms = evaluate_elems(elems, scopes, current_scope);
+    let terms = evaluate_elems(elems, scopes, current_scope, context);
     Term::Array(terms)
 }
 
-fn evaluate_elems(elems: &Elems, scopes: &mut Scopes, current_scope: ScopeId) -> Vec<Term> {
+fn evaluate_elems(
+    elems: &Elems,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) -> Vec<Term> {
     match elems {
         Elems::Elems(elems, expr) => {
-            let mut elems = evaluate_elems(elems, scopes, current_scope);
-            elems.push(evaluate_expr(&expr, scopes, current_scope));
+            let mut elems = evaluate_elems(elems, scopes, current_scope, context);
+            elems.push(evaluate_expr(&expr, scopes, current_scope, context));
             elems
         }
-        Elems::Expr(expr) => vec![evaluate_expr(&expr, scopes, current_scope)],
+        Elems::Expr(expr) => vec![evaluate_expr(&expr, scopes, current_scope, context)],
     }
 }
 
-fn evaluate_index(ident: &str, expr: &Expr, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
-    let index = evaluate_expr(expr, scopes, current_scope);
+fn evaluate_index(
+    ident: &str,
+    expr: &Expr,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) -> Term {
+    let index = evaluate_expr(expr, scopes, current_scope, context);
 
     if let Term::Num(index) = index {
         let array = scopes.get_value(ident, current_scope);

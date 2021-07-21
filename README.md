@@ -124,7 +124,7 @@ The `read` keyword is a method by which a new constant variable can be declared 
 
 ```
 print 'Please enter your name'
-read name;
+const name = read;
 print 'Hello ' + name;
 ```
 
