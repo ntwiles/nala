@@ -91,6 +91,16 @@ if (2 == 3) {
 }
 ```
 
+### Conditional expressions.
+
+The following operators are supported for comparisons: `<` `>` `==`:
+
+```
+let isGreater = 3 > 2;
+let isLesser = 2 < 3;
+let isEqual = 2 == 2;
+```
+
 ## Scope
 
 Lexical scope works as it does in most languages and should be intuitive. Blocks create new scopes in which local bindings can be created The following will throw a runtime error at execution of the last line:
@@ -144,7 +154,6 @@ print input * 7;
 Arrays are in the process of being implemented. They will be able to be initialized with the following literal syntax:
 
 ```
-
 const array = [5, 4, 2, 8];
 
 ```
@@ -152,11 +161,6 @@ const array = [5, 4, 2, 8];
 Values can be accessed by index with the following syntax:
 
 ```
-
 print array[0];
-
-```
-
-```
 
 ```
