@@ -29,7 +29,9 @@ pub enum Elems {
 }
 
 pub enum Expr {
-    Equal(Box<Expr>, Addend),
+    Eq(Box<Expr>, Addend),
+    Gt(Box<Expr>, Addend),
+    Lt(Box<Expr>, Addend),
     Addend(Addend),
     Array(Array),
     Index(String, Box<Expr>),

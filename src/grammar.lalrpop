@@ -26,7 +26,9 @@ Stmt: ast::Stmt = {
 };
 
 Expr: ast::Expr = {
-    <l:Expr> "==" <r:Addend> => ast::Expr::Equal(Box::new(l), r),
+    <l:Expr> "==" <r:Addend> => ast::Expr::Eq(Box::new(l), r),
+    <l:Expr> ">" <r:Addend> => ast::Expr::Gt(Box::new(l), r),
+    <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
     Addend => ast::Expr::Addend(<>),
     Array => ast::Expr::Array(<>),
     "read" => ast::Expr::Read,

@@ -1,3 +1,16 @@
-print 'Please enter a number:';
-const input = readnum;
-print 'The product of your number and 7 is: ' + input * 7;
+const secret = 52;
+print 'Guess the secret number!';
+const guess = readnum;
+print 'You guessed: ' + guess;
+
+if (guess == secret) {
+    print 'You guessed right!';
+}
+
+if (guess > secret) {
+    print 'You guessed too high!';
+}
+
+if (guess < secret) {
+    print 'You guessed too low!';
+}
