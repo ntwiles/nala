@@ -135,7 +135,23 @@ fn evaluate_expr(
         Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope),
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
         Expr::Index(ident, expr) => evaluate_index(ident, expr, scopes, current_scope, context),
-        Expr::Read => Term::String(context.read()),
+        Expr::Read => evaluate_read(context),
+        Expr::ReadNum => evaluate_readnum(context),
+    }
+}
+
+fn evaluate_read(context: &mut impl IoContext) -> Term {
+    let input = context.read();
+    Term::String(input.trim().to_string())
+}
+
+fn evaluate_readnum(context: &mut impl IoContext) -> Term {
+    let mut input = context.read();
+    input = input.trim().to_string();
+    let result = input.parse::<f32>();
+    match result {
+        Ok(num) => Term::Num(num),
+        Err(_) => panic!("Could not parse input '{}' as type Num.", input),
     }
 }
 

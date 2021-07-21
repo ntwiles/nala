@@ -30,6 +30,7 @@ Expr: ast::Expr = {
     Addend => ast::Expr::Addend(<>),
     Array => ast::Expr::Array(<>),
     "read" => ast::Expr::Read,
+    "readnum" => ast::Expr::ReadNum,
     <s:Symbol> "[" <e:Expr> "]" => ast::Expr::Index(s, Box::new(e)),
 };
 

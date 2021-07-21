@@ -120,7 +120,7 @@ print foo;
 
 ## `read` keyword
 
-The `read` keyword is a method by which a new constant variable can be declared and initialized with user input:
+The `read` keyword will get input from the console, treated as a String type.
 
 ```
 print 'Please enter your name'
@@ -128,16 +128,35 @@ const name = read;
 print 'Hello ' + name;
 ```
 
+## `readnum` keyword
+
+The `readnum` keyword will get input from the console and parse it as a Num type.
+
+```
+print 'Please enter a number:';
+const input = readnum;
+print 'The product of your number and 7 is:';
+print input * 7;
+```
+
 ## Arrays
 
 Arrays are in the process of being implemented. They will be able to be initialized with the following literal syntax:
 
 ```
+
 const array = [5, 4, 2, 8];
+
 ```
 
 Values can be accessed by index with the following syntax:
 
 ```
+
 print array[0];
+
+```
+
+```
+
 ```

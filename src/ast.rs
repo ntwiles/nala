@@ -34,6 +34,7 @@ pub enum Expr {
     Array(Array),
     Index(String, Box<Expr>),
     Read,
+    ReadNum,
 }
 
 pub enum Addend {
