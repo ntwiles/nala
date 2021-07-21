@@ -298,7 +298,16 @@ fn evaluate_oper(
                 OpKind::Mult => Term::Num(left * right),
                 OpKind::Div => Term::Num(do_divide(left, right)),
             },
-            Term::String(_) => panic!("Cannot perform operations between types Num and String."),
+            Term::String(str) => {
+                if let OpKind::Add = op_kind {
+                    Term::String(left.to_string() + &str)
+                } else {
+                    panic!(
+                        "Operation not supported between types Num and String: {:?}",
+                        op_kind
+                    )
+                }
+            }
             Term::Symbol(right) => {
                 let right = scopes.get_value(&right, current_scope);
                 evaluate_oper(Term::Num(left), op_kind, right, scopes, current_scope)
@@ -311,7 +320,16 @@ fn evaluate_oper(
             }
         },
         Term::String(left) => match right {
-            Term::Num(_) => panic!("Cannot perform operations between types Num and String."),
+            Term::Num(num) => {
+                if let OpKind::Add = op_kind {
+                    Term::String(left + &num.to_string())
+                } else {
+                    panic!(
+                        "Operation not supported between values of type String and Num: {:?}",
+                        op_kind
+                    )
+                }
+            }
             Term::String(right) => {
                 if let OpKind::Add = op_kind {
                     Term::String(left + &right)
@@ -327,10 +345,10 @@ fn evaluate_oper(
                 evaluate_oper(Term::String(left), op_kind, right, scopes, current_scope)
             }
             Term::Bool(_) => {
-                panic!("Cannot perform arithmetic operations between types Bool and String.")
+                panic!("Cannot perform arithmetic operations between types String and Bool.")
             }
             Term::Array(_) => {
-                panic!("Cannot perform arithmetic operations between types Bool and Array.")
+                panic!("Cannot perform arithmetic operations between types String and Array.")
             }
         },
         Term::Symbol(left) => {
