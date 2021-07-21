@@ -135,16 +135,8 @@ fn evaluate_expr(
         Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope),
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
         Expr::Index(ident, expr) => evaluate_index(ident, expr, scopes, current_scope, context),
-        Expr::Read => evaluate_read(scopes, current_scope, context),
+        Expr::Read => Term::String(context.read()),
     }
-}
-
-fn evaluate_read(
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-    context: &mut impl IoContext,
-) -> Term {
-    Term::String(context.read())
 }
 
 fn evaluate_array(
