@@ -26,12 +26,11 @@ Stmt: ast::Stmt = {
     <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
 };
 
-
 Expr: ast::Expr = {
     <l:Expr> "==" <r:Addend> => ast::Expr::Equal(Box::new(l), r),
     Addend => ast::Expr::Addend(<>),
     Array => ast::Expr::Array(<>),
-    <s:IndexedSymbol> <e:Expr> "]" => ast::Expr::Index(s, Box::new(e)),
+    <s:Symbol> "[" <e:Expr> "]" => ast::Expr::Index(s, Box::new(e)),
 };
 
 Array: ast::Array = {
@@ -60,14 +59,6 @@ Term: ast::Term = {
     Num => ast::Term::Num(<>),
     Str => ast::Term::String(<>)
 };
-
-IndexedSymbol: String = {
-    r"[a-zA-Z]+\[" => {
-        let mut chars = <>.chars();
-        chars.next_back();
-        String::from(chars.as_str())
-    }
-}
 
 Symbol: String = {
     r"[a-zA-Z]+" => String::from_str(<>).unwrap()
