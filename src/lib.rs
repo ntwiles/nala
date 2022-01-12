@@ -14,9 +14,17 @@ use io_context::ConsoleContext;
 use parser::*;
 
 pub fn main(path: &str) -> Result<(), Box<dyn Error>> {
-    let code = fs::read_to_string(path).unwrap();
-    let parsed = parse_code(code);
-    let mut context = ConsoleContext {};
-    interpret_tree(parsed, &mut context);
-    Ok(())
+    let result = fs::read_to_string(path);
+
+    match result {
+        Ok(code) => {
+            let parsed = parse_code(code);
+
+            let mut context = ConsoleContext {};
+            interpret_tree(parsed, &mut context);
+        
+            Ok(())
+        }
+        Err(err) => Err(Box::new(err))
+    }
 }
