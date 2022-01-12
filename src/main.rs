@@ -1,9 +1,8 @@
 use std::env;
-use std::error::Error;
 
 use library;
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> () {
     let args: Vec<String> = env::args().collect();
-    library::main(&args[1])
+    library::main(&args[1]);
 }

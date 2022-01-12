@@ -1,4 +1,3 @@
-use std::error::Error;
 use std::fs;
 
 mod ast;
@@ -10,21 +9,20 @@ pub mod parser;
 pub mod scope;
 
 use interpreter::*;
-use io_context::ConsoleContext;
+use io_context::{ConsoleContext, IoContext} ;
 use parser::*;
 
-pub fn main(path: &str) -> Result<(), Box<dyn Error>> {
+pub fn main(path: &str) -> () {
     let result = fs::read_to_string(path);
+    let mut context = ConsoleContext {};
 
     match result {
         Ok(code) => {
             let parsed = parse_code(code);
-
-            let mut context = ConsoleContext {};
             interpret_tree(parsed, &mut context);
-        
-            Ok(())
         }
-        Err(err) => Err(Box::new(err))
+        Err(err) => {
+            context.print(&format!("Error loading nala file: {}", err))
+        }
     }
 }
