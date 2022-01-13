@@ -16,7 +16,7 @@ Nala is (read: will be) an interpreted, expression-oriented programming language
 Parse and interpret in the console any `.nl` file with the following command:
 
 ```
-cargo run src/main.rs path/to/script.nl
+cargo run path/to/script.nl
 ```
 
 Example scripts are provided in the `example/` directory.
