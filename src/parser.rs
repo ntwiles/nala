@@ -6,6 +6,7 @@ use grammar::ProgramParser;
 
 use crate::ast::*;
 
+// TODO: Handle ParseError
 pub fn parse_code(code: String) -> Program {
     ProgramParser::new().parse(&code).unwrap()
 }
