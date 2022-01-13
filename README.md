@@ -106,9 +106,9 @@ if (2 == 3) {
 The following operators are supported for comparisons: `<` `>` `==`:
 
 ```
-let isGreater = 3 > 2;
-let isLesser = 2 < 3;
-let isEqual = 2 == 2;
+const isGreater = 3 > 2;
+const isLesser = 2 < 3;
+const isEqual = 2 == 2;
 ```
 
 ## Scope
