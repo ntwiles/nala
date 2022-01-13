@@ -33,6 +33,8 @@ print 'foo';
 
 In this code snippet, whitespace is insignificant, strings are surrounded by single quotes ('), and the required trailing semicolon signifies the end of a statement.
 
+Note: Once functions are introduced, this keyword will be replaced with an inbuilt function: `print('foo');`
+
 ## `const` keyword
 
 Constant variables can be declared with the following syntax:
@@ -148,6 +150,7 @@ const name = read;
 print 'Hello ' + name;
 ```
 
+Note: Once functions are introduced, this keyword will be replaced with an inbuilt function: `read();`
 ## `readnum` keyword
 
 The `readnum` keyword will get input from the console and parse it as a Num type.
@@ -159,6 +162,7 @@ print 'The product of your number and 7 is:';
 print input * 7;
 ```
 
+Note: Once functions are introduced, this keyword will be replaced with an inbuilt function: `readnum();`
 ## Arrays
 
 Arrays are in the process of being implemented. They will be able to be initialized with the following literal syntax:
