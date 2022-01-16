@@ -46,7 +46,6 @@ pub enum Expr {
     Index(String, Box<Expr>),
     Read,
     ReadNum,
-    Call(String)
 }
 
 #[derive(Debug, Clone)]
@@ -60,6 +59,12 @@ pub enum Addend {
 pub enum Factor {
     Mult(Box<Factor>, Term),
     Div(Box<Factor>, Term),
+    Call(Call),
+}
+
+#[derive(Debug, Clone)]
+pub enum Call {
+    Call(String),
     Term(Term),
 }
 

@@ -200,45 +200,55 @@ fn evaluate_expr(
     match expr {
         Expr::Eq(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context);
-            let right = evaluate_addend(right, scopes, current_scope);
+            let right = evaluate_addend(right, scopes, current_scope, context);
             evaluate_equals(left, right, scopes, current_scope)
         }
         Expr::Gt(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context);
-            let right = evaluate_addend(right, scopes, current_scope);
+            let right = evaluate_addend(right, scopes, current_scope, context);
             evaluate_gt(left, right, scopes, current_scope)
         }
         Expr::Lt(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context);
-            let right = evaluate_addend(right, scopes, current_scope);
+            let right = evaluate_addend(right, scopes, current_scope, context);
             evaluate_lt(left, right, scopes, current_scope)
         }
-        Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope),
+        Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope, context),
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
         Expr::Index(ident, expr) => evaluate_index(ident, expr, scopes, current_scope, context),
         Expr::Read => evaluate_read(context),
         Expr::ReadNum => evaluate_readnum(context),
-        Expr::Call(ident) => evaluate_call(ident, scopes, current_scope, context),
     }
 }
 
 fn evaluate_call(
-    ident: &str, 
+    call: &Call, 
     scopes: &mut Scopes, 
     current_scope: ScopeId,
     context: &mut impl IoContext
 ) -> Term {
-    let block = if scopes.binding_exists(&ident, current_scope) {
-        scopes.get_value(ident, current_scope)
-    } else {
-        panic!("Unknown identifier `{}`", ident);
-    };
-
-    // This None should never be returned, consider writing this differently.
-    if let Term::Func(block) = block {
-        interpret_block(&block, scopes, current_scope, context)
-    } else {
-        Term::Void
+    match call {
+        Call::Call(ident) => {
+            let block = if scopes.binding_exists(&ident, current_scope) {
+                scopes.get_value(ident, current_scope)
+            } else {
+                panic!("Unknown identifier `{}`", ident);
+            };
+        
+            // This None should never be returned, consider writing this differently.
+            if let Term::Func(block) = block {
+                interpret_block(&block, scopes, current_scope, context)
+            } else {
+                Term::Void
+            }
+        }
+        Call::Term(term) => {
+            if let Term::Symbol(ident) = term {
+                scopes.get_value(ident, current_scope)
+            } else {
+                term.clone()
+            }
+        }
     }
 }
 
@@ -308,45 +318,49 @@ fn evaluate_index(
     }
 }
 
-fn evaluate_addend(addend: &Addend, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+fn evaluate_addend(
+    addend: &Addend, 
+    scopes: &mut Scopes, 
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) -> Term {
     match addend {
         Addend::Add(left, right) => {
-            let left = evaluate_addend(left, scopes, current_scope);
-            let right = evaluate_factor(right, scopes, current_scope);
+            let left = evaluate_addend(left, scopes, current_scope, context);
+            let right = evaluate_factor(right, scopes, current_scope, context);
             evaluate_oper(left, OpKind::Add, right, scopes, current_scope)
         }
         Addend::Sub(left, right) => {
-            let left = evaluate_addend(left, scopes, current_scope);
-            let right = evaluate_factor(right, scopes, current_scope);
+            let left = evaluate_addend(left, scopes, current_scope, context);
+            let right = evaluate_factor(right, scopes, current_scope, context);
             evaluate_oper(left, OpKind::Sub, right, scopes, current_scope)
         }
-        Addend::Factor(factor) => evaluate_factor(factor, scopes, current_scope),
+        Addend::Factor(factor) => evaluate_factor(factor, scopes, current_scope, context),
     }
 }
 
-fn evaluate_factor(factor: &Factor, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+fn evaluate_factor(
+    factor: &Factor, 
+    scopes: &mut Scopes, 
+    current_scope: ScopeId,
+    context:  &mut impl IoContext
+) -> Term {
     match factor {
         Factor::Mult(left, right) => evaluate_oper(
-            evaluate_factor(left, scopes, current_scope),
+            evaluate_factor(left, scopes, current_scope, context),
             OpKind::Mult,
             right.clone(),
             scopes,
             current_scope,
         ),
         Factor::Div(left, right) => evaluate_oper(
-            evaluate_factor(left, scopes, current_scope),
+            evaluate_factor(left, scopes, current_scope, context),
             OpKind::Div,
             right.clone(),
             scopes,
             current_scope,
         ),
-        Factor::Term(term) => {
-            if let Term::Symbol(ident) = term {
-                scopes.get_value(ident, current_scope)
-            } else {
-                term.clone()
-            }
-        }
+        Factor::Call(call) => evaluate_call(call, scopes, current_scope, context),
     }
 }
 

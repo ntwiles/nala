@@ -6,7 +6,7 @@ grammar;
 pub Program: ast::Program = {
     <Block> => ast::Program::Block(<>),
     <Stmts> => ast::Program::Stmts(<>)
-} 
+}
 
 Block: ast::Block = {
     "{" <Stmts> "}" => ast::Block { stmts: <> }
@@ -37,7 +37,6 @@ Expr: ast::Expr = {
     "read" => ast::Expr::Read,
     "readnum" => ast::Expr::ReadNum,
     <s:Symbol> "[" <e:Expr> "]" => ast::Expr::Index(s, Box::new(e)),
-    <s:Symbol> "(" ")" => ast::Expr::Call(s),
 };
 
 Array: ast::Array = {
@@ -58,7 +57,12 @@ Addend: ast::Addend = {
 Factor: ast::Factor = {
     <l:Factor> "*" <r:Term>  => ast::Factor::Mult(Box::new(l), r),
     <l:Factor> "/" <r:Term> => ast::Factor::Div(Box::new(l), r), 
-    Term => ast::Factor::Term(<>)
+    Call => ast::Factor::Call(<>),
+};
+
+Call: ast::Call = {
+    <Symbol> "(" ")" => ast::Call::Call(<>),
+    Term => ast::Call::Term(<>),
 };
 
 Term: ast::Term = {
