@@ -5,6 +5,7 @@ use std::fs;
 #[test]
 fn test_run_examples() {
     let test_data = [
+        ("array-for", vec!["foo", "7", "bar", "3"]),
         ("array-index", vec!["5"]),
         ("block-parent-scopes", vec!["7", "7"]),
         ("block-shadowing", vec!["bar", "7"]),
