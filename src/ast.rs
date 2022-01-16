@@ -16,6 +16,7 @@ pub enum Stmt {
     If(Expr, Box<Block>),
     For(String, Expr, Box<Block>),
     Func(String, Box<Block>),
+    Expr(Expr)
 }
 
 #[derive(Debug, Clone)]
@@ -45,6 +46,7 @@ pub enum Expr {
     Index(String, Box<Expr>),
     Read,
     ReadNum,
+    Call(String)
 }
 
 #[derive(Debug, Clone)]
@@ -69,6 +71,7 @@ pub enum Term {
     Num(f32),
     Array(Vec<Term>),
     Func(Box<Block>),
+    Void,
 }
 
 #[derive(Debug)]
@@ -90,6 +93,7 @@ impl Term {
             Term::Bool(b) => b.to_string(),
             Term::Array(a) => String::from(format!("[{}]", a.len())),
             Term::Func(_) => String::from("<Func>"),
+            Term::Void => String::from("<Void>"),
         }
     }
 }

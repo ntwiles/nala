@@ -25,6 +25,7 @@ Stmt: ast::Stmt = {
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
     "func" <s:Symbol> "(" ")" <b:Block> => ast::Stmt::Func(s, Box::new(b)),
     <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
+    <e:Expr> ";" => ast::Stmt::Expr(e),
 };
 
 Expr: ast::Expr = {
@@ -36,6 +37,7 @@ Expr: ast::Expr = {
     "read" => ast::Expr::Read,
     "readnum" => ast::Expr::ReadNum,
     <s:Symbol> "[" <e:Expr> "]" => ast::Expr::Index(s, Box::new(e)),
+    <s:Symbol> "(" ")" => ast::Expr::Call(s),
 };
 
 Array: ast::Array = {
@@ -45,7 +47,7 @@ Array: ast::Array = {
 Elems: ast::Elems = {
     <ee:Elems> "," <e:Expr> => ast::Elems::Elems(Box::new(ee), e),
     <Expr> => ast::Elems::Expr(<>)
-}
+};
 
 Addend: ast::Addend = {
     <l:Addend> "+" <r:Factor> => ast::Addend::Add(Box::new(l), r),
