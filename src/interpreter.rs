@@ -620,14 +620,19 @@ fn do_divide(left: f32, right: f32) -> f32 {
 mod tests {
     use super::*;
 
+    use crate::io_context::TestContext;
+
     #[test]
     pub fn it_evaluates_add_with_2_terms() {
-        let left = Box::new(Addend::Factor(Factor::Term(Term::Num(7.0))));
-        let right = Factor::Term(Term::Num(4.0));
+        let mut test_context = TestContext::new();
+
+        let left = Box::new(Addend::Factor(Factor::Call(Call::Term(Term::Num(7.0)))));
+        let right = Factor::Call(Call::Term(Term::Num(4.0)));
+
         let operation = Addend::Add(left, right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_addend(&operation, &mut scopes, top_scope);
+        let actual = evaluate_addend(&operation, &mut scopes, top_scope, &mut test_context);
 
         if let Term::Num(actual) = actual {
             assert_eq!(11.0, actual);
@@ -638,14 +643,17 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_add_with_3_terms() {
-        let left = Addend::Factor(Factor::Term(Term::Num(3.0)));
-        let middle = Factor::Term(Term::Num(5.0));
-        let right = Factor::Term(Term::Num(4.0));
+        let mut test_context = TestContext::new();
+
+        let left = Addend::Factor(Factor::Call(Call::Term(Term::Num(3.0))));
+        let middle = Factor::Call(Call::Term(Term::Num(5.0)));
+        let right = Factor::Call(Call::Term(Term::Num(4.0)));
+
         let operation_a = Addend::Add(Box::new(left), middle);
         let operation_b = Addend::Add(Box::new(operation_a), right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_addend(&operation_b, &mut scopes, top_scope);
+        let actual = evaluate_addend(&operation_b, &mut scopes, top_scope, &mut test_context);
 
         if let Term::Num(actual) = actual {
             assert_eq!(12.0, actual);
@@ -656,12 +664,15 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_sub() {
-        let left = Addend::Factor(Factor::Term(Term::Num(5.0)));
-        let right = Factor::Term(Term::Num(3.0));
+        let mut test_context = TestContext::new();
+
+        let left = Addend::Factor(Factor::Call(Call::Term(Term::Num(5.0))));
+        let right = Factor::Call(Call::Term(Term::Num(3.0)));
+
         let operation = Addend::Sub(Box::new(left), right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_addend(&operation, &mut scopes, top_scope);
+        let actual = evaluate_addend(&operation, &mut scopes, top_scope, &mut test_context);
 
         if let Term::Num(actual) = actual {
             assert_eq!(2.0, actual);
@@ -672,12 +683,15 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_mult() {
-        let left = Factor::Term(Term::Num(5.0));
+        let mut test_context = TestContext::new();
+
+        let left = Factor::Call(Call::Term(Term::Num(5.0)));
         let right = Term::Num(3.0);
+
         let operation = Factor::Mult(Box::new(left), right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_factor(&operation, &mut scopes, top_scope);
+        let actual = evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
 
         if let Term::Num(actual) = actual {
             assert_eq!(15.0, actual);
@@ -688,12 +702,15 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_div() {
-        let left = Factor::Term(Term::Num(5.0));
+        let mut test_context = TestContext::new();
+
+        let left = Factor::Call(Call::Term(Term::Num(5.0)));
         let right = Term::Num(2.0);
+
         let operation = Factor::Div(Box::new(left), right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_factor(&operation, &mut scopes, top_scope);
+        let actual = evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
 
         if let Term::Num(actual) = actual {
             assert_eq!(2.5, actual);
@@ -705,11 +722,14 @@ mod tests {
     #[test]
     #[should_panic(expected = "Cannot divide by zero.")]
     pub fn it_disallows_div_by_zero() {
-        let left = Factor::Term(Term::Num(5.0));
+        let mut test_context = TestContext::new();
+
+        let left = Factor::Call(Call::Term(Term::Num(5.0)));
         let right = Term::Num(0.0);
+
         let operation = Factor::Div(Box::new(left), right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        evaluate_factor(&operation, &mut scopes, top_scope);
+        evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
     }
 }
