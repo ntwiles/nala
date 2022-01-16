@@ -23,6 +23,7 @@ Stmt: ast::Stmt = {
     "mut" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, true),
     "if" "(" <e:Expr> ")" <b:Block> => ast::Stmt::If(e, Box::new(b)),
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
+    "func" <s:Symbol> "(" ")" <b:Block> => ast::Stmt::Func(s, Box::new(b)),
     <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
 };
 

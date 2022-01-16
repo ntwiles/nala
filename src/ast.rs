@@ -3,35 +3,39 @@ pub enum Program {
     Stmts(Stmts),
 }
 
+#[derive(Debug, Clone)]
 pub struct Block {
     pub stmts: Stmts,
 }
 
-pub enum Stmts {
-    Stmts(Box<Stmts>, Stmt),
-    Stmt(Stmt),
-}
-
+#[derive(Debug, Clone)]
 pub enum Stmt {
     Print(Expr),
     Declare(String, Expr, bool),
     Assign(String, Expr),
     If(Expr, Box<Block>),
     For(String, Expr, Box<Block>),
+    Func(String, Box<Block>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
+pub enum Stmts {
+    Stmts(Box<Stmts>, Stmt),
+    Stmt(Stmt),
+}
+
+#[derive(Debug, Clone)]
 pub struct Array {
     pub elems: Box<Elems>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Elems {
     Elems(Box<Elems>, Expr),
     Expr(Expr),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expr {
     Eq(Box<Expr>, Addend),
     Gt(Box<Expr>, Addend),
@@ -43,14 +47,14 @@ pub enum Expr {
     ReadNum,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Addend {
     Add(Box<Addend>, Factor),
     Sub(Box<Addend>, Factor),
     Factor(Factor),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Factor {
     Mult(Box<Factor>, Term),
     Div(Box<Factor>, Term),
@@ -64,6 +68,7 @@ pub enum Term {
     String(String),
     Num(f32),
     Array(Vec<Term>),
+    Func(Box<Block>),
 }
 
 #[derive(Debug)]
@@ -84,6 +89,7 @@ impl Term {
             Term::Num(n) => n.to_string(),
             Term::Bool(b) => b.to_string(),
             Term::Array(a) => String::from(format!("[{}]", a.len())),
+            Term::Func(_) => String::from("<Func>"),
         }
     }
 }
