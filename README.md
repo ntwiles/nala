@@ -162,7 +162,25 @@ print 'The product of your number and 7 is:';
 print input * 7;
 ```
 
-Note: Once functions are introduced, this keyword will be replaced with an inbuilt function: `readnum();`
+Note: Once functions are implemented, this keyword will be replaced with an inbuilt function: `readnum();`
+
+## Functions 
+
+Functions are declared in this way:
+
+```
+func example() {
+
+}
+```
+
+And can be invoked thusly:
+
+```
+example();
+```
+
+Note: Functions do not yet support parameters or return values.
 ## Arrays
 
 Arrays are in the process of being implemented. They will be able to be initialized with the following literal syntax:
