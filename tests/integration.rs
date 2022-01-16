@@ -7,6 +7,7 @@ fn test_run_examples() {
     let test_data = [
         ("array-for", vec!["foo", "7", "bar", "3"]),
         ("array-index", vec!["5"]),
+        ("array-index-expressions", vec!["foo"]),
         ("block-parent-scopes", vec!["7", "7"]),
         ("block-shadowing", vec!["bar", "7"]),
         ("bool-branching", vec!["should print"]),
@@ -15,6 +16,7 @@ fn test_run_examples() {
         ("declare-basic", vec!["28"]),
         ("declare-mutable", vec!["7", "8"]),
         ("func-basic", vec!["Functions work!"]),
+        ("func-expressions", vec!["foo"]),
         ("print-expression", vec!["7"]),
         ("print-hello-world", vec!["hello world"]),
         ("print-multiple", vec!["hello world", "7"]),
