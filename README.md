@@ -22,19 +22,6 @@ cargo run path/to/script.nl
 Example scripts are provided in the `example/` directory.
 
 # Documentation
-
-## `print` keyword
-
-Output can be printed to the console with the following syntax:
-
-```
-print 'foo';
-```
-
-In this code snippet, whitespace is insignificant, strings are surrounded by single quotes ('), and the required trailing semicolon signifies the end of a statement.
-
-Note: Once functions are introduced, this keyword will be replaced with an inbuilt function: `print('foo');`
-
 ## Variable Declaration and Assignment
 ### Constants
 
@@ -148,7 +135,10 @@ const isLesser = 2 < 3;
 const isEqual = 2 == 2;
 ```
 
-## `read` keyword
+## Console Input and Output
+
+### Input
+#### `read` keyword
 
 The `read` keyword will get input from the console, treated as a String type.
 
@@ -159,7 +149,7 @@ print 'Hello ' + name;
 ```
 
 Note: Once functions are introduced, this keyword will be replaced with an inbuilt function: `read();`
-## `readnum` keyword
+#### `readnum` keyword
 
 The `readnum` keyword will get input from the console and parse it as a Num type.
 
@@ -172,6 +162,18 @@ print input * 7;
 
 Note: Once functions are implemented, this keyword will be replaced with an inbuilt function: `readnum();`
 
+### Output
+#### `print` keyword
+
+Output can be printed to the console with the following syntax:
+
+```
+print 'foo';
+```
+
+In this code snippet, whitespace is insignificant, strings are surrounded by single quotes ('), and the required trailing semicolon signifies the end of a statement.
+
+Note: Once functions are introduced, this keyword will be replaced with an inbuilt function: `print('foo');`
 ## Functions 
 
 Functions are declared in this way:
