@@ -1,10 +1,10 @@
 
 func foo() {
-    print 'called foo';
+    'foo';
 }
 
 func bar() {
-    print 'called bar';
+    'bar';
 }
 
-const foobar = foo() + bar();
+print foo() + bar();

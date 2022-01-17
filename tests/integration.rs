@@ -16,7 +16,7 @@ fn test_run_examples() {
         ("declare-basic", vec!["28"]),
         ("declare-mutable", vec!["7", "8"]),
         ("func-basic", vec!["Functions work!"]),
-        // ("func-expressions", vec!["foo"]),
+        ("func-expressions", vec!["foobar"]),
         ("func-return", vec!["Function returns work!"]),
         ("print-expression", vec!["7"]),
         ("print-hello-world", vec!["hello world"]),
