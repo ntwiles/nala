@@ -236,9 +236,7 @@ fn evaluate_call(
             // This Void should never be returned, consider writing this differently.
             if let Term::Func(block) = block {
                 let block_scope = scopes.new_scope(Some(current_scope));
-                let call_result = interpret_block(&block, scopes, block_scope, context);
-                println!("{}", call_result.to_string());
-                call_result
+                interpret_block(&block, scopes, block_scope, context)
             } else {
                 Term::Void
             }

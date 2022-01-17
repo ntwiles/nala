@@ -62,6 +62,7 @@ Factor: ast::Factor = {
 
 Call: ast::Call = {
     <s:Symbol> "(" <e:Elems> ")" => ast::Call::Call(s, Box::new(e)),
+    <s:Symbol> "(" ")" => ast::Call::Call(s, Box::new(ast::Elems::Empty)),
     Index => ast::Call::Index(<>)
 };
 
