@@ -111,9 +111,9 @@ print foo == 'bar';
 print 7 == 8;
 ```
 
-## `if` keyword
+## Conditional Branching
 
-The most basic of conditional branching is implemented in nala, as with most other languages, with `if` statements. The syntax should be familiar to everyone:
+The syntax for `if` branching should be familiar:
 
 ```
 if (2 == 2) {
@@ -125,7 +125,7 @@ if (2 == 3) {
 }
 ```
 
-### Conditional expressions.
+### Conditional Expressions
 
 The following operators are supported for comparisons: `<` `>` `==`:
 
@@ -163,7 +163,6 @@ print input * 7;
 Note: Once functions are implemented, this keyword will be replaced with an inbuilt function: `readnum();`
 
 ### Output
-#### `print` keyword
 
 Output can be printed to the console with the following syntax:
 
