@@ -35,7 +35,8 @@ In this code snippet, whitespace is insignificant, strings are surrounded by sin
 
 Note: Once functions are introduced, this keyword will be replaced with an inbuilt function: `print('foo');`
 
-## `const` keyword
+## Variable Declaration and Assignment
+### Constants
 
 Constant variables can be declared with the following syntax:
 
@@ -48,7 +49,7 @@ As with the above example, a trailing semicolon is required after both statement
 
 Values declared with the `const` keyword are immutable (though further clarification to this may be needed when objects are implemented).
 
-## `mut` keyword
+### Mutables
 
 Mutable variables are declared similarly:
 
@@ -68,6 +69,11 @@ foo = 7;
 
 ## Expressions
 
+Everything is an expression in Nala, including "statements" like assignment operations. Some expressions resolve 
+to the `Void` type though, which cannot be assigned.
+
+### Arithmatic
+
 Arithmetic expressions can be performed between number types:
 
 ```
@@ -75,6 +81,8 @@ print 5 + 10 * 2 / 4 - 3;
 ```
 
 Operations will evaluate in DOMA (Delimiter, Order, Multiplicatives, Additives) order, though at present only the following arithmetic operators are implemented (`+`, `-`, `*`, `/`) and delimiter grouping is not yet supported.
+
+### String Concatenation
 
 ```
 const message = 'hello ' + 'world';
@@ -84,8 +92,8 @@ print message;
 The `+` operator can also be used between strings to perform concatenation.
 
 ```
-const foo = "bar";
-print foo == "bar";
+const foo = 'bar';
+print foo == 'bar';
 print 7 == 8;
 ```
 
