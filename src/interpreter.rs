@@ -71,8 +71,7 @@ fn interpret_stmt(
         Stmt::Func(ident, block) => interpret_func(ident, block, scopes, current_scope),
         Stmt::Expr(expr) => {
             // TODO: Decide what to do if our expression returns a value here instead of just ignoring it.
-            evaluate_expr(expr, scopes, current_scope, context);
-            Term::Void
+            evaluate_expr(expr, scopes, current_scope, context)
         }
     }
 }

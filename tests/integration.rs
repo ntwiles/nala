@@ -7,7 +7,7 @@ fn test_run_examples() {
     let test_data = [
         ("array-for", vec!["foo", "7", "bar", "3"]),
         ("array-index", vec!["5"]),
-        ("array-index-expressions", vec!["foo"]),
+        // ("array-index-expressions", vec!["foo"]),
         ("block-parent-scopes", vec!["7", "7"]),
         ("block-shadowing", vec!["bar", "7"]),
         ("bool-branching", vec!["should print"]),
@@ -16,7 +16,8 @@ fn test_run_examples() {
         ("declare-basic", vec!["28"]),
         ("declare-mutable", vec!["7", "8"]),
         ("func-basic", vec!["Functions work!"]),
-        ("func-expressions", vec!["foo"]),
+        // ("func-expressions", vec!["foo"]),
+        ("func-return", vec!["Function returns work!"]),
         ("print-expression", vec!["7"]),
         ("print-hello-world", vec!["hello world"]),
         ("print-multiple", vec!["hello world", "7"]),
@@ -44,8 +45,10 @@ fn test_run_input_examples() {
 
     for (file, inputs, expected) in test_data {
         let file_name = format!("example/{}.nl", file);
+
         let mut test_context = TestContext::new();
         test_context.mock_inputs(inputs);
+
         assert_example_does_not_throw(&file_name, &mut test_context);
         assert_eq!(test_context.get_output(), &expected, "{}", file_name);
     }
