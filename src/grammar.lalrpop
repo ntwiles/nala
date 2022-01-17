@@ -39,12 +39,13 @@ Expr: ast::Expr = {
 };
 
 Array: ast::Array = {
-    "[" <Elems> "]" => ast::Array { elems: Box::new(<>) } 
+    "[" <Elems> "]" => ast::Array { elems: Box::new(<>) },
+    "[" "]" => ast::Array { elems: Box::new(ast::Elems::Empty) },
 };
 
 Elems: ast::Elems = {
     <ee:Elems> "," <e:Expr> => ast::Elems::Elems(Box::new(ee), e),
-    <Expr> => ast::Elems::Expr(<>)
+    <Expr> => ast::Elems::Expr(<>),
 };
 
 Addend: ast::Addend = {

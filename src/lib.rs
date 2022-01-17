@@ -17,7 +17,7 @@ pub fn main(path: &str) -> () {
     let code = fs::read_to_string(path);
     let mut context = ConsoleContext {};
 
-    let parsed = match code {
+    let result = match code {
         Ok(code) => parse_code(code),
         Err(err) => {
             println!("Error loading nala file: {}", err);
@@ -25,5 +25,9 @@ pub fn main(path: &str) -> () {
         },
     };
 
-    interpret_tree(parsed, &mut context)
+    if let Some(parsed) = result {
+        interpret_tree(parsed, &mut context);
+    } else {
+        println!("{}", format!("Error parsing nala file: {}", path))
+    }
 }

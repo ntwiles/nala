@@ -3,4 +3,4 @@ func printMessage() {
     print 'Functions work!';
 }
 
-printMessage();
+printMessage(6);

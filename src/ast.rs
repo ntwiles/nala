@@ -34,6 +34,7 @@ pub struct Array {
 pub enum Elems {
     Elems(Box<Elems>, Expr),
     Expr(Expr),
+    Empty,
 }
 
 #[derive(Debug, Clone)]

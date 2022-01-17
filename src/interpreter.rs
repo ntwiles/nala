@@ -224,19 +224,21 @@ fn evaluate_call(
     scopes: &mut Scopes, 
     current_scope: ScopeId,
     context: &mut impl IoContext
-) -> Term {
+) -> Term {    
     match call {
-        Call::Call(ident, args) => {
+        Call::Call(ident, _args) => {
             let block = if scopes.binding_exists(&ident, current_scope) {
                 scopes.get_value(ident, current_scope)
             } else {
                 panic!("Unknown identifier `{}`", ident);
             };
         
-            // This None should never be returned, consider writing this differently.
+            // This Void should never be returned, consider writing this differently.
             if let Term::Func(block) = block {
                 let block_scope = scopes.new_scope(Some(current_scope));
-                interpret_block(&block, scopes, block_scope, context)
+                let call_result = interpret_block(&block, scopes, block_scope, context);
+                println!("{}", call_result.to_string());
+                call_result
             } else {
                 Term::Void
             }
@@ -266,8 +268,7 @@ fn evaluate_array(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Term {
-    let elems = &*array.elems;
-    let terms = evaluate_elems(elems, scopes, current_scope, context);
+    let terms = evaluate_elems(&array.elems, scopes, current_scope, context);
     Term::Array(terms)
 }
 
@@ -284,6 +285,7 @@ fn evaluate_elems(
             elems
         }
         Elems::Expr(expr) => vec![evaluate_expr(&expr, scopes, current_scope, context)],
+        Elems::Empty => vec![]
     }
 }
 

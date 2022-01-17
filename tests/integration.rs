@@ -1,4 +1,4 @@
-use library::{interpreter::interpret_tree, io_context::TestContext, parser::parse_code};
+use library::{interpreter::interpret_tree, io_context::TestContext, parser};
 
 use std::fs;
 
@@ -6,6 +6,7 @@ use std::fs;
 fn test_run_examples() {
     let test_data = [
         ("array-for", vec!["foo", "7", "bar", "3"]),
+        ("array-empty", vec!["This should print."]),
         ("array-index", vec!["5"]),
         ("array-index-expressions", vec!["55"]),
         ("block-parent-scopes", vec!["7", "7"]),
@@ -56,6 +57,9 @@ fn test_run_input_examples() {
 
 fn assert_example_does_not_throw(path: &str, test_context: &mut TestContext) {
     let code = fs::read_to_string(path).unwrap();
-    let parsed = parse_code(code);
-    interpret_tree(parsed, test_context);
+    let result = parser::parse_code(code);
+
+    if let Some(parsed) = result {
+        interpret_tree(parsed, test_context);
+    }
 }
