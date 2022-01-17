@@ -180,8 +180,10 @@ And can be invoked thusly:
 example();
 ```
 
-Note: Functions return the `Void` type by default, or otherwise will return the resolved value of the first expression 
+Functions return the `Void` type by default, or otherwise will return the resolved value of the first expression 
 which does not resolve to type `Void`.
+
+Note: Functions do not yet support parameters.
 ## Arrays
 
 Arrays are in the process of being implemented. They will be able to be initialized with the following literal syntax:
