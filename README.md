@@ -138,7 +138,7 @@ const isEqual = 2 == 2;
 ## Console Input and Output
 
 ### Input
-#### `read` keyword
+#### Reading String Input
 
 The `read` keyword will get input from the console, treated as a String type.
 
@@ -149,9 +149,9 @@ print 'Hello ' + name;
 ```
 
 Note: Once functions are introduced, this keyword will be replaced with an inbuilt function: `read();`
-#### `readnum` keyword
+#### Reading Numeric Input
 
-The `readnum` keyword will get input from the console and parse it as a Num type.
+The `readnum` keyword will get input from the console and parse it as a `Num` type.
 
 ```
 print 'Please enter a number:';
