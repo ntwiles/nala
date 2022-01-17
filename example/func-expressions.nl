@@ -7,4 +7,4 @@ func bar() {
     'bar';
 }
 
-print foo(1) + bar(1);
+print foo() + bar();

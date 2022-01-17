@@ -3,5 +3,5 @@ func getMessage() {
     'Function returns work!';
 }
 
-const message = getMessage(1);
+const message = getMessage();
 print message;
