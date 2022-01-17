@@ -60,7 +60,7 @@ Factor: ast::Factor = {
 };
 
 Call: ast::Call = {
-    <Symbol> "(" ")" => ast::Call::Call(<>),
+    <s:Symbol> "(" <e:Elems> ")" => ast::Call::Call(s, Box::new(e)),
     Index => ast::Call::Index(<>)
 };
 

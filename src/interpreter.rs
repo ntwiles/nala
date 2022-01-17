@@ -22,8 +22,7 @@ fn interpret_block(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Term {
-    let block_scope = scopes.new_scope(Some(current_scope));
-    interpret_stmts(&block.stmts, scopes, block_scope, context)
+    interpret_stmts(&block.stmts, scopes, current_scope, context)
 }
 
 fn interpret_stmts(
@@ -140,7 +139,8 @@ fn interpret_if(
 
     if let Term::Bool(bool) = resolved {
         if bool {
-            interpret_block(&block, scopes, current_scope, context);
+            let block_scope = scopes.new_scope(Some(current_scope));
+            interpret_block(&block, scopes, block_scope, context);
         }
     } else {
         panic!("Cannot use non-boolean expressions inside 'if' conditions.")
@@ -226,7 +226,7 @@ fn evaluate_call(
     context: &mut impl IoContext
 ) -> Term {
     match call {
-        Call::Call(ident) => {
+        Call::Call(ident, args) => {
             let block = if scopes.binding_exists(&ident, current_scope) {
                 scopes.get_value(ident, current_scope)
             } else {
@@ -235,7 +235,8 @@ fn evaluate_call(
         
             // This None should never be returned, consider writing this differently.
             if let Term::Func(block) = block {
-                interpret_block(&block, scopes, current_scope, context)
+                let block_scope = scopes.new_scope(Some(current_scope));
+                interpret_block(&block, scopes, block_scope, context)
             } else {
                 Term::Void
             }
