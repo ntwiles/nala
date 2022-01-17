@@ -8,8 +8,8 @@ Nala is an interpreted, expression-oriented programming language with terse synt
 - [x] Arithmetic operations.
 - [x] Lexical scope.
 - [x] Conditional branching.
-- [ ] Arrays and loops.
-- [ ] Functions.
+- [x] Arrays and loops.
+- [] Functions.
 
 # Usage
 
@@ -67,6 +67,33 @@ mut foo;
 foo = 7;
 ```
 
+### Scope
+
+Lexical scope works as it does in most languages and should be intuitive. Blocks create new scopes in which local bindings can be created The following will throw a runtime error at execution of the last line:
+
+```
+if (2 == 2) {
+    const foo = 'bar';
+}
+
+print foo;
+```
+
+### Shadowing
+
+Identifiers can be 'shadowed' in lower scopes by re-using names. The following is valid and will print first `hello`, then `world`:
+
+```
+const foo = 'world';
+
+if (2 == 2) {
+    const foo = 'hello';
+    print foo;
+}
+
+print foo;
+```
+
 ## Expressions
 
 Everything is an expression in Nala, including "statements" like assignment operations. Some expressions resolve 
@@ -121,33 +148,6 @@ const isLesser = 2 < 3;
 const isEqual = 2 == 2;
 ```
 
-## Scope
-
-Lexical scope works as it does in most languages and should be intuitive. Blocks create new scopes in which local bindings can be created The following will throw a runtime error at execution of the last line:
-
-```
-if (2 == 2) {
-    const foo = 'bar';
-}
-
-print foo;
-```
-
-### Shadowing
-
-Identifiers can be 'shadowed' in lower scopes by re-using names. The following is valid and will print first `hello`, then `world`:
-
-```
-const foo = 'world';
-
-if (2 == 2) {
-    const foo = 'hello';
-    print foo;
-}
-
-print foo;
-```
-
 ## `read` keyword
 
 The `read` keyword will get input from the console, treated as a String type.
@@ -194,7 +194,7 @@ which does not resolve to type `Void`.
 Note: Functions do not yet support parameters.
 ## Arrays
 
-Arrays are in the process of being implemented. They will be able to be initialized with the following literal syntax:
+Arrays are initialized with the following literal syntax:
 
 ```
 const array = [5, 4, 2, 8];
@@ -204,4 +204,16 @@ Values can be accessed by index with the following syntax:
 
 ```
 print array[0];
+```
+
+### Iterating Arrays
+
+Arrays can be looped over with `for .. in` syntax:
+
+```
+const nums = [5, 4, 2, 8];
+
+for num in nums {
+    print num;
+}
 ```
