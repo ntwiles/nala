@@ -43,7 +43,6 @@ pub enum Expr {
     Lt(Box<Expr>, Addend),
     Addend(Addend),
     Array(Array),
-    Index(String, Box<Expr>),
     Read,
     ReadNum,
 }
@@ -65,6 +64,12 @@ pub enum Factor {
 #[derive(Debug, Clone)]
 pub enum Call {
     Call(String),
+    Index(Index),
+}
+
+#[derive(Debug, Clone)]
+pub enum Index {
+    Index(String, Box<Expr>),
     Term(Term),
 }
 

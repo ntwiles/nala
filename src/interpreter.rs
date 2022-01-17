@@ -214,7 +214,6 @@ fn evaluate_expr(
         }
         Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope, context),
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
-        Expr::Index(ident, expr) => evaluate_index(ident, expr, scopes, current_scope, context),
         Expr::Read => evaluate_read(context),
         Expr::ReadNum => evaluate_readnum(context),
     }
@@ -241,13 +240,7 @@ fn evaluate_call(
                 Term::Void
             }
         }
-        Call::Term(term) => {
-            if let Term::Symbol(ident) = term {
-                scopes.get_value(ident, current_scope)
-            } else {
-                term.clone()
-            }
-        }
+        Call::Index(index) => evaluate_index(index,scopes, current_scope, context)
     }
 }
 
@@ -294,27 +287,38 @@ fn evaluate_elems(
 }
 
 fn evaluate_index(
-    ident: &str,
-    expr: &Expr,
+    index: &Index,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Term {
-    let index = evaluate_expr(expr, scopes, current_scope, context);
+    match index {
+        Index::Index(ident, expr) => {
+            let index = evaluate_expr(expr, scopes, current_scope, context);
 
-    if let Term::Num(index) = index {
-        let array = scopes.get_value(ident, current_scope);
-        // TODO: Check that this cast is safe first.
-        let index = index as usize;
-
-        if let Term::Array(array) = array {
-            array.get(index).unwrap().clone()
-        } else {
-            panic!("Cannot index into a value which is not an array.");
+            if let Term::Num(index) = index {
+                let array = scopes.get_value(ident, current_scope);
+                // TODO: Check that this cast is safe first.
+                let index = index as usize;
+        
+                if let Term::Array(array) = array {
+                    array.get(index).unwrap().clone()
+                } else {
+                    panic!("Cannot index into a value which is not an array.");
+                }
+            } else {
+                panic!("Cannot index using non-numeric value.");
+            }
+        },
+        Index::Term(term) => {
+            if let Term::Symbol(ident) = term {
+                scopes.get_value(ident, current_scope)
+            } else {
+                term.clone()
+            }
         }
-    } else {
-        panic!("Cannot index using non-numeric value.");
     }
+
 }
 
 fn evaluate_addend(
@@ -625,8 +629,8 @@ mod tests {
     pub fn it_evaluates_add_with_2_terms() {
         let mut test_context = TestContext::new();
 
-        let left = Box::new(Addend::Factor(Factor::Call(Call::Term(Term::Num(7.0)))));
-        let right = Factor::Call(Call::Term(Term::Num(4.0)));
+        let left = Box::new(Addend::Factor(Factor::Call(Call::Index(Index::Term(Term::Num(7.0))))));
+        let right = Factor::Call(Call::Index(Index::Term(Term::Num(4.0))));
 
         let operation = Addend::Add(left, right);
         let mut scopes = Scopes::new();
@@ -644,9 +648,9 @@ mod tests {
     pub fn it_evaluates_add_with_3_terms() {
         let mut test_context = TestContext::new();
 
-        let left = Addend::Factor(Factor::Call(Call::Term(Term::Num(3.0))));
-        let middle = Factor::Call(Call::Term(Term::Num(5.0)));
-        let right = Factor::Call(Call::Term(Term::Num(4.0)));
+        let left = Addend::Factor(Factor::Call(Call::Index(Index::Term(Term::Num(3.0)))));
+        let middle = Factor::Call(Call::Index(Index::Term(Term::Num(5.0))));
+        let right = Factor::Call(Call::Index(Index::Term(Term::Num(4.0))));
 
         let operation_a = Addend::Add(Box::new(left), middle);
         let operation_b = Addend::Add(Box::new(operation_a), right);
@@ -665,8 +669,8 @@ mod tests {
     pub fn it_evaluates_sub() {
         let mut test_context = TestContext::new();
 
-        let left = Addend::Factor(Factor::Call(Call::Term(Term::Num(5.0))));
-        let right = Factor::Call(Call::Term(Term::Num(3.0)));
+        let left = Addend::Factor(Factor::Call(Call::Index(Index::Term(Term::Num(5.0)))));
+        let right = Factor::Call(Call::Index(Index::Term(Term::Num(3.0))));
 
         let operation = Addend::Sub(Box::new(left), right);
         let mut scopes = Scopes::new();
@@ -684,7 +688,7 @@ mod tests {
     pub fn it_evaluates_mult() {
         let mut test_context = TestContext::new();
 
-        let left = Factor::Call(Call::Term(Term::Num(5.0)));
+        let left = Factor::Call(Call::Index(Index::Term(Term::Num(5.0))));
         let right = Term::Num(3.0);
 
         let operation = Factor::Mult(Box::new(left), right);
@@ -703,7 +707,7 @@ mod tests {
     pub fn it_evaluates_div() {
         let mut test_context = TestContext::new();
 
-        let left = Factor::Call(Call::Term(Term::Num(5.0)));
+        let left = Factor::Call(Call::Index(Index::Term(Term::Num(5.0))));
         let right = Term::Num(2.0);
 
         let operation = Factor::Div(Box::new(left), right);
@@ -723,7 +727,7 @@ mod tests {
     pub fn it_disallows_div_by_zero() {
         let mut test_context = TestContext::new();
 
-        let left = Factor::Call(Call::Term(Term::Num(5.0)));
+        let left = Factor::Call(Call::Index(Index::Term(Term::Num(5.0))));
         let right = Term::Num(0.0);
 
         let operation = Factor::Div(Box::new(left), right);

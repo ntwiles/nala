@@ -36,7 +36,6 @@ Expr: ast::Expr = {
     Array => ast::Expr::Array(<>),
     "read" => ast::Expr::Read,
     "readnum" => ast::Expr::ReadNum,
-    <s:Symbol> "[" <e:Expr> "]" => ast::Expr::Index(s, Box::new(e)),
 };
 
 Array: ast::Array = {
@@ -62,8 +61,13 @@ Factor: ast::Factor = {
 
 Call: ast::Call = {
     <Symbol> "(" ")" => ast::Call::Call(<>),
-    Term => ast::Call::Term(<>),
+    Index => ast::Call::Index(<>)
 };
+
+Index: ast::Index = {
+    <s:Symbol> "[" <e:Expr> "]" => ast::Index::Index(s, Box::new(e)),
+    Term => ast::Index::Term(<>),
+}
 
 Term: ast::Term = {
     Symbol => ast::Term::Symbol(<>),
