@@ -1,6 +1,6 @@
 # Introduction
 
-Nala is (read: will be) an interpreted, expression-oriented programming language with terse syntax designed for quick use in prototyping console applications and in manipulating data.
+Nala is an interpreted, expression-oriented programming language with terse syntax designed for quick use in prototyping console applications and in manipulating data.
 
 # Features
 
