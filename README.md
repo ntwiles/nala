@@ -9,7 +9,7 @@ Nala is an interpreted, expression-oriented programming language with terse synt
 - [x] Lexical scope.
 - [x] Conditional branching.
 - [x] Arrays and loops.
-- [ ] Functions.
+- [x] Functions.
 
 # Usage
 
@@ -175,24 +175,20 @@ In this code snippet, whitespace is insignificant, strings are surrounded by sin
 Note: Once functions are introduced, this keyword will be replaced with an inbuilt function: `print('foo');`
 ## Functions 
 
-Functions are declared in this way:
+Functions are declared and invoked in this way:
 
 ```
-func example() {
-
+func add(a, b) {
+    a + b;
 }
-```
 
-And can be invoked thusly:
-
-```
-example();
+const result = add(3, 9);
 ```
 
 Functions return the `Void` type by default, or otherwise will return the resolved value of the first expression 
 which does not resolve to type `Void`.
 
-Note: Functions do not yet support parameters.
+Note: No type checking is currently done in function arguments. A future version of Nala will require type labels for function parameters.
 ## Arrays
 
 Arrays are initialized with the following literal syntax:
