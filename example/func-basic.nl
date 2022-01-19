@@ -1,6 +1,6 @@
 
 func printMessage() {
-    print 'Functions work!';
+    print('Functions work!');
 }
 
 printMessage();

@@ -1,6 +1,6 @@
 
 func foo(message) {
-    print message;
+    print(message);
 }
 
 const bar = foo;

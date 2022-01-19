@@ -4,4 +4,4 @@ func getMessage() {
 }
 
 const message = getMessage();
-print message;
+print(message);

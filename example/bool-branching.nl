@@ -1,7 +1,7 @@
 if (2 == 2) {
-    print 'should print';
+    print('should print');
 }
 
 if (2 == 3) {
-    print 'should not print';
+    print('should not print');
 }

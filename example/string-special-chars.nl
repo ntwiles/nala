@@ -1,3 +1,3 @@
 
 const special = '!@#$%^&*()_+-=;:"';
-print special;
+print(special);

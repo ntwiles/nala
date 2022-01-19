@@ -19,7 +19,7 @@ mod tests {
 
     #[test]
     pub fn it_identifies_print_statements() {
-        let parsed = StmtsParser::new().parse("print 'hello world';");
+        let parsed = StmtsParser::new().parse("print('hello world');");
         if let Ok(Stmts::Stmt(stmt)) = parsed {
             assert!(matches!(stmt, Stmt::Print(_)));
         } else {
@@ -29,7 +29,7 @@ mod tests {
 
     #[test]
     pub fn it_parses_print_statements_with_string_literals() {
-        let parsed = StmtsParser::new().parse("print 'hello world';");
+        let parsed = StmtsParser::new().parse("print('hello world');");
 
         if let Ok(Stmts::Stmt(Stmt::Print(Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Term(
             Term::String(message),
@@ -43,7 +43,7 @@ mod tests {
 
     #[test]
     pub fn it_parses_print_statements_with_number_literals() {
-        let parsed = StmtsParser::new().parse("print 313;");
+        let parsed = StmtsParser::new().parse("print(313);");
 
         if let Ok(Stmts::Stmt(Stmt::Print(Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Term(
             Term::Num(number),
@@ -57,7 +57,7 @@ mod tests {
 
     #[test]
     pub fn it_parses_print_statements_with_add_expressions() {
-        let parsed = StmtsParser::new().parse("print 2 + 3;");
+        let parsed = StmtsParser::new().parse("print(2 + 3);");
 
         if let Ok(Stmts::Stmt(Stmt::Print(Expr::Addend(Addend::Add(left, right))))) = parsed {
             // TODO: box_patterns feature may make this uncessecary when stable.
@@ -71,7 +71,7 @@ mod tests {
 
     #[test]
     pub fn it_parses_print_statements_with_add_expressions_three_terms() {
-        let parsed = StmtsParser::new().parse("print 2 + 3 + 4;");
+        let parsed = StmtsParser::new().parse("print(2 + 3 + 4);");
 
         if let Ok(Stmts::Stmt(Stmt::Print(Expr::Addend(Addend::Add(left, right))))) = parsed {
             // TODO: box_patterns feature may make this uncessecary when stable.
@@ -87,7 +87,7 @@ mod tests {
 
     #[test]
     pub fn it_parses_print_statements_with_mult_expressions() {
-        let parsed = StmtsParser::new().parse("print 2 * 4;");
+        let parsed = StmtsParser::new().parse("print(2 * 4);");
 
         if let Ok(Stmts::Stmt(Stmt::Print(Expr::Addend(Addend::Factor(Factor::Mult(
             left,
@@ -105,7 +105,7 @@ mod tests {
 
     #[test]
     pub fn it_parses_print_statements_with_div_expressions() {
-        let parsed = StmtsParser::new().parse("print 4 / 2;");
+        let parsed = StmtsParser::new().parse("print(4 / 2);");
 
         if let Ok(Stmts::Stmt(Stmt::Print(Expr::Addend(Addend::Factor(Factor::Div(
             left,
