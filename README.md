@@ -29,7 +29,7 @@ Constant variables can be declared with the following syntax:
 
 ```
 const foo = 7;
-print foo;
+print(foo);
 ```
 
 As with the above example, a trailing semicolon is required after both statements.
@@ -42,9 +42,9 @@ Mutable variables are declared similarly:
 
 ```
 mut foo = 7;
-print foo;
+print(foo);
 foo = 8;
-print foo;
+print(foo);
 ```
 
 Both mutable and immutable variables must be initialized with value. The following is not valid nala:
@@ -63,7 +63,7 @@ if (2 == 2) {
     const foo = 'bar';
 }
 
-print foo;
+print(foo);
 ```
 
 ### Shadowing
@@ -75,10 +75,10 @@ const foo = 'world';
 
 if (2 == 2) {
     const foo = 'hello';
-    print foo;
+    print(foo);
 }
 
-print foo;
+print(foo);
 ```
 
 ## Expressions
@@ -91,7 +91,7 @@ to the `Void` type though, which cannot be assigned.
 Arithmetic expressions can be performed between number types:
 
 ```
-print 5 + 10 * 2 / 4 - 3;
+print(5 + 10 * 2 / 4 - 3);
 ```
 
 Operations will evaluate in DOMA (Delimiter, Order, Multiplicatives, Additives) order, though at present only the following arithmetic operators are implemented (`+`, `-`, `*`, `/`) and delimiter grouping is not yet supported.
@@ -100,16 +100,10 @@ Operations will evaluate in DOMA (Delimiter, Order, Multiplicatives, Additives) 
 
 ```
 const message = 'hello ' + 'world';
-print message;
+print(message);
 ```
 
 The `+` operator can also be used between strings to perform concatenation.
-
-```
-const foo = 'bar';
-print foo == 'bar';
-print 7 == 8;
-```
 
 ## Conditional Branching
 
@@ -117,11 +111,11 @@ The syntax for `if` branching should be familiar:
 
 ```
 if (2 == 2) {
-    print 'should print';
+    print('should print');
 }
 
 if (2 == 3) {
-    print 'should not print';
+    print('should not print');
 }
 ```
 
@@ -136,43 +130,33 @@ const isEqual = 2 == 2;
 ```
 
 ## Console Input and Output
-
 ### Input
 #### Reading String Input
 
-The `read` keyword will get input from the console, treated as a String type.
+The `read()` function will get input from the console, treated as a String type.
 
 ```
-print 'Please enter your name'
-const name = read;
-print 'Hello ' + name;
+print('Please enter your name');
+const name = read();
+print('Hello ' + name);
 ```
-
-Note: Once functions are introduced, this keyword will be replaced with an inbuilt function: `read();`
 #### Reading Numeric Input
 
-The `readnum` keyword will get input from the console and parse it as a `Num` type.
+The `readnum` function will get input from the console and parse it as a `Num` type.
 
 ```
-print 'Please enter a number:';
-const input = readnum;
-print 'The product of your number and 7 is:';
-print input * 7;
+print('Please enter a number:');
+const input = readnum();
+print('The product of your number and 7 is:');
+print(input * 7);
 ```
-
-Note: Once functions are implemented, this keyword will be replaced with an inbuilt function: `readnum();`
-
 ### Output
 
 Output can be printed to the console with the following syntax:
 
 ```
-print 'foo';
+print('foo');
 ```
-
-In this code snippet, whitespace is insignificant, strings are surrounded by single quotes ('), and the required trailing semicolon signifies the end of a statement.
-
-Note: Once functions are introduced, this keyword will be replaced with an inbuilt function: `print('foo');`
 ## Functions 
 
 Functions are declared and invoked in this way:
@@ -200,7 +184,7 @@ const array = [5, 4, 2, 8];
 Values can be accessed by index with the following syntax:
 
 ```
-print array[0];
+print(array[0]);
 ```
 
 ### Iterating Arrays
@@ -211,6 +195,6 @@ Arrays can be looped over with `for .. in` syntax:
 const nums = [5, 4, 2, 8];
 
 for num in nums {
-    print num;
+    print(num);
 }
 ```
