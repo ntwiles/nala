@@ -19,6 +19,7 @@ fn test_run_examples() {
         ("func-args", vec!["The total is 12"]),
         ("func-basic", vec!["Functions work!"]),
         ("func-expressions", vec!["foobar"]),
+        ("func-first-class", vec!["This should print."]),
         ("func-return", vec!["Function returns work!"]),
         ("print-expression", vec!["7"]),
         ("print-hello-world", vec!["hello world"]),
