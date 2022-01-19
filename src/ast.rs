@@ -15,7 +15,7 @@ pub enum Stmt {
     Assign(String, Expr),
     If(Expr, Box<Block>),
     For(String, Expr, Box<Block>),
-    Func(String, Box<Block>),
+    Func(String, Box<Params>, Box<Block>),
     Expr(Expr)
 }
 
@@ -34,6 +34,13 @@ pub struct Array {
 pub enum Elems {
     Elems(Box<Elems>, Expr),
     Expr(Expr),
+    Empty,
+}
+
+#[derive(Debug, Clone)]
+pub enum Params {
+    Params(Box<Params>, String),
+    Param(String),
     Empty,
 }
 
@@ -81,7 +88,7 @@ pub enum Term {
     String(String),
     Num(f32),
     Array(Vec<Term>),
-    Func(Box<Block>),
+    Func(Box<Params>, Box<Block>),
     Void,
 }
 
@@ -103,7 +110,7 @@ impl Term {
             Term::Num(n) => n.to_string(),
             Term::Bool(b) => b.to_string(),
             Term::Array(a) => String::from(format!("[{}]", a.len())),
-            Term::Func(_) => String::from("<Func>"),
+            Term::Func(_, _) => String::from("<Func>"),
             Term::Void => String::from("<Void>"),
         }
     }

@@ -16,6 +16,7 @@ fn test_run_examples() {
         ("declare-and-multiply", vec!["28"]),
         ("declare-basic", vec!["28"]),
         ("declare-mutable", vec!["7", "8"]),
+        ("func-args", vec!["The total is 12"]),
         ("func-basic", vec!["Functions work!"]),
         ("func-expressions", vec!["foobar"]),
         ("func-return", vec!["Function returns work!"]),

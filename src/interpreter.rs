@@ -67,7 +67,7 @@ fn interpret_stmt(
         Stmt::For(ident, expr, block) => {
             interpret_for(ident, &expr, block, scopes, current_scope, context)
         },
-        Stmt::Func(ident, block) => interpret_func(ident, block, scopes, current_scope),
+        Stmt::Func(ident, params, block) => interpret_func(ident, params, block, scopes, current_scope),
         Stmt::Expr(expr) => {
             // TODO: Decide what to do if our expression returns a value here instead of just ignoring it.
             evaluate_expr(expr, scopes, current_scope, context)
@@ -177,6 +177,7 @@ fn interpret_for(
 
 fn interpret_func(
     ident: &String,
+    params: &Params,
     block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
@@ -184,7 +185,10 @@ fn interpret_func(
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
-        scopes.add_binding(&ident, current_scope, Term::Func(Box::new(block.clone())), false);
+        let block = Box::new(block.clone());
+        let params = Box::new(params.clone());
+
+        scopes.add_binding(&ident, current_scope, Term::Func(params, block), false);
     }
 
     Term::Void
@@ -226,18 +230,29 @@ fn evaluate_call(
     context: &mut impl IoContext
 ) -> Term {    
     match call {
-        Call::Call(ident, _args) => {
-            let block = if scopes.binding_exists(&ident, current_scope) {
-                scopes.get_value(ident, current_scope)
+        Call::Call(ident, args) => {
+            let block = scopes.get_value(ident, current_scope);
+ 
+            if let Term::Func(params, block) = block {
+                let func_scope = scopes.new_scope(Some(current_scope));
+
+                let params = evaluate_params(&*params, scopes, func_scope, context);
+                let args = evaluate_elems(&*args, scopes, func_scope, context);
+
+                if params.len() != args.len() {
+                    panic!("Number of params does not match number of arguments.")
+                }
+
+                for i in 0..params.len() {
+                    let param = params.get(i).unwrap();
+                    let arg = args.get(i).unwrap();
+
+                    scopes.add_binding(param, func_scope, arg.clone(), true)
+                }
+
+                interpret_block(&block, scopes, func_scope, context)
             } else {
-                panic!("Unknown identifier `{}`", ident);
-            };
-        
-            // This Void should never be returned, consider writing this differently.
-            if let Term::Func(block) = block {
-                let block_scope = scopes.new_scope(Some(current_scope));
-                interpret_block(&block, scopes, block_scope, context)
-            } else {
+                // This Void should never be returned, consider writing this differently and panicking?
                 Term::Void
             }
         }
@@ -284,6 +299,23 @@ fn evaluate_elems(
         }
         Elems::Expr(expr) => vec![evaluate_expr(&expr, scopes, current_scope, context)],
         Elems::Empty => vec![]
+    }
+}
+
+fn evaluate_params(
+    params: &Params,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) -> Vec<String> {
+    match params {
+        Params::Params(params, param) => {
+            let mut params = evaluate_params(params, scopes, current_scope, context);
+            params.push(param.to_owned());
+            params
+        }
+        Params::Param(param) => vec![param.to_owned()],
+        Params::Empty => vec![] 
     }
 }
 
@@ -379,7 +411,7 @@ fn evaluate_equals(left: Term, right: Term, scopes: &mut Scopes, current_scope: 
             }
             Term::Bool(_) => panic!("Cannot perform comparisons between types Num and Bool."),
             Term::Array(_) => panic!("Cannot perform comparisons between types Num and Array."),
-            Term::Func(_) => panic!("Cannot perform comparisons between types Num and Func."),
+            Term::Func(_, _) => panic!("Cannot perform comparisons between types Num and Func."),
             Term::Void => panic!("Cannot perform comparisons between types Num and Void.")
         },
         Term::String(left) => match right {
@@ -391,7 +423,7 @@ fn evaluate_equals(left: Term, right: Term, scopes: &mut Scopes, current_scope: 
             }
             Term::Bool(_) => panic!("Cannot perform comparisons between types String and Bool."),
             Term::Array(_) => panic!("Cannot perform comparisons between types String and Array."),
-            Term::Func(_) => panic!("Cannot perform comparisons between types String and Func."),
+            Term::Func(_, _) => panic!("Cannot perform comparisons between types String and Func."),
             Term::Void => panic!("Cannot perform comparisons between types String and Void."),
         },
         Term::Symbol(left) => {
@@ -407,11 +439,11 @@ fn evaluate_equals(left: Term, right: Term, scopes: &mut Scopes, current_scope: 
             }
             Term::Bool(right) => Term::Bool(left == right),
             Term::Array(_) => panic!("Cannot perform comparisons between types Bool and Array."),
-            Term::Func(_) => panic!("Cannot perform comparisons between types Bool and Func."),
+            Term::Func(_, _) => panic!("Cannot perform comparisons between types Bool and Func."),
             Term::Void => panic!("Cannot perform comparisons between types Bool and Void."),
         },
         Term::Array(_) => panic!("Cannot perform comparions against values of type Array."),
-        Term::Func(_) => panic!("Cannot perform comparisons against values of type Func."),
+        Term::Func(_, _) => panic!("Cannot perform comparisons against values of type Func."),
         Term::Void => panic!("Cannot perform comparisons against values of type Void."),
     }
 }
@@ -427,7 +459,7 @@ fn evaluate_gt(left: Term, right: Term, scopes: &mut Scopes, current_scope: Scop
             }
             Term::Bool(_) => panic!("Cannot perform comparisons between types Num and Bool."),
             Term::Array(_) => panic!("Cannot perform comparisons between types Num and Array."),
-            Term::Func(_) => panic!("Cannot perform comparisons between types Num and Func."),
+            Term::Func(_, _) => panic!("Cannot perform comparisons between types Num and Func."),
             Term::Void => panic!("Cannot perform comparisons between types Num and Void.")
         },
         Term::String(left) => match right {
@@ -439,7 +471,7 @@ fn evaluate_gt(left: Term, right: Term, scopes: &mut Scopes, current_scope: Scop
             }
             Term::Bool(_) => panic!("Cannot perform comparisons between types String and Bool."),
             Term::Array(_) => panic!("Cannot perform comparisons between types String and Array."),
-            Term::Func(_) => panic!("Cannot perform comparisons between types String and Func."),
+            Term::Func(_, _) => panic!("Cannot perform comparisons between types String and Func."),
             Term::Void => panic!("Cannot perform comparisons between types String and Void."),
         },
         Term::Symbol(left) => {
@@ -455,11 +487,11 @@ fn evaluate_gt(left: Term, right: Term, scopes: &mut Scopes, current_scope: Scop
             }
             Term::Bool(right) => Term::Bool(left > right),
             Term::Array(_) => panic!("Cannot perform comparisons between types Bool and Array."),
-            Term::Func(_) => panic!("Cannot perform comparisons between types Bool and Func."),
+            Term::Func(_, _) => panic!("Cannot perform comparisons between types Bool and Func."),
             Term::Void => panic!("Cannot perform comparisons between types Bool and Void."),
         },
         Term::Array(_) => panic!("Cannot perform comparions against values of type Array."),
-        Term::Func(_) => panic!("Cannot perform comparisons against values of type Func."),
+        Term::Func(_, _) => panic!("Cannot perform comparisons against values of type Func."),
         Term::Void => panic!("Cannot perform comparisons against values of type Void.")
     }
 }
@@ -475,7 +507,7 @@ fn evaluate_lt(left: Term, right: Term, scopes: &mut Scopes, current_scope: Scop
             }
             Term::Bool(_) => panic!("Cannot perform comparisons between types Num and Bool."),
             Term::Array(_) => panic!("Cannot perform comparisons between types Num and Array."),
-            Term::Func(_) => panic!("Cannot perform comparisons between types Num and Func."),
+            Term::Func(_, _) => panic!("Cannot perform comparisons between types Num and Func."),
             Term::Void => panic!("Cannot perform comparisons between types Num and Void."),
         },
         Term::String(left) => match right {
@@ -487,7 +519,7 @@ fn evaluate_lt(left: Term, right: Term, scopes: &mut Scopes, current_scope: Scop
             }
             Term::Bool(_) => panic!("Cannot perform comparisons between types String and Bool."),
             Term::Array(_) => panic!("Cannot perform comparisons between types String and Array."),
-            Term::Func(_) => panic!("Cannot perform comparisons between types String and Func."),
+            Term::Func(_, _) => panic!("Cannot perform comparisons between types String and Func."),
             Term::Void => panic!("Cannot perform comparison between types String and Void."),
         },
         Term::Symbol(left) => {
@@ -503,11 +535,11 @@ fn evaluate_lt(left: Term, right: Term, scopes: &mut Scopes, current_scope: Scop
             }
             Term::Bool(right) => Term::Bool(left < right),
             Term::Array(_) => panic!("Cannot perform comparisons between types Bool and Array."),
-            Term::Func(_) => panic!("Cannot perform comparisons between types Bool and Func."),
+            Term::Func(_, _) => panic!("Cannot perform comparisons between types Bool and Func."),
             Term::Void => panic!("Cannot perform comparisons between types Bool and Void."),
         },
         Term::Array(_) => panic!("Cannot perform comparisons against values of type Array."),
-        Term::Func(_) => panic!("Cannot perform comparisons against values of type Func."),
+        Term::Func(_, _) => panic!("Cannot perform comparisons against values of type Func."),
         Term::Void => panic!("Cannot perform comparisons against values of type Void."),
     }
 }
@@ -548,7 +580,7 @@ fn evaluate_oper(
             Term::Array(_) => {
                 panic!("Cannot perform arithmetic operations between types Num and Array.")
             }
-            Term::Func(_) => {
+            Term::Func(_, _) => {
                 panic!("Cannot perform arithmetic operations between types Num and Func.")
             }
             Term::Void => {
@@ -586,7 +618,7 @@ fn evaluate_oper(
             Term::Array(_) => {
                 panic!("Cannot perform arithmetic operations between types String and Array.")
             }
-            Term::Func(_) => {
+            Term::Func(_, _) => {
                 panic!("Cannot perform arithmetic operations between types String and Func.")
             }
             Term::Void => {
@@ -603,7 +635,7 @@ fn evaluate_oper(
         Term::Array(_) => {
             panic!("Cannot perform arithmetic operations between values of type Array.")
         }
-        Term::Func(_) => {
+        Term::Func(_, _) => {
             panic!("Cannot perform arithmetic operations between values of type Func.")
         }
         Term::Void => {
