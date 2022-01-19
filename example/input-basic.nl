@@ -1,4 +1,4 @@
 
 print('Please enter your name:');
-const input = read;
+const input = read();
 print('Hello, ' + input);
