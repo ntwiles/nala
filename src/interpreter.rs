@@ -104,7 +104,7 @@ fn interpret_declare(
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
         let value = evaluate_expr(&expr, scopes, current_scope, context);
-        
+
         if let Term::Void = value {
             panic!("Cannot assign Void.");
         }
@@ -230,8 +230,17 @@ fn evaluate_expr(
         }
         Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope, context),
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
-        Expr::Read => evaluate_read(context),
-        Expr::ReadNum => evaluate_readnum(context),
+        Expr::Builtin(builtin) => evaluate_builtin(builtin, context),
+    }
+}
+
+fn evaluate_builtin(
+    builtin: &Builtin,
+    context: &mut impl IoContext,
+) -> Term {
+    match builtin {
+        Builtin::Read => evaluate_read(context),
+        Builtin::ReadNum => evaluate_readnum(context),
     }
 }
 

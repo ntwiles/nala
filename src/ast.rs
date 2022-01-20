@@ -51,6 +51,11 @@ pub enum Expr {
     Lt(Box<Expr>, Addend),
     Addend(Addend),
     Array(Array),
+    Builtin(Builtin),
+}
+
+#[derive(Debug, Clone)]
+pub enum Builtin {
     Read,
     ReadNum,
 }

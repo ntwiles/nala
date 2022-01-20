@@ -35,9 +35,14 @@ Expr: ast::Expr = {
     <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
     Addend => ast::Expr::Addend(<>),
     Array => ast::Expr::Array(<>),
-    "read" "(" ")" => ast::Expr::Read,
-    "readnum" "(" ")" => ast::Expr::ReadNum,
+    Builtin => ast::Expr::Builtin(<>),
+
 };
+
+Builtin: ast::Builtin = {
+    "read" "(" ")" => ast::Builtin::Read,
+    "readnum" "(" ")" => ast::Builtin::ReadNum,
+}
 
 Array: ast::Array = {
     "[" <Elems> "]" => ast::Array { elems: Box::new(<>) },
