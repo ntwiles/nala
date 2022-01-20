@@ -119,6 +119,11 @@ fn interpret_assign(
 ) -> Term {
     if scopes.binding_exists(&ident, current_scope) {
         let value = evaluate_expr(&expr, scopes, current_scope, context);
+
+        if let Term::Void = value {
+            panic!("Cannot assign Void.");
+        }
+
         scopes.mutate_value(&ident, current_scope, value);
     } else {
         panic!("Unknown identifier `{}`", ident);
