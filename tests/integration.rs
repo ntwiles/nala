@@ -31,7 +31,7 @@ fn test_run_examples() {
     ];
 
     for (file, expected) in test_data {
-        let file_name = format!("test/output/{}.nl", file);
+        let file_name = format!("tests/nala/output/{}.nl", file);
         let mut test_context = TestContext::new();
         read_and_execute(&file_name, &mut test_context);
         assert_eq!(test_context.get_output(), &expected, "{}", file_name);
@@ -50,7 +50,7 @@ fn test_run_input_examples() {
     ];
 
     for (file, inputs, expected) in test_data {
-        let file_name = format!("test/input/{}.nl", file);
+        let file_name = format!("tests/nala/input/{}.nl", file);
 
         let mut test_context = TestContext::new();
         test_context.mock_inputs(inputs);
@@ -68,7 +68,7 @@ fn test_run_error_examples() {
     ];
 
     for file in test_data {
-        let file_name = format!("test/error/{}.nl", file);
+        let file_name = format!("tests/nala/error/{}.nl", file);
         let mut test_context = TestContext::new();
 
         read_and_execute(&file_name, &mut test_context);
