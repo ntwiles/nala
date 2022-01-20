@@ -3,7 +3,7 @@ use super::basic::*;
 use crate::{
     ast::*,
     io_context::IoContext,
-    scope::{Scopes, ScopeId},
+    scope::{ScopeId, Scopes},
 };
 
 pub fn interpret_print(

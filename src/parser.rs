@@ -9,7 +9,7 @@ use crate::ast::*;
 pub fn parse_code(code: String) -> Option<Program> {
     match ProgramParser::new().parse(&code) {
         Ok(parsed) => Some(parsed),
-        Err(_) => None
+        Err(_) => None,
     }
 }
 
@@ -31,9 +31,9 @@ mod tests {
     pub fn it_parses_print_statements_with_string_literals() {
         let parsed = StmtsParser::new().parse("print('hello world');");
 
-        if let Ok(Stmts::Stmt(Stmt::Print(Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Builtin(Builtin::Term(
-            Term::String(message),
-        ))))))))) = parsed
+        if let Ok(Stmts::Stmt(Stmt::Print(Expr::Addend(Addend::Factor(Factor::Call(
+            Call::Index(Index::Builtin(Builtin::Term(Term::String(message)))),
+        )))))) = parsed
         {
             assert_eq!(message, String::from("hello world"));
         } else {
@@ -45,9 +45,9 @@ mod tests {
     pub fn it_parses_print_statements_with_number_literals() {
         let parsed = StmtsParser::new().parse("print(313);");
 
-        if let Ok(Stmts::Stmt(Stmt::Print(Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Builtin(Builtin::Term(
-            Term::Num(number),
-        ))))))))) = parsed
+        if let Ok(Stmts::Stmt(Stmt::Print(Expr::Addend(Addend::Factor(Factor::Call(
+            Call::Index(Index::Builtin(Builtin::Term(Term::Num(number)))),
+        )))))) = parsed
         {
             assert_eq!(number, 313.0);
         } else {
@@ -62,8 +62,16 @@ mod tests {
         if let Ok(Stmts::Stmt(Stmt::Print(Expr::Addend(Addend::Add(left, right))))) = parsed {
             // TODO: box_patterns feature may make this uncessecary when stable.
             let left = *left;
-            assert!(matches!(left, Addend::Factor(Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(_))))))));
-            assert!(matches!(right, Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(_)))))));
+            assert!(matches!(
+                left,
+                Addend::Factor(Factor::Call(Call::Index(Index::Builtin(Builtin::Term(
+                    Term::Num(_)
+                )))))
+            ));
+            assert!(matches!(
+                right,
+                Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(_)))))
+            ));
         } else {
             panic!();
         }
@@ -78,8 +86,17 @@ mod tests {
             let left = *left;
             // TODO: box_patterns can also allow the first _ here to be replaced with
             // a more precise pattern.
-            assert!(matches!(left, Addend::Add(_, Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(_))))))));
-            assert!(matches!(right, Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(_)))))));
+            assert!(matches!(
+                left,
+                Addend::Add(
+                    _,
+                    Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(_)))))
+                )
+            ));
+            assert!(matches!(
+                right,
+                Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(_)))))
+            ));
         } else {
             panic!();
         }
@@ -96,7 +113,10 @@ mod tests {
         {
             // TODO: box_patterns feature may make this uncessecary when stable.
             let left = *left;
-            assert!(matches!(left, Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(_)))))));
+            assert!(matches!(
+                left,
+                Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(_)))))
+            ));
             assert!(matches!(right, Term::Num(_)));
         } else {
             panic!();
@@ -114,7 +134,10 @@ mod tests {
         {
             // TODO: box_patterns feature may make this uncessecary when stable.
             let left = *left;
-            assert!(matches!(left, Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(_)))))));
+            assert!(matches!(
+                left,
+                Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(_)))))
+            ));
             assert!(matches!(right, Term::Num(_)));
         } else {
             panic!();
@@ -129,7 +152,9 @@ mod tests {
             parsed,
             Ok(Stmts::Stmt(Stmt::Declare(
                 _,
-                Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Symbol(_))))))),
+                Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Builtin(
+                    Builtin::Term(Term::Symbol(_))
+                ))))),
                 false
             ),),),
         ));
@@ -143,7 +168,9 @@ mod tests {
             parsed,
             Ok(Stmts::Stmt(Stmt::Declare(
                 _,
-                Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(_))))))),
+                Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Builtin(
+                    Builtin::Term(Term::Num(_))
+                ))))),
                 false
             ),),),
         ));

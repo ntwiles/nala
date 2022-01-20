@@ -1,4 +1,3 @@
-
 use std::usize;
 
 use crate::{
@@ -7,10 +6,7 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-use super::{
-    basic::*,
-    builtins::*,
-};
+use super::{basic::*, builtins::*};
 
 pub fn evaluate_index(
     index: &Index,
@@ -26,7 +22,6 @@ pub fn evaluate_index(
                 let array = scopes.get_value(ident, current_scope);
                 // TODO: Check that this cast is safe first.
                 let index = index as usize;
-        
                 if let Term::Array(array) = array {
                     array.get(index).unwrap().clone()
                 } else {
@@ -35,7 +30,7 @@ pub fn evaluate_index(
             } else {
                 panic!("Cannot index using non-numeric value.");
             }
-        },
+        }
         Index::Builtin(builtin) => evaluate_builtin(builtin, scopes, current_scope, context),
     }
 }

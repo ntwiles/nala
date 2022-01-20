@@ -1,8 +1,4 @@
-
-use super::{
-    arrays::*,
-    basic::*,
-};
+use super::{arrays::*, basic::*};
 
 use crate::{
     ast::*,
@@ -30,15 +26,14 @@ pub fn interpret_func(
 }
 
 pub fn evaluate_call(
-    call: &Call, 
-    scopes: &mut Scopes, 
+    call: &Call,
+    scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext
-) -> Term {    
+    context: &mut impl IoContext,
+) -> Term {
     match call {
         Call::Call(ident, args) => {
             let block = scopes.get_value(ident, current_scope);
- 
             if let Term::Func(params, block) = block {
                 let func_scope = scopes.new_scope(Some(current_scope));
 
@@ -62,7 +57,7 @@ pub fn evaluate_call(
                 Term::Void
             }
         }
-        Call::Index(index) => evaluate_index(index,scopes, current_scope, context)
+        Call::Index(index) => evaluate_index(index, scopes, current_scope, context),
     }
 }
 
@@ -79,6 +74,6 @@ pub fn evaluate_params(
             params
         }
         Params::Param(param) => vec![param.to_owned()],
-        Params::Empty => vec![] 
+        Params::Empty => vec![],
     }
 }

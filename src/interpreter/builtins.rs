@@ -1,7 +1,4 @@
-use super::{
-    basic::*,
-    io::*,
-};
+use super::{basic::*, io::*};
 
 use crate::{
     ast::*,
@@ -31,10 +28,10 @@ pub fn evaluate_builtin(
 }
 
 pub fn evaluate_floor(
-    expr: &Expr, 
-    scopes: &mut Scopes, 
-    current_scope: ScopeId, 
-    context: &mut impl IoContext
+    expr: &Expr,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
 ) -> Term {
     let value = evaluate_expr(expr, scopes, current_scope, context);
 
@@ -46,10 +43,10 @@ pub fn evaluate_floor(
 }
 
 fn evaluate_len(
-    expr: &Expr, 
-    scopes: &mut Scopes, 
-    current_scope: ScopeId, 
-    context: &mut impl IoContext
+    expr: &Expr,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
 ) -> Term {
     let value = evaluate_expr(expr, scopes, current_scope, context);
 

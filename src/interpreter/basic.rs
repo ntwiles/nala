@@ -1,12 +1,4 @@
-
-use super::{
-    arrays::*,
-    branching::*,
-    functions::*,
-    io::*,
-    operations::*, 
-    variables::*,
-};
+use super::{arrays::*, branching::*, functions::*, io::*, operations::*, variables::*};
 
 use crate::{
     ast::*,
@@ -23,7 +15,6 @@ pub fn interpret_block(
     interpret_stmts(&block.stmts, scopes, current_scope, context)
 }
 
-
 pub fn interpret_stmts(
     stmts: &Stmts,
     scopes: &mut Scopes,
@@ -39,7 +30,6 @@ pub fn interpret_stmts(
             } else {
                 result
             }
-
         }
         Stmts::Stmt(stmt) => interpret_stmt(stmt, scopes, current_scope, context),
     }
@@ -65,8 +55,10 @@ fn interpret_stmt(
         Stmt::If(cond, block) => interpret_if(cond, block, scopes, current_scope, context),
         Stmt::For(ident, expr, block) => {
             interpret_for(ident, &expr, block, scopes, current_scope, context)
-        },
-        Stmt::Func(ident, params, block) => interpret_func(ident, params, block, scopes, current_scope),
+        }
+        Stmt::Func(ident, params, block) => {
+            interpret_func(ident, params, block, scopes, current_scope)
+        }
         Stmt::Expr(expr) => {
             // TODO: Decide what to do if our expression returns a value here instead of just ignoring it.
             evaluate_expr(expr, scopes, current_scope, context)
@@ -97,7 +89,8 @@ pub fn evaluate_expr(
             evaluate_lt(left, right, scopes, current_scope)
         }
         Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope, context),
-        Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),    }
+        Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
+    }
 }
 
 pub fn evaluate_elems(
@@ -113,6 +106,6 @@ pub fn evaluate_elems(
             elems
         }
         Elems::Expr(expr) => vec![evaluate_expr(&expr, scopes, current_scope, context)],
-        Elems::Empty => vec![]
+        Elems::Empty => vec![],
     }
 }

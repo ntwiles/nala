@@ -7,8 +7,8 @@ use crate::{
 };
 
 pub fn evaluate_addend(
-    addend: &Addend, 
-    scopes: &mut Scopes, 
+    addend: &Addend,
+    scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Term {
@@ -28,10 +28,10 @@ pub fn evaluate_addend(
 }
 
 pub fn evaluate_factor(
-    factor: &Factor, 
-    scopes: &mut Scopes, 
+    factor: &Factor,
+    scopes: &mut Scopes,
     current_scope: ScopeId,
-    context:  &mut impl IoContext
+    context: &mut impl IoContext,
 ) -> Term {
     match factor {
         Factor::Mult(left, right) => evaluate_oper(
@@ -52,7 +52,12 @@ pub fn evaluate_factor(
     }
 }
 
-pub fn evaluate_equals(left: Term, right: Term, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+pub fn evaluate_equals(
+    left: Term,
+    right: Term,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+) -> Term {
     match left {
         Term::Num(left) => match right {
             Term::Num(right) => Term::Bool(left == right),
@@ -64,7 +69,7 @@ pub fn evaluate_equals(left: Term, right: Term, scopes: &mut Scopes, current_sco
             Term::Bool(_) => panic!("Cannot perform comparisons between types Num and Bool."),
             Term::Array(_) => panic!("Cannot perform comparisons between types Num and Array."),
             Term::Func(_, _) => panic!("Cannot perform comparisons between types Num and Func."),
-            Term::Void => panic!("Cannot perform comparisons between types Num and Void.")
+            Term::Void => panic!("Cannot perform comparisons between types Num and Void."),
         },
         Term::String(left) => match right {
             Term::Num(_) => panic!("Cannot perform comparisons between types String and Num."),
@@ -112,7 +117,7 @@ pub fn evaluate_gt(left: Term, right: Term, scopes: &mut Scopes, current_scope: 
             Term::Bool(_) => panic!("Cannot perform comparisons between types Num and Bool."),
             Term::Array(_) => panic!("Cannot perform comparisons between types Num and Array."),
             Term::Func(_, _) => panic!("Cannot perform comparisons between types Num and Func."),
-            Term::Void => panic!("Cannot perform comparisons between types Num and Void.")
+            Term::Void => panic!("Cannot perform comparisons between types Num and Void."),
         },
         Term::String(left) => match right {
             Term::Num(_) => panic!("Cannot perform comparisons between types String and Num."),
@@ -144,7 +149,7 @@ pub fn evaluate_gt(left: Term, right: Term, scopes: &mut Scopes, current_scope: 
         },
         Term::Array(_) => panic!("Cannot perform comparions against values of type Array."),
         Term::Func(_, _) => panic!("Cannot perform comparisons against values of type Func."),
-        Term::Void => panic!("Cannot perform comparisons against values of type Void.")
+        Term::Void => panic!("Cannot perform comparisons against values of type Void."),
     }
 }
 
@@ -314,7 +319,9 @@ mod tests {
     pub fn it_evaluates_add_with_2_terms() {
         let mut test_context = TestContext::new();
 
-        let left = Box::new(Addend::Factor(Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(7.0)))))));
+        let left = Box::new(Addend::Factor(Factor::Call(Call::Index(Index::Builtin(
+            Builtin::Term(Term::Num(7.0)),
+        )))));
         let right = Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(4.0)))));
 
         let operation = Addend::Add(left, right);
@@ -333,7 +340,9 @@ mod tests {
     pub fn it_evaluates_add_with_3_terms() {
         let mut test_context = TestContext::new();
 
-        let left = Addend::Factor(Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(3.0))))));
+        let left = Addend::Factor(Factor::Call(Call::Index(Index::Builtin(Builtin::Term(
+            Term::Num(3.0),
+        )))));
         let middle = Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(5.0)))));
         let right = Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(4.0)))));
 
@@ -354,7 +363,9 @@ mod tests {
     pub fn it_evaluates_sub() {
         let mut test_context = TestContext::new();
 
-        let left = Addend::Factor(Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(5.0))))));
+        let left = Addend::Factor(Factor::Call(Call::Index(Index::Builtin(Builtin::Term(
+            Term::Num(5.0),
+        )))));
         let right = Factor::Call(Call::Index(Index::Builtin(Builtin::Term(Term::Num(3.0)))));
 
         let operation = Addend::Sub(Box::new(left), right);

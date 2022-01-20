@@ -22,7 +22,7 @@ pub fn main(path: &str) -> () {
         Err(err) => {
             println!("Error loading nala file: {}", err);
             return;
-        },
+        }
     };
 
     if let Some(parsed) = result {

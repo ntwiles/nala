@@ -16,7 +16,7 @@ pub enum Stmt {
     If(Expr, Box<Block>),
     For(String, Expr, Box<Block>),
     Func(String, Box<Params>, Box<Block>),
-    Expr(Expr)
+    Expr(Expr),
 }
 
 #[derive(Debug, Clone)]
