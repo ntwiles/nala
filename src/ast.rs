@@ -51,7 +51,6 @@ pub enum Expr {
     Lt(Box<Expr>, Addend),
     Addend(Addend),
     Array(Array),
-    Builtin(Builtin),
 }
 
 #[derive(Debug, Clone)]
@@ -59,6 +58,7 @@ pub enum Builtin {
     Read,
     ReadNum,
     Len(Box<Expr>),
+    Term(Term),
 }
 
 #[derive(Debug, Clone)]
@@ -84,7 +84,7 @@ pub enum Call {
 #[derive(Debug, Clone)]
 pub enum Index {
     Index(String, Box<Expr>),
-    Term(Term),
+    Builtin(Builtin),
 }
 
 #[derive(Debug, Clone)]

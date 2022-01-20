@@ -35,15 +35,7 @@ Expr: ast::Expr = {
     <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
     Addend => ast::Expr::Addend(<>),
     Array => ast::Expr::Array(<>),
-    Builtin => ast::Expr::Builtin(<>),
-
 };
-
-Builtin: ast::Builtin = {
-    "read" "(" ")" => ast::Builtin::Read,
-    "readnum" "(" ")" => ast::Builtin::ReadNum,
-    "len" "(" <Expr> ")" => ast::Builtin::Len(Box::new(<>)),
-}
 
 Array: ast::Array = {
     "[" <Elems> "]" => ast::Array { elems: Box::new(<>) },
@@ -80,7 +72,14 @@ Call: ast::Call = {
 
 Index: ast::Index = {
     <s:Symbol> "[" <e:Expr> "]" => ast::Index::Index(s, Box::new(e)),
-    Term => ast::Index::Term(<>),
+    Builtin => ast::Index::Builtin(<>),
+}
+
+Builtin: ast::Builtin = {
+    "read" "(" ")" => ast::Builtin::Read,
+    "readnum" "(" ")" => ast::Builtin::ReadNum,
+    "len" "(" <Expr> ")" => ast::Builtin::Len(Box::new(<>)),
+    Term => ast::Builtin::Term(<>)
 }
 
 Term: ast::Term = {
