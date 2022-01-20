@@ -198,3 +198,23 @@ for num in nums {
     print(num);
 }
 ```
+
+### Get Array Length
+
+You can get the number of items currently in an array with this syntax:
+
+```
+const nums = [5, 4, 2, 8];
+const length = len(nums);
+```
+
+## Math
+
+### Floor
+
+You can round any Num down to the nearest integer with this syntax:
+
+```
+const decimal = 6.7;
+const floored = floor(decimal);
+```
