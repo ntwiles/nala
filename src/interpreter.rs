@@ -230,17 +230,20 @@ fn evaluate_expr(
         }
         Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope, context),
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
-        Expr::Builtin(builtin) => evaluate_builtin(builtin, context),
+        Expr::Builtin(builtin) => evaluate_builtin(builtin, scopes, current_scope, context),
     }
 }
 
 fn evaluate_builtin(
     builtin: &Builtin,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Term {
     match builtin {
         Builtin::Read => evaluate_read(context),
         Builtin::ReadNum => evaluate_readnum(context),
+        Builtin::Len(expr) => evaluate_len(expr, scopes, current_scope, context),
     }
 }
 
@@ -294,6 +297,22 @@ fn evaluate_readnum(context: &mut impl IoContext) -> Term {
         Ok(num) => Term::Num(num),
         Err(_) => panic!("Could not parse input '{}' as type Num.", input),
     }
+}
+
+fn evaluate_len(
+    expr: &Expr, 
+    scopes: &mut Scopes, 
+    current_scope: ScopeId, 
+    context: &mut impl IoContext
+) -> Term {
+    let value = evaluate_expr(expr, scopes, current_scope, context);
+
+    if let Term::Array(array) = value {
+        Term::Num(array.len() as f32)
+    } else {
+        panic!("Can only pass values of type Array into len().");
+    }
+
 }
 
 fn evaluate_array(

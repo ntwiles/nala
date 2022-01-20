@@ -9,6 +9,7 @@ fn test_run_examples() {
         ("array-empty", vec!["This should print."]),
         ("array-index", vec!["5"]),
         ("array-index-expressions", vec!["55"]),
+        ("array-len", vec!["5"]),
         ("block-parent-scopes", vec!["7", "7"]),
         ("block-shadowing", vec!["bar", "7"]),
         ("bool-branching", vec!["should print"]),
@@ -64,7 +65,8 @@ fn test_run_input_examples() {
 #[should_panic]
 fn test_run_error_examples() {
     let test_data = [
-        "assign-void"
+        "assign-void",
+        "array-len"
     ];
 
     for file in test_data {
