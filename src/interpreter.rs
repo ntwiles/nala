@@ -104,6 +104,11 @@ fn interpret_declare(
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
         let value = evaluate_expr(&expr, scopes, current_scope, context);
+        
+        if let Term::Void = value {
+            panic!("Cannot assign Void.");
+        }
+
         scopes.add_binding(&ident, current_scope, value, is_mutable);
     }
 
@@ -117,6 +122,8 @@ fn interpret_assign(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Term {
+    println!("Interpreting assignment!");
+
     if scopes.binding_exists(&ident, current_scope) {
         let value = evaluate_expr(&expr, scopes, current_scope, context);
 
