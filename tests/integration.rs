@@ -22,6 +22,7 @@ fn test_run_examples() {
         ("func-expressions", vec!["foobar"]),
         ("func-first-class", vec!["This should print."]),
         ("func-return", vec!["Function returns work!"]),
+        ("num-floor", vec!["6"]),
         ("print-expression", vec!["7"]),
         ("print-hello-world", vec!["hello world"]),
         ("print-multiple", vec!["hello world", "7"]),

@@ -59,6 +59,7 @@ pub enum Builtin {
     ReadNum,
     Len(Box<Expr>),
     Term(Term),
+    Floor(Box<Expr>),
 }
 
 #[derive(Debug, Clone)]

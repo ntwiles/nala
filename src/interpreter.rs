@@ -242,6 +242,7 @@ fn evaluate_builtin(
         Builtin::Read => evaluate_read(context),
         Builtin::ReadNum => evaluate_readnum(context),
         Builtin::Len(expr) => evaluate_len(expr, scopes, current_scope, context),
+        Builtin::Floor(expr) => evaluate_floor(expr, scopes, current_scope, context),
         Builtin::Term(term) => {
             if let Term::Symbol(ident) = term {
                 scopes.get_value(ident, current_scope)
@@ -316,6 +317,22 @@ fn evaluate_len(
         Term::Num(array.len() as f32)
     } else {
         panic!("Can only pass values of type Array into len().");
+    }
+
+}
+
+fn evaluate_floor(
+    expr: &Expr, 
+    scopes: &mut Scopes, 
+    current_scope: ScopeId, 
+    context: &mut impl IoContext
+) -> Term {
+    let value = evaluate_expr(expr, scopes, current_scope, context);
+
+    if let Term::Num(num) = value {
+        Term::Num(num.floor())
+    } else {
+        panic!("Can only pass values of type Num into floor().");
     }
 
 }
