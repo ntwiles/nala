@@ -8,6 +8,13 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
+pub fn get_builtins() -> Vec<(String, Block)> {
+    vec![
+        (String::from("floor"), get_floor_block()),
+        (String::from("print"), get_print_block()),
+    ]
+}
+
 pub fn evaluate_builtin(
     builtin: &Builtin,
     scopes: &mut Scopes,
@@ -45,13 +52,13 @@ pub fn invoke_builtin(
     func(args, scopes, current_scope, context)
 }
 
-pub fn get_floor_block() -> Block {
+fn get_floor_block() -> Block {
     // TODO: Get rid of this magic string, maybe use enum?
     let params = Params::Param("num".to_string());
     Block::RustBlock(params, builtin_floor)
 }
 
-pub fn get_print_block() -> Block {
+fn get_print_block() -> Block {
     // TODO: Get rid of this magic string, maybe use enum?
     let params = Params::Param("message".to_string());
     Block::RustBlock(params, builtin_print)
