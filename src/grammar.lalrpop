@@ -76,8 +76,6 @@ Index: ast::Index = {
 }
 
 Builtin: ast::Builtin = {
-    "read" "(" ")" => ast::Builtin::Read,
-    "readnum" "(" ")" => ast::Builtin::ReadNum,
     "len" "(" <Expr> ")" => ast::Builtin::Len(Box::new(<>)),
     Term => ast::Builtin::Term(<>)
 }

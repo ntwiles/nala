@@ -73,8 +73,6 @@ pub enum Expr {
 
 #[derive(Debug, Clone)]
 pub enum Builtin {
-    Read,
-    ReadNum,
     Len(Box<Expr>),
     Term(Term),
 }

@@ -3,7 +3,6 @@ pub mod basic;
 mod branching;
 mod builtins;
 mod functions;
-mod io;
 mod operations;
 mod variables;
 

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::{basic::*, functions::*, io::*};
+use super::{basic::*, functions::*};
 
 use crate::{
     ast::*,
@@ -12,9 +12,12 @@ pub fn get_builtins() -> Vec<(String, Block)> {
     vec![
         (String::from("floor"), get_floor_block()),
         (String::from("print"), get_print_block()),
+        (String::from("read"), get_read_block()),
+        (String::from("readnum"), get_readnum_block()),
     ]
 }
 
+// TODO: Once builtins are are 'natural' (using invoke_builtin) we can delete this function.
 pub fn evaluate_builtin(
     builtin: &Builtin,
     scopes: &mut Scopes,
@@ -22,8 +25,6 @@ pub fn evaluate_builtin(
     context: &mut impl IoContext,
 ) -> Term {
     match builtin {
-        Builtin::Read => evaluate_read(context),
-        Builtin::ReadNum => evaluate_readnum(context),
         Builtin::Len(expr) => evaluate_len(expr, scopes, current_scope, context),
         Builtin::Term(term) => {
             if let Term::Symbol(ident) = term {
@@ -64,6 +65,14 @@ fn get_print_block() -> Block {
     Block::RustBlock(params, builtin_print)
 }
 
+fn get_read_block() -> Block {
+    Block::RustBlock(Params::Empty, builtin_read)
+}
+
+fn get_readnum_block() -> Block {
+    Block::RustBlock(Params::Empty, builtin_readnum)
+}
+
 fn builtin_floor(
     args: HashMap<String, Term>,
     _scopes: &mut Scopes,
@@ -96,6 +105,32 @@ fn builtin_print(
 
     Term::Void
 }
+
+fn builtin_read(
+    _args: HashMap<String, Term>,
+    _scopes: &mut Scopes,
+    _current_scope: ScopeId,
+    context: &mut dyn IoContext,
+) -> Term {
+    let input = context.read();
+    Term::String(input.trim().to_string())
+}
+
+fn builtin_readnum(
+    _args: HashMap<String, Term>,
+    _scopes: &mut Scopes,
+    _current_scope: ScopeId,
+    context: &mut dyn IoContext,
+) -> Term {
+    let mut input = context.read();
+    input = input.trim().to_string();
+    let result = input.parse::<f32>();
+    match result {
+        Ok(num) => Term::Num(num),
+        Err(_) => panic!("Could not parse input '{}' as type Num.", input),
+    }
+}
+
 fn evaluate_len(
     expr: &Expr,
     scopes: &mut Scopes,
