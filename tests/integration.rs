@@ -1,69 +1,75 @@
 use library::{interpreter::interpret_tree, io_context::TestContext, parser};
 
-use std::fs;
+use std::{collections::HashMap, fs};
+
+use serde::{Deserialize, Serialize};
+use serde_json;
+
+#[derive(Serialize, Deserialize)]
+struct TestData {
+    input: Option<Vec<String>>,
+    output: Vec<String>,
+}
 
 #[test]
 fn test_run_examples() {
-    let test_data = [
-        ("array-for", vec!["foo", "7", "bar", "3"]),
-        ("array-empty", vec!["This should print."]),
-        ("array-index", vec!["5"]),
-        ("array-index-expressions", vec!["55"]),
-        ("array-len", vec!["5"]),
-        ("array-slice", vec!["1", "2"]),
-        ("block-parent-scopes", vec!["7", "7"]),
-        ("block-shadowing", vec!["bar", "7"]),
-        ("bool-branching", vec!["should print"]),
-        ("bool-expression", vec!["true", "false"]),
-        ("declare-and-multiply", vec!["28"]),
-        ("declare-basic", vec!["28"]),
-        ("declare-mutable", vec!["7", "8"]),
-        ("func-args", vec!["The total is 12"]),
-        ("func-basic", vec!["Functions work!"]),
-        ("func-expressions", vec!["foobar"]),
-        ("func-first-class", vec!["This should print."]),
-        ("func-return", vec!["Function returns work!"]),
-        ("num-floor", vec!["6"]),
-        ("print-expression", vec!["7"]),
-        ("print-hello-world", vec!["hello world"]),
-        ("print-multiple", vec!["hello world", "7"]),
-        ("print-number", vec!["311"]),
-        ("print-string-concat-vars", vec!["hello world"]),
-        ("print-string-concat", vec!["hello world"]),
-        ("string-special-chars", vec!["!@#$%^&*()_+-=;:\""]),
-    ];
+    let data = fs::read_to_string("tests/data/output.json").unwrap();
+    let data: HashMap<String, TestData> = serde_json::from_str(&data).unwrap();
 
-    for (file, expected) in test_data {
-        let file_name = format!("tests/nala/output/{}.nl", file);
+    let files = fs::read_dir("tests/nala/output");
+
+    for file in files.unwrap() {
+        let file = file.unwrap();
+        let name = file.file_name().into_string().unwrap();
+        let name = name[..name.find('.').unwrap()].to_owned();
+
+        let nala_path = format!("tests/nala/output/{}.nl", name);
+
+        let test_data = if let Some(test_data) = data.get(&name) {
+            test_data
+        } else {
+            panic!("Could not find matching test data for file: {}", name);
+        };
+
         let mut test_context = TestContext::new();
-        read_and_execute(&file_name, &mut test_context);
-        assert_eq!(test_context.get_output(), &expected, "{}", file_name);
+        read_and_execute(&nala_path, &mut test_context);
+        assert_eq!(
+            test_context.get_output(),
+            &test_data.output,
+            "{}",
+            nala_path
+        );
     }
 }
 
 #[test]
 fn test_run_input_examples() {
-    let test_data = [
-        (
-            "input-basic",
-            vec!["Nathan"],
-            vec!["Please enter your name:", "Hello, Nathan"],
-        ),
-        (
-            "input-numbers",
-            vec!["31"],
-            vec!["Please enter your age:", "Next year your age will be 32"],
-        ),
-    ];
+    let data = fs::read_to_string("tests/data/input.json").unwrap();
+    let data: HashMap<String, TestData> = serde_json::from_str(&data).unwrap();
 
-    for (file, inputs, expected) in test_data {
-        let file_name = format!("tests/nala/input/{}.nl", file);
+    let files = fs::read_dir("tests/nala/input");
+
+    for file in files.unwrap() {
+        let name = file.unwrap().file_name().into_string().unwrap();
+        let name = name[..name.find('.').unwrap()].to_owned();
+
+        let test_data = if let Some(test_data) = data.get(&name) {
+            test_data
+        } else {
+            panic!("Could not find matching test data for file: {}", name);
+        };
 
         let mut test_context = TestContext::new();
-        test_context.mock_inputs(inputs);
+        test_context.mock_inputs(test_data.input.clone().unwrap());
 
-        read_and_execute(&file_name, &mut test_context);
-        assert_eq!(test_context.get_output(), &expected, "{}", file_name);
+        let nala_path = format!("tests/nala/input/{}.nl", name);
+        read_and_execute(&nala_path, &mut test_context);
+        assert_eq!(
+            test_context.get_output(),
+            &test_data.output,
+            "{}",
+            nala_path
+        );
     }
 }
 
@@ -81,7 +87,12 @@ fn test_run_error_examples() {
 }
 
 fn read_and_execute(path: &str, test_context: &mut TestContext) {
-    let code = fs::read_to_string(path).unwrap();
+    let code = if let Ok(code) = fs::read_to_string(path) {
+        code
+    } else {
+        panic!("Could not load nala file! {}", path);
+    };
+
     let result = parser::parse_code(code);
 
     if let Some(parsed) = result {

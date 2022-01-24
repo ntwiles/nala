@@ -1,0 +1,20 @@
+{
+    "input-basic": {
+        "input": [
+            "Nathan"
+        ],
+        "output": [
+            "Please enter your name:",
+            "Hello, Nathan"
+        ]
+    },
+    "input-numbers": {
+        "input": [
+            "31"
+        ],
+        "output": [
+            "Please enter your age:",
+            "Next year your age will be 32"
+        ]
+    }
+}

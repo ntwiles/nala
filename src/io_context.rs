@@ -36,7 +36,7 @@ impl TestContext {
         &self.outputs
     }
 
-    pub fn mock_inputs(self: &mut Self, inputs: Vec<&str>) {
+    pub fn mock_inputs(self: &mut Self, inputs: Vec<String>) {
         self.inputs = inputs.iter().map(|s| s.to_string()).collect()
     }
 }
