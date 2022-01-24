@@ -72,11 +72,6 @@ pub enum Expr {
 }
 
 #[derive(Debug, Clone)]
-pub enum Builtin {
-    Term(Term),
-}
-
-#[derive(Debug, Clone)]
 pub enum Addend {
     Add(Box<Addend>, Factor),
     Sub(Box<Addend>, Factor),
@@ -99,7 +94,7 @@ pub enum Call {
 #[derive(Debug, Clone)]
 pub enum Index {
     Index(String, Box<Expr>),
-    Builtin(Builtin),
+    Term(Term),
 }
 
 #[derive(Debug, Clone)]

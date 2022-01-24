@@ -18,24 +18,6 @@ pub fn get_builtins() -> Vec<(String, Block)> {
     ]
 }
 
-// TODO: Once builtins are are 'natural' (using invoke_builtin) we can delete this function.
-pub fn evaluate_builtin(
-    builtin: &Builtin,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-    _context: &mut impl IoContext,
-) -> Term {
-    match builtin {
-        Builtin::Term(term) => {
-            if let Term::Symbol(ident) = term {
-                scopes.get_value(ident, current_scope)
-            } else {
-                term.clone()
-            }
-        }
-    }
-}
-
 pub fn invoke_builtin(
     func: BuiltinFunc,
     params: &Params,

@@ -6,7 +6,7 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-use super::{basic::*, builtins::*};
+use super::basic::*;
 
 pub fn evaluate_index(
     index: &Index,
@@ -31,7 +31,13 @@ pub fn evaluate_index(
                 panic!("Cannot index using non-numeric value.");
             }
         }
-        Index::Builtin(builtin) => evaluate_builtin(builtin, scopes, current_scope, context),
+        Index::Term(term) => {
+            if let Term::Symbol(ident) = term {
+                scopes.get_value(ident, current_scope)
+            } else {
+                term.clone()
+            }
+        }
     }
 }
 

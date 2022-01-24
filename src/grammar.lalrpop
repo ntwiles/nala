@@ -72,11 +72,7 @@ Call: ast::Call = {
 
 Index: ast::Index = {
     <s:Symbol> "[" <e:Expr> "]" => ast::Index::Index(s, Box::new(e)),
-    Builtin => ast::Index::Builtin(<>),
-}
-
-Builtin: ast::Builtin = {
-    Term => ast::Builtin::Term(<>)
+    Term => ast::Index::Term(<>)
 }
 
 Term: ast::Term = {
