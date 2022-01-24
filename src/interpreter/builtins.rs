@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::{basic::*, functions::*};
+use super::functions::*;
 
 use crate::{
     ast::*,
@@ -11,6 +11,7 @@ use crate::{
 pub fn get_builtins() -> Vec<(String, Block)> {
     vec![
         (String::from("floor"), get_floor_block()),
+        (String::from("len"), get_len_block()),
         (String::from("print"), get_print_block()),
         (String::from("read"), get_read_block()),
         (String::from("readnum"), get_readnum_block()),
@@ -22,10 +23,9 @@ pub fn evaluate_builtin(
     builtin: &Builtin,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    _context: &mut impl IoContext,
 ) -> Term {
     match builtin {
-        Builtin::Len(expr) => evaluate_len(expr, scopes, current_scope, context),
         Builtin::Term(term) => {
             if let Term::Symbol(ident) = term {
                 scopes.get_value(ident, current_scope)
@@ -57,6 +57,12 @@ fn get_floor_block() -> Block {
     // TODO: Get rid of this magic string, maybe use enum?
     let params = Params::Param("num".to_string());
     Block::RustBlock(params, builtin_floor)
+}
+
+fn get_len_block() -> Block {
+    // TODO: Get rid of this magic string, maybe use enum?
+    let params = Params::Param("array".to_string());
+    Block::RustBlock(params, builtin_len)
 }
 
 fn get_print_block() -> Block {
@@ -131,15 +137,15 @@ fn builtin_readnum(
     }
 }
 
-fn evaluate_len(
-    expr: &Expr,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-    context: &mut impl IoContext,
+fn builtin_len(
+    args: HashMap<String, Term>,
+    _scopes: &mut Scopes,
+    _current_scope: ScopeId,
+    _context: &mut dyn IoContext,
 ) -> Term {
-    let value = evaluate_expr(expr, scopes, current_scope, context);
+    let array = args.get("array").unwrap();
 
-    if let Term::Array(array) = value {
+    if let Term::Array(array) = array {
         Term::Num(array.len() as f32)
     } else {
         panic!("Can only pass values of type Array into len().");
