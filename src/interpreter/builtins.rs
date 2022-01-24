@@ -59,9 +59,9 @@ pub fn get_print_block() -> Block {
 
 fn builtin_floor(
     args: HashMap<String, Term>,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    _scopes: &mut Scopes,
+    _current_scope: ScopeId,
+    _context: &mut dyn IoContext,
 ) -> Term {
     // TODO: Get rid of this magic string, maybe use enum?
     let num = args.get("num").unwrap();

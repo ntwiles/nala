@@ -19,7 +19,7 @@ pub enum Block {
 }
 
 impl Debug for Block {
-    fn fmt(&self, formatter: &mut Formatter) -> Result<(), Error> {
+    fn fmt(&self, _formatter: &mut Formatter) -> Result<(), Error> {
         // TODO: Implement this properly.
         Ok(())
     }

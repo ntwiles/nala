@@ -1,6 +1,4 @@
-use super::{
-    arrays::*, branching::*, builtins::*, functions::*, io::*, operations::*, variables::*,
-};
+use super::{arrays::*, branching::*, builtins::*, functions::*, operations::*, variables::*};
 
 use crate::{
     ast::*,
