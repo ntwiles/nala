@@ -42,7 +42,7 @@ pub fn invoke_builtin(
         .map(|param| (param.clone(), scopes.get_value(&param, current_scope)))
         .collect();
 
-    func(args)
+    func(args, scopes, current_scope, context)
 }
 
 pub fn get_floor_block() -> Block {
@@ -51,17 +51,44 @@ pub fn get_floor_block() -> Block {
     Block::RustBlock(params, builtin_floor)
 }
 
-fn builtin_floor(args: HashMap<String, Term>) -> Term {
+pub fn get_print_block() -> Block {
     // TODO: Get rid of this magic string, maybe use enum?
-    let value = args.get("num").unwrap();
+    let params = Params::Param("message".to_string());
+    Block::RustBlock(params, builtin_print)
+}
 
-    if let Term::Num(num) = value {
+fn builtin_floor(
+    args: HashMap<String, Term>,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut dyn IoContext,
+) -> Term {
+    // TODO: Get rid of this magic string, maybe use enum?
+    let num = args.get("num").unwrap();
+
+    if let Term::Num(num) = num {
         Term::Num(num.floor())
     } else {
         panic!("Can only pass values of type Num into floor().");
     }
 }
 
+fn builtin_print(
+    args: HashMap<String, Term>,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut dyn IoContext,
+) -> Term {
+    let message = args.get("message").unwrap();
+
+    if let Term::Symbol(ident) = message {
+        context.print(&scopes.get_value(&ident, current_scope).to_string());
+    } else {
+        context.print(&message.to_string());
+    }
+
+    Term::Void
+}
 fn evaluate_len(
     expr: &Expr,
     scopes: &mut Scopes,

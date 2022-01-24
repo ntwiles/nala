@@ -49,7 +49,6 @@ fn interpret_stmt(
     context: &mut impl IoContext,
 ) -> Term {
     match stmt {
-        Stmt::Print(expr) => interpret_print(expr, scopes, current_scope, context),
         Stmt::Declare(ident, expr, is_mutable) => interpret_declare(
             ident,
             expr,

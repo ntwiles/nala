@@ -19,7 +19,6 @@ pub Stmts: ast::Stmts = {
 
 // TODO: Instead of two entries for func here, use lalrpop macros like ? or +.
 Stmt: ast::Stmt = {
-    "print" "(" <Expr> ")" ";" => ast::Stmt::Print(<>),
     "const" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, false),
     "mut" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, true),
     "if" "(" <e:Expr> ")" <b:Block> => ast::Stmt::If(e, Box::new(b)),

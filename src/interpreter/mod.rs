@@ -29,6 +29,18 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
             top_scope,
         );
     }
+
+    let print = get_print_block();
+
+    if let Block::RustBlock(params, _block) = print.clone() {
+        interpret_func(
+            &"print".to_string(),
+            &params,
+            &print,
+            &mut scopes,
+            top_scope,
+        );
+    }
     match program {
         Program::Block(block) => interpret_block(&block, &mut scopes, top_scope, context),
         Program::Stmts(stmts) => interpret_stmts(&stmts, &mut scopes, top_scope, context),

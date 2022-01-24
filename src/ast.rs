@@ -1,22 +1,34 @@
 use std::collections::HashMap;
+use std::fmt::{Debug, Error, Formatter};
+
+use crate::{
+    io_context::IoContext,
+    scope::{ScopeId, Scopes},
+};
 
 pub enum Program {
     Block(Block),
     Stmts(Stmts),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub enum Block {
     NalaBlock(Stmts),
     // RustBlock is used for builtin functions.
     RustBlock(Params, BuiltinFunc),
 }
 
-pub type BuiltinFunc = fn(HashMap<String, Term>) -> Term;
+impl Debug for Block {
+    fn fmt(&self, formatter: &mut Formatter) -> Result<(), Error> {
+        // TODO: Implement this properly.
+        Ok(())
+    }
+}
+
+pub type BuiltinFunc = fn(HashMap<String, Term>, &mut Scopes, ScopeId, &mut dyn IoContext) -> Term;
 
 #[derive(Debug, Clone)]
 pub enum Stmt {
-    Print(Expr),
     Declare(String, Expr, bool),
     Assign(String, Expr),
     If(Expr, Box<Block>),

@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::ast;
 
+#[derive(Debug)]
 pub struct Scope {
     parent: Option<ScopeId>,
     bindings: HashMap<String, (ast::Term, bool)>,
@@ -28,11 +29,12 @@ impl Scope {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct ScopeId {
     index: usize,
 }
 
+#[derive(Debug)]
 pub struct Scopes {
     scopes: Vec<Scope>,
 }

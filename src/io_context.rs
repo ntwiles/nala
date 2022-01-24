@@ -3,6 +3,7 @@ pub trait IoContext {
     fn read(self: &mut Self) -> String;
 }
 
+#[derive(Debug)]
 pub struct ConsoleContext;
 
 impl IoContext for ConsoleContext {
@@ -17,6 +18,7 @@ impl IoContext for ConsoleContext {
     }
 }
 
+#[derive(Debug)]
 pub struct TestContext {
     outputs: Vec<String>,
     inputs: Vec<String>,
