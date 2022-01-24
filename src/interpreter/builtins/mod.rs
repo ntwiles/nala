@@ -1,4 +1,6 @@
 mod array;
+mod io;
+mod math;
 
 use std::collections::HashMap;
 
@@ -11,6 +13,8 @@ use crate::{
 };
 
 use array::*;
+use io::*;
+use math::*;
 
 pub fn get_builtins() -> Vec<(String, Block)> {
     vec![
@@ -37,82 +41,4 @@ pub fn invoke_builtin(
         .collect();
 
     func(args, scopes, current_scope, context)
-}
-
-fn get_floor_block() -> Block {
-    // TODO: Get rid of this magic string, maybe use enum?
-    let params = Params::Param("num".to_string());
-    Block::RustBlock(params, builtin_floor)
-}
-
-fn get_print_block() -> Block {
-    // TODO: Get rid of this magic string, maybe use enum?
-    let params = Params::Param("message".to_string());
-    Block::RustBlock(params, builtin_print)
-}
-
-fn get_read_block() -> Block {
-    Block::RustBlock(Params::Empty, builtin_read)
-}
-
-fn get_readnum_block() -> Block {
-    Block::RustBlock(Params::Empty, builtin_readnum)
-}
-
-fn builtin_floor(
-    args: HashMap<String, Term>,
-    _scopes: &mut Scopes,
-    _current_scope: ScopeId,
-    _context: &mut dyn IoContext,
-) -> Term {
-    // TODO: Get rid of this magic string, maybe use enum?
-    let num = args.get("num").unwrap();
-
-    if let Term::Num(num) = num {
-        Term::Num(num.floor())
-    } else {
-        panic!("Can only pass values of type Num into floor().");
-    }
-}
-
-fn builtin_print(
-    args: HashMap<String, Term>,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-    context: &mut dyn IoContext,
-) -> Term {
-    let message = args.get("message").unwrap();
-
-    if let Term::Symbol(ident) = message {
-        context.print(&scopes.get_value(&ident, current_scope).to_string());
-    } else {
-        context.print(&message.to_string());
-    }
-
-    Term::Void
-}
-
-fn builtin_read(
-    _args: HashMap<String, Term>,
-    _scopes: &mut Scopes,
-    _current_scope: ScopeId,
-    context: &mut dyn IoContext,
-) -> Term {
-    let input = context.read();
-    Term::String(input.trim().to_string())
-}
-
-fn builtin_readnum(
-    _args: HashMap<String, Term>,
-    _scopes: &mut Scopes,
-    _current_scope: ScopeId,
-    context: &mut dyn IoContext,
-) -> Term {
-    let mut input = context.read();
-    input = input.trim().to_string();
-    let result = input.parse::<f32>();
-    match result {
-        Ok(num) => Term::Num(num),
-        Err(_) => panic!("Could not parse input '{}' as type Num.", input),
-    }
 }
