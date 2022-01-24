@@ -6,7 +6,7 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-// Todo: Consider treating if as an expression.
+// Todo: Consider returning something other than Void.
 pub fn interpret_if(
     cond: &Expr,
     block: &Block,
