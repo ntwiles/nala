@@ -1,4 +1,6 @@
-use super::{basic::*, io::*};
+use std::collections::HashMap;
+
+use super::{basic::*, functions::*, io::*};
 
 use crate::{
     ast::*,
@@ -16,7 +18,6 @@ pub fn evaluate_builtin(
         Builtin::Read => evaluate_read(context),
         Builtin::ReadNum => evaluate_readnum(context),
         Builtin::Len(expr) => evaluate_len(expr, scopes, current_scope, context),
-        Builtin::Floor(expr) => evaluate_floor(expr, scopes, current_scope, context),
         Builtin::Term(term) => {
             if let Term::Symbol(ident) = term {
                 scopes.get_value(ident, current_scope)
@@ -27,13 +28,32 @@ pub fn evaluate_builtin(
     }
 }
 
-pub fn evaluate_floor(
-    expr: &Expr,
+pub fn invoke_builtin(
+    func: BuiltinFunc,
+    params: &Params,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Term {
-    let value = evaluate_expr(expr, scopes, current_scope, context);
+    // TODO: We already get params and args in evaluate_call, do we have to do this work again?
+    let params: Vec<String> = evaluate_params(params, scopes, current_scope, context);
+    let args: HashMap<String, Term> = params
+        .into_iter()
+        .map(|param| (param.clone(), scopes.get_value(&param, current_scope)))
+        .collect();
+
+    func(args)
+}
+
+pub fn get_floor_block() -> Block {
+    // TODO: Get rid of this magic string, maybe use enum?
+    let params = Params::Param("num".to_string());
+    Block::RustBlock(params, builtin_floor)
+}
+
+fn builtin_floor(args: HashMap<String, Term>) -> Term {
+    // TODO: Get rid of this magic string, maybe use enum?
+    let value = args.get("num").unwrap();
 
     if let Term::Num(num) = value {
         Term::Num(num.floor())

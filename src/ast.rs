@@ -1,12 +1,18 @@
+use std::collections::HashMap;
+
 pub enum Program {
     Block(Block),
     Stmts(Stmts),
 }
 
 #[derive(Debug, Clone)]
-pub struct Block {
-    pub stmts: Stmts,
+pub enum Block {
+    NalaBlock(Stmts),
+    // RustBlock is used for builtin functions.
+    RustBlock(Params, BuiltinFunc),
 }
+
+pub type BuiltinFunc = fn(HashMap<String, Term>) -> Term;
 
 #[derive(Debug, Clone)]
 pub enum Stmt {
@@ -59,7 +65,6 @@ pub enum Builtin {
     ReadNum,
     Len(Box<Expr>),
     Term(Term),
-    Floor(Box<Expr>),
 }
 
 #[derive(Debug, Clone)]

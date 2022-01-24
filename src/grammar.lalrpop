@@ -9,7 +9,7 @@ pub Program: ast::Program = {
 }
 
 Block: ast::Block = {
-    "{" <Stmts> "}" => ast::Block { stmts: <> }
+    "{" <Stmts> "}" => ast::Block::NalaBlock(<>)
 }
 
 pub Stmts: ast::Stmts = {
@@ -80,7 +80,6 @@ Builtin: ast::Builtin = {
     "read" "(" ")" => ast::Builtin::Read,
     "readnum" "(" ")" => ast::Builtin::ReadNum,
     "len" "(" <Expr> ")" => ast::Builtin::Len(Box::new(<>)),
-    "floor" "(" <Expr> ")" => ast::Builtin::Floor(Box::new(<>)),
     Term => ast::Builtin::Term(<>)
 }
 

@@ -1,4 +1,6 @@
-use super::{arrays::*, branching::*, functions::*, io::*, operations::*, variables::*};
+use super::{
+    arrays::*, branching::*, builtins::*, functions::*, io::*, operations::*, variables::*,
+};
 
 use crate::{
     ast::*,
@@ -12,7 +14,12 @@ pub fn interpret_block(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Term {
-    interpret_stmts(&block.stmts, scopes, current_scope, context)
+    match block {
+        Block::NalaBlock(stmts) => interpret_stmts(stmts, scopes, current_scope, context),
+        Block::RustBlock(params, func) => {
+            invoke_builtin(*func, params, scopes, current_scope, context)
+        }
+    }
 }
 
 pub fn interpret_stmts(
