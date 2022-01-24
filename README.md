@@ -10,6 +10,7 @@ Nala is an interpreted, expression-oriented programming language with terse synt
 - [x] Conditional branching.
 - [x] Arrays and loops.
 - [x] Functions.
+- [ ] Function pipelines.
 - [ ] Type system.
 - [ ] Package system.
 
