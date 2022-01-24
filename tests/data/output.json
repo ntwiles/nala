@@ -29,8 +29,8 @@
     },
     "array-slice": {
         "output": [
-            "1",
-            "2"
+            "2",
+            "3"
         ]
     },
     "block-parent-scopes": {
