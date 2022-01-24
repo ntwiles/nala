@@ -45,9 +45,6 @@ fn builtin_slice(
     _current_scope: ScopeId,
     _context: &mut dyn IoContext,
 ) -> Term {
-    let start = args.get("start").unwrap();
-    let end = args.get("end").unwrap();
-
     let array = if let Term::Array(array) = args.get("array").unwrap() {
         array
     } else {
