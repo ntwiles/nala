@@ -211,6 +211,14 @@ const nums = [5, 4, 2, 8];
 const length = len(nums);
 ```
 
+### Array Slices
+
+You can retrieve a portion of an array with `slice()`. The function takes three args; the first is the input array, the second is the starting index of the slice, and the third is the exclusive ending index.
+
+```
+const nums = [5, 4, 2, 8];
+const middle = slice(nums, 1, 3);
+
 ## Math
 
 ### Floor
