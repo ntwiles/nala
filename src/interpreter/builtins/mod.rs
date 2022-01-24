@@ -23,6 +23,7 @@ pub fn get_builtins() -> Vec<(String, Block)> {
         (String::from("print"), get_print_block()),
         (String::from("read"), get_read_block()),
         (String::from("readnum"), get_readnum_block()),
+        (String::from("slice"), get_slice_block()),
     ]
 }
 

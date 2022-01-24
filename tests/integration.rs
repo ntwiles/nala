@@ -10,6 +10,7 @@ fn test_run_examples() {
         ("array-index", vec!["5"]),
         ("array-index-expressions", vec!["55"]),
         ("array-len", vec!["5"]),
+        ("array-slice", vec!["1", "2"]),
         ("block-parent-scopes", vec!["7", "7"]),
         ("block-shadowing", vec!["bar", "7"]),
         ("bool-branching", vec!["should print"]),
@@ -43,12 +44,16 @@ fn test_run_examples() {
 #[test]
 fn test_run_input_examples() {
     let test_data = [
-        ("input-basic",
-        vec!["Nathan"],
-        vec!["Please enter your name:", "Hello, Nathan"]),
-        ("input-numbers",
-        vec!["31"],
-        vec!["Please enter your age:", "Next year your age will be 32"])
+        (
+            "input-basic",
+            vec!["Nathan"],
+            vec!["Please enter your name:", "Hello, Nathan"],
+        ),
+        (
+            "input-numbers",
+            vec!["31"],
+            vec!["Please enter your age:", "Next year your age will be 32"],
+        ),
     ];
 
     for (file, inputs, expected) in test_data {
@@ -65,10 +70,7 @@ fn test_run_input_examples() {
 #[test]
 #[should_panic]
 fn test_run_error_examples() {
-    let test_data = [
-        "assign-void",
-        "array-len"
-    ];
+    let test_data = ["assign-void", "array-len"];
 
     for file in test_data {
         let file_name = format!("tests/nala/error/{}.nl", file);
