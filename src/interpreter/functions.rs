@@ -4,6 +4,7 @@ use crate::{
     ast::*,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
+    types::*,
 };
 
 pub fn interpret_func(
@@ -45,8 +46,18 @@ pub fn evaluate_call(
                 }
 
                 for i in 0..params.len() {
-                    let (param, _) = params.get(i).unwrap();
+                    let (param, param_type_name) = params.get(i).unwrap();
                     let arg = args.get(i).unwrap();
+
+                    if get_type_name(arg.clone()) != param_type_name.to_owned() {
+                        panic!(
+                            "Passed value `{3}` of type {0} to func `{1}` where {2} was expected.",
+                            get_type_name(arg.clone()),
+                            ident,
+                            param_type_name,
+                            arg.clone().to_string()
+                        )
+                    }
 
                     scopes.add_binding(param, func_scope, arg.clone(), true)
                 }

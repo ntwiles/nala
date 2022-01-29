@@ -2,7 +2,7 @@
 
 const words = ['wheres', 'the', 'party'];
 
-func indexOf(needle: String, haystack: String) {
+func indexOf(needle: String, haystack: Array) {
     mut i = 0;
 
     for hay in haystack {
