@@ -51,7 +51,10 @@ fn interpret_stmt(
             let term = evaluate_expr(expr, scopes, current_scope, context);
             interpret_declare(ident, &term, scopes, current_scope, is_mutable.clone())
         }
-        Stmt::Assign(ident, expr) => interpret_assign(ident, expr, scopes, current_scope, context),
+        Stmt::Assign(ident, expr) => {
+            let term = evaluate_expr(expr, scopes, current_scope, context);
+            interpret_assign(ident, &term, scopes, current_scope, context)
+        }
         Stmt::If(cond, block) => interpret_if(cond, block, scopes, current_scope, context),
         Stmt::For(ident, expr, block) => {
             interpret_for(ident, &expr, block, scopes, current_scope, context)

@@ -28,7 +28,7 @@ pub fn interpret_declare(
 
 pub fn interpret_assign(
     variable: &SymbolOrIndex,
-    expr: &Expr,
+    term: &Term,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
@@ -37,9 +37,8 @@ pub fn interpret_assign(
         SymbolOrIndex::Index(ident, index_expr) => {
             if scopes.binding_exists(&ident, current_scope) {
                 let index = evaluate_expr(&index_expr, scopes, current_scope, context);
-                let value = evaluate_expr(&expr, scopes, current_scope, context);
 
-                if let Term::Void = value {
+                if let Term::Void = term {
                     panic!("Cannot assign Void.");
                 }
 
@@ -53,7 +52,7 @@ pub fn interpret_assign(
 
                 if let Term::Array(mut array) = array {
                     // TODO: This doesn't work with bad input.
-                    array[index as usize] = value;
+                    array[index as usize] = term.clone();
 
                     scopes.mutate_value(&ident, current_scope, Term::Array(array));
                 } else {
@@ -63,13 +62,11 @@ pub fn interpret_assign(
         }
         SymbolOrIndex::Symbol(ident) => {
             if scopes.binding_exists(&ident, current_scope) {
-                let value = evaluate_expr(&expr, scopes, current_scope, context);
-
-                if let Term::Void = value {
+                if let Term::Void = term {
                     panic!("Cannot assign Void.");
                 }
 
-                scopes.mutate_value(&ident, current_scope, value);
+                scopes.mutate_value(&ident, current_scope, term.clone());
             } else {
                 panic!("Unknown identifier `{}`", ident);
             }
