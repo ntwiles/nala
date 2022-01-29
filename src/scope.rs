@@ -5,22 +5,36 @@ use crate::ast;
 #[derive(Debug)]
 pub struct Scope {
     parent: Option<ScopeId>,
-    bindings: HashMap<String, (ast::Term, bool)>,
+    bindings: HashMap<String, (ast::Term, String, bool)>,
 }
 
 impl Scope {
     pub fn new(parent: Option<ScopeId>) -> Scope {
         Scope {
             parent,
-            bindings: HashMap::<String, (ast::Term, bool)>::new(),
+            bindings: HashMap::<String, (ast::Term, String, bool)>::new(),
         }
     }
 
     pub fn add_binding(self: &mut Self, ident: &str, value: ast::Term, is_mutable: bool) {
-        self.bindings.insert(ident.to_owned(), (value, is_mutable));
+        let typeName = match value {
+            ast::Term::Array(_) => "Array",
+            ast::Term::Bool(_) => "Bool",
+            ast::Term::Break(_) => "<Break>",
+            ast::Term::Func(_, _) => "Func",
+            ast::Term::Num(_) => "Num",
+            ast::Term::String(_) => "String",
+            ast::Term::Symbol(_) => "Symbol",
+            ast::Term::Void => "<Void>",
+        };
+
+        self.bindings.insert(
+            ident.to_owned(),
+            (value, String::from(typeName), is_mutable),
+        );
     }
 
-    pub fn get_binding(self: &Self, ident: &str) -> Option<(ast::Term, bool)> {
+    pub fn get_binding(self: &Self, ident: &str) -> Option<(ast::Term, String, bool)> {
         if let Some(binding) = self.bindings.get(ident) {
             Some(binding.clone())
         } else {
@@ -54,7 +68,7 @@ impl Scopes {
         let scope = self.scopes.get(current_scope.index).unwrap();
 
         match scope.get_binding(&ident) {
-            Some((value, _)) => Some(value),
+            Some((value, _, _)) => Some(value),
             None => match scope.parent {
                 Some(parent_scope) => Some(self.get_value(ident, parent_scope)),
                 None => None,
@@ -96,7 +110,7 @@ impl Scopes {
         let scope = self.find_scope_with_binding(ident, current_scope);
 
         if let Some(scope) = scope {
-            let (_, is_mutable) = scope.get_binding(ident).unwrap();
+            let (_, _, is_mutable) = scope.get_binding(ident).unwrap();
             if is_mutable {
                 scope.add_binding(ident, new_value, true)
             } else {
