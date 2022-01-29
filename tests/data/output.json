@@ -78,6 +78,11 @@
             "8"
         ]
     },
+    "for-break": {
+        "output": [
+            "2"
+        ]
+    },
     "func-args": {
         "output": [
             "The total is 12"
@@ -142,6 +147,14 @@
     "string-special-chars": {
         "output": [
             "!@#$%^&*()_+-=;:\""
+        ]
+    },
+    "wiles-basic": {
+        "output": [
+            "h",
+            "e",
+            "l",
+            "l"
         ]
     }
 }

@@ -33,8 +33,10 @@ pub enum Stmt {
     Assign(SymbolOrIndex, Expr),
     If(Expr, Box<Block>),
     For(String, Expr, Box<Block>),
+    Wiles(Expr, Box<Block>),
     Func(String, Box<Params>, Box<Block>),
     Expr(Expr),
+    Break(Expr),
 }
 
 #[derive(Debug, Clone)]
@@ -112,6 +114,7 @@ pub enum Term {
     Array(Vec<Term>),
     Func(Box<Params>, Box<Block>),
     Void,
+    Break(Box<Expr>),
 }
 
 #[derive(Debug)]
@@ -134,6 +137,7 @@ impl Term {
             Term::Array(a) => String::from(format!("[{}]", a.len())),
             Term::Func(_, _) => String::from("<Func>"),
             Term::Void => String::from("<Void>"),
+            Term::Break(_) => String::from("<Break>"),
         }
     }
 }

@@ -60,13 +60,12 @@ fn interpret_stmt(
         Stmt::For(ident, expr, block) => {
             interpret_for(ident, &expr, block, scopes, current_scope, context)
         }
+        Stmt::Wiles(expr, block) => interpret_wiles(&expr, block, scopes, current_scope, context),
         Stmt::Func(ident, params, block) => {
             interpret_func(ident, params, block, scopes, current_scope)
         }
-        Stmt::Expr(expr) => {
-            // TODO: Decide what to do if our expression returns a value here instead of just ignoring it.
-            evaluate_expr(expr, scopes, current_scope, context)
-        }
+        Stmt::Expr(expr) => evaluate_expr(expr, scopes, current_scope, context),
+        Stmt::Break(expr) => Term::Break(Box::new(expr.clone())),
     }
 }
 

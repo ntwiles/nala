@@ -23,8 +23,10 @@ Stmt: ast::Stmt = {
     "mut" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, true),
     "if" "(" <e:Expr> ")" <b:Block> => ast::Stmt::If(e, Box::new(b)),
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
+    "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
     "func" <s:Symbol> "(" <p:Params> ")" <b:Block> => ast::Stmt::Func(s, Box::new(p), Box::new(b)),
     "func" <s:Symbol> "(" ")" <b:Block> => ast::Stmt::Func(s, Box::new(ast::Params::Empty), Box::new(b)),
+    "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
     <s:SymbolOrIndex> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <e:Expr> ";" => ast::Stmt::Expr(e),
 };
