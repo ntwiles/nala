@@ -77,7 +77,11 @@ pub fn interpret_wiles(
         };
 
         if condition {
-            interpret_block(block, scopes, current_scope, context);
+            let result = interpret_block(block, scopes, current_scope, context);
+
+            if let Term::Break(expr) = result {
+                return evaluate_expr(&*expr, scopes, current_scope, context);
+            }
         } else {
             break;
         }
