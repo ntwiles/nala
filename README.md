@@ -25,8 +25,11 @@ Parse and interpret in the console any `.nl` file with the following command:
 cargo run path/to/script.nl
 ```
 
-Example scripts are provided in the `example/` directory.
+## Eamples
 
+Example scripts are provided in the `examples/` directory. 
+
+Within that directory, `sandbox.nl` will be ignored by git.
 # Documentation
 
 Documentation can be found on the [Nala Wiki](https://github.com/ntwiles/nala-rust/wiki).
