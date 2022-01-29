@@ -68,8 +68,8 @@ pub fn interpret_assign(
 
                 let existing = scopes.get_value(ident, current_scope);
 
-                let existing_type = existing.value_type();
-                let term_type = term.value_type();
+                let existing_type = existing.get_type();
+                let term_type = term.get_type();
 
                 if existing_type == term_type {
                     scopes.mutate_value(&ident, current_scope, term.clone());

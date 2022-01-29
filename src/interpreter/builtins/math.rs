@@ -8,7 +8,10 @@ use crate::{
 
 pub fn get_floor_block() -> Block {
     // TODO: Get rid of this magic string, maybe use enum?
-    let params = Params::Param(String::from("num"), ValueType::Number);
+    let params = Params::Param(
+        String::from("num"),
+        GenericType::Primitive(ValueType::Number),
+    );
     Block::RustBlock(params, builtin_floor)
 }
 fn builtin_floor(

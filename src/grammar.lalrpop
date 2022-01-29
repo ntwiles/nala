@@ -50,12 +50,16 @@ Elems: ast::Elems = {
 };
 
 Params: ast::Params = {
-    <p:Params> "," <s:Symbol> ":" <v:ValueType> => ast::Params::Params(Box::new(p), (s, v)),
-    <s:Symbol> ":" <v:ValueType> => ast::Params::Param(s, v)
+    <p:Params> "," <s:Symbol> ":" <g:GenericType> => ast::Params::Params(Box::new(p), (s, g)),
+    <s:Symbol> ":" <g:GenericType> => ast::Params::Param(s, g)
 }
 
-ValueType: ast::ValueType = {
-    "Array" => ast::ValueType::Array,
+GenericType: ast::GenericType = {
+    "Array" "<" <GenericType> ">" => ast::GenericType::Generic(ast::ValueType::Array, Box::new(<>)),
+    <PrimitiveType> => ast::GenericType::Primitive(<>)
+}
+
+PrimitiveType: ast::ValueType = {
     "Bool" => ast::ValueType::Bool,
     "Func" => ast::ValueType::Func,
     "Number" => ast::ValueType::Number,

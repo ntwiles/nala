@@ -59,9 +59,15 @@ pub enum Elems {
 
 #[derive(Debug, Clone)]
 pub enum Params {
-    Params(Box<Params>, (String, ValueType)),
-    Param(String, ValueType),
+    Params(Box<Params>, (String, GenericType)),
+    Param(String, GenericType),
     Empty,
+}
+
+#[derive(Debug, Clone)]
+pub enum GenericType {
+    Generic(ValueType, Box<GenericType>),
+    Primitive(ValueType),
 }
 
 #[derive(Debug, Clone)]
@@ -154,21 +160,77 @@ impl Term {
         }
     }
 
-    pub fn value_type(&self) -> ValueType {
+    pub fn get_type(&self) -> GenericType {
         match self {
-            Term::Array(_) => ValueType::Array,
-            Term::Bool(_) => ValueType::Bool,
-            Term::Break(_) => ValueType::Break,
-            Term::Func(_, _) => ValueType::Func,
-            Term::Num(_) => ValueType::Number,
-            Term::String(_) => ValueType::String,
-            Term::Symbol(_) => ValueType::Symbol,
-            Term::Void => ValueType::Void,
+            Term::Array(items) => {
+                let first = items[0].get_type();
+                GenericType::Generic(ValueType::Array, Box::new(first))
+            }
+            Term::Bool(_) => GenericType::Primitive(ValueType::Bool),
+            Term::Break(_) => GenericType::Primitive(ValueType::Break),
+            Term::Func(_, _) => GenericType::Primitive(ValueType::Func),
+            Term::Num(_) => GenericType::Primitive(ValueType::Number),
+            Term::String(_) => GenericType::Primitive(ValueType::String),
+            Term::Symbol(_) => GenericType::Primitive(ValueType::Symbol),
+            Term::Void => GenericType::Primitive(ValueType::Void),
+        }
+    }
+}
+
+impl GenericType {
+    pub fn is_assignable_to(&self, other: &Self) -> bool {
+        match self {
+            GenericType::Generic(sv, svv) => {
+                if let GenericType::Generic(ov, ovv) = other {
+                    sv.is_assignable_to(ov) && svv.is_assignable_to(ovv)
+                } else {
+                    false
+                }
+            }
+            GenericType::Primitive(sv) => {
+                if let GenericType::Primitive(ov) = other {
+                    sv.is_assignable_to(ov)
+                } else {
+                    false
+                }
+            }
+        }
+    }
+
+    pub fn to_string(&self) -> String {
+        match self {
+            GenericType::Generic(v, vv) => format!("{0}<{1}>", v.to_string(), vv.to_string()),
+            GenericType::Primitive(v) => v.to_string(),
+        }
+    }
+}
+
+impl PartialEq for GenericType {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            GenericType::Generic(mv, mg) => {
+                if let GenericType::Generic(ov, og) = other {
+                    return mv == ov && mg == og;
+                } else {
+                    panic!("Cannot compare between generic and primitive types.")
+                }
+            }
+            GenericType::Primitive(me) => {
+                if let GenericType::Primitive(other) = other {
+                    return me == other;
+                } else {
+                    panic!("Cannot compare between generic and primitive types.");
+                }
+            }
         }
     }
 }
 
 impl ValueType {
+    pub fn is_assignable_to(&self, param: &Self) -> bool {
+        param == &ValueType::Any || self.to_string() == param.to_string()
+    }
+
     pub fn to_string(&self) -> String {
         let type_name = match self {
             ValueType::Array => "Array",
