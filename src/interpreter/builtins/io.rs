@@ -8,7 +8,7 @@ use crate::{
 
 pub fn get_print_block() -> Block {
     // TODO: Get rid of this magic string, maybe use enum?
-    let params = Params::Param(String::from("message"), String::from("String"));
+    let params = Params::Param(String::from("message"), ValueType::Any);
     Block::RustBlock(params, builtin_print)
 }
 

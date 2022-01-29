@@ -46,15 +46,18 @@ pub fn evaluate_call(
                 }
 
                 for i in 0..params.len() {
-                    let (param, param_type_name) = params.get(i).unwrap();
+                    let (param, param_type) = params.get(i).unwrap();
                     let arg = args.get(i).unwrap();
 
-                    if get_type_name(arg.clone()) != param_type_name.to_owned() {
+                    let arg_type = get_value_type(arg.clone());
+                    let param_type = param_type.clone();
+
+                    if arg_type != param_type && param_type != ValueType::Any {
                         panic!(
                             "Passed value `{3}` of type {0} to func `{1}` where {2} was expected.",
-                            get_type_name(arg.clone()),
+                            get_value_type(arg.clone()).to_string(),
                             ident,
-                            param_type_name,
+                            param_type.to_string(),
                             arg.clone().to_string()
                         )
                     }
@@ -77,7 +80,7 @@ pub fn evaluate_params(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Vec<(String, String)> {
+) -> Vec<(String, ValueType)> {
     match params {
         Params::Params(params, param) => {
             let mut params = evaluate_params(params, scopes, current_scope, context);

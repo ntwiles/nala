@@ -50,8 +50,16 @@ Elems: ast::Elems = {
 };
 
 Params: ast::Params = {
-    <p:Params> "," <s:Symbol> ":" <ss:Symbol> => ast::Params::Params(Box::new(p), (s, ss)),
-    <s:Symbol> ":" <ss:Symbol> => ast::Params::Param(s, ss)
+    <p:Params> "," <s:Symbol> ":" <v:ValueType> => ast::Params::Params(Box::new(p), (s, v)),
+    <s:Symbol> ":" <v:ValueType> => ast::Params::Param(s, v)
+}
+
+ValueType: ast::ValueType = {
+    "Array" => ast::ValueType::Array,
+    "Bool" => ast::ValueType::Bool,
+    "Func" => ast::ValueType::Func,
+    "Num" => ast::ValueType::Num,
+    "String" => ast::ValueType::String,
 }
 
 Addend: ast::Addend = {

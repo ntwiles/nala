@@ -69,13 +69,16 @@ pub fn interpret_assign(
 
                 let existing = scopes.get_value(ident, current_scope);
 
-                if get_type_name(existing.clone()) == get_type_name(term.clone()) {
+                let existing_type = get_value_type(existing);
+                let term_type = get_value_type(term.clone());
+
+                if existing_type == term_type {
                     scopes.mutate_value(&ident, current_scope, term.clone());
                 } else {
                     panic!(
                         "Cannot assign value of type {0} where {1} is expected.",
-                        get_type_name(term.clone()),
-                        get_type_name(existing)
+                        term_type.to_string(),
+                        existing_type.to_string()
                     )
                 }
             } else {

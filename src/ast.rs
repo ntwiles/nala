@@ -59,9 +59,22 @@ pub enum Elems {
 
 #[derive(Debug, Clone)]
 pub enum Params {
-    Params(Box<Params>, (String, String)),
-    Param(String, String),
+    Params(Box<Params>, (String, ValueType)),
+    Param(String, ValueType),
     Empty,
+}
+
+#[derive(Debug, Clone)]
+pub enum ValueType {
+    Array,
+    Bool,
+    Break,
+    Func,
+    Num,
+    String,
+    Symbol,
+    Void,
+    Any,
 }
 
 #[derive(Debug, Clone)]
@@ -139,5 +152,29 @@ impl Term {
             Term::Void => String::from("<Void>"),
             Term::Break(_) => String::from("<Break>"),
         }
+    }
+}
+
+impl ValueType {
+    pub fn to_string(&self) -> String {
+        let type_name = match self {
+            ValueType::Array => "Array",
+            ValueType::Bool => "Bool",
+            ValueType::Break => "<Break>",
+            ValueType::Func => "Func",
+            ValueType::Num => "Num",
+            ValueType::String => "String",
+            ValueType::Symbol => "<Symbol>",
+            ValueType::Void => "<Void>",
+            ValueType::Any => "<Any>",
+        };
+
+        String::from(type_name)
+    }
+}
+
+impl PartialEq for ValueType {
+    fn eq(&self, other: &Self) -> bool {
+        self.to_string() == other.to_string()
     }
 }
