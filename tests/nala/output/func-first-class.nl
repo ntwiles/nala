@@ -1,5 +1,5 @@
 
-func foo(message) {
+func foo(message: String) {
     print(message);
 }
 

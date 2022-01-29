@@ -50,8 +50,8 @@ Elems: ast::Elems = {
 };
 
 Params: ast::Params = {
-    <p:Params> "," <s:Symbol> => ast::Params::Params(Box::new(p), s),
-    <Symbol> => ast::Params::Param(<>)
+    <p:Params> "," <s:Symbol> ":" <ss:Symbol> => ast::Params::Params(Box::new(p), (s, ss)),
+    <s:Symbol> ":" <ss:Symbol> => ast::Params::Param(s, ss)
 }
 
 Addend: ast::Addend = {

@@ -1,6 +1,6 @@
 
 
-func add(a, b) {
+func add(a: Num, b: Num) {
     a + b;
 }
 

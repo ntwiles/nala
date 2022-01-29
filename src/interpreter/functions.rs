@@ -45,7 +45,7 @@ pub fn evaluate_call(
                 }
 
                 for i in 0..params.len() {
-                    let param = params.get(i).unwrap();
+                    let (param, _) = params.get(i).unwrap();
                     let arg = args.get(i).unwrap();
 
                     scopes.add_binding(param, func_scope, arg.clone(), true)
@@ -66,14 +66,14 @@ pub fn evaluate_params(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Vec<String> {
+) -> Vec<(String, String)> {
     match params {
         Params::Params(params, param) => {
             let mut params = evaluate_params(params, scopes, current_scope, context);
             params.push(param.to_owned());
             params
         }
-        Params::Param(param) => vec![param.to_owned()],
+        Params::Param(param, type_name) => vec![(param.to_owned(), type_name.to_owned())],
         Params::Empty => vec![],
     }
 }

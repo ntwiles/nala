@@ -8,7 +8,7 @@ use crate::{
 
 pub fn get_len_block() -> Block {
     // TODO: Get rid of this magic string, maybe use enum?
-    let params = Params::Param("array".to_string());
+    let params = Params::Param(String::from("array"), String::from("Array"));
     Block::RustBlock(params, builtin_len)
 }
 
@@ -16,10 +16,15 @@ pub fn get_slice_block() -> Block {
     // TODO: Get rid of this magic string, maybe use enum?
     // TODO: The experience for laying out multiple params is terrible here.
     let first_two_params = Params::Params(
-        Box::new(Params::Param("array".to_string())),
-        "start".to_string(),
+        Box::new(Params::Param(String::from("array"), String::from("Array"))),
+        (String::from("start"), String::from("Num")),
     );
-    let params = Params::Params(Box::new(first_two_params), "end".to_string());
+
+    let params = Params::Params(
+        Box::new(first_two_params),
+        (String::from("end"), String::from("Num")),
+    );
+
     Block::RustBlock(params, builtin_slice)
 }
 
