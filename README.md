@@ -29,4 +29,4 @@ Example scripts are provided in the `example/` directory.
 
 # Documentation
 
-Documentation can be found on the [Nala Wiki](https://github.com/ntwiles/nala-rust/wiki)
+Documentation can be found on the [Nala Wiki](https://github.com/ntwiles/nala-rust/wiki).
