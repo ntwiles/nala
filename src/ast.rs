@@ -30,7 +30,7 @@ pub type BuiltinFunc = fn(HashMap<String, Term>, &mut Scopes, ScopeId, &mut dyn 
 #[derive(Debug, Clone)]
 pub enum Stmt {
     Declare(String, Expr, bool),
-    Assign(String, Expr),
+    Assign(SymbolOrIndex, Expr),
     If(Expr, Box<Block>),
     For(String, Expr, Box<Block>),
     Func(String, Box<Params>, Box<Block>),
@@ -89,6 +89,12 @@ pub enum Factor {
 pub enum Call {
     Call(String, Box<Elems>),
     Index(Index),
+}
+
+#[derive(Debug, Clone)]
+pub enum SymbolOrIndex {
+    Symbol(String),
+    Index(String, Box<Expr>),
 }
 
 #[derive(Debug, Clone)]

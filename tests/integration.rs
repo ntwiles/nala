@@ -81,5 +81,7 @@ fn read_and_execute(path: &str, test_context: &mut TestContext) {
 
     if let Some(parsed) = result {
         interpret_tree(parsed, test_context);
+    } else {
+        panic!("Could not parse nala file! {}", path)
     }
 }

@@ -25,7 +25,7 @@ Stmt: ast::Stmt = {
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
     "func" <s:Symbol> "(" <p:Params> ")" <b:Block> => ast::Stmt::Func(s, Box::new(p), Box::new(b)),
     "func" <s:Symbol> "(" ")" <b:Block> => ast::Stmt::Func(s, Box::new(ast::Params::Empty), Box::new(b)),
-    <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
+    <s:SymbolOrIndex> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <e:Expr> ";" => ast::Stmt::Expr(e),
 };
 
@@ -69,6 +69,11 @@ Call: ast::Call = {
     <s:Symbol> "(" ")" => ast::Call::Call(s, Box::new(ast::Elems::Empty)),
     Index => ast::Call::Index(<>)
 };
+
+SymbolOrIndex: ast::SymbolOrIndex = {
+    <s:Symbol> "[" <e:Expr> "]" => ast::SymbolOrIndex::Index(s, Box::new(e)),
+    <Symbol> => ast::SymbolOrIndex::Symbol(<>)
+}
 
 Index: ast::Index = {
     <s:Symbol> "[" <e:Expr> "]" => ast::Index::Index(s, Box::new(e)),

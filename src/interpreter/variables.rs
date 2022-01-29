@@ -30,24 +30,53 @@ pub fn interpret_declare(
 }
 
 pub fn interpret_assign(
-    ident: &String,
+    variable: &SymbolOrIndex,
     expr: &Expr,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Term {
-    println!("Interpreting assignment!");
+    match variable {
+        SymbolOrIndex::Index(ident, index_expr) => {
+            if scopes.binding_exists(&ident, current_scope) {
+                let index = evaluate_expr(&index_expr, scopes, current_scope, context);
+                let value = evaluate_expr(&expr, scopes, current_scope, context);
 
-    if scopes.binding_exists(&ident, current_scope) {
-        let value = evaluate_expr(&expr, scopes, current_scope, context);
+                if let Term::Void = value {
+                    panic!("Cannot assign Void.");
+                }
 
-        if let Term::Void = value {
-            panic!("Cannot assign Void.");
+                let index = if let Term::Num(index) = index {
+                    index
+                } else {
+                    panic!("Index does not resolve to a Number.");
+                };
+
+                let array = scopes.get_value(&ident, current_scope);
+
+                if let Term::Array(mut array) = array {
+                    // TODO: This doesn't work with bad input.
+                    array[index as usize] = value;
+
+                    scopes.mutate_value(&ident, current_scope, Term::Array(array));
+                } else {
+                    panic!("Trying to index into a non-Array.")
+                }
+            }
         }
+        SymbolOrIndex::Symbol(ident) => {
+            if scopes.binding_exists(&ident, current_scope) {
+                let value = evaluate_expr(&expr, scopes, current_scope, context);
 
-        scopes.mutate_value(&ident, current_scope, value);
-    } else {
-        panic!("Unknown identifier `{}`", ident);
+                if let Term::Void = value {
+                    panic!("Cannot assign Void.");
+                }
+
+                scopes.mutate_value(&ident, current_scope, value);
+            } else {
+                panic!("Unknown identifier `{}`", ident);
+            }
+        }
     }
 
     Term::Void
