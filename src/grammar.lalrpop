@@ -58,7 +58,7 @@ ValueType: ast::ValueType = {
     "Array" => ast::ValueType::Array,
     "Bool" => ast::ValueType::Bool,
     "Func" => ast::ValueType::Func,
-    "Num" => ast::ValueType::Num,
+    "Number" => ast::ValueType::Number,
     "String" => ast::ValueType::String,
 }
 

@@ -70,7 +70,7 @@ pub enum ValueType {
     Bool,
     Break,
     Func,
-    Num,
+    Number,
     String,
     Symbol,
     Void,
@@ -153,6 +153,19 @@ impl Term {
             Term::Break(_) => String::from("<Break>"),
         }
     }
+
+    pub fn value_type(&self) -> ValueType {
+        match self {
+            Term::Array(_) => ValueType::Array,
+            Term::Bool(_) => ValueType::Bool,
+            Term::Break(_) => ValueType::Break,
+            Term::Func(_, _) => ValueType::Func,
+            Term::Num(_) => ValueType::Number,
+            Term::String(_) => ValueType::String,
+            Term::Symbol(_) => ValueType::Symbol,
+            Term::Void => ValueType::Void,
+        }
+    }
 }
 
 impl ValueType {
@@ -162,7 +175,7 @@ impl ValueType {
             ValueType::Bool => "Bool",
             ValueType::Break => "<Break>",
             ValueType::Func => "Func",
-            ValueType::Num => "Num",
+            ValueType::Number => "Number",
             ValueType::String => "String",
             ValueType::Symbol => "<Symbol>",
             ValueType::Void => "<Void>",

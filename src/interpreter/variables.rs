@@ -4,7 +4,6 @@ use crate::{
     ast::*,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
-    types::*,
 };
 
 pub fn interpret_declare(
@@ -69,8 +68,8 @@ pub fn interpret_assign(
 
                 let existing = scopes.get_value(ident, current_scope);
 
-                let existing_type = get_value_type(existing);
-                let term_type = get_value_type(term.clone());
+                let existing_type = existing.value_type();
+                let term_type = term.value_type();
 
                 if existing_type == term_type {
                     scopes.mutate_value(&ident, current_scope, term.clone());

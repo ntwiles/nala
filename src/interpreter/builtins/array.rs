@@ -17,12 +17,12 @@ pub fn get_slice_block() -> Block {
     // TODO: The experience for laying out multiple params is terrible here.
     let first_two_params = Params::Params(
         Box::new(Params::Param(String::from("array"), ValueType::Array)),
-        (String::from("start"), ValueType::Num),
+        (String::from("start"), ValueType::Number),
     );
 
     let params = Params::Params(
         Box::new(first_two_params),
-        (String::from("end"), ValueType::Num),
+        (String::from("end"), ValueType::Number),
     );
 
     Block::RustBlock(params, builtin_slice)

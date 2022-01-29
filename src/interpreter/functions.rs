@@ -4,7 +4,6 @@ use crate::{
     ast::*,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
-    types::*,
 };
 
 pub fn interpret_func(
@@ -49,13 +48,13 @@ pub fn evaluate_call(
                     let (param, param_type) = params.get(i).unwrap();
                     let arg = args.get(i).unwrap();
 
-                    let arg_type = get_value_type(arg.clone());
+                    let arg_type = arg.value_type();
                     let param_type = param_type.clone();
 
                     if arg_type != param_type && param_type != ValueType::Any {
                         panic!(
                             "Passed value `{3}` of type {0} to func `{1}` where {2} was expected.",
-                            get_value_type(arg.clone()).to_string(),
+                            arg.value_type().to_string(),
                             ident,
                             param_type.to_string(),
                             arg.clone().to_string()
