@@ -63,7 +63,7 @@ foo = 7;
 Lexical scope works as it does in most languages and should be intuitive. Blocks create new scopes in which local bindings can be created The following will throw a runtime error at execution of the last line:
 
 ```
-if (2 == 2) {
+if (true) {
     const foo = 'bar';
 }
 
@@ -77,7 +77,7 @@ Identifiers can be 'shadowed' in lower scopes by re-using names. The following i
 ```
 const foo = 'world';
 
-if (2 == 2) {
+if (true) {
     const foo = 'hello';
     print(foo);
 }
@@ -114,11 +114,11 @@ The `+` operator can also be used between strings to perform concatenation.
 The syntax for `if` branching should be familiar:
 
 ```
-if (2 == 2) {
+if (true) {
     print('should print');
 }
 
-if (2 == 3) {
+if (false) {
     print('should not print');
 }
 ```
@@ -271,7 +271,7 @@ wiles (i < 3) {
 You can break out of (and return a value from) a `wiles` loop early with this syntax:
 
 ```
-wiles (1 == 1) {
+wiles (true) {
     break(1);
 }
 ```
