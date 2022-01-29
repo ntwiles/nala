@@ -26,9 +26,19 @@ Stmt: ast::Stmt = {
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
     "func" <s:Symbol> "(" <p:Params> ")" <b:Block> => ast::Stmt::Func(s, Box::new(p), Box::new(b)),
     "func" <s:Symbol> "(" ")" <b:Block> => ast::Stmt::Func(s, Box::new(ast::Params::Empty), Box::new(b)),
+    "enum" <s:Symbol> "{" <k:Kinds> "}" => ast::Stmt::Enum(s, Box::new(k)),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
     <s:SymbolOrIndex> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <e:Expr> ";" => ast::Stmt::Expr(e),
+};
+
+Kinds: ast::Kinds = {
+    <kk:Kinds> "," <k:Kind> => ast::Kinds::Kinds(Box::new(kk), k),
+    <Kind> => ast::Kinds::Kind(<>)
+};
+
+Kind: ast::Kind = {
+    <Symbol> => ast::Kind::Empty(<>)
 };
 
 Expr: ast::Expr = {

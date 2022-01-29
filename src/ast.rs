@@ -29,20 +29,32 @@ pub type BuiltinFunc = fn(HashMap<String, Term>, &mut Scopes, ScopeId, &mut dyn 
 
 #[derive(Debug, Clone)]
 pub enum Stmt {
-    Declare(String, Expr, bool),
     Assign(SymbolOrIndex, Expr),
-    If(Expr, Box<Block>),
-    For(String, Expr, Box<Block>),
-    Wiles(Expr, Box<Block>),
-    Func(String, Box<Params>, Box<Block>),
-    Expr(Expr),
     Break(Expr),
+    Declare(String, Expr, bool),
+    Enum(String, Box<Kinds>),
+    Expr(Expr),
+    For(String, Expr, Box<Block>),
+    Func(String, Box<Params>, Box<Block>),
+    If(Expr, Box<Block>),
+    Wiles(Expr, Box<Block>),
 }
 
 #[derive(Debug, Clone)]
 pub enum Stmts {
     Stmts(Box<Stmts>, Stmt),
     Stmt(Stmt),
+}
+
+#[derive(Debug, Clone)]
+pub enum Kinds {
+    Kinds(Box<Kinds>, Kind),
+    Kind(Kind),
+}
+
+#[derive(Debug, Clone)]
+pub enum Kind {
+    Empty(String),
 }
 
 #[derive(Debug, Clone)]

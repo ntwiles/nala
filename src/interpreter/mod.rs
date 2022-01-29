@@ -2,6 +2,7 @@ mod arrays;
 pub mod basic;
 mod branching;
 mod builtins;
+mod enums;
 mod functions;
 mod operations;
 mod variables;

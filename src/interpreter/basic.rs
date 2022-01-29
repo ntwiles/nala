@@ -65,6 +65,7 @@ fn interpret_stmt(
         }
         Stmt::Expr(expr) => evaluate_expr(expr, scopes, current_scope, context),
         Stmt::Break(expr) => Term::Break(Box::new(expr.clone())),
+        Stmt::Enum(ident, kinds) => Term::Void,
     }
 }
 
