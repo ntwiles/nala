@@ -18,39 +18,26 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
 
     let top_scope = scopes.new_scope(None);
 
-    let builtins = get_builtins();
-
-    for builtin in builtins.iter() {
-        let (identifier, block) = builtin;
+    for (ident, block) in get_builtins().iter() {
         if let Block::RustBlock(params, _block) = block.clone() {
-            interpret_func(identifier, &params, &block, &mut scopes, top_scope);
+            interpret_func(ident, &params, &block, &mut scopes, top_scope);
         }
     }
 
-    interpret_declare(
-        &String::from("true"),
-        &Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Term(
-            Term::Bool(true),
-        ))))),
-        &mut scopes,
-        top_scope,
-        context,
-        true,
-    );
-
-    interpret_declare(
-        &String::from("false"),
-        &Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Term(
-            Term::Bool(false),
-        ))))),
-        &mut scopes,
-        top_scope,
-        context,
-        true,
-    );
+    for (ident, term) in get_constants().iter() {
+        interpret_declare(ident, &term, &mut scopes, top_scope, context, false);
+    }
 
     match program {
         Program::Block(block) => interpret_block(&block, &mut scopes, top_scope, context),
         Program::Stmts(stmts) => interpret_stmts(&stmts, &mut scopes, top_scope, context),
     };
+}
+
+fn get_constants() -> Vec<(String, Term)> {
+    let constants = vec![
+        (String::from("true"), Term::Bool(true)),
+        (String::from("false"), Term::Bool(false)),
+    ];
+    constants
 }

@@ -8,7 +8,7 @@ use crate::{
 
 pub fn interpret_declare(
     ident: &String,
-    expr: &Expr,
+    term: &Term,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
@@ -17,13 +17,11 @@ pub fn interpret_declare(
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
-        let value = evaluate_expr(&expr, scopes, current_scope, context);
-
-        if let Term::Void = value {
+        if let Term::Void = term {
             panic!("Cannot assign Void.");
         }
 
-        scopes.add_binding(&ident, current_scope, value, is_mutable);
+        scopes.add_binding(&ident, current_scope, term.clone(), is_mutable);
     }
 
     Term::Void
