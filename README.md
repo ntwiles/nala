@@ -181,13 +181,20 @@ Note: No type checking is currently done in function arguments. A future version
 Arrays are initialized with the following literal syntax:
 
 ```
-const array = [5, 4, 2, 8];
+mut array = [5, 4, 2, 8];
 ```
 
 Values can be accessed by index with the following syntax:
 
 ```
 print(array[0]);
+```
+
+In order to modify the elements of an array after initialization, the array must be declared as `mut`. The following will error:
+
+```
+const array = [1, 8, 3, 4];
+array[2] = 2;
 ```
 
 ### Iterating Arrays
