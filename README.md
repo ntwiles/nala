@@ -57,7 +57,6 @@ Both mutable and immutable variables must be initialized with value. The followi
 mut foo;
 foo = 7;
 ```
-
 ### Scope
 
 Lexical scope works as it does in most languages and should be intuitive. Blocks create new scopes in which local bindings can be created The following will throw a runtime error at execution of the last line:
@@ -166,7 +165,7 @@ print('foo');
 Functions are declared and invoked in this way:
 
 ```
-func add(a, b) {
+func add(a: Number, b: Number) {
     a + b;
 }
 
