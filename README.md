@@ -209,6 +209,24 @@ for num in nums {
 }
 ```
 
+#### Breaking For Loops
+
+You can break out of (and return a value from) a `for` loop early with this syntax:
+
+```
+for num in nums {
+    if (num == 2) {
+        break(i);
+    }
+
+    i = i + 1;
+}
+```
+
+Because this enables the `for` loop to return values of multiple types (one of which is `Void`), 
+the evaluated value of the `for` block cannot be captured and assigned. Instead, this feature
+should be used to return from any parent block.
+
 ### Get Array Length
 
 You can get the number of items currently in an array with this syntax:
@@ -235,4 +253,16 @@ You can round any Num down to the nearest integer with this syntax:
 ```
 const decimal = 6.7;
 const floored = floor(decimal);
+```
+
+## Looping
+
+In order to loop conditionally, use the following syntax:
+
+```
+mut i = 0;
+wiles (i < 3) {
+    print(i);
+    i = i + 1;
+}
 ```

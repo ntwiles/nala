@@ -58,9 +58,9 @@ fn test_run_examples(cat: &str) {
 
 // TODO: Improve this to work with above style of testing. Maybe should throw status can be embedded in json files.
 #[test]
-#[should_panic]
+#[should_panic(expected = "Could not parse nala file!")]
 fn test_run_error_examples() {
-    let test_data = ["assign-void", "array-len"];
+    let test_data = ["assign-void", "array-len", "for-return-void"];
 
     for file in test_data {
         let file_name = format!("tests/nala/error/{}.nl", file);
