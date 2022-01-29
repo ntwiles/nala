@@ -17,7 +17,7 @@ impl Scope {
     }
 
     pub fn add_binding(self: &mut Self, ident: &str, value: ast::Term, is_mutable: bool) {
-        let typeName = match value {
+        let type_name = match value {
             ast::Term::Array(_) => "Array",
             ast::Term::Bool(_) => "Bool",
             ast::Term::Break(_) => "<Break>",
@@ -30,7 +30,7 @@ impl Scope {
 
         self.bindings.insert(
             ident.to_owned(),
-            (value, String::from(typeName), is_mutable),
+            (value, String::from(type_name), is_mutable),
         );
     }
 
