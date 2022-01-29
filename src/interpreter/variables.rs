@@ -4,6 +4,7 @@ use crate::{
     ast::*,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
+    types::*,
 };
 
 pub fn interpret_declare(
@@ -63,10 +64,20 @@ pub fn interpret_assign(
         SymbolOrIndex::Symbol(ident) => {
             if scopes.binding_exists(&ident, current_scope) {
                 if let Term::Void = term {
-                    panic!("Cannot assign Void.");
+                    panic!("Cannot assign value of type Void.");
                 }
 
-                scopes.mutate_value(&ident, current_scope, term.clone());
+                let existing = scopes.get_value(ident, current_scope);
+
+                if get_type_name(existing.clone()) == get_type_name(term.clone()) {
+                    scopes.mutate_value(&ident, current_scope, term.clone());
+                } else {
+                    panic!(
+                        "Cannot assign value of type {0} where {1} is expected.",
+                        get_type_name(term.clone()),
+                        get_type_name(existing)
+                    )
+                }
             } else {
                 panic!("Unknown identifier `{}`", ident);
             }
