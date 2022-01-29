@@ -25,7 +25,7 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
     }
 
     for (ident, term) in get_constants().iter() {
-        interpret_declare(ident, &term, &mut scopes, top_scope, context, false);
+        interpret_declare(ident, &term, &mut scopes, top_scope, false);
     }
 
     match program {

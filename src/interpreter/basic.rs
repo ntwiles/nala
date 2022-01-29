@@ -49,14 +49,7 @@ fn interpret_stmt(
     match stmt {
         Stmt::Declare(ident, expr, is_mutable) => {
             let term = evaluate_expr(expr, scopes, current_scope, context);
-            interpret_declare(
-                ident,
-                &term,
-                scopes,
-                current_scope,
-                context,
-                is_mutable.clone(),
-            )
+            interpret_declare(ident, &term, scopes, current_scope, is_mutable.clone())
         }
         Stmt::Assign(ident, expr) => interpret_assign(ident, expr, scopes, current_scope, context),
         Stmt::If(cond, block) => interpret_if(cond, block, scopes, current_scope, context),

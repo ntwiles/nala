@@ -11,7 +11,6 @@ pub fn interpret_declare(
     term: &Term,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
     is_mutable: bool,
 ) -> Term {
     if scopes.binding_exists_local(&ident, current_scope) {
