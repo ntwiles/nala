@@ -1,7 +1,7 @@
 
 const foo = 7;
 
-if (1 == 1) {
+if (true) {
     print(foo);
 }
 

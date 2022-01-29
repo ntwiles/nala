@@ -1,7 +1,7 @@
-if (2 == 2) {
+if (true) {
     print('should print');
 }
 
-if (2 == 3) {
+if (false) {
     print('should not print');
 }

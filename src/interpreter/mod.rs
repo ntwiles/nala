@@ -11,6 +11,7 @@ use crate::{ast::*, io_context::IoContext, scope::Scopes};
 use basic::*;
 use builtins::*;
 use functions::*;
+use variables::*;
 
 pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
     let mut scopes = Scopes::new();
@@ -25,6 +26,28 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
             interpret_func(identifier, &params, &block, &mut scopes, top_scope);
         }
     }
+
+    interpret_declare(
+        &String::from("true"),
+        &Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Term(
+            Term::Bool(true),
+        ))))),
+        &mut scopes,
+        top_scope,
+        context,
+        true,
+    );
+
+    interpret_declare(
+        &String::from("false"),
+        &Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Term(
+            Term::Bool(false),
+        ))))),
+        &mut scopes,
+        top_scope,
+        context,
+        true,
+    );
 
     match program {
         Program::Block(block) => interpret_block(&block, &mut scopes, top_scope, context),

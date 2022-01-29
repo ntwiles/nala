@@ -1,5 +1,5 @@
 
-wiles(1 == 1) {
+wiles(true) {
     print('foo');
     break(1);
 }
