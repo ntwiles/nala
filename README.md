@@ -243,7 +243,7 @@ You can retrieve a portion of an array with `slice()`. The function takes three 
 ```
 const nums = [5, 4, 2, 8];
 const middle = slice(nums, 1, 3);
-
+```
 ## Math
 
 ### Floor
@@ -254,7 +254,6 @@ You can round any Num down to the nearest integer with this syntax:
 const decimal = 6.7;
 const floored = floor(decimal);
 ```
-
 ## Looping
 
 In order to loop conditionally, use the following syntax:
@@ -266,3 +265,16 @@ wiles (i < 3) {
     i = i + 1;
 }
 ```
+
+### Breaking Wiles Loops
+You can break out of (and return a value from) a `wiles` loop early with this syntax:
+
+```
+wiles (1 == 1) {
+    break(1);
+}
+```
+
+Because this enables the `wiles` loop to return values of multiple types (one of which is `Void`), 
+the evaluated value of the `wiles` block cannot be captured and assigned. Instead, this feature
+should be used to return from any parent block.
