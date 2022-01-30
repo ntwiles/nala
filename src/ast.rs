@@ -71,31 +71,9 @@ pub enum Elems {
 
 #[derive(Debug, Clone)]
 pub enum Params {
-    Params(Box<Params>, (String, GenericType)),
-    Param(String, GenericType),
+    Params(Box<Params>, (String, Type)),
+    Param(String, Type),
     Empty,
-}
-
-#[derive(Debug, Clone)]
-pub enum GenericType {
-    Generic(PrimitiveType, Box<GenericType>),
-    Primitive(PrimitiveType),
-}
-
-#[derive(Debug, Clone)]
-pub enum PrimitiveType {
-    Array,
-    Bool,
-    Break,
-    Func,
-    Number,
-    String,
-    Symbol,
-    Void,
-    Any,
-    Enum,
-    Kind,
-    Unknown,
 }
 
 #[derive(Debug, Clone)]
@@ -161,7 +139,25 @@ pub enum Term {
 
 #[derive(Debug, Clone)]
 pub enum Type {
+    Nested(PrimitiveType, Box<Type>),
     Enum(String, Box<KindsDeclare>),
+    Primitive(PrimitiveType),
+}
+
+#[derive(Debug, Clone)]
+pub enum PrimitiveType {
+    Array,
+    Bool,
+    Break,
+    Func,
+    Number,
+    String,
+    Symbol,
+    Void,
+    Any,
+    Enum,
+    Kind,
+    Unknown,
 }
 
 #[derive(Debug)]
@@ -190,86 +186,81 @@ impl Term {
         }
     }
 
-    pub fn get_type(&self) -> GenericType {
+    pub fn get_type(&self) -> Type {
         match self {
             Term::Array(items) => {
                 let elem_type = if items.len() > 0 {
                     items[0].get_type()
                 } else {
-                    GenericType::Primitive(PrimitiveType::Unknown)
+                    Type::Primitive(PrimitiveType::Unknown)
                 };
 
-                GenericType::Generic(PrimitiveType::Array, Box::new(elem_type))
+                Type::Nested(PrimitiveType::Array, Box::new(elem_type))
             }
-            Term::Bool(_) => GenericType::Primitive(PrimitiveType::Bool),
-            Term::Break(_) => GenericType::Primitive(PrimitiveType::Break),
-            Term::Func(_, _) => GenericType::Primitive(PrimitiveType::Func),
-            Term::Num(_) => GenericType::Primitive(PrimitiveType::Number),
-            Term::String(_) => GenericType::Primitive(PrimitiveType::String),
-            Term::Symbol(_) => GenericType::Primitive(PrimitiveType::Symbol),
-            Term::Void => GenericType::Primitive(PrimitiveType::Void),
-            Term::Type(_) => GenericType::Primitive(PrimitiveType::Enum),
-            Term::Kind(_) => GenericType::Primitive(PrimitiveType::Kind),
-        }
-    }
-}
-
-impl GenericType {
-    pub fn is_assignable_to(&self, other: &Self) -> bool {
-        match self {
-            GenericType::Generic(sv, svv) => {
-                if let GenericType::Generic(ov, ovv) = other {
-                    sv.is_assignable_to(ov) && svv.is_assignable_to(ovv)
-                } else {
-                    false
-                }
-            }
-            GenericType::Primitive(sv) => {
-                if let GenericType::Primitive(ov) = other {
-                    sv.is_assignable_to(ov)
-                } else {
-                    false
-                }
-            }
-        }
-    }
-
-    pub fn to_string(&self) -> String {
-        match self {
-            GenericType::Generic(v, vv) => format!("{0}<{1}>", v.to_string(), vv.to_string()),
-            GenericType::Primitive(v) => v.to_string(),
-        }
-    }
-}
-
-impl PartialEq for GenericType {
-    fn eq(&self, other: &Self) -> bool {
-        match self {
-            GenericType::Generic(mv, mg) => {
-                if let GenericType::Generic(ov, og) = other {
-                    return mv == ov && mg == og;
-                } else {
-                    panic!("Cannot compare between generic and primitive types.")
-                }
-            }
-            GenericType::Primitive(me) => {
-                if let GenericType::Primitive(other) = other {
-                    return me == other;
-                } else {
-                    panic!("Cannot compare between generic and primitive types.");
-                }
-            }
+            Term::Bool(_) => Type::Primitive(PrimitiveType::Bool),
+            Term::Break(_) => Type::Primitive(PrimitiveType::Break),
+            Term::Func(_, _) => Type::Primitive(PrimitiveType::Func),
+            Term::Num(_) => Type::Primitive(PrimitiveType::Number),
+            Term::String(_) => Type::Primitive(PrimitiveType::String),
+            Term::Symbol(_) => Type::Primitive(PrimitiveType::Symbol),
+            Term::Void => Type::Primitive(PrimitiveType::Void),
+            Term::Type(_) => Type::Primitive(PrimitiveType::Enum),
+            Term::Kind(_) => Type::Primitive(PrimitiveType::Kind),
         }
     }
 }
 
 impl Type {
-    pub fn to_string(&self) -> String {
-        let type_name = match self {
-            Type::Enum(ident, _kinds) => format!("<Enum:{}", ident),
-        };
+    pub fn is_assignable_to(&self, other: &Self) -> bool {
+        match self {
+            Type::Nested(sv, svv) => {
+                if let Type::Nested(ov, ovv) = other {
+                    sv.is_assignable_to(ov) && svv.is_assignable_to(ovv)
+                } else {
+                    false
+                }
+            }
+            Type::Primitive(sv) => {
+                if let Type::Primitive(ov) = other {
+                    sv.is_assignable_to(ov)
+                } else {
+                    false
+                }
+            }
+            Type::Enum(_, _) => todo!(),
+        }
+    }
 
-        String::from(type_name)
+    pub fn to_string(&self) -> String {
+        match self {
+            Type::Nested(v, vv) => format!("{0}<{1}>", v.to_string(), vv.to_string()),
+            Type::Primitive(v) => v.to_string(),
+            Type::Enum(_, _) => todo!(),
+        }
+    }
+}
+
+impl PartialEq for Type {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            Type::Nested(mv, mg) => {
+                if let Type::Nested(ov, og) = other {
+                    return mv == ov && mg == og;
+                } else {
+                    panic!("Cannot compare between generic and primitive types.")
+                }
+            }
+            Type::Primitive(me) => {
+                if let Type::Primitive(other) = other {
+                    return me == other;
+                } else {
+                    panic!("Cannot compare between generic and primitive types.");
+                }
+            }
+            Type::Enum(_, _) => {
+                todo!()
+            }
+        }
     }
 }
 

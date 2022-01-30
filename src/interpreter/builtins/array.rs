@@ -10,9 +10,9 @@ pub fn get_len_block() -> Block {
     // TODO: Get rid of this magic string, maybe use enum?
     let params = Params::Param(
         String::from("array"),
-        GenericType::Generic(
+        Type::Nested(
             PrimitiveType::Array,
-            Box::new(GenericType::Primitive(PrimitiveType::Number)),
+            Box::new(Type::Primitive(PrimitiveType::Number)),
         ),
     );
     Block::RustBlock(params, builtin_len)
@@ -24,23 +24,20 @@ pub fn get_slice_block() -> Block {
     let first_two_params = Params::Params(
         Box::new(Params::Param(
             String::from("array"),
-            GenericType::Generic(
+            Type::Nested(
                 PrimitiveType::Array,
-                Box::new(GenericType::Primitive(PrimitiveType::Number)),
+                Box::new(Type::Primitive(PrimitiveType::Number)),
             ),
         )),
         (
             String::from("start"),
-            GenericType::Primitive(PrimitiveType::Number),
+            Type::Primitive(PrimitiveType::Number),
         ),
     );
 
     let params = Params::Params(
         Box::new(first_two_params),
-        (
-            String::from("end"),
-            GenericType::Primitive(PrimitiveType::Number),
-        ),
+        (String::from("end"), Type::Primitive(PrimitiveType::Number)),
     );
 
     Block::RustBlock(params, builtin_slice)

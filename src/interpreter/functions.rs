@@ -79,7 +79,7 @@ pub fn evaluate_params(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Vec<(String, GenericType)> {
+) -> Vec<(String, Type)> {
     match params {
         Params::Params(params, param) => {
             let mut params = evaluate_params(params, scopes, current_scope, context);
