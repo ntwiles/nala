@@ -3,6 +3,8 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
+use super::errors::panic_oper_not_impl;
+
 pub fn evaluate_lt(left: Term, right: Term, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
     match left {
         Term::Num(left) => num_lt(left, right, scopes, current_scope),
@@ -12,10 +14,7 @@ pub fn evaluate_lt(left: Term, right: Term, scopes: &mut Scopes, current_scope: 
             evaluate_lt(left, right, scopes, current_scope)
         }
         Term::Bool(left) => bool_lt(left, right, scopes, current_scope),
-        left => panic!(
-            "Cannot perform comparisons against values of type {}.",
-            left.get_type().to_string()
-        ),
+        left => panic_oper_not_impl!("<", left.get_type()),
     }
 }
 
@@ -26,10 +25,7 @@ fn num_lt(left: f32, right: Term, scopes: &mut Scopes, current_scope: ScopeId) -
             let right = scopes.get_value(&right, current_scope);
             evaluate_lt(Term::Num(left), right, scopes, current_scope)
         }
-        right => panic!(
-            "Cannot perform comparisons between types Num and {}.",
-            right.get_type().to_string()
-        ),
+        right => panic_oper_not_impl!("<", PrimitiveType::Number, right.get_type()),
     }
 }
 
@@ -40,10 +36,7 @@ fn string_lt(left: String, right: Term, scopes: &mut Scopes, current_scope: Scop
             let right = scopes.get_value(&right, current_scope);
             evaluate_lt(Term::String(left), right, scopes, current_scope)
         }
-        right => panic!(
-            "Cannot perform comparisons between types String and {}.",
-            right.get_type().to_string()
-        ),
+        right => panic_oper_not_impl!("<", PrimitiveType::String, right.get_type()),
     }
 }
 
@@ -54,9 +47,6 @@ fn bool_lt(left: bool, right: Term, scopes: &mut Scopes, current_scope: ScopeId)
             evaluate_lt(Term::Bool(left), right, scopes, current_scope)
         }
         Term::Bool(right) => Term::Bool(left < right),
-        right => panic!(
-            "Cannot perform comparisons between types Bool and {}.",
-            right.get_type().to_string()
-        ),
+        right => panic_oper_not_impl!("<", PrimitiveType::Bool, right.get_type()),
     }
 }
