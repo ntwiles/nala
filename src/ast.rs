@@ -266,7 +266,7 @@ impl PartialEq for GenericType {
 impl Type {
     pub fn to_string(&self) -> String {
         let type_name = match self {
-            Type::Enum(ident, kinds) => format!("<Enum:{}", ident),
+            Type::Enum(ident, _kinds) => format!("<Enum:{}", ident),
         };
 
         String::from(type_name)

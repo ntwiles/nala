@@ -71,7 +71,7 @@ pub fn evaluate_equals(
             Term::Func(_, _) => panic!("Cannot perform comparisons between types Num and Func."),
             Term::Void => panic!("Cannot perform comparisons between types Num and Void."),
             Term::Break(_) => panic!("Cannot perform comparisons between types Num and Break."),
-            Term::Type(type_kind) => {
+            Term::Type(_) => {
                 panic!("Cannot perform comparisons between types Num and Enum.")
             }
             Term::Kind(_) => panic!("Cannot perform comparisons between types Num and Kind"),
@@ -88,7 +88,7 @@ pub fn evaluate_equals(
             Term::Func(_, _) => panic!("Cannot perform comparisons between types String and Func."),
             Term::Void => panic!("Cannot perform comparisons between types String and Void."),
             Term::Break(_) => panic!("Cannot perform comparisons between types String and Break."),
-            Term::Type(type_kind) => {
+            Term::Type(_) => {
                 panic!("Cannot perform comparisons between types String and Enum.")
             }
             Term::Kind(_) => panic!("Cannot perform comparisons between types String and Kind."),
@@ -109,7 +109,7 @@ pub fn evaluate_equals(
             Term::Func(_, _) => panic!("Cannot perform comparisons between types Bool and Func."),
             Term::Void => panic!("Cannot perform comparisons between types Bool and Void."),
             Term::Break(_) => panic!("Cannot perform comparisons between types Bool and Break."),
-            Term::Type(type_kind) => {
+            Term::Type(_) => {
                 panic!("Cannot perform comparisons between types Bool and Enum.")
             }
             Term::Kind(_) => panic!("Cannot perform comparisons between types Bool and Kind."),
@@ -118,7 +118,7 @@ pub fn evaluate_equals(
         Term::Func(_, _) => panic!("Cannot perform comparisons against values of type Func."),
         Term::Void => panic!("Cannot perform comparisons against values of type Void."),
         Term::Break(_) => panic!("Cannot perform comparisons against values of type Break."),
-        Term::Type(type_kind) => panic!("Cannot perform comparisons against values of type Enum."),
+        Term::Type(_) => panic!("Cannot perform comparisons against values of type Enum."),
         Term::Kind(left) => {
             if let Term::Kind(right) = right {
                 Term::Bool(left == right)
