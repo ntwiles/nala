@@ -98,6 +98,11 @@
             "FooKind::Bar"
         ]
     },
+    "enum-compare": {
+        "output": [
+            "should print"
+        ]
+    },
     "func-args": {
         "output": [
             "The total is 12"

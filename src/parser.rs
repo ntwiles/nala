@@ -25,9 +25,9 @@ mod tests {
             parsed,
             Ok(Stmts::Stmt(Stmt::Declare(
                 _,
-                Expr::Addend(Addend::Factor(Factor::Call(Call::Index(Index::Term(
-                    Term::Num(_)
-                ))))),
+                Expr::KindValue(KindValue::Addend(Addend::Factor(Factor::Call(
+                    Call::Index(Index::Term(Term::Num(_)))
+                )))),
                 false
             ),),),
         ));

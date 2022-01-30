@@ -47,8 +47,6 @@ pub fn evaluate_array(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Term {
-    println!("Evaluating array.");
     let terms = evaluate_elems(&array.elems, scopes, current_scope, context);
-    println!("About to return array.");
     Term::Array(terms)
 }

@@ -80,7 +80,7 @@ pub fn evaluate_expr(
     match expr {
         Expr::Eq(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context);
-            let right = evaluate_addend(right, scopes, current_scope, context);
+            let right = evaluate_kind(right, scopes, current_scope, context);
             evaluate_equals(left, right, scopes, current_scope)
         }
         Expr::Gt(left, right) => {
@@ -93,9 +93,8 @@ pub fn evaluate_expr(
             let right = evaluate_addend(right, scopes, current_scope, context);
             evaluate_lt(left, right, scopes, current_scope)
         }
-        Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope, context),
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
-        Expr::Kind(enum_name, kind) => evaluate_kind(enum_name, kind, scopes, current_scope),
+        Expr::KindValue(kind) => evaluate_kind(kind, scopes, current_scope, context),
     }
 }
 
@@ -105,7 +104,6 @@ pub fn evaluate_elems(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Vec<Term> {
-    println!("Evaluating elems.");
     match elems {
         Elems::Elems(elems, expr) => {
             let mut elems = evaluate_elems(elems, scopes, current_scope, context);

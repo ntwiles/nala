@@ -1,11 +1,14 @@
 use crate::{
     ast::*,
+    io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
 
+use super::operations::*;
+
 pub fn interpret_enum(
     ident: &String,
-    kinds: &Kinds,
+    kinds: &KindsDeclare,
     scopes: &mut Scopes,
     current_scope: ScopeId,
 ) -> Term {
@@ -20,33 +23,40 @@ pub fn interpret_enum(
 }
 
 pub fn evaluate_kind(
-    enum_name: &String,
-    kind: &String,
+    kind: &KindValue,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    context: &mut impl IoContext,
 ) -> Term {
-    let term = scopes.get_value(enum_name, current_scope);
-
-    if let Term::Enum(_, kinds) = term {
-        if kind_exists(&*kinds, kind) {
-            Term::Kind(format!("{0}::{1}", enum_name, kind.to_owned()))
-        } else {
-            panic!("Kind {0} does not exist on Enum {1}", kind, enum_name)
-        }
-    } else {
-        panic!("{} is not an Enum value.", enum_name);
-    }
-}
-
-fn compare_kind(kind: &Kind, name: &String) -> bool {
     match kind {
-        Kind::Empty(kind_name) => kind_name == name,
+        KindValue::KindValue(enum_name, kind) => {
+            let term = scopes.get_value(enum_name, current_scope);
+
+            if let Term::Enum(_, kinds) = term {
+                if kind_exists(&*kinds, kind) {
+                    Term::Kind(format!("{0}::{1}", enum_name, kind.to_owned()))
+                } else {
+                    panic!("Kind {0} does not exist on Enum {1}", kind, enum_name)
+                }
+            } else {
+                panic!("{} is not an Enum value.", enum_name);
+            }
+        }
+        KindValue::Addend(addend) => evaluate_addend(addend, scopes, current_scope, context),
     }
 }
 
-fn kind_exists(kinds: &Kinds, needle: &String) -> bool {
+fn compare_kind(kind: &KindDeclare, name: &String) -> bool {
+    match kind {
+        KindDeclare::Empty(kind_name) => kind_name == name,
+    }
+}
+
+fn kind_exists(kinds: &KindsDeclare, needle: &String) -> bool {
     match kinds {
-        Kinds::Kinds(kinds, kind) => compare_kind(kind, needle) || kind_exists(kinds, needle),
-        Kinds::Kind(kind) => compare_kind(kind, needle),
+        KindsDeclare::Kinds(kinds, kind) => {
+            compare_kind(kind, needle) || kind_exists(kinds, needle)
+        }
+        KindsDeclare::Kind(kind) => compare_kind(kind, needle),
     }
 }

@@ -32,7 +32,7 @@ pub enum Stmt {
     Assign(SymbolOrIndex, Expr),
     Break(Expr),
     Declare(String, Expr, bool),
-    Enum(String, Box<Kinds>),
+    Enum(String, Box<KindsDeclare>),
     Expr(Expr),
     For(String, Expr, Box<Block>),
     Func(String, Box<Params>, Box<Block>),
@@ -47,13 +47,13 @@ pub enum Stmts {
 }
 
 #[derive(Debug, Clone)]
-pub enum Kinds {
-    Kinds(Box<Kinds>, Kind),
-    Kind(Kind),
+pub enum KindsDeclare {
+    Kinds(Box<KindsDeclare>, KindDeclare),
+    Kind(KindDeclare),
 }
 
 #[derive(Debug, Clone)]
-pub enum Kind {
+pub enum KindDeclare {
     Empty(String),
 }
 
@@ -100,12 +100,17 @@ pub enum ValueType {
 
 #[derive(Debug, Clone)]
 pub enum Expr {
-    Eq(Box<Expr>, Addend),
+    Eq(Box<Expr>, KindValue),
     Gt(Box<Expr>, Addend),
     Lt(Box<Expr>, Addend),
-    Addend(Addend),
+    KindValue(KindValue),
     Array(Array),
-    Kind(String, String),
+}
+
+#[derive(Debug, Clone)]
+pub enum KindValue {
+    KindValue(String, String),
+    Addend(Addend),
 }
 
 #[derive(Debug, Clone)]
@@ -150,7 +155,7 @@ pub enum Term {
     Func(Box<Params>, Box<Block>),
     Void,
     Break(Box<Expr>),
-    Enum(String, Box<Kinds>),
+    Enum(String, Box<KindsDeclare>),
     Kind(String),
 }
 

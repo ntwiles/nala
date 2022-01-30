@@ -113,7 +113,16 @@ pub fn evaluate_equals(
         Term::Void => panic!("Cannot perform comparisons against values of type Void."),
         Term::Break(_) => panic!("Cannot perform comparisons against values of type Break."),
         Term::Enum(_, _) => panic!("Cannot perform comparisons against values of type Enum."),
-        Term::Kind(_kind) => todo!(),
+        Term::Kind(left) => {
+            if let Term::Kind(right) = right {
+                Term::Bool(left == right)
+            } else {
+                panic!(
+                    "Cannot perform comparisons against values of type {}.",
+                    right.get_type().to_string()
+                )
+            }
+        }
     }
 }
 

@@ -26,29 +26,34 @@ Stmt: ast::Stmt = {
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
     "func" <s:Symbol> "(" <p:Params> ")" <b:Block> => ast::Stmt::Func(s, Box::new(p), Box::new(b)),
     "func" <s:Symbol> "(" ")" <b:Block> => ast::Stmt::Func(s, Box::new(ast::Params::Empty), Box::new(b)),
-    "enum" <s:Symbol> "{" <k:Kinds> "}" => ast::Stmt::Enum(s, Box::new(k)),
+    "enum" <s:Symbol> "{" <k:KindsDeclare> "}" => ast::Stmt::Enum(s, Box::new(k)),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
     <s:SymbolOrIndex> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <e:Expr> ";" => ast::Stmt::Expr(e),
 };
 
-Kinds: ast::Kinds = {
-    <kk:Kinds> "," <k:Kind> => ast::Kinds::Kinds(Box::new(kk), k),
-    <Kind> => ast::Kinds::Kind(<>)
+KindsDeclare: ast::KindsDeclare = {
+    <kk:KindsDeclare> "," <k:KindDeclare> => ast::KindsDeclare::Kinds(Box::new(kk), k),
+    <KindDeclare> => ast::KindsDeclare::Kind(<>)
 };
 
-Kind: ast::Kind = {
-    <Symbol> => ast::Kind::Empty(<>)
+KindDeclare: ast::KindDeclare = {
+    <Symbol> => ast::KindDeclare::Empty(<>)
 };
 
 Expr: ast::Expr = {
-    <l:Expr> "==" <r:Addend> => ast::Expr::Eq(Box::new(l), r),
+    <l:Expr> "==" <k:KindValue> => ast::Expr::Eq(Box::new(l), k),
     <l:Expr> ">" <r:Addend> => ast::Expr::Gt(Box::new(l), r),
     <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
-    Addend => ast::Expr::Addend(<>),
+    KindValue => ast::Expr::KindValue(<>),
     Array => ast::Expr::Array(<>),
-    <e:Symbol> "::" <k:Symbol> => ast::Expr::Kind(e, k),
 };
+
+KindValue: ast::KindValue = {
+    <e:Symbol> "::" <k:Symbol> => ast::KindValue::KindValue(e, k),
+    Addend => ast::KindValue::Addend(<>),
+}
+
 
 Array: ast::Array = {
     "[" <Elems> "]" => ast::Array { elems: Box::new(<>) },
