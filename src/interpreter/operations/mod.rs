@@ -1,4 +1,6 @@
 pub mod equals;
+mod errors;
+pub mod lt;
 
 use super::functions::*;
 
@@ -106,66 +108,6 @@ pub fn evaluate_gt(left: Term, right: Term, scopes: &mut Scopes, current_scope: 
             Term::Kind(_) => panic!("Cannot perform comparisons between types Bool and Kind."),
         },
         Term::Array(_) => panic!("Cannot perform comparions against values of type Array."),
-        Term::Func(_, _) => panic!("Cannot perform comparisons against values of type Func."),
-        Term::Void => panic!("Cannot perform comparisons against values of type Void."),
-        Term::Break(_) => panic!("Cannot perform comparisons against values of type Break."),
-        Term::Type(_) => panic!("Cannot perform comparisons against values of type Enum."),
-        Term::Kind(_) => panic!("Cannot perform comparisons against values of type Kind."),
-    }
-}
-
-pub fn evaluate_lt(left: Term, right: Term, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
-    match left {
-        Term::Num(left) => match right {
-            Term::Num(right) => Term::Bool(left < right),
-            Term::String(_) => panic!("Cannot perform comparisons between types Num and String."),
-            Term::Symbol(right) => {
-                let right = scopes.get_value(&right, current_scope);
-                evaluate_lt(Term::Num(left), right, scopes, current_scope)
-            }
-            Term::Bool(_) => panic!("Cannot perform comparisons between types Num and Bool."),
-            Term::Array(_) => panic!("Cannot perform comparisons between types Num and Array."),
-            Term::Func(_, _) => panic!("Cannot perform comparisons between types Num and Func."),
-            Term::Void => panic!("Cannot perform comparisons between types Num and Void."),
-            Term::Break(_) => panic!("Cannot perform comparisons between types Num and Break."),
-            Term::Type(_) => panic!("Cannot perform comparisons between types Num and Enum."),
-            Term::Kind(_) => panic!("Cannot perform comparisons between types Num and Kind."),
-        },
-        Term::String(left) => match right {
-            Term::Num(_) => panic!("Cannot perform comparisons between types String and Num."),
-            Term::String(right) => Term::Bool(left < right),
-            Term::Symbol(right) => {
-                let right = scopes.get_value(&right, current_scope);
-                evaluate_lt(Term::String(left), right, scopes, current_scope)
-            }
-            Term::Bool(_) => panic!("Cannot perform comparisons between types String and Bool."),
-            Term::Array(_) => panic!("Cannot perform comparisons between types String and Array."),
-            Term::Func(_, _) => panic!("Cannot perform comparisons between types String and Func."),
-            Term::Void => panic!("Cannot perform comparisons between types String and Void."),
-            Term::Break(_) => panic!("Cannot perform comparisons between types String and Break."),
-            Term::Type(_) => panic!("Cannot perform comparisons between types String and Enum."),
-            Term::Kind(_) => panic!("Cannot perform comparisons between types String and Kind."),
-        },
-        Term::Symbol(left) => {
-            let left = scopes.get_value(&left, current_scope);
-            evaluate_lt(left, right, scopes, current_scope)
-        }
-        Term::Bool(left) => match right {
-            Term::Num(_) => panic!("Cannot perform comparisons between types Bool and Num."),
-            Term::String(_) => panic!("Cannot perform comparisons between types Bool and String."),
-            Term::Symbol(right) => {
-                let right = scopes.get_value(&right, current_scope);
-                evaluate_lt(Term::Bool(left), right, scopes, current_scope)
-            }
-            Term::Bool(right) => Term::Bool(left < right),
-            Term::Array(_) => panic!("Cannot perform comparisons between types Bool and Array."),
-            Term::Func(_, _) => panic!("Cannot perform comparisons between types Bool and Func."),
-            Term::Void => panic!("Cannot perform comparisons between types Bool and Void."),
-            Term::Break(_) => panic!("Cannot perform comparisons between types Bool and Break."),
-            Term::Type(_) => panic!("Cannot perform comparisons between types Bool and Enum."),
-            Term::Kind(_) => panic!("Cannot perform comparisons between types Bool and Kind."),
-        },
-        Term::Array(_) => panic!("Cannot perform comparisons against values of type Array."),
         Term::Func(_, _) => panic!("Cannot perform comparisons against values of type Func."),
         Term::Void => panic!("Cannot perform comparisons against values of type Void."),
         Term::Break(_) => panic!("Cannot perform comparisons against values of type Break."),

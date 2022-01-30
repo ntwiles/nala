@@ -3,6 +3,8 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
+use super::errors::panic_oper_not_impl;
+
 pub fn evaluate_equals(
     left: Term,
     right: Term,
@@ -18,21 +20,8 @@ pub fn evaluate_equals(
         }
         Term::Bool(left) => bool_equals(left, right, scopes, current_scope),
         Term::Kind(left) => kind_equals(left, right),
-        other => panic!(
-            "Operator `==` is not implemented for type {}.",
-            other.get_type().to_string()
-        ),
+        other => panic_oper_not_impl!("==", other.get_type().to_string()),
     }
-}
-
-macro_rules! panic_no_compare_with {
-    ($left:expr, $right:expr) => {
-        panic!(
-            "Operator `==` is not implemented for types {0} and {1}.",
-            $left.to_string(),
-            $right.to_string()
-        )
-    };
 }
 
 fn num_equals(left: f32, right: Term, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
@@ -42,7 +31,7 @@ fn num_equals(left: f32, right: Term, scopes: &mut Scopes, current_scope: ScopeI
         let right = scopes.get_value(&right, current_scope);
         evaluate_equals(Term::Num(left), right, scopes, current_scope)
     } else {
-        panic_no_compare_with!(PrimitiveType::Number, right.get_type())
+        panic_oper_not_impl!("==", PrimitiveType::Number, right.get_type())
     }
 }
 
@@ -53,7 +42,7 @@ fn string_equals(left: String, right: Term, scopes: &mut Scopes, current_scope: 
         let right = scopes.get_value(&right, current_scope);
         evaluate_equals(Term::String(left), right, scopes, current_scope)
     } else {
-        panic_no_compare_with!(PrimitiveType::String, right.get_type())
+        panic_oper_not_impl!("==", PrimitiveType::String, right.get_type())
     }
 }
 
@@ -64,7 +53,7 @@ fn bool_equals(left: bool, right: Term, scopes: &mut Scopes, current_scope: Scop
         let right = scopes.get_value(&right, current_scope);
         evaluate_equals(Term::Bool(left), right, scopes, current_scope)
     } else {
-        panic_no_compare_with!(PrimitiveType::Bool, right.get_type())
+        panic_oper_not_impl!("==", PrimitiveType::Bool, right.get_type())
     }
 }
 
@@ -72,6 +61,6 @@ fn kind_equals(left: String, right: Term) -> Term {
     if let Term::Kind(right) = right {
         Term::Bool(left == right)
     } else {
-        panic_no_compare_with!(PrimitiveType::Kind, right.get_type())
+        panic_oper_not_impl!("==", PrimitiveType::Kind, right.get_type())
     }
 }
