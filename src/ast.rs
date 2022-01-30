@@ -6,6 +6,7 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
+#[derive(Debug)]
 pub enum Program {
     Block(Block),
     Stmts(Stmts),

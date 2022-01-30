@@ -1,8 +1,7 @@
-use lalrpop_util::lalrpop_mod;
-
 lalrpop_mod!(pub grammar);
 
 use grammar::ProgramParser;
+use lalrpop_util::lalrpop_mod;
 
 use crate::ast::*;
 
@@ -18,7 +17,7 @@ mod tests {
     use super::{grammar::StmtsParser, *};
 
     #[test]
-    pub fn it_parses_const_statements() {
+    fn it_parses_const_statements() {
         let parsed = StmtsParser::new().parse("const foo = 7;");
 
         assert!(matches!(
@@ -32,4 +31,15 @@ mod tests {
             ),),),
         ));
     }
+
+    // #[test]
+    // fn it_fails_parse_when_assigning_type_void() {
+    //     let code = fs::read_to_string("tests/nala/error/parse/assign-void.nl").unwrap();
+    //     let parsed = ProgramParser::new().parse(&code);
+
+    //     let re = regex!("Unrecognized token `break`");
+    //     let error = parsed.unwrap_err().to_string();
+
+    //     assert_regex_match!(re, &error);
+    // }
 }

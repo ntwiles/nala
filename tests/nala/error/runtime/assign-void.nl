@@ -3,6 +3,6 @@ func returnVoid() {
     const void = 'void';
 }
 
-const break = returnVoid();
+const test = returnVoid();
 
-print(break);
+print(test);
