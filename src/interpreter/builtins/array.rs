@@ -11,8 +11,8 @@ pub fn get_len_block() -> Block {
     let params = Params::Param(
         String::from("array"),
         GenericType::Generic(
-            ValueType::Array,
-            Box::new(GenericType::Primitive(ValueType::Number)),
+            PrimitiveType::Array,
+            Box::new(GenericType::Primitive(PrimitiveType::Number)),
         ),
     );
     Block::RustBlock(params, builtin_len)
@@ -25,13 +25,13 @@ pub fn get_slice_block() -> Block {
         Box::new(Params::Param(
             String::from("array"),
             GenericType::Generic(
-                ValueType::Array,
-                Box::new(GenericType::Primitive(ValueType::Number)),
+                PrimitiveType::Array,
+                Box::new(GenericType::Primitive(PrimitiveType::Number)),
             ),
         )),
         (
             String::from("start"),
-            GenericType::Primitive(ValueType::Number),
+            GenericType::Primitive(PrimitiveType::Number),
         ),
     );
 
@@ -39,7 +39,7 @@ pub fn get_slice_block() -> Block {
         Box::new(first_two_params),
         (
             String::from("end"),
-            GenericType::Primitive(ValueType::Number),
+            GenericType::Primitive(PrimitiveType::Number),
         ),
     );
 

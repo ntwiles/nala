@@ -71,15 +71,15 @@ Params: ast::Params = {
 }
 
 GenericType: ast::GenericType = {
-    "Array" "<" <GenericType> ">" => ast::GenericType::Generic(ast::ValueType::Array, Box::new(<>)),
+    "Array" "<" <GenericType> ">" => ast::GenericType::Generic(ast::PrimitiveType::Array, Box::new(<>)),
     <PrimitiveType> => ast::GenericType::Primitive(<>)
 }
 
-PrimitiveType: ast::ValueType = {
-    "Bool" => ast::ValueType::Bool,
-    "Func" => ast::ValueType::Func,
-    "Number" => ast::ValueType::Number,
-    "String" => ast::ValueType::String,
+PrimitiveType: ast::PrimitiveType = {
+    "Bool" => ast::PrimitiveType::Bool,
+    "Func" => ast::PrimitiveType::Func,
+    "Number" => ast::PrimitiveType::Number,
+    "String" => ast::PrimitiveType::String,
 }
 
 Addend: ast::Addend = {

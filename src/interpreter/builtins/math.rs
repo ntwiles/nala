@@ -10,7 +10,7 @@ pub fn get_floor_block() -> Block {
     // TODO: Get rid of this magic string, maybe use enum?
     let params = Params::Param(
         String::from("num"),
-        GenericType::Primitive(ValueType::Number),
+        GenericType::Primitive(PrimitiveType::Number),
     );
     Block::RustBlock(params, builtin_floor)
 }

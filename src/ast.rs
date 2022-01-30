@@ -78,12 +78,12 @@ pub enum Params {
 
 #[derive(Debug, Clone)]
 pub enum GenericType {
-    Generic(ValueType, Box<GenericType>),
-    Primitive(ValueType),
+    Generic(PrimitiveType, Box<GenericType>),
+    Primitive(PrimitiveType),
 }
 
 #[derive(Debug, Clone)]
-pub enum ValueType {
+pub enum PrimitiveType {
     Array,
     Bool,
     Break,
@@ -155,8 +155,13 @@ pub enum Term {
     Func(Box<Params>, Box<Block>),
     Void,
     Break(Box<Expr>),
-    Enum(String, Box<KindsDeclare>),
+    Type(Type),
     Kind(String),
+}
+
+#[derive(Debug, Clone)]
+pub enum Type {
+    Enum(String, Box<KindsDeclare>),
 }
 
 #[derive(Debug)]
@@ -180,7 +185,7 @@ impl Term {
             Term::Func(_, _) => String::from("<Func>"),
             Term::Void => String::from("<Void>"),
             Term::Break(_) => String::from("<Break>"),
-            Term::Enum(e, _) => String::from(format!("<Enum:{}>", e)),
+            Term::Type(type_kind) => type_kind.to_string(),
             Term::Kind(k) => k.to_owned(),
         }
     }
@@ -191,20 +196,20 @@ impl Term {
                 let elem_type = if items.len() > 0 {
                     items[0].get_type()
                 } else {
-                    GenericType::Primitive(ValueType::Unknown)
+                    GenericType::Primitive(PrimitiveType::Unknown)
                 };
 
-                GenericType::Generic(ValueType::Array, Box::new(elem_type))
+                GenericType::Generic(PrimitiveType::Array, Box::new(elem_type))
             }
-            Term::Bool(_) => GenericType::Primitive(ValueType::Bool),
-            Term::Break(_) => GenericType::Primitive(ValueType::Break),
-            Term::Func(_, _) => GenericType::Primitive(ValueType::Func),
-            Term::Num(_) => GenericType::Primitive(ValueType::Number),
-            Term::String(_) => GenericType::Primitive(ValueType::String),
-            Term::Symbol(_) => GenericType::Primitive(ValueType::Symbol),
-            Term::Void => GenericType::Primitive(ValueType::Void),
-            Term::Enum(_, _) => GenericType::Primitive(ValueType::Enum),
-            Term::Kind(_) => GenericType::Primitive(ValueType::Kind),
+            Term::Bool(_) => GenericType::Primitive(PrimitiveType::Bool),
+            Term::Break(_) => GenericType::Primitive(PrimitiveType::Break),
+            Term::Func(_, _) => GenericType::Primitive(PrimitiveType::Func),
+            Term::Num(_) => GenericType::Primitive(PrimitiveType::Number),
+            Term::String(_) => GenericType::Primitive(PrimitiveType::String),
+            Term::Symbol(_) => GenericType::Primitive(PrimitiveType::Symbol),
+            Term::Void => GenericType::Primitive(PrimitiveType::Void),
+            Term::Type(_) => GenericType::Primitive(PrimitiveType::Enum),
+            Term::Kind(_) => GenericType::Primitive(PrimitiveType::Kind),
         }
     }
 }
@@ -258,32 +263,42 @@ impl PartialEq for GenericType {
     }
 }
 
-impl ValueType {
-    pub fn is_assignable_to(&self, param: &Self) -> bool {
-        param == &ValueType::Any || self.to_string() == param.to_string()
-    }
-
+impl Type {
     pub fn to_string(&self) -> String {
         let type_name = match self {
-            ValueType::Array => "Array",
-            ValueType::Bool => "Bool",
-            ValueType::Break => "<Break>",
-            ValueType::Func => "Func",
-            ValueType::Number => "Number",
-            ValueType::String => "String",
-            ValueType::Symbol => "<Symbol>",
-            ValueType::Void => "<Void>",
-            ValueType::Any => "<Any>",
-            ValueType::Enum => "<Enum>",
-            ValueType::Kind => "Kind",
-            ValueType::Unknown => "<Unknown>",
+            Type::Enum(ident, kinds) => format!("<Enum:{}", ident),
         };
 
         String::from(type_name)
     }
 }
 
-impl PartialEq for ValueType {
+impl PrimitiveType {
+    pub fn is_assignable_to(&self, param: &Self) -> bool {
+        param == &PrimitiveType::Any || self.to_string() == param.to_string()
+    }
+
+    pub fn to_string(&self) -> String {
+        let type_name = match self {
+            PrimitiveType::Array => "Array",
+            PrimitiveType::Bool => "Bool",
+            PrimitiveType::Break => "<Break>",
+            PrimitiveType::Func => "Func",
+            PrimitiveType::Number => "Number",
+            PrimitiveType::String => "String",
+            PrimitiveType::Symbol => "<Symbol>",
+            PrimitiveType::Void => "<Void>",
+            PrimitiveType::Any => "<Any>",
+            PrimitiveType::Enum => "<Enum>",
+            PrimitiveType::Kind => "Kind",
+            PrimitiveType::Unknown => "<Unknown>",
+        };
+
+        String::from(type_name)
+    }
+}
+
+impl PartialEq for PrimitiveType {
     fn eq(&self, other: &Self) -> bool {
         self.to_string() == other.to_string()
     }
