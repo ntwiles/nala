@@ -19,7 +19,7 @@ pub fn evaluate_equals(
         Term::Bool(left) => bool_equals(left, right, scopes, current_scope),
         Term::Kind(left) => kind_equals(left, right),
         other => panic!(
-            "Operator `==` is not implemented for type {}",
+            "Operator `==` is not implemented for type {}.",
             other.get_type().to_string()
         ),
     }
