@@ -47,6 +47,7 @@ Expr: ast::Expr = {
     <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
     Addend => ast::Expr::Addend(<>),
     Array => ast::Expr::Array(<>),
+    <e:Symbol> "::" <k:Symbol> => ast::Expr::Kind(e, k),
 };
 
 Array: ast::Array = {

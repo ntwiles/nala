@@ -46,6 +46,8 @@ fn test_run_examples(cat: &str) {
         }
 
         let nala_path = format!("tests/nala/{0}/{1}.nl", cat, name);
+
+        println!("Testing: {}", nala_path);
         read_and_execute(&nala_path, &mut test_context);
         assert_eq!(
             test_context.get_output(),

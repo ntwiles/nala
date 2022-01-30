@@ -17,16 +17,7 @@ impl Scope {
     }
 
     pub fn add_binding(self: &mut Self, ident: &str, value: ast::Term, is_mutable: bool) {
-        let type_name = match value {
-            ast::Term::Array(_) => "Array",
-            ast::Term::Bool(_) => "Bool",
-            ast::Term::Break(_) => "<Break>",
-            ast::Term::Func(_, _) => "Func",
-            ast::Term::Num(_) => "Num",
-            ast::Term::String(_) => "String",
-            ast::Term::Symbol(_) => "Symbol",
-            ast::Term::Void => "<Void>",
-        };
+        let type_name = value.get_type().to_string();
 
         self.bindings.insert(
             ident.to_owned(),

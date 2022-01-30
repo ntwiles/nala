@@ -1,4 +1,6 @@
-use super::{arrays::*, branching::*, builtins::*, functions::*, operations::*, variables::*};
+use super::{
+    arrays::*, branching::*, builtins::*, enums::*, functions::*, operations::*, variables::*,
+};
 
 use crate::{
     ast::*,
@@ -65,7 +67,7 @@ fn interpret_stmt(
         }
         Stmt::Expr(expr) => evaluate_expr(expr, scopes, current_scope, context),
         Stmt::Break(expr) => Term::Break(Box::new(expr.clone())),
-        Stmt::Enum(ident, kinds) => Term::Void,
+        Stmt::Enum(ident, kinds) => interpret_enum(ident, kinds, scopes, current_scope),
     }
 }
 
@@ -93,6 +95,7 @@ pub fn evaluate_expr(
         }
         Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope, context),
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
+        Expr::Kind(enum_name, kind) => evaluate_kind(enum_name, kind, scopes, current_scope),
     }
 }
 
@@ -102,6 +105,7 @@ pub fn evaluate_elems(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Vec<Term> {
+    println!("Evaluating elems.");
     match elems {
         Elems::Elems(elems, expr) => {
             let mut elems = evaluate_elems(elems, scopes, current_scope, context);

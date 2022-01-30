@@ -93,6 +93,9 @@ pub enum ValueType {
     Symbol,
     Void,
     Any,
+    Enum,
+    Kind,
+    Unknown,
 }
 
 #[derive(Debug, Clone)]
@@ -102,6 +105,7 @@ pub enum Expr {
     Lt(Box<Expr>, Addend),
     Addend(Addend),
     Array(Array),
+    Kind(String, String),
 }
 
 #[derive(Debug, Clone)]
@@ -146,6 +150,8 @@ pub enum Term {
     Func(Box<Params>, Box<Block>),
     Void,
     Break(Box<Expr>),
+    Enum(String, Box<Kinds>),
+    Kind(String),
 }
 
 #[derive(Debug)]
@@ -169,14 +175,21 @@ impl Term {
             Term::Func(_, _) => String::from("<Func>"),
             Term::Void => String::from("<Void>"),
             Term::Break(_) => String::from("<Break>"),
+            Term::Enum(e, _) => String::from(format!("<Enum:{}>", e)),
+            Term::Kind(k) => k.to_owned(),
         }
     }
 
     pub fn get_type(&self) -> GenericType {
         match self {
             Term::Array(items) => {
-                let first = items[0].get_type();
-                GenericType::Generic(ValueType::Array, Box::new(first))
+                let elem_type = if items.len() > 0 {
+                    items[0].get_type()
+                } else {
+                    GenericType::Primitive(ValueType::Unknown)
+                };
+
+                GenericType::Generic(ValueType::Array, Box::new(elem_type))
             }
             Term::Bool(_) => GenericType::Primitive(ValueType::Bool),
             Term::Break(_) => GenericType::Primitive(ValueType::Break),
@@ -185,6 +198,8 @@ impl Term {
             Term::String(_) => GenericType::Primitive(ValueType::String),
             Term::Symbol(_) => GenericType::Primitive(ValueType::Symbol),
             Term::Void => GenericType::Primitive(ValueType::Void),
+            Term::Enum(_, _) => GenericType::Primitive(ValueType::Enum),
+            Term::Kind(_) => GenericType::Primitive(ValueType::Kind),
         }
     }
 }
@@ -254,6 +269,9 @@ impl ValueType {
             ValueType::Symbol => "<Symbol>",
             ValueType::Void => "<Void>",
             ValueType::Any => "<Any>",
+            ValueType::Enum => "<Enum>",
+            ValueType::Kind => "Kind",
+            ValueType::Unknown => "<Unknown>",
         };
 
         String::from(type_name)

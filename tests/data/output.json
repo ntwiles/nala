@@ -88,6 +88,16 @@
             "8"
         ]
     },
+    "enum-declare": {
+        "output": [
+            "success"
+        ]
+    },
+    "enum-basic": {
+        "output": [
+            "FooKind::Bar"
+        ]
+    },
     "func-args": {
         "output": [
             "The total is 12"
