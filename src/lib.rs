@@ -7,6 +7,7 @@ pub mod io_context;
 mod lexer;
 pub mod parser;
 pub mod scope;
+pub mod test_util;
 mod util;
 
 use interpreter::*;

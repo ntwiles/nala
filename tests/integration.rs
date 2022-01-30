@@ -1,11 +1,9 @@
-mod errors;
-
-use library::{interpreter::interpret_tree, io_context::TestContext, parser};
-
 use std::{collections::HashMap, fs};
 
 use serde::{Deserialize, Serialize};
 use serde_json;
+
+use library::{io_context::TestContext, test_util::read_and_execute};
 
 #[derive(Serialize, Deserialize)]
 struct TestData {
@@ -57,20 +55,5 @@ fn test_run_examples(cat: &str) {
             "{}",
             nala_path
         );
-    }
-}
-
-fn read_and_execute(path: &str, test_context: &mut TestContext) {
-    let code = if let Ok(code) = fs::read_to_string(path) {
-        code
-    } else {
-        panic!("Could not load nala file! {}", path);
-    };
-
-    let result = parser::parse_code(code);
-
-    match result {
-        Ok(parsed) => interpret_tree(parsed, test_context),
-        Err(_) => panic!("Could not parse nala file! {}", path),
     }
 }
