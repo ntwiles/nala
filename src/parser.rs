@@ -6,10 +6,10 @@ use grammar::ProgramParser;
 
 use crate::ast::*;
 
-pub fn parse_code(code: String) -> Option<Program> {
+pub fn parse_code(code: String) -> Result<Program, String> {
     match ProgramParser::new().parse(&code) {
-        Ok(parsed) => Some(parsed),
-        Err(_) => None,
+        Ok(parsed) => Ok(parsed),
+        Err(error) => Err(error.to_string()),
     }
 }
 

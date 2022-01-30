@@ -96,9 +96,8 @@ fn read_and_execute(path: &str, test_context: &mut TestContext) {
 
     let result = parser::parse_code(code);
 
-    if let Some(parsed) = result {
-        interpret_tree(parsed, test_context);
-    } else {
-        panic!("Could not parse nala file! {}", path)
+    match result {
+        Ok(parsed) => interpret_tree(parsed, test_context),
+        Err(_) => panic!("Could not parse nala file! {}", path),
     }
 }

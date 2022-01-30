@@ -22,6 +22,8 @@ pub fn interpret_block(
 ) -> Term {
     match block {
         Block::NalaBlock(stmts) => interpret_stmts(stmts, scopes, current_scope, context),
+        // TODO: A builtin isn't a kind of block, it's a kind of function. Move this so we don't have
+        // to store the params on the block, which makes no sense.
         Block::RustBlock(params, func) => {
             invoke_builtin(*func, params, scopes, current_scope, context)
         }

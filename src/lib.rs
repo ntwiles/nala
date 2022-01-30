@@ -25,9 +25,14 @@ pub fn main(path: &str) -> () {
         }
     };
 
-    if let Some(parsed) = result {
-        interpret_tree(parsed, &mut context);
-    } else {
-        println!("{}", format!("Error parsing nala file: {}", path))
+    match result {
+        Ok(parsed) => interpret_tree(parsed, &mut context),
+        Err(message) => println!(
+            "{}",
+            format!(
+                "Parse Error:\n  file:\n    {0} \n  message:\n    {1}",
+                path, message
+            )
+        ),
     }
 }
