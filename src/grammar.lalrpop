@@ -71,11 +71,12 @@ Params: ast::Params = {
 }
 
 Type: ast::Type = {
-    "Array" "<" <Type> ">" => ast::Type::Nested(ast::PrimitiveType::Array, Box::new(<>)),
+    <p:PrimitiveType> "<" <t:Type> ">" => ast::Type::Nested(p, Box::new(t)),
     <PrimitiveType> => ast::Type::Primitive(<>)
 }
 
 PrimitiveType: ast::PrimitiveType = {
+    "Array" => ast::PrimitiveType::Array,
     "Bool" => ast::PrimitiveType::Bool,
     "Func" => ast::PrimitiveType::Func,
     "Number" => ast::PrimitiveType::Number,
