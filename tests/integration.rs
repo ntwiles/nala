@@ -77,7 +77,7 @@ fn test_run_parse_error_examples() {
 #[test]
 #[should_panic]
 fn test_run_runtime_error_examples() {
-    let test_data = ["assign-types"];
+    let test_data = ["assign-types", "nested-types"];
 
     for file in test_data {
         let file_name = format!("tests/nala/error/runtime/{}.nl", file);
