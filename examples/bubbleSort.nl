@@ -32,7 +32,7 @@ func bubblePass(items: Array<Number>, comparator: Func) {
             
             if (comparator(prev, current) < 0) {
                 items[i] = prev;
-                items[i-1] = current;
+                items[i - 1] = current;
             }
         }
 
