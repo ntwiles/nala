@@ -4,7 +4,7 @@ use super::{
     builtins::*,
     enums::*,
     functions::*,
-    operations::{equals::*, lt::*, *},
+    operations::{equals::*, gt::*, lt::*, *},
     variables::*,
 };
 
