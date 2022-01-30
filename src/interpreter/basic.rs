@@ -1,5 +1,11 @@
 use super::{
-    arrays::*, branching::*, builtins::*, enums::*, functions::*, operations::*, variables::*,
+    arrays::*,
+    branching::*,
+    builtins::*,
+    enums::*,
+    functions::*,
+    operations::{equals::*, *},
+    variables::*,
 };
 
 use crate::{
