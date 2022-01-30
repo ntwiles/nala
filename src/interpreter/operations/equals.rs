@@ -25,6 +25,16 @@ pub fn evaluate_equals(
     }
 }
 
+macro_rules! panic_no_compare_with {
+    ($left:expr, $right:expr) => {
+        panic!(
+            "Operator `==` is not implemented for types {0} and {1}.",
+            $left.to_string(),
+            $right.to_string()
+        )
+    };
+}
+
 fn num_equals(left: f32, right: Term, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
     if let Term::Num(right) = right {
         Term::Bool(left == right)
@@ -32,10 +42,7 @@ fn num_equals(left: f32, right: Term, scopes: &mut Scopes, current_scope: ScopeI
         let right = scopes.get_value(&right, current_scope);
         evaluate_equals(Term::Num(left), right, scopes, current_scope)
     } else {
-        panic!(
-            "Cannot perform comparisons between types Num and {}.",
-            right.get_type().to_string()
-        )
+        panic_no_compare_with!(PrimitiveType::Number, right.get_type())
     }
 }
 
@@ -46,10 +53,7 @@ fn string_equals(left: String, right: Term, scopes: &mut Scopes, current_scope: 
         let right = scopes.get_value(&right, current_scope);
         evaluate_equals(Term::String(left), right, scopes, current_scope)
     } else {
-        panic!(
-            "Cannot perform comparisons between types String and {}.",
-            right.get_type().to_string()
-        )
+        panic_no_compare_with!(PrimitiveType::String, right.get_type())
     }
 }
 
@@ -60,10 +64,7 @@ fn bool_equals(left: bool, right: Term, scopes: &mut Scopes, current_scope: Scop
         let right = scopes.get_value(&right, current_scope);
         evaluate_equals(Term::Bool(left), right, scopes, current_scope)
     } else {
-        panic!(
-            "Cannot perform comparisons between types Bool and {}",
-            right.get_type().to_string()
-        )
+        panic_no_compare_with!(PrimitiveType::Bool, right.get_type())
     }
 }
 
@@ -71,10 +72,6 @@ fn kind_equals(left: String, right: Term) -> Term {
     if let Term::Kind(right) = right {
         Term::Bool(left == right)
     } else {
-        panic!(
-            "Cannot perform comparisons between values of type {0} and {1}.",
-            left,
-            right.get_type().to_string()
-        )
+        panic_no_compare_with!(PrimitiveType::Kind, right.get_type())
     }
 }
