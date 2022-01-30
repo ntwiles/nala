@@ -57,7 +57,8 @@ pub fn evaluate_factor(
     }
 }
 
-// TODO: Can this be simplified?
+// TODO: Simplify this.
+// TODO: Use existing or new macro in errors.rs.
 fn evaluate_oper(
     left: Term,
     op_kind: OpKind,
@@ -87,26 +88,11 @@ fn evaluate_oper(
                 let right = scopes.get_value(&right, current_scope);
                 evaluate_oper(Term::Num(left), op_kind, right, scopes, current_scope)
             }
-            Term::Bool(_) => {
-                panic!("Cannot perform arithmetic operations between types of Num and Bool.")
-            }
-            Term::Array(_) => {
-                panic!("Cannot perform arithmetic operations between types Num and Array.")
-            }
-            Term::Func(_, _) => {
-                panic!("Cannot perform arithmetic operations between types Num and Func.")
-            }
-            Term::Void => {
-                panic!("Cannot perform arithmetic operations between types Num and Void.")
-            }
-            Term::Break(_) => {
-                panic!("Cannot perform arithmetic operations between types Num and Break.")
-            }
-            Term::Type(_) => {
-                panic!("Cannot perform arithmetic operations between types Num and Enum.")
-            }
-            Term::Kind(_) => {
-                panic!("Cannot perform arithmetic operations between types Num and Kind.")
+            right => {
+                panic!(
+                    "Cannot perform arithmetic operations between types of Num and {}.",
+                    right.get_type().to_string()
+                )
             }
         },
         Term::String(left) => match right {
@@ -134,52 +120,22 @@ fn evaluate_oper(
                 let right = scopes.get_value(&right, current_scope);
                 evaluate_oper(Term::String(left), op_kind, right, scopes, current_scope)
             }
-            Term::Bool(_) => {
-                panic!("Cannot perform arithmetic operations between types String and Bool.")
-            }
-            Term::Array(_) => {
-                panic!("Cannot perform arithmetic operations between types String and Array.")
-            }
-            Term::Func(_, _) => {
-                panic!("Cannot perform arithmetic operations between types String and Func.")
-            }
-            Term::Void => {
-                panic!("Cannot perform arithmetic operations between types String and Void.")
-            }
-            Term::Break(_) => {
-                panic!("Cannot perform arithmetic operations between types String and Break.")
-            }
-            Term::Type(_) => {
-                panic!("Cannot perform arithmetic operations between types String and Enum.")
-            }
-            Term::Kind(_) => {
-                panic!("Cannot perform arithmetic operations between types String and Kind.")
+            right => {
+                panic!(
+                    "Cannot perform arithmetic operations between types of String and {}.",
+                    right.get_type().to_string()
+                )
             }
         },
         Term::Symbol(left) => {
             let left = scopes.get_value(&left, current_scope);
             evaluate_oper(left, op_kind, right, scopes, current_scope)
         }
-        Term::Bool(_) => {
-            panic!("Cannot perform arithmetic operations between values of type Bool.")
-        }
-        Term::Array(_) => {
-            panic!("Cannot perform arithmetic operations between values of type Array.")
-        }
-        Term::Func(_, _) => {
-            panic!("Cannot perform arithmetic operations between values of type Func.")
-        }
-        Term::Void => {
-            panic!("Cannot perform arithmetic operations between values of type Void.")
-        }
-        Term::Break(_) => {
-            panic!("Cannot perform arithmetic operations between values of type Break.")
-        }
-        Term::Type(_) => {
-            panic!("Cannot perform arithmetic operations between values of type Enum.")
-        }
-        Term::Kind(_) => {
-            panic!("Cannot perform arithmetic operations between values of type Kind.")
+        left => {
+            panic!(
+                "Cannot perform arithmetic operations between values of type {}.",
+                left.get_type().to_string()
+            )
         }
     }
 }
