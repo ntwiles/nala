@@ -33,20 +33,20 @@ pub fn interpret_func(
 
 fn check_param_types(params: &Params) -> Result<(), String> {
     match params {
-        Params::Params(params, (ident, param_type)) => {
+        Params::Params(params, (_, param_type)) => {
             match check_param_types(params) {
                 Ok(_) => (),
                 Err(err) => return Err(err),
             };
 
-            check_param_type(ident, param_type)
+            check_param_type(param_type)
         }
-        Params::Param(ident, param_type) => check_param_type(ident, param_type),
+        Params::Param(_, param_type) => check_param_type(param_type),
         Params::Empty => Ok(()),
     }
 }
 
-fn check_param_type(ident: &String, param_type: &Type) -> Result<(), String> {
+fn check_param_type(param_type: &Type) -> Result<(), String> {
     if let Type::Nested(outer, inner) = param_type {
         return if let PrimitiveType::Array = outer {
             Ok(())
