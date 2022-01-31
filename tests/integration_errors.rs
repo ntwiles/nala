@@ -1,6 +1,14 @@
 use library::{io_context::TestContext, test_util::read_and_execute};
 
 #[test]
+#[should_panic(expected = "Cannot index using non-numeric value.")]
+fn it_errors_when_indexing_array_with_string() {
+    let file_name = "tests/nala/integration_errors/array-index-string.nl";
+    let mut test_context = TestContext::new();
+    read_and_execute(&file_name, &mut test_context);
+}
+
+#[test]
 #[should_panic(expected = "Passed value `7` of type Number to func `len`")]
 fn it_errors_when_passing_number_arg_to_len() {
     let file_name = "tests/nala/integration_errors/array-len.nl";
