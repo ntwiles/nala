@@ -17,7 +17,7 @@ fn it_errors_when_declaring_array_multiple_types() {
 }
 
 #[test]
-#[should_panic(expected = "Cannot assign value of type String where Number is expected.")]
+#[should_panic(expected = "Cannot assign a value of type String where Number is expected.")]
 fn it_errors_when_assigning_wrong_type() {
     let file_name = "tests/nala/integration_errors/assign-types.nl";
     let mut test_context = TestContext::new();
@@ -26,7 +26,7 @@ fn it_errors_when_assigning_wrong_type() {
 }
 
 #[test]
-#[should_panic(expected = "Cannot assign Void.")]
+#[should_panic(expected = "Cannot declare a variable with a value of type Void.")]
 fn it_errors_when_assigning_type_void() {
     let file_name = "tests/nala/integration_errors/assign-void.nl";
     let mut test_context = TestContext::new();

@@ -17,7 +17,7 @@ pub fn interpret_declare(
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
         if let Term::Void = term {
-            panic!("Cannot assign Void.");
+            panic!("Cannot declare a variable with a value of type Void.");
         }
 
         scopes.add_binding(&ident, current_scope, term.clone(), is_mutable);
@@ -39,7 +39,7 @@ pub fn interpret_assign(
                 let index = evaluate_expr(&index_expr, scopes, current_scope, context);
 
                 if let Term::Void = term {
-                    panic!("Cannot assign Void.");
+                    panic!("Cannot assign a value of type Void.");
                 }
 
                 let index = if let Term::Num(index) = index {
@@ -63,7 +63,7 @@ pub fn interpret_assign(
         SymbolOrIndex::Symbol(ident) => {
             if scopes.binding_exists(&ident, current_scope) {
                 if let Term::Void = term {
-                    panic!("Cannot assign value of type Void.");
+                    panic!("Cannot assign a value of type Void.");
                 }
 
                 let existing = scopes.get_value(ident, current_scope);
@@ -75,7 +75,7 @@ pub fn interpret_assign(
                     scopes.mutate_value(&ident, current_scope, term.clone());
                 } else {
                     panic!(
-                        "Cannot assign value of type {0} where {1} is expected.",
+                        "Cannot assign a value of type {0} where {1} is expected.",
                         term_type.to_string(),
                         existing_type.to_string()
                     )
