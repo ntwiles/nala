@@ -9,7 +9,14 @@ pub fn read_and_execute(path: &str, test_context: &mut TestContext) {
         panic!("Could not load nala file! {}", path);
     };
 
-    println!("\n{}\n", code.trim_start().trim_end());
+    let lines = code.trim_start().trim_end().split("\n");
+    let output: String = lines
+        .enumerate()
+        .map(|(i, l)| format!("{i} | {l}"))
+        .collect::<Vec<String>>()
+        .join("\n");
+
+    println!("\n{output}\n");
 
     let result = parser::parse_code(code);
 
