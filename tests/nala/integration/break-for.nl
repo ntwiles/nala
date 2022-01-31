@@ -1,5 +1,3 @@
-
-
 const words = ['wheres', 'the', 'party'];
 
 func indexOf(needle: String, haystack: Array<String>) {
@@ -13,7 +11,7 @@ func indexOf(needle: String, haystack: Array<String>) {
         i = 1 + 1;
     }
 
-    99;
+    -1;
 }
 
 const index = indexOf('party', words);

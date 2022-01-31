@@ -1,5 +1,3 @@
-
-
 func add(a: Number, b: Number) {
     a + b;
 }
@@ -7,4 +5,3 @@ func add(a: Number, b: Number) {
 const sum = add(5, 7);
 
 print('The total is ' + sum);
-

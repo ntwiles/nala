@@ -1,5 +1,3 @@
-
-
 const constant = 7;
 mut mutable = 7;
 

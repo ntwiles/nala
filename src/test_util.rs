@@ -8,7 +8,11 @@ pub fn read_and_execute(path: &str, test_context: &mut TestContext) {
     } else {
         panic!("Could not load nala file! {}", path);
     };
+
+    println!("\n{}\n", code.trim_start().trim_end());
+
     let result = parser::parse_code(code);
+
     match result {
         Ok(parsed) => interpret_tree(parsed, test_context),
         Err(_) => panic!("Could not parse nala file! {}", path),
