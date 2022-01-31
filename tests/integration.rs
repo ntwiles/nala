@@ -11,12 +11,11 @@ fn it_runs_array_empty() {
     assert_eq!(test_context.get_output(), vec!["This should print."]);
 }
 
-// TODO: This test has multiple array elements with different types and compiles, fix this.
 #[test]
 fn it_runs_array_for() {
     let mut test_context = TestContext::new();
     read_and_execute(&test_path("array-for"), &mut test_context);
-    assert_eq!(test_context.get_output(), vec!["foo", "7", "bar", "3"]);
+    assert_eq!(test_context.get_output(), vec!["foo", "bar", "baz", "qux"]);
 }
 
 #[test]

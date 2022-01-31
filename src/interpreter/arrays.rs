@@ -48,5 +48,20 @@ pub fn evaluate_array(
     context: &mut impl IoContext,
 ) -> Term {
     let terms = evaluate_elems(&array.elems, scopes, current_scope, context);
+
+    if let Some(first) = terms.clone().first() {
+        let first_type = first.get_type();
+
+        for term in terms.clone() {
+            if term.get_type() != first_type {
+                panic!(
+                    "Arrays can contain elements of only a single type. Found elements of types `{0}` and `{1}`.",
+                    first_type.to_string(),
+                    term.get_type().to_string()
+                );
+            }
+        }
+    };
+
     Term::Array(terms)
 }

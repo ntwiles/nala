@@ -9,6 +9,14 @@ fn it_errors_when_passing_number_arg_to_len() {
 }
 
 #[test]
+#[should_panic(expected = "Arrays can contain elements of only a single type.")]
+fn it_errors_when_declaring_array_multiple_types() {
+    let file_name = "tests/nala/integration_errors/array-multiple-types.nl";
+    let mut test_context = TestContext::new();
+    read_and_execute(&file_name, &mut test_context);
+}
+
+#[test]
 #[should_panic(expected = "Cannot assign value of type String where Number is expected.")]
 fn it_errors_when_assigning_wrong_type() {
     let file_name = "tests/nala/integration_errors/assign-types.nl";
