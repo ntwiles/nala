@@ -19,10 +19,48 @@ pub fn interpret_func(
         let block = Box::new(block.clone());
         let params = Box::new(params.clone());
 
-        scopes.add_binding(&ident, current_scope, Term::Func(params, block), false);
+        let result = check_param_types(&*params);
+
+        if result.is_ok() {
+            scopes.add_binding(&ident, current_scope, Term::Func(params, block), false);
+        } else {
+            panic!("{}", result.unwrap_err())
+        }
     }
 
     Term::Void
+}
+
+fn check_param_types(params: &Params) -> Result<(), String> {
+    match params {
+        Params::Params(params, (ident, param_type)) => {
+            match check_param_types(params) {
+                Ok(_) => (),
+                Err(err) => return Err(err),
+            };
+
+            check_param_type(ident, param_type)
+        }
+        Params::Param(ident, param_type) => check_param_type(ident, param_type),
+        Params::Empty => Ok(()),
+    }
+}
+
+fn check_param_type(ident: &String, param_type: &Type) -> Result<(), String> {
+    if let Type::Nested(outer, inner) = param_type {
+        return if let PrimitiveType::Array = outer {
+            Ok(())
+        } else {
+            let message = format!(
+                "Type `{0}` does not support nesting. Type `{0}<{1}>` is invalid.",
+                outer.to_string(),
+                inner.to_string()
+            );
+            Err(message)
+        };
+    }
+
+    Ok(())
 }
 
 pub fn evaluate_call(

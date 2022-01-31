@@ -27,9 +27,7 @@ fn it_errors_when_assigning_type_void() {
 }
 
 #[test]
-#[should_panic(
-    expected = "Passed value `false` of type Bool to func `bad` where Bool<String> was expected."
-)]
+#[should_panic(expected = "Type `Bool` does not support nesting. Type `Bool<String>` is invalid.")]
 fn it_errors_when_passing_primitive_when_nested_is_expected() {
     let file_name = "tests/nala/integration_errors/nested-types.nl";
     let mut test_context = TestContext::new();
