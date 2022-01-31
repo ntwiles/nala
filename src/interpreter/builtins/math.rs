@@ -7,7 +7,6 @@ use crate::{
 };
 
 pub fn get_floor_block() -> Block {
-    // TODO: Get rid of this magic string, maybe use enum?
     let params = Params::Param(Param {
         ident: String::from("num"),
         param_type: Type::Primitive(PrimitiveType::Number),
@@ -21,7 +20,6 @@ fn builtin_floor(
     _current_scope: ScopeId,
     _context: &mut dyn IoContext,
 ) -> Term {
-    // TODO: Get rid of this magic string, maybe use enum?
     let num = args.get("num").unwrap();
 
     if let Term::Num(num) = num {

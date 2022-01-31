@@ -9,7 +9,6 @@ use crate::{
 use super::build_params;
 
 pub fn get_len_block() -> Block {
-    // TODO: Get rid of this magic string, maybe use enum?
     let params = Params::Param(Param {
         ident: String::from("array"),
         param_type: Type::Nested(
@@ -22,7 +21,6 @@ pub fn get_len_block() -> Block {
 }
 
 pub fn get_slice_block() -> Block {
-    // TODO: Get rid of these magic strings, maybe use enum?
     let params = build_params(vec![
         Param {
             ident: String::from("array"),

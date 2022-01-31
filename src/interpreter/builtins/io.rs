@@ -7,7 +7,6 @@ use crate::{
 };
 
 pub fn get_print_block() -> Block {
-    // TODO: Get rid of this magic string, maybe use enum?
     let params = Params::Param(Param {
         ident: String::from("message"),
         param_type: Type::Primitive(PrimitiveType::Any),
