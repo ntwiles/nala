@@ -6,6 +6,8 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
+use super::build_params;
+
 pub fn get_len_block() -> Block {
     // TODO: Get rid of this magic string, maybe use enum?
     let params = Params::Param(Param {
@@ -19,38 +21,25 @@ pub fn get_len_block() -> Block {
     Block::RustBlock(params, builtin_len)
 }
 
-// fn build_params(params: Vec<Params>) -> Params {
-//     match params.len() {
-//         0 => Params::Empty,
-//         1 => Params::Param(params.first().unwrap())
-
-//     }
-// }
-
 pub fn get_slice_block() -> Block {
-    // TODO: Get rid of this magic string, maybe use enum?
-    // TODO: The experience for laying out multiple params is terrible here.
-    let first_two_params = Params::Params(
-        Box::new(Params::Param(Param {
+    // TODO: Get rid of these magic strings, maybe use enum?
+    let params = build_params(vec![
+        Param {
             ident: String::from("array"),
             param_type: Type::Nested(
                 PrimitiveType::Array,
                 Box::new(Type::Primitive(PrimitiveType::Number)),
             ),
-        })),
+        },
         Param {
             ident: String::from("start"),
             param_type: Type::Primitive(PrimitiveType::Number),
         },
-    );
-
-    let params = Params::Params(
-        Box::new(first_two_params),
         Param {
             ident: String::from("end"),
             param_type: Type::Primitive(PrimitiveType::Number),
         },
-    );
+    ]);
 
     Block::RustBlock(params, builtin_slice)
 }

@@ -43,3 +43,16 @@ pub fn invoke_builtin(
 
     func(args, scopes, current_scope, context)
 }
+
+fn build_params(params: Vec<Param>) -> Params {
+    match params.len() {
+        0 => Params::Empty,
+        1 => Params::Param(params.first().unwrap().clone()),
+        _ => {
+            let last = params.last().unwrap();
+            let remaining = build_params(params[..params.len() - 1].to_owned());
+
+            Params::Params(Box::new(remaining), last.clone())
+        }
+    }
+}
