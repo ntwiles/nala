@@ -33,7 +33,7 @@ pub fn interpret_func(
 
 fn check_param_types(params: &Params) -> Result<(), String> {
     match params {
-        Params::Params(params, (_, param_type)) => {
+        Params::Params(params, Param { param_type, .. }) => {
             match check_param_types(params) {
                 Ok(_) => (),
                 Err(err) => return Err(err),
@@ -41,7 +41,7 @@ fn check_param_types(params: &Params) -> Result<(), String> {
 
             check_param_type(param_type)
         }
-        Params::Param(_, param_type) => check_param_type(param_type),
+        Params::Param(Param { param_type, .. }) => check_param_type(param_type),
         Params::Empty => Ok(()),
     }
 }
@@ -83,7 +83,10 @@ pub fn evaluate_call(
                 }
 
                 for i in 0..params.len() {
-                    let (param, param_type) = params.get(i).unwrap();
+                    let Param {
+                        ident: param_ident,
+                        param_type,
+                    } = params.get(i).unwrap();
                     let arg = args.get(i).unwrap();
 
                     let arg_type = arg.get_type();
@@ -99,7 +102,7 @@ pub fn evaluate_call(
                         )
                     }
 
-                    scopes.add_binding(param, func_scope, arg.clone(), true)
+                    scopes.add_binding(param_ident, func_scope, arg.clone(), true)
                 }
 
                 interpret_block(&block, scopes, func_scope, context)
@@ -117,14 +120,14 @@ pub fn evaluate_params(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Vec<(String, Type)> {
+) -> Vec<Param> {
     match params {
         Params::Params(params, param) => {
             let mut params = evaluate_params(params, scopes, current_scope, context);
             params.push(param.to_owned());
             params
         }
-        Params::Param(param, type_name) => vec![(param.to_owned(), type_name.to_owned())],
+        Params::Param(param) => vec![param.to_owned()],
         Params::Empty => vec![],
     }
 }

@@ -35,10 +35,10 @@ pub fn invoke_builtin(
     context: &mut impl IoContext,
 ) -> Term {
     // TODO: We already get params and args in evaluate_call, do we have to do this work again?
-    let params: Vec<(String, Type)> = evaluate_params(params, scopes, current_scope, context);
+    let params: Vec<Param> = evaluate_params(params, scopes, current_scope, context);
     let args: HashMap<String, Term> = params
         .into_iter()
-        .map(|(param, _)| (param.clone(), scopes.get_value(&param, current_scope)))
+        .map(|Param { ident, .. }| (ident.clone(), scopes.get_value(&ident, current_scope)))
         .collect();
 
     func(args, scopes, current_scope, context)

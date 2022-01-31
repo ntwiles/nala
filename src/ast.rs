@@ -72,9 +72,15 @@ pub enum Elems {
 
 #[derive(Debug, Clone)]
 pub enum Params {
-    Params(Box<Params>, (String, Type)),
-    Param(String, Type),
+    Params(Box<Params>, Param),
+    Param(Param),
     Empty,
+}
+
+#[derive(Debug, Clone)]
+pub struct Param {
+    pub ident: String,
+    pub param_type: Type,
 }
 
 #[derive(Debug, Clone)]

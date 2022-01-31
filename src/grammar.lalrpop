@@ -66,8 +66,12 @@ Elems: ast::Elems = {
 };
 
 Params: ast::Params = {
-    <p:Params> "," <s:Symbol> ":" <t:Type> => ast::Params::Params(Box::new(p), (s, t)),
-    <s:Symbol> ":" <t:Type> => ast::Params::Param(s, t)
+    <pp:Params> "," <p:Param> => ast::Params::Params(Box::new(pp), p),
+    <Param> => ast::Params::Param(<>)
+}
+
+Param: ast::Param = {
+    <s:Symbol> ":" <t:Type> => ast::Param { ident: s, param_type: t }
 }
 
 Type: ast::Type = {
