@@ -32,11 +32,15 @@ impl TestContext {
         }
     }
 
-    pub fn get_output(self: &mut Self) -> &Vec<String> {
-        &self.outputs
+    pub fn get_output(self: &mut Self) -> Vec<&str> {
+        self.outputs
+            .iter()
+            .map(|s| s as &str)
+            .collect::<Vec<&str>>()
+            .clone()
     }
 
-    pub fn mock_inputs(self: &mut Self, inputs: Vec<String>) {
+    pub fn mock_inputs(self: &mut Self, inputs: Vec<&str>) {
         self.inputs = inputs.iter().map(|s| s.to_string()).collect()
     }
 }
