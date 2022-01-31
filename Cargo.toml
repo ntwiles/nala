@@ -1,5 +1,5 @@
 [package]
-name = "nala-rust"
+name = "nala"
 version = "0.1.0"
 authors = ["Nathan Wiles <ntwiles@gmail.com>"]
 edition = "2018"
