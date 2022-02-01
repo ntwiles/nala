@@ -9,7 +9,7 @@ name = "library"
 path = "src/lib.rs"
 
 [[bin]]
-name = "nala_rust"
+name = "nala"
 path = "src/main.rs"
 
 [build-dependencies]
