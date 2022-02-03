@@ -34,3 +34,7 @@ Within that directory, `sandbox.nl` will be ignored by git.
 # Documentation
 
 Documentation can be found on the [Nala Wiki](https://github.com/ntwiles/nala-rust/wiki).
+
+# Syntax Highlighting
+
+Syntax highlighting is available in the form of a VS Code extension [here](https://github.com/ntwiles/nala-vscode-extension).
