@@ -13,7 +13,7 @@ func isUnsorted(items: Array<Number>, comparator: Func) {
         if (i > 0) {
             const prev = items[i - 1];
 
-            if (comparator(prev, current) < 0) {
+            if (comparator(prev, current) == Comparison::GreaterThan) {
                 break(true);
             }
         }
@@ -30,7 +30,7 @@ func bubblePass(items: Array<Number>, comparator: Func) {
         if (i > 0) {
             const prev = items[i - 1];
             
-            if (comparator(prev, current) < 0) {
+            if (comparator(prev, current) == Comparison::GreaterThan) {
                 items[i] = prev;
                 items[i - 1] = current;
             }
@@ -42,8 +42,22 @@ func bubblePass(items: Array<Number>, comparator: Func) {
     items;
 }
 
+enum Comparison {
+    LessThan,
+    Equal,
+    GreaterThan
+}
+
 func byValue(a: Number, b: Number) {
-    b - a;
+    if (a < b) {
+        Comparison::LessThan;
+    }
+
+    if (a > b) {
+        Comparison::GreaterThan;
+    }
+
+    Comparison::Equal;
 }
 
 const unsorted = [ 3, 5, 1, 4, 2];
