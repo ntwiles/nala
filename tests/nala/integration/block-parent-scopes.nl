@@ -5,4 +5,4 @@ if (true) {
     print(foo);
 }
 
-print (foo);
+print(foo);
