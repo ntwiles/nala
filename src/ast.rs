@@ -185,7 +185,7 @@ impl Term {
             Term::Num(n) => n.to_string(),
             Term::Bool(b) => b.to_string(),
             Term::Array(a) => String::from(format!("[{}]", a.len())),
-            Term::Func(_, _) => String::from("<Func>"),
+            Term::Func(_, _) => String::from(format!("[{}]", self.get_type().to_string())),
             Term::Void => String::from("<Void>"),
             Term::Break(_) => String::from("<Break>"),
             Term::Type(type_kind) => type_kind.to_string(),
@@ -197,7 +197,7 @@ impl Term {
         match self {
             Term::Array(items) => {
                 let elem_type = if items.len() > 0 {
-                    items[0].get_type()
+                    items.first().unwrap().get_type()
                 } else {
                     Type::Primitive(PrimitiveType::Unknown)
                 };
@@ -205,12 +205,13 @@ impl Term {
                 Type::Nested(PrimitiveType::Array, Box::new(elem_type))
             }
             Term::Func(params, _) => {
-                // let params = *params.clone();
-                // if params.len() > 0 {
-                //     Type::Nested(PrimitiveType::Func, Box::new())
-                // } else {
-                Type::Primitive(PrimitiveType::Func)
-                // }
+                let params = params.to_vec();
+                if params.len() > 0 {
+                    let param_type = params.first().unwrap().param_type.clone();
+                    Type::Nested(PrimitiveType::Func, Box::new(param_type))
+                } else {
+                    Type::Primitive(PrimitiveType::Func)
+                }
             }
             Term::Bool(_) => Type::Primitive(PrimitiveType::Bool),
             Term::Break(_) => Type::Primitive(PrimitiveType::Break),
@@ -293,7 +294,7 @@ impl PrimitiveType {
             PrimitiveType::String => "String",
             PrimitiveType::Symbol => "<Symbol>",
             PrimitiveType::Void => "<Void>",
-            PrimitiveType::Any => "<Any>",
+            PrimitiveType::Any => "Any",
             PrimitiveType::Enum => "<Enum>",
             PrimitiveType::Kind => "Kind",
             PrimitiveType::Unknown => "<Unknown>",
@@ -319,6 +320,18 @@ impl Params {
                 let remaining = Params::from_vec(params[..params.len() - 1].to_owned());
                 Params::Params(Box::new(remaining), last.clone())
             }
+        }
+    }
+
+    pub fn to_vec(&self) -> Vec<Param> {
+        match self {
+            Params::Params(params, param) => {
+                let mut params = params.to_vec();
+                params.push(param.to_owned());
+                params
+            }
+            Params::Param(param) => vec![param.to_owned()],
+            Params::Empty => vec![],
         }
     }
 }
