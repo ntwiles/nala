@@ -204,9 +204,16 @@ impl Term {
 
                 Type::Nested(PrimitiveType::Array, Box::new(elem_type))
             }
+            Term::Func(params, _) => {
+                // let params = *params.clone();
+                // if params.len() > 0 {
+                //     Type::Nested(PrimitiveType::Func, Box::new())
+                // } else {
+                Type::Primitive(PrimitiveType::Func)
+                // }
+            }
             Term::Bool(_) => Type::Primitive(PrimitiveType::Bool),
             Term::Break(_) => Type::Primitive(PrimitiveType::Break),
-            Term::Func(_, _) => Type::Primitive(PrimitiveType::Func),
             Term::Num(_) => Type::Primitive(PrimitiveType::Number),
             Term::String(_) => Type::Primitive(PrimitiveType::String),
             Term::Symbol(_) => Type::Primitive(PrimitiveType::Symbol),
@@ -299,5 +306,19 @@ impl PrimitiveType {
 impl PartialEq for PrimitiveType {
     fn eq(&self, other: &Self) -> bool {
         self.to_string() == other.to_string()
+    }
+}
+
+impl Params {
+    pub fn from_vec(params: Vec<Param>) -> Params {
+        match params.len() {
+            0 => Params::Empty,
+            1 => Params::Param(params.first().unwrap().clone()),
+            _ => {
+                let last = params.last().unwrap();
+                let remaining = Params::from_vec(params[..params.len() - 1].to_owned());
+                Params::Params(Box::new(remaining), last.clone())
+            }
+        }
     }
 }

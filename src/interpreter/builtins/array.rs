@@ -6,8 +6,6 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-use super::build_params;
-
 pub fn get_len_block() -> Block {
     let params = Params::Param(Param {
         ident: String::from("array"),
@@ -21,7 +19,7 @@ pub fn get_len_block() -> Block {
 }
 
 pub fn get_slice_block() -> Block {
-    let params = build_params(vec![
+    let params = Params::from_vec(vec![
         Param {
             ident: String::from("array"),
             param_type: Type::Nested(
