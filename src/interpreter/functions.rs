@@ -94,7 +94,7 @@ pub fn evaluate_call(
 
                     if !arg_type.is_assignable_to(&param_type) {
                         panic!(
-                            "Passed value `{0}` of type {1} to func `{2}` where {3} was expected.",
+                            "Passed value `{0}` of type `{1}` to func `{2}` where `{3}` was expected.",
                             arg.clone().to_string(),
                             arg.get_type().to_string(),
                             ident,
