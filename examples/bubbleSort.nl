@@ -48,7 +48,7 @@ enum Comparison {
     GreaterThan
 }
 
-func byValue(a: Number, b: Number) {
+func compareByValue(a: Number, b: Number) {
     if (a < b) {
         Comparison::LessThan;
     }
@@ -60,11 +60,17 @@ func byValue(a: Number, b: Number) {
     Comparison::Equal;
 }
 
-const unsorted = [ 3, 5, 1, 4, 2];
-const sorted = bubbleSort(unsorted, byValue);
-
-print('sorted');
-
-for item in sorted {
-    print(item);
+func printArray(array: Array<Number>, label: String) {
+    print(label + ':');
+    for item in array {
+        print(item);
+    }
+    print('');
 }
+
+const unsorted = [3, 5, 1, 4, 2];
+printArray(unsorted, 'Unsorted');
+
+const sorted = bubbleSort(unsorted, compareByValue);
+printArray(sorted, 'Sorted');
+
