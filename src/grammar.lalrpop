@@ -76,7 +76,8 @@ Param: ast::Param = {
 
 Type: ast::Type = {
     <p:PrimitiveType> "<" <t:Type> ">" => ast::Type::Nested(p, Box::new(t)),
-    <PrimitiveType> => ast::Type::Primitive(<>)
+    <PrimitiveType> => ast::Type::Primitive(<>),
+    <PrimitiveInterface> => ast::Type::Interface(<>)
 }
 
 PrimitiveType: ast::PrimitiveType = {
@@ -85,6 +86,10 @@ PrimitiveType: ast::PrimitiveType = {
     "Func" => ast::PrimitiveType::Func,
     "Number" => ast::PrimitiveType::Number,
     "String" => ast::PrimitiveType::String,
+}
+
+PrimitiveInterface: ast::PrimitiveInterface = {
+    "IPrintable" => ast::PrimitiveInterface::IPrintable
 }
 
 Addend: ast::Addend = {

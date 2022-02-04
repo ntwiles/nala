@@ -149,6 +149,12 @@ pub enum Type {
     Nested(PrimitiveType, Box<Type>),
     Enum(String, Box<KindsDeclare>),
     Primitive(PrimitiveType),
+    Interface(PrimitiveInterface),
+}
+
+#[derive(Debug, Clone)]
+pub enum PrimitiveInterface {
+    IPrintable,
 }
 
 #[derive(Debug, Clone)]
@@ -238,11 +244,18 @@ impl Type {
             Type::Primitive(sv) => {
                 if let Type::Primitive(ov) = other {
                     sv.is_assignable_to(ov)
+                } else if let Type::Interface(_) = other {
+                    // This only works because so far we only have a single interface, IPrintable,
+                    // and all primitive types should be treated as IPrintable.
+                    true
                 } else {
                     false
                 }
             }
             Type::Enum(_, _) => todo!(),
+            Type::Interface(_) => {
+                todo!();
+            }
         }
     }
 
@@ -251,6 +264,7 @@ impl Type {
             Type::Nested(v, vv) => format!("{0}<{1}>", v.to_string(), vv.to_string()),
             Type::Primitive(v) => v.to_string(),
             Type::Enum(_, _) => todo!(),
+            Type::Interface(i) => i.to_string(),
         }
     }
 }
@@ -273,6 +287,9 @@ impl PartialEq for Type {
                 }
             }
             Type::Enum(_, _) => {
+                todo!()
+            }
+            Type::Interface(_) => {
                 todo!()
             }
         }
@@ -298,6 +315,16 @@ impl PrimitiveType {
             PrimitiveType::Enum => "<Enum>",
             PrimitiveType::Kind => "Kind",
             PrimitiveType::Unknown => "<Unknown>",
+        };
+
+        String::from(type_name)
+    }
+}
+
+impl PrimitiveInterface {
+    pub fn to_string(&self) -> String {
+        let type_name = match self {
+            PrimitiveInterface::IPrintable => "IPrintable",
         };
 
         String::from(type_name)
