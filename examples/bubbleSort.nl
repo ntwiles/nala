@@ -1,5 +1,5 @@
 
-func bubbleSort(items: Array<Number>, comparator: Func<Number>) {
+func bubbleSort(items: Array<Number>, comparator: Func<Number, Number>) {
     wiles (isUnsorted(items, comparator)) {
         items = bubblePass(items, comparator);
     }
@@ -7,7 +7,7 @@ func bubbleSort(items: Array<Number>, comparator: Func<Number>) {
     items;
 }
 
-func isUnsorted(items: Array<Number>, comparator: Func<Number>) {
+func isUnsorted(items: Array<Number>, comparator: Func<Number, Number>) {
     mut i = 0; 
     for current in items {
         if (i > 0) {
@@ -24,7 +24,7 @@ func isUnsorted(items: Array<Number>, comparator: Func<Number>) {
     false;
 }
 
-func bubblePass(items: Array<Number>, comparator: Func<Number>) {
+func bubblePass(items: Array<Number>, comparator: Func<Number, Number>) {
     mut i = 0;
     for current in items {
         if (i > 0) {

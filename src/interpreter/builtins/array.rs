@@ -11,7 +11,7 @@ pub fn get_len_block() -> Block {
         ident: String::from("array"),
         param_type: Type::Nested(
             PrimitiveType::Array,
-            Box::new(Type::Primitive(PrimitiveType::Number)),
+            Box::new(Types::Type(Type::Primitive(PrimitiveType::Number))),
         ),
     });
 
@@ -24,7 +24,7 @@ pub fn get_slice_block() -> Block {
             ident: String::from("array"),
             param_type: Type::Nested(
                 PrimitiveType::Array,
-                Box::new(Type::Primitive(PrimitiveType::Number)),
+                Box::new(Types::Type(Type::Primitive(PrimitiveType::Number))),
             ),
         },
         Param {

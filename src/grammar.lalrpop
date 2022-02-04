@@ -74,8 +74,13 @@ Param: ast::Param = {
     <s:Symbol> ":" <t:Type> => ast::Param { ident: s, param_type: t }
 }
 
+Types: ast::Types = {
+    <tt:Types> "," <t:Type> => ast::Types::Types(Box::new(tt), t),
+    <Type> => ast::Types::Type(<>)
+}
+
 Type: ast::Type = {
-    <p:PrimitiveType> "<" <t:Type> ">" => ast::Type::Nested(p, Box::new(t)),
+    <p:PrimitiveType> "<" <tt:Types> ">" => ast::Type::Nested(p, Box::new(tt)),
     <PrimitiveType> => ast::Type::Primitive(<>),
     <PrimitiveInterface> => ast::Type::Interface(<>)
 }

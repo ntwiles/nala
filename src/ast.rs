@@ -145,8 +145,14 @@ pub enum Term {
 }
 
 #[derive(Debug, Clone)]
+pub enum Types {
+    Types(Box<Types>, Type),
+    Type(Type),
+}
+
+#[derive(Debug, Clone)]
 pub enum Type {
-    Nested(PrimitiveType, Box<Type>),
+    Nested(PrimitiveType, Box<Types>),
     Enum(String, Box<KindsDeclare>),
     Primitive(PrimitiveType),
     Interface(PrimitiveInterface),
@@ -208,13 +214,16 @@ impl Term {
                     Type::Primitive(PrimitiveType::Unknown)
                 };
 
+                let elem_type = Types::Type(elem_type);
                 Type::Nested(PrimitiveType::Array, Box::new(elem_type))
             }
             Term::Func(params, _) => {
                 let params = params.to_vec();
                 if params.len() > 0 {
-                    let param_type = params.first().unwrap().param_type.clone();
-                    Type::Nested(PrimitiveType::Func, Box::new(param_type))
+                    let param_types: Vec<Type> =
+                        params.iter().map(|p| p.clone().param_type).collect();
+                    let param_types = Types::from_vec(param_types);
+                    Type::Nested(PrimitiveType::Func, Box::new(param_types))
                 } else {
                     Type::Primitive(PrimitiveType::Func)
                 }
@@ -231,12 +240,51 @@ impl Term {
     }
 }
 
+impl Types {
+    pub fn are_assignable_to(&self, other: &Self) -> bool {
+        match self {
+            Types::Types(svv, sv) => {
+                if let Types::Types(ovv, ov) = other {
+                    sv.is_assignable_to(ov) && svv.are_assignable_to(ovv)
+                } else {
+                    false
+                }
+            }
+            Types::Type(sv) => {
+                if let Types::Type(ov) = other {
+                    sv.is_assignable_to(ov)
+                } else {
+                    false
+                }
+            }
+        }
+    }
+
+    pub fn to_string(&self) -> String {
+        match self {
+            Types::Type(s) => s.to_string(),
+            Types::Types(ss, s) => format!("{0}, {1}", ss.to_string(), s.to_string()),
+        }
+    }
+
+    pub fn from_vec(types: Vec<Type>) -> Types {
+        match types.len() {
+            1 => Types::Type(types.first().unwrap().clone()),
+            _ => {
+                let last = types.last().unwrap();
+                let remaining = Types::from_vec(types[..types.len() - 1].to_owned());
+                Types::Types(Box::new(remaining), last.clone())
+            }
+        }
+    }
+}
+
 impl Type {
     pub fn is_assignable_to(&self, other: &Self) -> bool {
         match self {
             Type::Nested(sv, svv) => {
                 if let Type::Nested(ov, ovv) = other {
-                    sv.is_assignable_to(ov) && svv.is_assignable_to(ovv)
+                    sv.is_assignable_to(ov) && svv.are_assignable_to(ovv)
                 } else {
                     false
                 }
@@ -266,6 +314,27 @@ impl Type {
             Type::Enum(_, _) => todo!(),
             Type::Interface(i) => i.to_string(),
         }
+    }
+}
+
+impl PartialEq for Types {
+    fn eq(&self, other: &Self) -> bool {
+        return match self {
+            Types::Types(mvv, mv) => {
+                if let Types::Types(ovv, ov) = other {
+                    ovv == mvv && ov == mv
+                } else {
+                    false
+                }
+            }
+            Types::Type(mv) => {
+                if let Types::Type(ov) = other {
+                    mv == ov
+                } else {
+                    false
+                }
+            }
+        };
     }
 }
 
