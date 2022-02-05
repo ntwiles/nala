@@ -25,7 +25,7 @@ Stmt: ast::Stmt = {
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
     "func" <s:Symbol> "(" <p:Params> ")" <b:Block> => ast::Stmt::Func(s, Box::new(p), Box::new(b)),
-    "func" <s:Symbol> "(" ")" <b:Block> => ast::Stmt::Func(s, Box::new(ast::Params::Empty), Box::new(b)),
+    "func" <s:Symbol> "(" ")" <b:Block> => ast::Stmt::Func(s, Box::new(ast::funcs::Params::Empty), Box::new(b)),
     "enum" <s:Symbol> "{" <k:KindsDeclare> "}" => ast::Stmt::Enum(s, Box::new(k)),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
     <s:SymbolOrIndex> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
@@ -65,13 +65,13 @@ Elems: ast::Elems = {
     <Expr> => ast::Elems::Expr(<>),
 };
 
-Params: ast::Params = {
-    <pp:Params> "," <p:Param> => ast::Params::Params(Box::new(pp), p),
-    <Param> => ast::Params::Param(<>)
+Params: ast::funcs::Params = {
+    <pp:Params> "," <p:Param> => ast::funcs::Params::Params(Box::new(pp), p),
+    <Param> => ast::funcs::Params::Param(<>)
 }
 
-Param: ast::Param = {
-    <s:Symbol> ":" <t:Type> => ast::Param { ident: s, param_type: t }
+Param: ast::funcs::Param = {
+    <s:Symbol> ":" <t:Type> => ast::funcs::Param { ident: s, param_type: t }
 }
 
 Types: ast::types::Types = {
@@ -111,10 +111,10 @@ Factor: ast::Factor = {
     Call => ast::Factor::Call(<>),
 };
 
-Call: ast::Call = {
-    <s:Symbol> "(" <e:Elems> ")" => ast::Call::Call(s, Box::new(e)),
-    <s:Symbol> "(" ")" => ast::Call::Call(s, Box::new(ast::Elems::Empty)),
-    Index => ast::Call::Index(<>)
+Call: ast::funcs::Call = {
+    <s:Symbol> "(" <e:Elems> ")" => ast::funcs::Call::Call(s, Box::new(e)),
+    <s:Symbol> "(" ")" => ast::funcs::Call::Call(s, Box::new(ast::Elems::Empty)),
+    Index => ast::funcs::Call::Index(<>)
 };
 
 SymbolOrIndex: ast::SymbolOrIndex = {
