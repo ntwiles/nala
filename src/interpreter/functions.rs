@@ -81,7 +81,7 @@ pub fn evaluate_call(
                 let args = evaluate_elems(&*args, scopes, func_scope, context);
 
                 if params.len() != args.len() {
-                    panic!("Number of params does not match number of arguments.")
+                    panic!("Called func `{0}` with wrong number of arguments: Expected {1}, got {2}.", ident, params.len(), args.len())
                 }
 
                 for i in 0..params.len() {
