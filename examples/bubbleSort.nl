@@ -1,23 +1,5 @@
 
-enum Comparison {
-    LessThan,
-    Equal,
-    GreaterThan
-}
-
-func compare(a: ICompare, b: ICompare) {
-    if (a < b) {
-        Comparison::LessThan;
-    }
-
-    if (a > b) {
-        Comparison::GreaterThan;
-    }
-
-    Comparison::Equal;
-}
-
-func bubbleSort(items: Array<Number>, comparator: Func<Number, Number>) {
+func bubbleSort(items: Array<ICompare>) {
     mut i = 0;
     mut changed = false;
 
@@ -25,7 +7,7 @@ func bubbleSort(items: Array<Number>, comparator: Func<Number, Number>) {
         if (i > 0) {
             const prev = items[i - 1];
             
-            if (comparator(prev, current) == Comparison::GreaterThan) {
+            if (prev > current) {
                 items[i] = prev;
                 items[i - 1] = current;
                 changed = true;
@@ -35,10 +17,7 @@ func bubbleSort(items: Array<Number>, comparator: Func<Number, Number>) {
         i = i + 1;
     }
 
-    if (changed) {
-        bubbleSort(items, comparator);
-    }
-
+    if (changed) { bubbleSort(items); }
     items;
 }
 
@@ -51,7 +30,5 @@ func printArray(array: Array<IPrint>, label: String) {
 }
 
 const unsortedNums = [3, 5, 1, 4, 2];
-printArray(unsortedNums, 'Unsorted Number Array');
-
-const sortedNums = bubbleSort(unsortedNums, compare);
+const sortedNums = bubbleSort(unsortedNums);
 printArray(sortedNums, 'Sorted Number Array');

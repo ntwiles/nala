@@ -85,14 +85,11 @@ pub fn evaluate_call(
                 }
 
                 for i in 0..params.len() {
-                    let Param {
-                        ident: param_ident,
-                        param_type,
-                    } = params.get(i).unwrap();
+                    let param = params.get(i).unwrap();
                     let arg = args.get(i).unwrap();
 
                     let arg_type = arg.get_type();
-                    let param_type = param_type.clone();
+                    let param_type = param.param_type.clone();
 
                     if !arg_type.is_assignable_to(&param_type) {
                         panic!(
@@ -104,7 +101,7 @@ pub fn evaluate_call(
                         )
                     }
 
-                    scopes.add_binding(param_ident, func_scope, arg.clone(), true)
+                    scopes.add_binding(&param.ident, func_scope, arg.clone(), true)
                 }
 
                 interpret_block(&block, scopes, func_scope, context)

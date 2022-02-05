@@ -1,5 +1,13 @@
-// This data structure will hold other information about a type, like which interfaces it implements.
-#[derive(Debug, Clone)]
-pub struct Type {
-    Variant: TypeVariant,
+use crate::ast::{PrimitiveInterface::*, *};
+
+pub fn get_interfaces_for_primitive_type(primitive: PrimitiveType) -> Vec<PrimitiveInterface>{
+    match primitive {
+        PrimitiveType::Array => vec![IPrint],
+        PrimitiveType::Bool => vec![IPrint],
+        PrimitiveType::Func => vec![IPrint],
+        PrimitiveType::Kind => vec![IPrint],
+        PrimitiveType::Number => vec![IPrint, ICompare],
+        PrimitiveType::String => vec![IPrint],
+        _ => vec![]
+    }
 }

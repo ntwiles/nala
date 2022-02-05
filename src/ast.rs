@@ -4,6 +4,7 @@ use std::fmt::{Debug, Error, Formatter};
 use crate::{
     io_context::IoContext,
     scope::{ScopeId, Scopes},
+    types::*
 };
 
 #[derive(Debug)]
@@ -294,20 +295,19 @@ impl TypeVariant {
                 if let TypeVariant::Primitive(ov) = other {
                     sv.is_assignable_to(ov)
                 } else if let TypeVariant::Interface(i) = other {
-                    // This only works because so far we only have a single interface, IPrint,
-                    // and all primitive types should be treated as IPrint.
-                    match i {
-                        PrimitiveInterface::IPrint => true,
-                        PrimitiveInterface::ICompare => true,
-                    }
- 
+                    let implemented = get_interfaces_for_primitive_type(sv.clone());
+                    implemented.contains(i)
                 } else {
                     false
                 }
             }
             TypeVariant::Enum(_, _) => todo!(),
-            TypeVariant::Interface(_) => {
-                todo!();
+            TypeVariant::Interface(i) => {
+                if let TypeVariant::Interface(other) = other {
+                    i == other
+                } else {
+                    false
+                }
             }
         }
     }
@@ -395,6 +395,12 @@ impl PrimitiveType {
     }
 }
 
+impl PartialEq for PrimitiveType {
+    fn eq(&self, other: &Self) -> bool {
+        self.to_string() == other.to_string()
+    }
+}
+
 impl PrimitiveInterface {
     pub fn to_string(&self) -> String {
         let type_name = match self {
@@ -406,7 +412,7 @@ impl PrimitiveInterface {
     }
 }
 
-impl PartialEq for PrimitiveType {
+impl PartialEq for PrimitiveInterface {
     fn eq(&self, other: &Self) -> bool {
         self.to_string() == other.to_string()
     }

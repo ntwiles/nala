@@ -9,6 +9,7 @@ pub mod parser;
 pub mod scope;
 pub mod test_util;
 mod util;
+mod types;
 
 use interpreter::*;
 use io_context::ConsoleContext;
