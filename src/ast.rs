@@ -196,10 +196,12 @@ impl Term {
             Term::Symbol(_) => {
                 panic!("Cannot know string representation of un-evaluated symbol.")
             }
+            Term::Array(a) => {
+                String::from(format!("Array[{}]", a.len()))
+            }
             Term::String(t) => t.to_owned(),
             Term::Num(n) => n.to_string(),
             Term::Bool(b) => b.to_string(),
-            Term::Array(a) => String::from(format!("[{}]", a.len())),
             Term::Func(_, _) => String::from(format!("[{}]", self.get_type().to_string())),
             Term::Void => String::from("<Void>"),
             Term::Break(_) => String::from("<Break>"),
