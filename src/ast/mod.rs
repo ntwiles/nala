@@ -1,4 +1,5 @@
 pub mod funcs;
+pub mod math;
 pub mod terms;
 pub mod types;
 
@@ -7,6 +8,7 @@ use std::fmt::{Debug, Error, Formatter};
 use crate::builtins::*;
 
 use funcs::*;
+use math::*;
 use terms::*;
 use types::*;
 
@@ -87,20 +89,6 @@ pub enum KindValue {
 }
 
 #[derive(Debug, Clone)]
-pub enum Addend {
-    Add(Box<Addend>, Factor),
-    Sub(Box<Addend>, Factor),
-    Factor(Factor),
-}
-
-#[derive(Debug, Clone)]
-pub enum Factor {
-    Mult(Box<Factor>, Term),
-    Div(Box<Factor>, Term),
-    Call(Call),
-}
-
-#[derive(Debug, Clone)]
 pub enum SymbolOrIndex {
     Symbol(String),
     Index(String, Box<Expr>),
@@ -110,12 +98,4 @@ pub enum SymbolOrIndex {
 pub enum Index {
     Index(String, Box<Expr>),
     Term(Term),
-}
-
-#[derive(Debug)]
-pub enum OpKind {
-    Add,
-    Sub,
-    Mult,
-    Div,
 }

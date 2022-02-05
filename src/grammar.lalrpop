@@ -99,16 +99,16 @@ PrimitiveInterface: ast::types::PrimitiveInterface = {
     "IPrint" => ast::types::PrimitiveInterface::IPrint,
 }
 
-Addend: ast::Addend = {
-    <l:Addend> "+" <r:Factor> => ast::Addend::Add(Box::new(l), r),
-    <l:Addend> "-" <r:Factor> => ast::Addend::Sub(Box::new(l), r),
-    Factor =>  ast::Addend::Factor(<>)
+Addend: ast::math::Addend = {
+    <l:Addend> "+" <r:Factor> => ast::math::Addend::Add(Box::new(l), r),
+    <l:Addend> "-" <r:Factor> => ast::math::Addend::Sub(Box::new(l), r),
+    Factor =>  ast::math::Addend::Factor(<>)
 };
 
-Factor: ast::Factor = {
-    <l:Factor> "*" <r:Term>  => ast::Factor::Mult(Box::new(l), r),
-    <l:Factor> "/" <r:Term> => ast::Factor::Div(Box::new(l), r), 
-    Call => ast::Factor::Call(<>),
+Factor: ast::math::Factor = {
+    <l:Factor> "*" <r:Term>  => ast::math::Factor::Mult(Box::new(l), r),
+    <l:Factor> "/" <r:Term> => ast::math::Factor::Div(Box::new(l), r), 
+    Call => ast::math::Factor::Call(<>),
 };
 
 Call: ast::funcs::Call = {
