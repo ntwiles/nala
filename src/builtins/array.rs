@@ -6,6 +6,8 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
+use super::*;
+
 pub fn get_len_block() -> Func {
     let inner_type = Types::Type(TypeVariant::Primitive(PrimitiveType::Number));
 
@@ -62,8 +64,7 @@ fn builtin_len(
     if let Term::Array(array) = array {
         Term::Num(array.len() as f32)
     } else {
-        // TODO: Centralize these kinds of errors.
-        panic!("Can only pass values of type Array into len().");
+        panic_bad_args("len");
     }
 }
 
@@ -76,22 +77,19 @@ fn builtin_slice(
     let array = if let Term::Array(array) = args.get("array").unwrap() {
         array
     } else {
-        // TODO: Centralize these kinds of errors.
-        panic!("Can only pass values of type Array into slice().");
+        panic_bad_args("slice")
     };
 
     let start = if let Term::Num(start) = args.get("start").unwrap() {
         *start as usize
     } else {
-        // TODO: Centralize these kinds of errors.
-        panic!("Can only pass values of type Array into slice().");
+        panic_bad_args("slice")
     };
 
     let end = if let Term::Num(end) = args.get("end").unwrap() {
         *end as usize
     } else {
-        // TODO: Centralize these kinds of errors.
-        panic!("Can only pass values of type Array into slice().");
+        panic_bad_args("slice")
     };
 
     Term::Array(array[start..end].to_owned())

@@ -26,3 +26,8 @@ pub fn get_builtins() -> Vec<Func> {
         get_slice_block(),
     ]
 }
+
+// This should never be hit.
+fn panic_bad_args(func_name: &str) -> ! {
+    panic!("Wrong value type passed to builtin func {0}", func_name)
+}

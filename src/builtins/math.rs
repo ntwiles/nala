@@ -6,6 +6,8 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
+use super::*;
+
 pub fn get_floor_block() -> Func {
     let num_param = Param {
         ident: String::from("num"),
@@ -32,6 +34,6 @@ fn builtin_floor(
     if let Term::Num(num) = num {
         Term::Num(num.floor())
     } else {
-        panic!("Can only pass values of type Num into floor().");
+        panic_bad_args("floor")
     }
 }
