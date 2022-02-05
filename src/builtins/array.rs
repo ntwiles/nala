@@ -39,7 +39,6 @@ pub fn get_slice_block() -> Block {
     };
 
     let params = Params::from_vec(vec![array_param, start_param, end_param]);
-
     Block::RustBlock(params, builtin_slice)
 }
 

@@ -5,9 +5,26 @@ use super::{arrays::*, basic::*};
 use crate::{
     ast::{funcs::*, terms::*, types::*, *},
     builtins::BuiltinFunc,
+    errors::*,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
+
+pub struct WrongArgTypeForParamError {
+    func_ident: String,
+    arg_value: String,
+    arg_type: String,
+    param_type: String,
+}
+
+impl NalaRuntimeError for WrongArgTypeForParamError {
+    fn message(&self) -> String {
+        format!(
+            "Passed value `{0}` of type `{1}` to func `{2}` where `{3}` was expected.",
+            self.arg_value, self.arg_type, self.func_ident, self.param_type
+        )
+    }
+}
 
 pub fn interpret_func(
     ident: &String,
@@ -100,13 +117,12 @@ pub fn evaluate_call(
                     let param_type = param.param_type.clone();
 
                     if !arg_type.is_assignable_to(&param_type) {
-                        panic!(
-                            "Passed value `{0}` of type `{1}` to func `{2}` where `{3}` was expected.",
-                            arg.clone().to_string(),
-                            arg.get_type().to_string(),
-                            ident,
-                            param_type.to_string(),
-                        )
+                        runtime_error(WrongArgTypeForParamError {
+                            arg_value: arg.clone().to_string(),
+                            arg_type: arg.get_type().to_string(),
+                            func_ident: ident.to_owned(),
+                            param_type: param_type.to_string(),
+                        })
                     }
 
                     scopes.add_binding(&param.ident, func_scope, arg.clone(), true)
