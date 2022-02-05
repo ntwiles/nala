@@ -24,13 +24,7 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
 
     // Builtin functions.
     for func in get_builtins().iter() {
-        interpret_func(
-            &func.ident,
-            &func.params,
-            &func.block,
-            &mut scopes,
-            top_scope,
-        );
+        interpret_func(&func, &mut scopes, top_scope);
     }
 
     // Builtin constants.

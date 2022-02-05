@@ -26,13 +26,13 @@ impl NalaRuntimeError for WrongArgTypeForParamError {
     }
 }
 
-pub fn interpret_func(
-    ident: &String,
-    params: &Params,
-    block: &Block,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-) -> Term {
+pub fn interpret_func(func: &Func, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+    let Func {
+        ident,
+        block,
+        params,
+    } = func;
+
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
@@ -42,7 +42,7 @@ pub fn interpret_func(
         let result = check_param_types(&*params);
 
         if result.is_ok() {
-            scopes.add_binding(&ident, current_scope, Term::Func(params, block), false);
+            scopes.add_binding(&ident, current_scope, Term::Func(*params, *block), false);
         } else {
             panic!("{}", result.unwrap_err())
         }
