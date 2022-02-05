@@ -74,29 +74,29 @@ Param: ast::Param = {
     <s:Symbol> ":" <t:Type> => ast::Param { ident: s, param_type: t }
 }
 
-Types: ast::Types = {
-    <tt:Types> "," <t:Type> => ast::Types::Types(Box::new(tt), t),
-    <Type> => ast::Types::Type(<>)
+Types: ast::types::Types = {
+    <tt:Types> "," <t:Type> => ast::types::Types::Types(Box::new(tt), t),
+    <Type> => ast::types::Types::Type(<>)
 }
 
-Type: ast::TypeVariant = {
-    <p:PrimitiveType> "<" <tt:Types> ">" => ast::TypeVariant::Nested(p, Box::new(tt)),
-    <PrimitiveType> => ast::TypeVariant::Primitive(<>),
-    <PrimitiveInterface> => ast::TypeVariant::Interface(<>)
+Type: ast::types::TypeVariant = {
+    <p:PrimitiveType> "<" <tt:Types> ">" => ast::types::TypeVariant::Nested(p, Box::new(tt)),
+    <PrimitiveType> => ast::types::TypeVariant::Primitive(<>),
+    <PrimitiveInterface> => ast::types::TypeVariant::Interface(<>)
 }
 
-PrimitiveType: ast::PrimitiveType = {
-    "Array" => ast::PrimitiveType::Array,
-    "Bool" => ast::PrimitiveType::Bool,
-    "Func" => ast::PrimitiveType::Func,
-    "Number" => ast::PrimitiveType::Number,
-    "String" => ast::PrimitiveType::String,
+PrimitiveType: ast::types::PrimitiveType = {
+    "Array" => ast::types::PrimitiveType::Array,
+    "Bool" => ast::types::PrimitiveType::Bool,
+    "Func" => ast::types::PrimitiveType::Func,
+    "Number" => ast::types::PrimitiveType::Number,
+    "String" => ast::types::PrimitiveType::String,
 }
 
-PrimitiveInterface: ast::PrimitiveInterface = {
-    "ICompare" => ast::PrimitiveInterface::ICompare,
-    "IEqual" => ast::PrimitiveInterface::IEqual,
-    "IPrint" => ast::PrimitiveInterface::IPrint,
+PrimitiveInterface: ast::types::PrimitiveInterface = {
+    "ICompare" => ast::types::PrimitiveInterface::ICompare,
+    "IEqual" => ast::types::PrimitiveInterface::IEqual,
+    "IPrint" => ast::types::PrimitiveInterface::IPrint,
 }
 
 Addend: ast::Addend = {

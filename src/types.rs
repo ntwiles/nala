@@ -1,4 +1,4 @@
-use crate::ast::{PrimitiveInterface::*, *};
+use crate::ast::{types::{PrimitiveInterface::*, *}};
 
 pub fn get_interfaces_for_primitive_type(primitive: PrimitiveType) -> Vec<PrimitiveInterface>{
     match primitive {

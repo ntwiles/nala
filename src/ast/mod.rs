@@ -1,11 +1,15 @@
+pub mod types;
+
 use std::collections::HashMap;
 use std::fmt::{Debug, Error, Formatter};
 
 use crate::{
     io_context::IoContext,
     scope::{ScopeId, Scopes},
-    types::*
+    types::get_interfaces_for_primitive_type,
 };
+
+use types::*;
 
 #[derive(Debug)]
 pub enum Program {
@@ -143,43 +147,6 @@ pub enum Term {
     Break(Box<Expr>),
     Type(TypeVariant),
     Kind(String),
-}
-
-#[derive(Debug, Clone)]
-pub enum Types {
-    Types(Box<Types>, TypeVariant),
-    Type(TypeVariant),
-}
-
-#[derive(Debug, Clone)]
-pub enum TypeVariant {
-    Nested(PrimitiveType, Box<Types>),
-    Enum(String, Box<KindsDeclare>),
-    Primitive(PrimitiveType),
-    Interface(PrimitiveInterface),
-}
-
-#[derive(Debug, Clone)]
-pub enum PrimitiveInterface {
-    ICompare,
-    IEqual,
-    IPrint,
-}
-
-#[derive(Debug, Clone)]
-pub enum PrimitiveType {
-    Array,
-    Bool,
-    Break,
-    Func,
-    Number,
-    String,
-    Symbol,
-    Void,
-    Any,
-    Enum,
-    Kind,
-    Unknown,
 }
 
 #[derive(Debug)]
