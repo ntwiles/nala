@@ -1,6 +1,6 @@
 
 
-func indexOf(haystack: Array<String>, needle: String ) {
+func indexOf(haystack: Array<IEqual>, needle: String ) {
     mut i = 0;
     for item in haystack {
         if (item == needle) {

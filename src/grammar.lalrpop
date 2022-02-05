@@ -94,8 +94,9 @@ PrimitiveType: ast::PrimitiveType = {
 }
 
 PrimitiveInterface: ast::PrimitiveInterface = {
+    "ICompare" => ast::PrimitiveInterface::ICompare,
+    "IEqual" => ast::PrimitiveInterface::IEqual,
     "IPrint" => ast::PrimitiveInterface::IPrint,
-    "ICompare" => ast::PrimitiveInterface::ICompare
 }
 
 Addend: ast::Addend = {

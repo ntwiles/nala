@@ -162,6 +162,7 @@ pub enum TypeVariant {
 #[derive(Debug, Clone)]
 pub enum PrimitiveInterface {
     ICompare,
+    IEqual,
     IPrint,
 }
 
@@ -406,6 +407,7 @@ impl PrimitiveInterface {
         let type_name = match self {
             PrimitiveInterface::ICompare => "ICompare",
             PrimitiveInterface::IPrint => "IPrint",
+            PrimitiveInterface::IEqual => "IEqual",
         };
 
         String::from(type_name)
