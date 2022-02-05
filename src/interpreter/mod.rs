@@ -23,10 +23,14 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
     let top_scope = scopes.new_scope(None);
 
     // Builtin functions.
-    for (ident, block) in get_builtins().iter() {
-        if let Block::RustBlock(params, _block) = block.clone() {
-            interpret_func(ident, &params, &block, &mut scopes, top_scope);
-        }
+    for func in get_builtins().iter() {
+        interpret_func(
+            &func.ident,
+            &func.params,
+            &func.block,
+            &mut scopes,
+            top_scope,
+        );
     }
 
     // Builtin constants.

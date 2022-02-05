@@ -5,7 +5,7 @@ mod math;
 use std::collections::HashMap;
 
 use crate::{
-    ast::{terms::*, *},
+    ast::{funcs::*, terms::*},
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -16,13 +16,13 @@ use math::*;
 
 pub type BuiltinFunc = fn(HashMap<String, Term>, &mut Scopes, ScopeId, &mut dyn IoContext) -> Term;
 
-pub fn get_builtins() -> Vec<(String, Block)> {
+pub fn get_builtins() -> Vec<Func> {
     vec![
-        (String::from("floor"), get_floor_block()),
-        (String::from("len"), get_len_block()),
-        (String::from("print"), get_print_block()),
-        (String::from("read"), get_read_block()),
-        (String::from("readnum"), get_readnum_block()),
-        (String::from("slice"), get_slice_block()),
+        get_floor_block(),
+        get_len_block(),
+        get_print_block(),
+        get_read_block(),
+        get_readnum_block(),
+        get_slice_block(),
     ]
 }

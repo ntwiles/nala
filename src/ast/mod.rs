@@ -6,7 +6,7 @@ pub mod types;
 
 use std::fmt::{Debug, Error, Formatter};
 
-use crate::builtins::*;
+use crate::builtins::BuiltinFunc;
 
 use arrays::*;
 use funcs::*;
@@ -23,7 +23,7 @@ pub enum Program {
 #[derive(Clone)]
 pub enum Block {
     NalaBlock(Stmts),
-    RustBlock(Params, BuiltinFunc),
+    RustBlock(BuiltinFunc),
 }
 
 impl Debug for Block {

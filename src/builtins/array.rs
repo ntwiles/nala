@@ -6,7 +6,7 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-pub fn get_len_block() -> Block {
+pub fn get_len_block() -> Func {
     let inner_type = Types::Type(TypeVariant::Primitive(PrimitiveType::Number));
 
     let outer_type = TypeVariant::Nested(PrimitiveType::Array, Box::new(inner_type));
@@ -16,10 +16,14 @@ pub fn get_len_block() -> Block {
         param_type: outer_type,
     });
 
-    Block::RustBlock(params, builtin_len)
+    Func {
+        ident: "len".to_string(),
+        params: Box::new(params),
+        block: Box::new(Block::RustBlock(builtin_len)),
+    }
 }
 
-pub fn get_slice_block() -> Block {
+pub fn get_slice_block() -> Func {
     let array_param = Param {
         ident: String::from("array"),
         param_type: TypeVariant::Nested(
@@ -39,7 +43,12 @@ pub fn get_slice_block() -> Block {
     };
 
     let params = Params::from_vec(vec![array_param, start_param, end_param]);
-    Block::RustBlock(params, builtin_slice)
+
+    Func {
+        ident: "slice".to_string(),
+        params: Box::new(params),
+        block: Box::new(Block::RustBlock(builtin_slice)),
+    }
 }
 
 fn builtin_len(

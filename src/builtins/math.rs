@@ -6,15 +6,21 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-pub fn get_floor_block() -> Block {
+pub fn get_floor_block() -> Func {
     let num_param = Param {
         ident: String::from("num"),
         param_type: TypeVariant::Primitive(PrimitiveType::Number),
     };
 
     let params = Params::Param(num_param);
-    Block::RustBlock(params, builtin_floor)
+
+    Func {
+        ident: "floor".to_string(),
+        params: Box::new(params),
+        block: Box::new(Block::RustBlock(builtin_floor)),
+    }
 }
+
 fn builtin_floor(
     args: HashMap<String, Term>,
     _scopes: &mut Scopes,

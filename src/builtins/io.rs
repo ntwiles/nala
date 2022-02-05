@@ -1,27 +1,40 @@
 use std::collections::HashMap;
 
 use crate::{
-    ast::{funcs::*, types::*, terms::*, *},
+    ast::{funcs::*, terms::*, types::*, *},
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
 
-pub fn get_print_block() -> Block {
+pub fn get_print_block() -> Func {
     let message_param = Param {
         ident: String::from("message"),
-        param_type: TypeVariant::Primitive(PrimitiveType::Any)
+        param_type: TypeVariant::Primitive(PrimitiveType::Any),
     };
 
     let params = Params::Param(message_param);
-    Block::RustBlock(params, builtin_print)
+
+    Func {
+        ident: "print".to_string(),
+        params: Box::new(params),
+        block: Box::new(Block::RustBlock(builtin_print)),
+    }
 }
 
-pub fn get_read_block() -> Block {
-    Block::RustBlock(Params::Empty, builtin_read)
+pub fn get_read_block() -> Func {
+    Func {
+        ident: "read".to_string(),
+        params: Box::new(Params::Empty),
+        block: Box::new(Block::RustBlock(builtin_read)),
+    }
 }
 
-pub fn get_readnum_block() -> Block {
-    Block::RustBlock(Params::Empty, builtin_readnum)
+pub fn get_readnum_block() -> Func {
+    Func {
+        ident: "readnum".to_string(),
+        params: Box::new(Params::Empty),
+        block: Box::new(Block::RustBlock(builtin_readnum)),
+    }
 }
 
 fn builtin_print(

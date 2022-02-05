@@ -97,20 +97,20 @@ pub fn evaluate_call(
             if let Term::Func(params, block) = block {
                 let func_scope = scopes.new_scope(Some(current_scope));
 
-                let params = evaluate_params(&*params, scopes, func_scope, context);
+                let params_vec = evaluate_params(&*params, scopes, func_scope, context);
                 let args = evaluate_elems(&*args, scopes, func_scope, context);
 
-                if params.len() != args.len() {
+                if params_vec.len() != args.len() {
                     panic!(
                         "Called func `{0}` with wrong number of arguments: Expected {1}, got {2}.",
                         ident,
-                        params.len(),
+                        params_vec.len(),
                         args.len()
                     )
                 }
 
-                for i in 0..params.len() {
-                    let param = params.get(i).unwrap();
+                for i in 0..params_vec.len() {
+                    let param = params_vec.get(i).unwrap();
                     let arg = args.get(i).unwrap();
 
                     let arg_type = arg.get_type();
@@ -128,7 +128,14 @@ pub fn evaluate_call(
                     scopes.add_binding(&param.ident, func_scope, arg.clone(), true)
                 }
 
-                interpret_block(&block, scopes, func_scope, context)
+                let block = *block;
+
+                match block {
+                    Block::NalaBlock(stmts) => interpret_stmts(&stmts, scopes, func_scope, context),
+                    Block::RustBlock(block) => {
+                        invoke_builtin(block, &params, scopes, func_scope, context)
+                    }
+                }
             } else {
                 // This Void should never be returned, consider writing this differently and panicking?
                 Term::Void
