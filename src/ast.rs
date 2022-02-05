@@ -160,7 +160,8 @@ pub enum Type {
 
 #[derive(Debug, Clone)]
 pub enum PrimitiveInterface {
-    IPrintable,
+    ICompare,
+    IPrint,
 }
 
 #[derive(Debug, Clone)]
@@ -293,8 +294,8 @@ impl Type {
                 if let Type::Primitive(ov) = other {
                     sv.is_assignable_to(ov)
                 } else if let Type::Interface(_) = other {
-                    // This only works because so far we only have a single interface, IPrintable,
-                    // and all primitive types should be treated as IPrintable.
+                    // This only works because so far we only have a single interface, IPrint,
+                    // and all primitive types should be treated as IPrint.
                     true
                 } else {
                     false
@@ -345,14 +346,14 @@ impl PartialEq for Type {
                 if let Type::Nested(ov, og) = other {
                     return mv == ov && mg == og;
                 } else {
-                    panic!("Cannot compare between generic and primitive types.")
+                    panic!("Cannot compare between types `{0}` and `{1}`.", self.to_string(), other.to_string())
                 }
             }
             Type::Primitive(me) => {
                 if let Type::Primitive(other) = other {
                     return me == other;
                 } else {
-                    panic!("Cannot compare between generic and primitive types.");
+                    panic!("Cannot compare between types `{0}` and `{1}`.", self.to_string(), other.to_string())
                 }
             }
             Type::Enum(_, _) => {
@@ -393,7 +394,8 @@ impl PrimitiveType {
 impl PrimitiveInterface {
     pub fn to_string(&self) -> String {
         let type_name = match self {
-            PrimitiveInterface::IPrintable => "IPrintable",
+            PrimitiveInterface::ICompare => "ICompare",
+            PrimitiveInterface::IPrint => "IPrint",
         };
 
         String::from(type_name)
