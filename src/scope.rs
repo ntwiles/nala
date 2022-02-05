@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::ast;
+use crate::{ast, errors::*};
 
 #[derive(Debug)]
 pub struct Scope {
@@ -34,6 +34,26 @@ impl Scope {
     }
 }
 
+pub struct NotFoundInScopeError {
+    ident: String,
+}
+
+impl NalaRuntimeError for NotFoundInScopeError {
+    fn message(&self) -> String {
+        format!("Identifier '{}' was not found in this scope.", self.ident)
+    }
+}
+
+pub struct AssignImmutableBindingError {
+    ident: String,
+}
+
+impl NalaRuntimeError for AssignImmutableBindingError {
+    fn message(&self) -> String {
+        format!("Cannot re-assign to immutable binding {}", self.ident)
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct ScopeId {
     index: usize,
@@ -55,7 +75,11 @@ impl Scopes {
         ScopeId { index: next_index }
     }
 
-    fn get_maybe_value(self: &Self, ident: &str, current_scope: ScopeId) -> Option<ast::terms::Term> {
+    fn get_maybe_value(
+        self: &Self,
+        ident: &str,
+        current_scope: ScopeId,
+    ) -> Option<ast::terms::Term> {
         let scope = self.scopes.get(current_scope.index).unwrap();
 
         match scope.get_binding(&ident) {
@@ -70,7 +94,9 @@ impl Scopes {
     pub fn get_value(self: &Self, ident: &str, starting_scope: ScopeId) -> ast::terms::Term {
         match self.get_maybe_value(ident, starting_scope) {
             Some(value) => value,
-            None => panic!("Identifier '{}' was not found in this scope.", ident),
+            None => runtime_error(NotFoundInScopeError {
+                ident: String::from(ident),
+            }),
         }
     }
 
@@ -105,7 +131,9 @@ impl Scopes {
             if is_mutable {
                 scope.add_binding(ident, new_value, true)
             } else {
-                panic!("Cannot re-assign to immutable binding {}", &ident)
+                runtime_error(AssignImmutableBindingError {
+                    ident: ident.to_string(),
+                })
             }
         }
     }

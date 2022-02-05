@@ -2,6 +2,7 @@ use std::fs;
 
 mod ast;
 mod builtins;
+mod errors;
 pub mod interpreter;
 pub mod io_context;
 #[allow(dead_code)]
@@ -9,8 +10,8 @@ mod lexer;
 pub mod parser;
 pub mod scope;
 pub mod test_util;
-mod util;
 mod types;
+mod util;
 
 use interpreter::*;
 use io_context::ConsoleContext;
