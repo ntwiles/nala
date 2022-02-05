@@ -20,9 +20,7 @@ impl Term {
             Term::Symbol(_) => {
                 panic!("Cannot know string representation of un-evaluated symbol.")
             }
-            Term::Array(a) => {
-                String::from(format!("Array[{}]", a.len()))
-            }
+            Term::Array(a) => String::from(format!("Array[{}]", a.len())),
             Term::String(t) => t.to_owned(),
             Term::Num(n) => n.to_string(),
             Term::Bool(b) => b.to_string(),

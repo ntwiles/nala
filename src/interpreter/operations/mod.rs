@@ -152,7 +152,7 @@ fn do_divide(left: f32, right: f32) -> f32 {
 mod tests {
     use super::*;
 
-    use crate::io_context::TestContext;
+    use crate::{ast::funcs::*, io_context::TestContext};
 
     #[test]
     pub fn it_evaluates_add_with_2_terms() {

@@ -1,17 +1,14 @@
-pub mod types;
+pub mod funcs;
 pub mod terms;
+pub mod types;
 
-use std::collections::HashMap;
 use std::fmt::{Debug, Error, Formatter};
 
-use crate::{
-    io_context::IoContext,
-    scope::{ScopeId, Scopes},
-    types::get_interfaces_for_primitive_type,
-};
+use crate::builtins::*;
 
-use types::*;
+use funcs::*;
 use terms::*;
+use types::*;
 
 #[derive(Debug)]
 pub enum Program {
@@ -22,7 +19,6 @@ pub enum Program {
 #[derive(Clone)]
 pub enum Block {
     NalaBlock(Stmts),
-    // RustBlock is used for builtin functions.
     RustBlock(Params, BuiltinFunc),
 }
 
@@ -32,8 +28,6 @@ impl Debug for Block {
         Ok(())
     }
 }
-
-pub type BuiltinFunc = fn(HashMap<String, Term>, &mut Scopes, ScopeId, &mut dyn IoContext) -> Term;
 
 #[derive(Debug, Clone)]
 pub enum Stmt {
@@ -78,19 +72,6 @@ pub enum Elems {
 }
 
 #[derive(Debug, Clone)]
-pub enum Params {
-    Params(Box<Params>, Param),
-    Param(Param),
-    Empty,
-}
-
-#[derive(Debug, Clone)]
-pub struct Param {
-    pub ident: String,
-    pub param_type: TypeVariant,
-}
-
-#[derive(Debug, Clone)]
 pub enum Expr {
     Eq(Box<Expr>, KindValue),
     Gt(Box<Expr>, Addend),
@@ -120,12 +101,6 @@ pub enum Factor {
 }
 
 #[derive(Debug, Clone)]
-pub enum Call {
-    Call(String, Box<Elems>),
-    Index(Index),
-}
-
-#[derive(Debug, Clone)]
 pub enum SymbolOrIndex {
     Symbol(String),
     Index(String, Box<Expr>),
@@ -143,30 +118,4 @@ pub enum OpKind {
     Sub,
     Mult,
     Div,
-}
-
-impl Params {
-    pub fn from_vec(params: Vec<Param>) -> Params {
-        match params.len() {
-            0 => Params::Empty,
-            1 => Params::Param(params.first().unwrap().clone()),
-            _ => {
-                let last = params.last().unwrap();
-                let remaining = Params::from_vec(params[..params.len() - 1].to_owned());
-                Params::Params(Box::new(remaining), last.clone())
-            }
-        }
-    }
-
-    pub fn to_vec(&self) -> Vec<Param> {
-        match self {
-            Params::Params(params, param) => {
-                let mut params = params.to_vec();
-                params.push(param.to_owned());
-                params
-            }
-            Params::Param(param) => vec![param.to_owned()],
-            Params::Empty => vec![],
-        }
-    }
 }

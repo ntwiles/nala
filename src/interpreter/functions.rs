@@ -1,7 +1,10 @@
+use std::collections::HashMap;
+
 use super::{arrays::*, basic::*};
 
 use crate::{
-    ast::{types::*, terms::*, *},
+    ast::{funcs::*, terms::*, types::*, *},
+    builtins::BuiltinFunc,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -81,7 +84,12 @@ pub fn evaluate_call(
                 let args = evaluate_elems(&*args, scopes, func_scope, context);
 
                 if params.len() != args.len() {
-                    panic!("Called func `{0}` with wrong number of arguments: Expected {1}, got {2}.", ident, params.len(), args.len())
+                    panic!(
+                        "Called func `{0}` with wrong number of arguments: Expected {1}, got {2}.",
+                        ident,
+                        params.len(),
+                        args.len()
+                    )
                 }
 
                 for i in 0..params.len() {
@@ -129,4 +137,21 @@ pub fn evaluate_params(
         Params::Param(param) => vec![param.to_owned()],
         Params::Empty => vec![],
     }
+}
+
+pub fn invoke_builtin(
+    func: BuiltinFunc,
+    params: &Params,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) -> Term {
+    // TODO: We already get params and args in evaluate_call, do we have to do this work again?
+    let params: Vec<Param> = evaluate_params(params, scopes, current_scope, context);
+    let args: HashMap<String, Term> = params
+        .into_iter()
+        .map(|Param { ident, .. }| (ident.clone(), scopes.get_value(&ident, current_scope)))
+        .collect();
+
+    func(args, scopes, current_scope, context)
 }

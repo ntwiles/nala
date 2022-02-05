@@ -1,16 +1,19 @@
 mod arrays;
 pub mod basic;
 mod branching;
-mod builtins;
 mod enums;
 mod functions;
 mod operations;
 mod variables;
 
-use crate::{ast::{terms::*, *}, io_context::IoContext, scope::Scopes};
+use crate::{
+    ast::{terms::*, *},
+    builtins::*,
+    io_context::IoContext,
+    scope::Scopes,
+};
 
 use basic::*;
-use builtins::*;
 use functions::*;
 use variables::*;
 
@@ -18,7 +21,6 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
     let mut scopes = Scopes::new();
 
     let top_scope = scopes.new_scope(None);
-
 
     // Builtin functions.
     for (ident, block) in get_builtins().iter() {

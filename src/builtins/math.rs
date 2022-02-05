@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    ast::{types::*, terms::*, *},
+    ast::{funcs::*, terms::*, types::*, *},
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };

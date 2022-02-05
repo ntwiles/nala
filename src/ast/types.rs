@@ -1,5 +1,7 @@
 use super::*;
 
+use crate::types::get_interfaces_for_primitive_type;
+
 #[derive(Debug, Clone)]
 pub enum Types {
     Types(Box<Types>, TypeVariant),
@@ -145,14 +147,22 @@ impl PartialEq for TypeVariant {
                 if let TypeVariant::Nested(ov, og) = other {
                     return mv == ov && mg == og;
                 } else {
-                    panic!("Cannot compare between types `{0}` and `{1}`.", self.to_string(), other.to_string())
+                    panic!(
+                        "Cannot compare between types `{0}` and `{1}`.",
+                        self.to_string(),
+                        other.to_string()
+                    )
                 }
             }
             TypeVariant::Primitive(me) => {
                 if let TypeVariant::Primitive(other) = other {
                     return me == other;
                 } else {
-                    panic!("Cannot compare between types `{0}` and `{1}`.", self.to_string(), other.to_string())
+                    panic!(
+                        "Cannot compare between types `{0}` and `{1}`.",
+                        self.to_string(),
+                        other.to_string()
+                    )
                 }
             }
             TypeVariant::Enum(_, _) => {
@@ -213,4 +223,3 @@ impl PartialEq for PrimitiveInterface {
         self.to_string() == other.to_string()
     }
 }
-
