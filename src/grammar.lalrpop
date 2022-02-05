@@ -55,14 +55,14 @@ KindValue: ast::KindValue = {
 }
 
 
-Array: ast::Array = {
-    "[" <Elems> "]" => ast::Array { elems: Box::new(<>) },
-    "[" "]" => ast::Array { elems: Box::new(ast::Elems::Empty) },
+Array: ast::arrays::Array = {
+    "[" <Elems> "]" => ast::arrays::Array { elems: Box::new(<>) },
+    "[" "]" => ast::arrays::Array { elems: Box::new(ast::arrays::Elems::Empty) },
 };
 
-Elems: ast::Elems = {
-    <ee:Elems> "," <e:Expr> => ast::Elems::Elems(Box::new(ee), e),
-    <Expr> => ast::Elems::Expr(<>),
+Elems: ast::arrays::Elems = {
+    <ee:Elems> "," <e:Expr> => ast::arrays::Elems::Elems(Box::new(ee), e),
+    <Expr> => ast::arrays::Elems::Expr(<>),
 };
 
 Params: ast::funcs::Params = {
@@ -113,7 +113,7 @@ Factor: ast::math::Factor = {
 
 Call: ast::funcs::Call = {
     <s:Symbol> "(" <e:Elems> ")" => ast::funcs::Call::Call(s, Box::new(e)),
-    <s:Symbol> "(" ")" => ast::funcs::Call::Call(s, Box::new(ast::Elems::Empty)),
+    <s:Symbol> "(" ")" => ast::funcs::Call::Call(s, Box::new(ast::arrays::Elems::Empty)),
     Index => ast::funcs::Call::Index(<>)
 };
 
@@ -122,9 +122,9 @@ SymbolOrIndex: ast::SymbolOrIndex = {
     <Symbol> => ast::SymbolOrIndex::Symbol(<>)
 }
 
-Index: ast::Index = {
-    <s:Symbol> "[" <e:Expr> "]" => ast::Index::Index(s, Box::new(e)),
-    Term => ast::Index::Term(<>)
+Index: ast::arrays::Index = {
+    <s:Symbol> "[" <e:Expr> "]" => ast::arrays::Index::Index(s, Box::new(e)),
+    Term => ast::arrays::Index::Term(<>)
 }
 
 Term: ast::terms::Term = {

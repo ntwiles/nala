@@ -1,3 +1,4 @@
+pub mod arrays;
 pub mod funcs;
 pub mod math;
 pub mod terms;
@@ -7,6 +8,7 @@ use std::fmt::{Debug, Error, Formatter};
 
 use crate::builtins::*;
 
+use arrays::*;
 use funcs::*;
 use math::*;
 use terms::*;
@@ -62,18 +64,6 @@ pub enum KindDeclare {
 }
 
 #[derive(Debug, Clone)]
-pub struct Array {
-    pub elems: Box<Elems>,
-}
-
-#[derive(Debug, Clone)]
-pub enum Elems {
-    Elems(Box<Elems>, Expr),
-    Expr(Expr),
-    Empty,
-}
-
-#[derive(Debug, Clone)]
 pub enum Expr {
     Eq(Box<Expr>, KindValue),
     Gt(Box<Expr>, Addend),
@@ -92,10 +82,4 @@ pub enum KindValue {
 pub enum SymbolOrIndex {
     Symbol(String),
     Index(String, Box<Expr>),
-}
-
-#[derive(Debug, Clone)]
-pub enum Index {
-    Index(String, Box<Expr>),
-    Term(Term),
 }

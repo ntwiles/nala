@@ -8,7 +8,7 @@ use super::{
 };
 
 use crate::{
-    ast::{terms::*, *},
+    ast::{arrays::*, terms::*, *},
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };

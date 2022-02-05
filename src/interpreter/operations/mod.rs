@@ -153,7 +153,7 @@ mod tests {
     use super::*;
 
     use crate::{
-        ast::{funcs::*, *},
+        ast::{arrays::*, funcs::*},
         io_context::TestContext,
     };
 
