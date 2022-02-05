@@ -53,6 +53,15 @@ pub enum Stmts {
 }
 
 #[derive(Debug, Clone)]
+pub enum Expr {
+    Eq(Box<Expr>, KindValue),
+    Gt(Box<Expr>, Addend),
+    Lt(Box<Expr>, Addend),
+    KindValue(KindValue),
+    Array(Array),
+}
+
+#[derive(Debug, Clone)]
 pub enum KindsDeclare {
     Kinds(Box<KindsDeclare>, KindDeclare),
     Kind(KindDeclare),
@@ -61,15 +70,6 @@ pub enum KindsDeclare {
 #[derive(Debug, Clone)]
 pub enum KindDeclare {
     Empty(String),
-}
-
-#[derive(Debug, Clone)]
-pub enum Expr {
-    Eq(Box<Expr>, KindValue),
-    Gt(Box<Expr>, Addend),
-    Lt(Box<Expr>, Addend),
-    KindValue(KindValue),
-    Array(Array),
 }
 
 #[derive(Debug, Clone)]
