@@ -79,10 +79,10 @@ Types: ast::Types = {
     <Type> => ast::Types::Type(<>)
 }
 
-Type: ast::Type = {
-    <p:PrimitiveType> "<" <tt:Types> ">" => ast::Type::Nested(p, Box::new(tt)),
-    <PrimitiveType> => ast::Type::Primitive(<>),
-    <PrimitiveInterface> => ast::Type::Interface(<>)
+Type: ast::TypeVariant = {
+    <p:PrimitiveType> "<" <tt:Types> ">" => ast::TypeVariant::Nested(p, Box::new(tt)),
+    <PrimitiveType> => ast::TypeVariant::Primitive(<>),
+    <PrimitiveInterface> => ast::TypeVariant::Interface(<>)
 }
 
 PrimitiveType: ast::PrimitiveType = {
@@ -96,7 +96,6 @@ PrimitiveType: ast::PrimitiveType = {
 PrimitiveInterface: ast::PrimitiveInterface = {
     "IPrint" => ast::PrimitiveInterface::IPrint,
     "ICompare" => ast::PrimitiveInterface::ICompare
-
 }
 
 Addend: ast::Addend = {

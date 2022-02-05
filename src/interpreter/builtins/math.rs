@@ -7,11 +7,12 @@ use crate::{
 };
 
 pub fn get_floor_block() -> Block {
-    let params = Params::Param(Param {
+    let num_param = Param {
         ident: String::from("num"),
-        param_type: Type::Primitive(PrimitiveType::Number),
-    });
+        param_type: TypeVariant::Primitive(PrimitiveType::Number),
+    };
 
+    let params = Params::Param(num_param);
     Block::RustBlock(params, builtin_floor)
 }
 fn builtin_floor(

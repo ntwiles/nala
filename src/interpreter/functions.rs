@@ -46,8 +46,8 @@ fn check_param_types(params: &Params) -> Result<(), String> {
     }
 }
 
-fn check_param_type(param_type: &Type) -> Result<(), String> {
-    if let Type::Nested(outer, inner) = param_type {
+fn check_param_type(param_type: &TypeVariant) -> Result<(), String> {
+    if let TypeVariant::Nested(outer, inner) = param_type {
         return match outer {
             PrimitiveType::Array => Ok(()),
             PrimitiveType::Func => Ok(()),

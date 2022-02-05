@@ -80,7 +80,7 @@ pub enum Params {
 #[derive(Debug, Clone)]
 pub struct Param {
     pub ident: String,
-    pub param_type: Type,
+    pub param_type: TypeVariant,
 }
 
 #[derive(Debug, Clone)]
@@ -140,18 +140,18 @@ pub enum Term {
     Func(Box<Params>, Box<Block>),
     Void,
     Break(Box<Expr>),
-    Type(Type),
+    Type(TypeVariant),
     Kind(String),
 }
 
 #[derive(Debug, Clone)]
 pub enum Types {
-    Types(Box<Types>, Type),
-    Type(Type),
+    Types(Box<Types>, TypeVariant),
+    Type(TypeVariant),
 }
 
 #[derive(Debug, Clone)]
-pub enum Type {
+pub enum TypeVariant {
     Nested(PrimitiveType, Box<Types>),
     Enum(String, Box<KindsDeclare>),
     Primitive(PrimitiveType),
@@ -206,37 +206,37 @@ impl Term {
         }
     }
 
-    pub fn get_type(&self) -> Type {
+    pub fn get_type(&self) -> TypeVariant {
         match self {
             Term::Array(items) => {
                 let elem_type = if items.len() > 0 {
                     items.first().unwrap().get_type()
                 } else {
-                    Type::Primitive(PrimitiveType::Unknown)
+                    TypeVariant::Primitive(PrimitiveType::Unknown)
                 };
 
                 let elem_type = Types::Type(elem_type);
-                Type::Nested(PrimitiveType::Array, Box::new(elem_type))
+                TypeVariant::Nested(PrimitiveType::Array, Box::new(elem_type))
             }
             Term::Func(params, _) => {
                 let params = params.to_vec();
                 if params.len() > 0 {
-                    let param_types: Vec<Type> =
+                    let param_types: Vec<TypeVariant> =
                         params.iter().map(|p| p.clone().param_type).collect();
                     let param_types = Types::from_vec(param_types);
-                    Type::Nested(PrimitiveType::Func, Box::new(param_types))
+                    TypeVariant::Nested(PrimitiveType::Func, Box::new(param_types))
                 } else {
-                    Type::Primitive(PrimitiveType::Func)
+                    TypeVariant::Primitive(PrimitiveType::Func)
                 }
             }
-            Term::Bool(_) => Type::Primitive(PrimitiveType::Bool),
-            Term::Break(_) => Type::Primitive(PrimitiveType::Break),
-            Term::Num(_) => Type::Primitive(PrimitiveType::Number),
-            Term::String(_) => Type::Primitive(PrimitiveType::String),
-            Term::Symbol(_) => Type::Primitive(PrimitiveType::Symbol),
-            Term::Void => Type::Primitive(PrimitiveType::Void),
-            Term::Type(_) => Type::Primitive(PrimitiveType::Enum),
-            Term::Kind(_) => Type::Primitive(PrimitiveType::Kind),
+            Term::Bool(_) => TypeVariant::Primitive(PrimitiveType::Bool),
+            Term::Break(_) => TypeVariant::Primitive(PrimitiveType::Break),
+            Term::Num(_) => TypeVariant::Primitive(PrimitiveType::Number),
+            Term::String(_) => TypeVariant::Primitive(PrimitiveType::String),
+            Term::Symbol(_) => TypeVariant::Primitive(PrimitiveType::Symbol),
+            Term::Void => TypeVariant::Primitive(PrimitiveType::Void),
+            Term::Type(_) => TypeVariant::Primitive(PrimitiveType::Enum),
+            Term::Kind(_) => TypeVariant::Primitive(PrimitiveType::Kind),
         }
     }
 }
@@ -268,7 +268,7 @@ impl Types {
         }
     }
 
-    pub fn from_vec(types: Vec<Type>) -> Types {
+    pub fn from_vec(types: Vec<TypeVariant>) -> Types {
         match types.len() {
             1 => Types::Type(types.first().unwrap().clone()),
             _ => {
@@ -280,29 +280,33 @@ impl Types {
     }
 }
 
-impl Type {
+impl TypeVariant {
     pub fn is_assignable_to(&self, other: &Self) -> bool {
         match self {
-            Type::Nested(sv, svv) => {
-                if let Type::Nested(ov, ovv) = other {
+            TypeVariant::Nested(sv, svv) => {
+                if let TypeVariant::Nested(ov, ovv) = other {
                     sv.is_assignable_to(ov) && svv.are_assignable_to(ovv)
                 } else {
                     false
                 }
             }
-            Type::Primitive(sv) => {
-                if let Type::Primitive(ov) = other {
+            TypeVariant::Primitive(sv) => {
+                if let TypeVariant::Primitive(ov) = other {
                     sv.is_assignable_to(ov)
-                } else if let Type::Interface(_) = other {
+                } else if let TypeVariant::Interface(i) = other {
                     // This only works because so far we only have a single interface, IPrint,
                     // and all primitive types should be treated as IPrint.
-                    true
+                    match i {
+                        PrimitiveInterface::IPrint => true,
+                        PrimitiveInterface::ICompare => true,
+                    }
+ 
                 } else {
                     false
                 }
             }
-            Type::Enum(_, _) => todo!(),
-            Type::Interface(_) => {
+            TypeVariant::Enum(_, _) => todo!(),
+            TypeVariant::Interface(_) => {
                 todo!();
             }
         }
@@ -310,10 +314,10 @@ impl Type {
 
     pub fn to_string(&self) -> String {
         match self {
-            Type::Nested(v, vv) => format!("{0}<{1}>", v.to_string(), vv.to_string()),
-            Type::Primitive(v) => v.to_string(),
-            Type::Enum(_, _) => todo!(),
-            Type::Interface(i) => i.to_string(),
+            TypeVariant::Nested(v, vv) => format!("{0}<{1}>", v.to_string(), vv.to_string()),
+            TypeVariant::Primitive(v) => v.to_string(),
+            TypeVariant::Enum(_, _) => todo!(),
+            TypeVariant::Interface(i) => i.to_string(),
         }
     }
 }
@@ -339,27 +343,27 @@ impl PartialEq for Types {
     }
 }
 
-impl PartialEq for Type {
+impl PartialEq for TypeVariant {
     fn eq(&self, other: &Self) -> bool {
         match self {
-            Type::Nested(mv, mg) => {
-                if let Type::Nested(ov, og) = other {
+            TypeVariant::Nested(mv, mg) => {
+                if let TypeVariant::Nested(ov, og) = other {
                     return mv == ov && mg == og;
                 } else {
                     panic!("Cannot compare between types `{0}` and `{1}`.", self.to_string(), other.to_string())
                 }
             }
-            Type::Primitive(me) => {
-                if let Type::Primitive(other) = other {
+            TypeVariant::Primitive(me) => {
+                if let TypeVariant::Primitive(other) = other {
                     return me == other;
                 } else {
                     panic!("Cannot compare between types `{0}` and `{1}`.", self.to_string(), other.to_string())
                 }
             }
-            Type::Enum(_, _) => {
+            TypeVariant::Enum(_, _) => {
                 todo!()
             }
-            Type::Interface(_) => {
+            TypeVariant::Interface(_) => {
                 todo!()
             }
         }

@@ -7,11 +7,12 @@ use crate::{
 };
 
 pub fn get_print_block() -> Block {
-    let params = Params::Param(Param {
+    let message_param = Param {
         ident: String::from("message"),
-        param_type: Type::Primitive(PrimitiveType::Any),
-    });
+        param_type: TypeVariant::Primitive(PrimitiveType::Any)
+    };
 
+    let params = Params::Param(message_param);
     Block::RustBlock(params, builtin_print)
 }
 

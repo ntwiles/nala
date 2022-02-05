@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap};
 
 use crate::{
     ast::*,
@@ -7,34 +7,45 @@ use crate::{
 };
 
 pub fn get_len_block() -> Block {
+    let inner_type = Types::Type(
+        TypeVariant::Primitive(PrimitiveType::Number)
+    );
+
+    let outer_type =TypeVariant::Nested(
+        PrimitiveType::Array,
+        Box::new(inner_type)
+    );
+
     let params = Params::Param(Param {
         ident: String::from("array"),
-        param_type: Type::Nested(
-            PrimitiveType::Array,
-            Box::new(Types::Type(Type::Primitive(PrimitiveType::Number))),
-        ),
+        param_type: outer_type
     });
 
     Block::RustBlock(params, builtin_len)
 }
 
 pub fn get_slice_block() -> Block {
+    let array_param = Param {
+        ident: String::from("array"),
+        param_type: TypeVariant::Nested(
+            PrimitiveType::Array,
+            Box::new(Types::Type(TypeVariant::Primitive(PrimitiveType::Number)))
+        )};
+
+    let start_param = Param {
+        ident: String::from("start"),
+        param_type:  TypeVariant::Primitive(PrimitiveType::Number),
+    };
+
+    let end_param = Param {
+        ident: String::from("end"),
+        param_type: TypeVariant::Primitive(PrimitiveType::Number)
+    };
+
     let params = Params::from_vec(vec![
-        Param {
-            ident: String::from("array"),
-            param_type: Type::Nested(
-                PrimitiveType::Array,
-                Box::new(Types::Type(Type::Primitive(PrimitiveType::Number))),
-            ),
-        },
-        Param {
-            ident: String::from("start"),
-            param_type: Type::Primitive(PrimitiveType::Number),
-        },
-        Param {
-            ident: String::from("end"),
-            param_type: Type::Primitive(PrimitiveType::Number),
-        },
+        array_param,
+        start_param,
+        end_param
     ]);
 
     Block::RustBlock(params, builtin_slice)

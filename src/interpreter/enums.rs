@@ -15,7 +15,8 @@ pub fn interpret_enum(
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
-        let enum_term = Term::Type(Type::Enum(ident.to_owned(), Box::new(kinds.clone())));
+        let enum_type = TypeVariant::Enum(ident.to_owned(), Box::new(kinds.clone()));
+        let enum_term = Term::Type(enum_type);
         scopes.add_binding(&ident, current_scope, enum_term, false);
     }
 
@@ -32,7 +33,7 @@ pub fn evaluate_kind(
         KindValue::KindValue(enum_name, kind) => {
             let term = scopes.get_value(enum_name, current_scope);
 
-            if let Term::Type(Type::Enum(_, kinds)) = term {
+            if let Term::Type(TypeVariant::Enum(_, kinds)) = term {
                 if kind_exists(&*kinds, kind) {
                     Term::Kind(format!("{0}::{1}", enum_name, kind.to_owned()))
                 } else {

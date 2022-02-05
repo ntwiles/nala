@@ -5,7 +5,7 @@ enum Comparison {
     GreaterThan
 }
 
-func compare(a: Number, b: Number) {
+func compare(a: ICompare, b: ICompare) {
     if (a < b) {
         Comparison::LessThan;
     }
