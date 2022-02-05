@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use super::functions::*;
 
 use crate::{
-    ast::*,
+    ast::{terms::*, *},
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };

@@ -1,7 +1,7 @@
 use std::usize;
 
 use crate::{
-    ast::*,
+    ast::{terms::*, *},
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };

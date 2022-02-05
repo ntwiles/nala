@@ -127,10 +127,10 @@ Index: ast::Index = {
     Term => ast::Index::Term(<>)
 }
 
-Term: ast::Term = {
-    Symbol => ast::Term::Symbol(<>),
-    Num => ast::Term::Num(<>),
-    Str => ast::Term::String(<>)
+Term: ast::terms::Term = {
+    Symbol => ast::terms::Term::Symbol(<>),
+    Num => ast::terms::Term::Num(<>),
+    Str => ast::terms::Term::String(<>)
 };
 
 Symbol: String = {

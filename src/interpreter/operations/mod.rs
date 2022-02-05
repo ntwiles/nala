@@ -6,7 +6,7 @@ pub mod lt;
 use super::functions::*;
 
 use crate::{
-    ast::*,
+    ast::{terms::*, *},
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };

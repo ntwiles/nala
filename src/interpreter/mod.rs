@@ -7,7 +7,7 @@ mod functions;
 mod operations;
 mod variables;
 
-use crate::{ast::*, io_context::IoContext, scope::Scopes};
+use crate::{ast::{terms::*, *}, io_context::IoContext, scope::Scopes};
 
 use basic::*;
 use builtins::*;

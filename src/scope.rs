@@ -5,18 +5,18 @@ use crate::ast;
 #[derive(Debug)]
 pub struct Scope {
     parent: Option<ScopeId>,
-    bindings: HashMap<String, (ast::Term, String, bool)>,
+    bindings: HashMap<String, (ast::terms::Term, String, bool)>,
 }
 
 impl Scope {
     pub fn new(parent: Option<ScopeId>) -> Scope {
         Scope {
             parent,
-            bindings: HashMap::<String, (ast::Term, String, bool)>::new(),
+            bindings: HashMap::<String, (ast::terms::Term, String, bool)>::new(),
         }
     }
 
-    pub fn add_binding(self: &mut Self, ident: &str, value: ast::Term, is_mutable: bool) {
+    pub fn add_binding(self: &mut Self, ident: &str, value: ast::terms::Term, is_mutable: bool) {
         let type_name = value.get_type().to_string();
 
         self.bindings.insert(
@@ -25,7 +25,7 @@ impl Scope {
         );
     }
 
-    pub fn get_binding(self: &Self, ident: &str) -> Option<(ast::Term, String, bool)> {
+    pub fn get_binding(self: &Self, ident: &str) -> Option<(ast::terms::Term, String, bool)> {
         if let Some(binding) = self.bindings.get(ident) {
             Some(binding.clone())
         } else {
@@ -55,7 +55,7 @@ impl Scopes {
         ScopeId { index: next_index }
     }
 
-    fn get_maybe_value(self: &Self, ident: &str, current_scope: ScopeId) -> Option<ast::Term> {
+    fn get_maybe_value(self: &Self, ident: &str, current_scope: ScopeId) -> Option<ast::terms::Term> {
         let scope = self.scopes.get(current_scope.index).unwrap();
 
         match scope.get_binding(&ident) {
@@ -67,7 +67,7 @@ impl Scopes {
         }
     }
 
-    pub fn get_value(self: &Self, ident: &str, starting_scope: ScopeId) -> ast::Term {
+    pub fn get_value(self: &Self, ident: &str, starting_scope: ScopeId) -> ast::terms::Term {
         match self.get_maybe_value(ident, starting_scope) {
             Some(value) => value,
             None => panic!("Identifier '{}' was not found in this scope.", ident),
@@ -96,7 +96,7 @@ impl Scopes {
         self: &mut Self,
         ident: &str,
         current_scope: ScopeId,
-        new_value: ast::Term,
+        new_value: ast::terms::Term,
     ) {
         let scope = self.find_scope_with_binding(ident, current_scope);
 
@@ -114,7 +114,7 @@ impl Scopes {
         self: &mut Self,
         ident: &str,
         current_scope: ScopeId,
-        value: ast::Term,
+        value: ast::terms::Term,
         is_mutable: bool,
     ) {
         let scope = self.scopes.get_mut(current_scope.index).unwrap();
