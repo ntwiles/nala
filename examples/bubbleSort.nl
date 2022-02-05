@@ -1,54 +1,11 @@
 
-func bubbleSort(items: Array<Number>, comparator: Func<Number, Number>) {
-    wiles (isUnsorted(items, comparator)) {
-        items = bubblePass(items, comparator);
-    }
-
-    items;
-}
-
-func isUnsorted(items: Array<Number>, comparator: Func<Number, Number>) {
-    mut i = 0; 
-    for current in items {
-        if (i > 0) {
-            const prev = items[i - 1];
-
-            if (comparator(prev, current) == Comparison::GreaterThan) {
-                break(true);
-            }
-        }
-
-        i = i + 1;
-    }
-
-    false;
-}
-
-func bubblePass(items: Array<Number>, comparator: Func<Number, Number>) {
-    mut i = 0;
-    for current in items {
-        if (i > 0) {
-            const prev = items[i - 1];
-            
-            if (comparator(prev, current) == Comparison::GreaterThan) {
-                items[i] = prev;
-                items[i - 1] = current;
-            }
-        }
-
-        i = i + 1;
-    }
-
-    items;
-}
-
 enum Comparison {
     LessThan,
     Equal,
     GreaterThan
 }
 
-func compareByValue(a: Number, b: Number) {
+func compare(a: Number, b: Number) {
     if (a < b) {
         Comparison::LessThan;
     }
@@ -60,7 +17,32 @@ func compareByValue(a: Number, b: Number) {
     Comparison::Equal;
 }
 
-func printArray(array: Array<IPrintable>, label: String) {
+func bubbleSort(items: Array<Number>, comparator: Func<Number, Number>) {
+    mut i = 0;
+    mut changed = false;
+
+    for current in items {
+        if (i > 0) {
+            const prev = items[i - 1];
+            
+            if (comparator(prev, current) == Comparison::GreaterThan) {
+                items[i] = prev;
+                items[i - 1] = current;
+                changed = true;
+            }
+        }
+
+        i = i + 1;
+    }
+
+    if (changed) {
+        bubbleSort(items, comparator);
+    }
+
+    items;
+}
+
+func printArray(array: Array<IPrint>, label: String) {
     print(label + ':');
     for item in array {
         print(item);
@@ -68,9 +50,8 @@ func printArray(array: Array<IPrintable>, label: String) {
     print('');
 }
 
-const unsorted = [3, 5, 1, 4, 2];
-printArray(unsorted, 'Unsorted');
+const unsortedNums = [3, 5, 1, 4, 2];
+printArray(unsortedNums, 'Unsorted Number Array');
 
-const sorted = bubbleSort(unsorted, compareByValue);
-printArray(sorted, 'Sorted');
-
+const sortedNums = bubbleSort(unsortedNums, compare);
+printArray(sortedNums, 'Sorted Number Array');
