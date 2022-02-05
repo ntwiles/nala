@@ -61,6 +61,7 @@ pub enum Expr {
     Array(Array),
 }
 
+// TODO: 'Kind' here and below refers to enum variants; give these a better name.
 #[derive(Debug, Clone)]
 pub enum KindsDeclare {
     Kinds(Box<KindsDeclare>, KindDeclare),
