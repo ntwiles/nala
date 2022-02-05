@@ -1,4 +1,12 @@
 
+func printArray(array: Array<IPrint>, label: String) {
+    print(label + ':');
+    for item in array {
+        print(item);
+    }
+    print('');
+}
+
 func bubbleSort(items: Array<ICompare>) {
     mut i = 0;
     mut changed = false;
@@ -21,14 +29,6 @@ func bubbleSort(items: Array<ICompare>) {
     items;
 }
 
-func printArray(array: Array<IPrint>, label: String) {
-    print(label + ':');
-    for item in array {
-        print(item);
-    }
-    print('');
-}
-
-const unsortedNums = [3, 5, 1, 4, 2];
-const sortedNums = bubbleSort(unsortedNums);
-printArray(sortedNums, 'Sorted Number Array');
+const unsorted = [3, 5, 1, 4, 2];
+const sorted = bubbleSort(unsorted);
+printArray(sorted, 'Sorted Numbers');
