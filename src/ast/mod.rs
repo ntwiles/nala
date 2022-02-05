@@ -41,7 +41,7 @@ pub enum Stmt {
     Enum(String, Box<KindsDeclare>),
     Expr(Expr),
     For(String, Expr, Box<Block>),
-    Func(String, Box<Params>, Box<Block>),
+    Func(Func),
     If(Expr, Box<Block>),
     Wiles(Expr, Box<Block>),
 }

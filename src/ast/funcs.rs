@@ -2,6 +2,13 @@ use super::types::*;
 use super::*;
 
 #[derive(Debug, Clone)]
+pub struct Func {
+    pub ident: String,
+    pub params: Box<Params>,
+    pub block: Box<Block>,
+}
+
+#[derive(Debug, Clone)]
 pub enum Params {
     Params(Box<Params>, Param),
     Param(Param),

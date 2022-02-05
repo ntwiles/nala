@@ -8,7 +8,7 @@ use super::{
 };
 
 use crate::{
-    ast::{arrays::*, terms::*, *},
+    ast::{arrays::*, funcs::*, terms::*, *},
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -69,9 +69,11 @@ fn interpret_stmt(
             interpret_for(ident, &expr, block, scopes, current_scope, context)
         }
         Stmt::Wiles(expr, block) => interpret_wiles(&expr, block, scopes, current_scope, context),
-        Stmt::Func(ident, params, block) => {
-            interpret_func(ident, params, block, scopes, current_scope)
-        }
+        Stmt::Func(Func {
+            ident,
+            params,
+            block,
+        }) => interpret_func(ident, params, block, scopes, current_scope),
         Stmt::Expr(expr) => evaluate_expr(expr, scopes, current_scope, context),
         Stmt::Break(expr) => Term::Break(Box::new(expr.clone())),
         Stmt::Enum(ident, kinds) => interpret_enum(ident, kinds, scopes, current_scope),
