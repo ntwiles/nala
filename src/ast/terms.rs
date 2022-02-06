@@ -38,6 +38,7 @@ impl Term {
                 let elem_type = if items.len() > 0 {
                     items.first().unwrap().get_type()
                 } else {
+                    // TODO: We need to get rid of the Unknown primitive type and solve this problem another way.
                     TypeVariant::Primitive(PrimitiveType::Unknown)
                 };
 
