@@ -7,6 +7,7 @@ use super::functions::*;
 
 use crate::{
     ast::{math::*, terms::*},
+    interpreter::evaluate_if_symbol,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -66,6 +67,9 @@ fn evaluate_oper(
     scopes: &mut Scopes,
     current_scope: ScopeId,
 ) -> Term {
+    let left = evaluate_if_symbol(left, scopes, current_scope);
+    let right = evaluate_if_symbol(right, scopes, current_scope);
+
     match left {
         Term::Num(left) => match right {
             Term::Num(right) => match op_kind {
@@ -83,10 +87,6 @@ fn evaluate_oper(
                         op_kind
                     )
                 }
-            }
-            Term::Symbol(right) => {
-                let right = scopes.get_value(&right, current_scope);
-                evaluate_oper(Term::Num(left), op_kind, right, scopes, current_scope)
             }
             right => {
                 panic!(
@@ -116,10 +116,6 @@ fn evaluate_oper(
                     )
                 }
             }
-            Term::Symbol(right) => {
-                let right = scopes.get_value(&right, current_scope);
-                evaluate_oper(Term::String(left), op_kind, right, scopes, current_scope)
-            }
             right => {
                 panic!(
                     "Cannot perform arithmetic operations between types of String and {}.",
@@ -127,10 +123,6 @@ fn evaluate_oper(
                 )
             }
         },
-        Term::Symbol(left) => {
-            let left = scopes.get_value(&left, current_scope);
-            evaluate_oper(left, op_kind, right, scopes, current_scope)
-        }
         left => {
             panic!(
                 "Cannot perform arithmetic operations between values of type {}.",

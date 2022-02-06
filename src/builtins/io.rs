@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     ast::{funcs::*, terms::*, types::*, *},
+    interpreter::evaluate_if_symbol,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -44,13 +45,8 @@ fn builtin_print(
     context: &mut dyn IoContext,
 ) -> Term {
     let message = args.get("message").unwrap();
-
-    if let Term::Symbol(ident) = message {
-        context.print(&scopes.get_value(&ident, current_scope).to_string());
-    } else {
-        context.print(&message.to_string());
-    }
-
+    let message = evaluate_if_symbol(message.clone(), scopes, current_scope);
+    context.print(&message.to_string());
     Term::Void
 }
 
