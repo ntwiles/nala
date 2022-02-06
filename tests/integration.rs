@@ -141,7 +141,7 @@ fn it_runs_enum_declare() {
 fn it_runs_func_args() {
     let mut test_context = TestContext::new();
     read_and_execute(&test_path("func-args"), &mut test_context);
-    assert_eq!(test_context.get_output(), vec!["The total is 12"]);
+    assert_eq!(test_context.get_output(), vec!["The total is:", "12"]);
 }
 
 #[test]
@@ -187,7 +187,11 @@ fn it_runs_input_basic() {
 #[test]
 fn it_runs_input_numbers() {
     let input = vec!["31"];
-    let output = vec!["Please enter your age:", "Next year your age will be 32"];
+    let output = vec![
+        "Please enter your age:",
+        "Next year your age will be:",
+        "32",
+    ];
 
     let mut test_context = TestContext::new();
     test_context.mock_inputs(input);

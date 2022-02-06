@@ -1,9 +1,8 @@
+mod arithmatic;
 pub mod equals;
 mod errors;
 pub mod gt;
 pub mod lt;
-
-use super::functions::*;
 
 use crate::{
     ast::{math::*, terms::*},
@@ -11,6 +10,10 @@ use crate::{
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
+
+use super::functions::*;
+
+use arithmatic::*;
 
 pub fn evaluate_addend(
     addend: &Addend,
@@ -22,7 +25,7 @@ pub fn evaluate_addend(
         Addend::Add(left, right) => {
             let left = evaluate_addend(left, scopes, current_scope, context);
             let right = evaluate_factor(right, scopes, current_scope, context);
-            evaluate_oper(left, OpKind::Add, right, scopes, current_scope)
+            do_add(left, right)
         }
         Addend::Sub(left, right) => {
             let left = evaluate_addend(left, scopes, current_scope, context);
@@ -73,21 +76,11 @@ fn evaluate_oper(
     match left {
         Term::Num(left) => match right {
             Term::Num(right) => match op_kind {
-                OpKind::Add => Term::Num(left + right),
                 OpKind::Sub => Term::Num(left - right),
                 OpKind::Mult => Term::Num(left * right),
                 OpKind::Div => Term::Num(do_divide(left, right)),
+                _ => todo!("Get rid of this catchall."),
             },
-            Term::String(str) => {
-                if let OpKind::Add = op_kind {
-                    Term::String(left.to_string() + &str)
-                } else {
-                    panic!(
-                        "Operation not supported between types Num and String: {:?}",
-                        op_kind
-                    )
-                }
-            }
             right => {
                 panic!(
                     "Cannot perform arithmetic operations between types of Num and {}.",
@@ -96,16 +89,6 @@ fn evaluate_oper(
             }
         },
         Term::String(left) => match right {
-            Term::Num(num) => {
-                if let OpKind::Add = op_kind {
-                    Term::String(left + &num.to_string())
-                } else {
-                    panic!(
-                        "Operation not supported between values of type String and Num: {:?}",
-                        op_kind
-                    )
-                }
-            }
             Term::String(right) => {
                 if let OpKind::Add = op_kind {
                     Term::String(left + &right)

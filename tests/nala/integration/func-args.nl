@@ -4,4 +4,5 @@ func add(a: Number, b: Number) {
 
 const sum = add(5, 7);
 
-print('The total is ' + sum);
+print('The total is:');
+print(sum);
