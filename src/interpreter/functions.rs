@@ -139,8 +139,7 @@ pub fn evaluate_call(
                     Block::RustBlock(func) => func(param_args, scopes, func_scope, context),
                 }
             } else {
-                // This Void should never be returned, consider writing this differently and panicking?
-                Term::Void
+                panic!("Cannot invoke `{0}` because it is not a function.", ident)
             }
         }
         Call::Index(index) => evaluate_index(index, scopes, current_scope, context),
