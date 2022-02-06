@@ -9,7 +9,7 @@ use crate::{
 pub fn get_print_block() -> Func {
     let message_param = Param {
         ident: String::from("message"),
-        param_type: TypeVariant::Primitive(PrimitiveType::Any),
+        param_type: TypeVariant::Interface(PrimitiveInterface::IPrint),
     };
 
     let params = Params::Param(message_param);

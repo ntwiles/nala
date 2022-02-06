@@ -16,6 +16,19 @@ pub enum TypeVariant {
     Interface(PrimitiveInterface),
 }
 
+impl TypeVariant {
+    pub fn implements_interface(&self, interface: PrimitiveInterface) -> bool {
+        let interfaces = match self {
+            TypeVariant::Primitive(primitive) => {
+                get_interfaces_for_primitive_type(primitive.clone())
+            }
+            _ => todo!(),
+        };
+
+        interfaces.contains(&interface)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum PrimitiveInterface {
     ICompare,
@@ -33,7 +46,6 @@ pub enum PrimitiveType {
     String,
     Symbol,
     Void,
-    Any,
     Enum,
     Kind,
     Unknown,
@@ -177,7 +189,7 @@ impl PartialEq for TypeVariant {
 
 impl PrimitiveType {
     pub fn is_assignable_to(&self, param: &Self) -> bool {
-        param == &PrimitiveType::Any || self.to_string() == param.to_string()
+        self.to_string() == param.to_string()
     }
 
     pub fn to_string(&self) -> String {
@@ -190,7 +202,6 @@ impl PrimitiveType {
             PrimitiveType::String => "String",
             PrimitiveType::Symbol => "<Symbol>",
             PrimitiveType::Void => "<Void>",
-            PrimitiveType::Any => "Any",
             PrimitiveType::Enum => "<Enum>",
             PrimitiveType::Kind => "Kind",
             PrimitiveType::Unknown => "<Unknown>",
