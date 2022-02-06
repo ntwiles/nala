@@ -4,7 +4,6 @@ use super::{arrays::*, basic::*};
 
 use crate::{
     ast::{funcs::*, terms::*, types::*, *},
-    builtins::BuiltinFunc,
     errors::*,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
