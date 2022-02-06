@@ -94,6 +94,7 @@ pub fn evaluate_call(
     match call {
         Call::Call(ident, args) => {
             let block = scopes.get_value(ident, current_scope);
+
             if let Term::Func(params, block) = block {
                 let func_scope = scopes.new_scope(Some(current_scope));
 
@@ -109,32 +110,34 @@ pub fn evaluate_call(
                     )
                 }
 
-                for i in 0..params_vec.len() {
-                    let param = params_vec.get(i).unwrap();
-                    let arg = args.get(i).unwrap();
+                let param_args: HashMap<String, Term> = params_vec
+                    .clone()
+                    .iter()
+                    .enumerate()
+                    .map(|(i, Param { ident, param_type })| {
+                        let arg = args.get(i).unwrap();
 
-                    let arg_type = arg.get_type();
-                    let param_type = param.param_type.clone();
+                        let arg_type = arg.get_type();
+                        let param_type = param_type.clone();
 
-                    if !arg_type.is_assignable_to(&param_type) {
-                        runtime_error(WrongArgTypeForParamError {
-                            arg_value: arg.clone().to_string(),
-                            arg_type: arg.get_type().to_string(),
-                            func_ident: ident.to_owned(),
-                            param_type: param_type.to_string(),
-                        })
-                    }
+                        if !arg_type.is_assignable_to(&param_type) {
+                            runtime_error(WrongArgTypeForParamError {
+                                arg_value: arg.clone().to_string(),
+                                arg_type: arg.get_type().to_string(),
+                                func_ident: ident.to_owned(),
+                                param_type: param_type.to_string(),
+                            })
+                        }
 
-                    scopes.add_binding(&param.ident, func_scope, arg.clone(), true)
-                }
+                        (ident.clone(), arg.clone())
+                    })
+                    .collect();
 
                 let block = *block;
 
                 match block {
                     Block::NalaBlock(stmts) => interpret_stmts(&stmts, scopes, func_scope, context),
-                    Block::RustBlock(block) => {
-                        invoke_builtin(block, &params, scopes, func_scope, context)
-                    }
+                    Block::RustBlock(func) => func(param_args, scopes, func_scope, context),
                 }
             } else {
                 // This Void should never be returned, consider writing this differently and panicking?
@@ -160,21 +163,4 @@ pub fn evaluate_params(
         Params::Param(param) => vec![param.to_owned()],
         Params::Empty => vec![],
     }
-}
-
-pub fn invoke_builtin(
-    func: BuiltinFunc,
-    params: &Params,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-    context: &mut impl IoContext,
-) -> Term {
-    // TODO: We already get params and args in evaluate_call, do we have to do this work again?
-    let params: Vec<Param> = evaluate_params(params, scopes, current_scope, context);
-    let args: HashMap<String, Term> = params
-        .into_iter()
-        .map(|Param { ident, .. }| (ident.clone(), scopes.get_value(&ident, current_scope)))
-        .collect();
-
-    func(args, scopes, current_scope, context)
 }
