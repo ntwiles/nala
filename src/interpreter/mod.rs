@@ -10,7 +10,7 @@ use crate::{
     ast::{terms::*, *},
     builtins::*,
     io_context::IoContext,
-    scope::Scopes,
+    scope::*,
 };
 
 use basic::*;
@@ -36,6 +36,14 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
         Program::Block(block) => interpret_block(&block, &mut scopes, top_scope, context),
         Program::Stmts(stmts) => interpret_stmts(&stmts, &mut scopes, top_scope, context),
     };
+}
+
+fn evaluate_if_symbol(term: Term, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+    if let Term::Symbol(ident) = term {
+        scopes.get_value(&ident, current_scope)
+    } else {
+        term.clone()
+    }
 }
 
 fn get_constants() -> Vec<(String, Term)> {

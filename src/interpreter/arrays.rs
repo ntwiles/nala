@@ -6,7 +6,7 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-use super::basic::*;
+use super::{basic::*, evaluate_if_symbol};
 
 pub fn evaluate_index(
     index: &Index,
@@ -31,13 +31,7 @@ pub fn evaluate_index(
                 panic!("Cannot index using non-numeric value.");
             }
         }
-        Index::Term(term) => {
-            if let Term::Symbol(ident) = term {
-                scopes.get_value(ident, current_scope)
-            } else {
-                term.clone()
-            }
-        }
+        Index::Term(term) => evaluate_if_symbol(term.clone(), scopes, current_scope),
     }
 }
 

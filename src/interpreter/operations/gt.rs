@@ -1,34 +1,20 @@
 use crate::{
-    ast::{terms::*, types::*},
+    ast::{
+        terms::*,
+        types::{PrimitiveInterface::*, PrimitiveType},
+    },
+    interpreter::evaluate_if_symbol,
     scope::{ScopeId, Scopes},
 };
 
 use super::errors::*;
 
 pub fn evaluate_gt(left: Term, right: Term, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
-    check_operator_implemented(
-        left.get_type(),
-        ">".to_string(),
-        PrimitiveInterface::ICompare,
-    );
+    check_operator_implemented(left.get_type(), ">".to_string(), ICompare);
+    check_operator_implemented(right.get_type(), ">".to_string(), ICompare);
 
-    check_operator_implemented(
-        right.get_type(),
-        ">".to_string(),
-        PrimitiveInterface::ICompare,
-    );
-
-    let left = if let Term::Symbol(symbol) = left {
-        scopes.get_value(&symbol, current_scope)
-    } else {
-        left
-    };
-
-    let right = if let Term::Symbol(symbol) = right {
-        scopes.get_value(&symbol, current_scope)
-    } else {
-        right
-    };
+    let left = evaluate_if_symbol(left, scopes, current_scope);
+    let right = evaluate_if_symbol(right, scopes, current_scope);
 
     match left {
         Term::Num(left) => match right {
