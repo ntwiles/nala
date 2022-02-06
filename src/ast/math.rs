@@ -13,11 +13,3 @@ pub enum Factor {
     Div(Box<Factor>, Term),
     Call(Call),
 }
-
-#[derive(Debug)]
-pub enum OpKind {
-    Add,
-    Sub,
-    Mult,
-    Div,
-}
