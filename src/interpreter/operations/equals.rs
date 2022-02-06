@@ -1,5 +1,5 @@
 use crate::{
-    ast::{types::*, terms::*},
+    ast::{terms::*, types::*},
     scope::{ScopeId, Scopes},
 };
 
