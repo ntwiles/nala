@@ -19,7 +19,7 @@ pub fn evaluate_index(
             let index = evaluate_expr(expr, scopes, current_scope, context);
 
             if let Term::Num(index) = index {
-                let array = scopes.get_value(ident, current_scope);
+                let array = scopes.get_value(ident, current_scope, context);
                 // TODO: Check that this cast is safe first.
                 let index = index as usize;
                 if let Term::Array(array) = array {
@@ -31,7 +31,7 @@ pub fn evaluate_index(
                 panic!("Cannot index using non-numeric value.");
             }
         }
-        Index::Term(term) => evaluate_if_symbol(term.clone(), scopes, current_scope),
+        Index::Term(term) => evaluate_if_symbol(term.clone(), scopes, current_scope, context),
     }
 }
 

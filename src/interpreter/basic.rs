@@ -85,17 +85,17 @@ pub fn evaluate_expr(
         Expr::Eq(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context);
             let right = evaluate_kind(right, scopes, current_scope, context);
-            evaluate_equals(left, right, scopes, current_scope)
+            evaluate_equals(left, right, scopes, current_scope, context)
         }
         Expr::Gt(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context);
             let right = evaluate_addend(right, scopes, current_scope, context);
-            evaluate_gt(left, right, scopes, current_scope)
+            evaluate_gt(left, right, scopes, current_scope, context)
         }
         Expr::Lt(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context);
             let right = evaluate_addend(right, scopes, current_scope, context);
-            evaluate_lt(left, right, scopes, current_scope)
+            evaluate_lt(left, right, scopes, current_scope, context)
         }
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
         Expr::KindValue(kind) => evaluate_kind(kind, scopes, current_scope, context),

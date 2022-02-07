@@ -35,7 +35,7 @@ pub fn interpret_assign(
 ) -> Term {
     match variable {
         SymbolOrIndex::Index(ident, index_expr) => {
-            if scopes.binding_exists(&ident, current_scope) {
+            if scopes.binding_exists(&ident, current_scope, context) {
                 let index = evaluate_expr(&index_expr, scopes, current_scope, context);
 
                 if let Term::Void = term {
@@ -48,31 +48,31 @@ pub fn interpret_assign(
                     panic!("Index does not resolve to a Number.");
                 };
 
-                let array = scopes.get_value(&ident, current_scope);
+                let array = scopes.get_value(&ident, current_scope, context);
 
                 if let Term::Array(mut array) = array {
                     // TODO: This doesn't work with bad input.
                     array[index as usize] = term.clone();
 
-                    scopes.mutate_value(&ident, current_scope, Term::Array(array));
+                    scopes.mutate_value(&ident, current_scope, context, Term::Array(array));
                 } else {
                     panic!("Trying to index into a non-Array.")
                 }
             }
         }
         SymbolOrIndex::Symbol(ident) => {
-            if scopes.binding_exists(&ident, current_scope) {
+            if scopes.binding_exists(&ident, current_scope, context) {
                 if let Term::Void = term {
                     panic!("Cannot assign a value of type Void.");
                 }
 
-                let existing = scopes.get_value(ident, current_scope);
+                let existing = scopes.get_value(ident, current_scope, context);
 
                 let existing_type = existing.get_type();
                 let term_type = term.get_type();
 
                 if existing_type == term_type {
-                    scopes.mutate_value(&ident, current_scope, term.clone());
+                    scopes.mutate_value(&ident, current_scope, context, term.clone());
                 } else {
                     panic!(
                         "Cannot assign a value of type {0} where {1} is expected.",

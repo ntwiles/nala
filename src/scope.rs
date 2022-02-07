@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{ast, errors::*};
+use crate::{ast, errors::*, io_context::IoContext};
 
 #[derive(Debug)]
 pub struct Scope {
@@ -79,24 +79,33 @@ impl Scopes {
         self: &Self,
         ident: &str,
         current_scope: ScopeId,
+        context: &mut dyn IoContext,
     ) -> Option<ast::terms::Term> {
         let scope = self.scopes.get(current_scope.index).unwrap();
 
         match scope.get_binding(&ident) {
             Some((value, _, _)) => Some(value),
             None => match scope.parent {
-                Some(parent_scope) => Some(self.get_value(ident, parent_scope)),
+                Some(parent_scope) => Some(self.get_value(ident, parent_scope, context)),
                 None => None,
             },
         }
     }
 
-    pub fn get_value(self: &Self, ident: &str, starting_scope: ScopeId) -> ast::terms::Term {
-        match self.get_maybe_value(ident, starting_scope) {
+    pub fn get_value(
+        self: &Self,
+        ident: &str,
+        starting_scope: ScopeId,
+        context: &mut dyn IoContext,
+    ) -> ast::terms::Term {
+        match self.get_maybe_value(ident, starting_scope, context) {
             Some(value) => value,
-            None => runtime_error(NotFoundInScopeError {
-                ident: String::from(ident),
-            }),
+            None => runtime_error(
+                context,
+                NotFoundInScopeError {
+                    ident: String::from(ident),
+                },
+            ),
         }
     }
 
@@ -122,6 +131,7 @@ impl Scopes {
         self: &mut Self,
         ident: &str,
         current_scope: ScopeId,
+        context: &mut dyn IoContext,
         new_value: ast::terms::Term,
     ) {
         let scope = self.find_scope_with_binding(ident, current_scope);
@@ -131,9 +141,12 @@ impl Scopes {
             if is_mutable {
                 scope.add_binding(ident, new_value, true)
             } else {
-                runtime_error(AssignImmutableBindingError {
-                    ident: ident.to_string(),
-                })
+                runtime_error(
+                    context,
+                    AssignImmutableBindingError {
+                        ident: ident.to_string(),
+                    },
+                )
             }
         }
     }
@@ -149,8 +162,14 @@ impl Scopes {
         scope.add_binding(ident, value, is_mutable);
     }
 
-    pub fn binding_exists(self: &Self, ident: &str, current_scope: ScopeId) -> bool {
-        self.get_maybe_value(ident, current_scope).is_some()
+    pub fn binding_exists(
+        self: &Self,
+        ident: &str,
+        current_scope: ScopeId,
+        context: &mut dyn IoContext,
+    ) -> bool {
+        self.get_maybe_value(ident, current_scope, context)
+            .is_some()
     }
 
     pub fn binding_exists_local(self: &Self, ident: &str, current_scope: ScopeId) -> bool {

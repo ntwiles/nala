@@ -92,7 +92,7 @@ pub fn evaluate_call(
 ) -> Term {
     match call {
         Call::Call(ident, args) => {
-            let block = scopes.get_value(ident, current_scope);
+            let block = scopes.get_value(ident, current_scope, context);
 
             if let Term::Func(params, block) = block {
                 let func_scope = scopes.new_scope(Some(current_scope));
@@ -120,12 +120,15 @@ pub fn evaluate_call(
                         let param_type = param_type.clone();
 
                         if !arg_type.is_assignable_to(&param_type) {
-                            runtime_error(WrongArgTypeForParamError {
-                                arg_value: arg.clone().to_string(),
-                                arg_type: arg.get_type().to_string(),
-                                func_ident: ident.to_owned(),
-                                param_type: param_type.to_string(),
-                            })
+                            runtime_error(
+                                context,
+                                WrongArgTypeForParamError {
+                                    arg_value: arg.clone().to_string(),
+                                    arg_type: arg.get_type().to_string(),
+                                    func_ident: ident.to_owned(),
+                                    param_type: param_type.to_string(),
+                                },
+                            )
                         }
 
                         // TODO: Should function args be mutable or immutable?

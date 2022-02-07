@@ -1,5 +1,5 @@
 use crate::{
-    ast::{types::*, terms::*, *},
+    ast::{terms::*, types::*, *},
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -31,7 +31,7 @@ pub fn evaluate_kind(
 ) -> Term {
     match kind {
         KindValue::KindValue(enum_name, kind) => {
-            let term = scopes.get_value(enum_name, current_scope);
+            let term = scopes.get_value(enum_name, current_scope, context);
 
             if let Term::Type(TypeVariant::Enum(_, kinds)) = term {
                 if kind_exists(&*kinds, kind) {

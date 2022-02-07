@@ -38,9 +38,14 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
     };
 }
 
-pub fn evaluate_if_symbol(term: Term, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+pub fn evaluate_if_symbol(
+    term: Term,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut dyn IoContext,
+) -> Term {
     if let Term::Symbol(ident) = term {
-        scopes.get_value(&ident, current_scope)
+        scopes.get_value(&ident, current_scope, context)
     } else {
         term.clone()
     }

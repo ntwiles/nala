@@ -27,11 +27,11 @@ pub fn evaluate_addend(
             let left = evaluate_addend(left, scopes, current_scope, context);
             let right = evaluate_factor(right, scopes, current_scope, context);
 
-            let left = evaluate_if_symbol(left, scopes, current_scope);
-            let right = evaluate_if_symbol(right, scopes, current_scope);
+            let left = evaluate_if_symbol(left, scopes, current_scope, context);
+            let right = evaluate_if_symbol(right, scopes, current_scope, context);
 
-            check_operator_implemented(left.get_type(), "+".to_string(), IAdd);
-            check_operator_implemented(right.get_type(), "+".to_string(), IAdd);
+            check_operator_implemented(left.get_type(), "+".to_string(), IAdd, context);
+            check_operator_implemented(right.get_type(), "+".to_string(), IAdd, context);
 
             do_add(left, right)
         }
@@ -39,11 +39,11 @@ pub fn evaluate_addend(
             let left = evaluate_addend(left, scopes, current_scope, context);
             let right = evaluate_factor(right, scopes, current_scope, context);
 
-            let left = evaluate_if_symbol(left, scopes, current_scope);
-            let right = evaluate_if_symbol(right, scopes, current_scope);
+            let left = evaluate_if_symbol(left, scopes, current_scope, context);
+            let right = evaluate_if_symbol(right, scopes, current_scope, context);
 
-            check_operator_implemented(left.get_type(), "-".to_string(), ISubtract);
-            check_operator_implemented(right.get_type(), "-".to_string(), ISubtract);
+            check_operator_implemented(left.get_type(), "-".to_string(), ISubtract, context);
+            check_operator_implemented(right.get_type(), "-".to_string(), ISubtract, context);
 
             do_subtract(left, right)
         }
@@ -62,11 +62,11 @@ pub fn evaluate_factor(
             let left = evaluate_factor(left, scopes, current_scope, context);
             let right = right.clone();
 
-            let left = evaluate_if_symbol(left, scopes, current_scope);
-            let right = evaluate_if_symbol(right, scopes, current_scope);
+            let left = evaluate_if_symbol(left, scopes, current_scope, context);
+            let right = evaluate_if_symbol(right, scopes, current_scope, context);
 
-            check_operator_implemented(left.get_type(), "*".to_string(), IMultiply);
-            check_operator_implemented(right.get_type(), "*".to_string(), IMultiply);
+            check_operator_implemented(left.get_type(), "*".to_string(), IMultiply, context);
+            check_operator_implemented(right.get_type(), "*".to_string(), IMultiply, context);
 
             do_multiply(left, right)
         }
@@ -74,11 +74,11 @@ pub fn evaluate_factor(
             let left = evaluate_factor(left, scopes, current_scope, context);
             let right = right.clone();
 
-            let left = evaluate_if_symbol(left, scopes, current_scope);
-            let right = evaluate_if_symbol(right, scopes, current_scope);
+            let left = evaluate_if_symbol(left, scopes, current_scope, context);
+            let right = evaluate_if_symbol(right, scopes, current_scope, context);
 
-            check_operator_implemented(left.get_type(), "/".to_string(), IDivide);
-            check_operator_implemented(right.get_type(), "/".to_string(), IDivide);
+            check_operator_implemented(left.get_type(), "/".to_string(), IDivide, context);
+            check_operator_implemented(right.get_type(), "/".to_string(), IDivide, context);
 
             do_divide(left, right)
         }

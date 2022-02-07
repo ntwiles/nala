@@ -1,6 +1,7 @@
 use crate::{
     ast::{terms::*, types::*},
     interpreter::evaluate_if_symbol,
+    io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
 
@@ -11,9 +12,10 @@ pub fn evaluate_equals(
     right: Term,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    context: &mut dyn IoContext,
 ) -> Term {
-    let left = evaluate_if_symbol(left, scopes, current_scope);
-    let right = evaluate_if_symbol(right, scopes, current_scope);
+    let left = evaluate_if_symbol(left, scopes, current_scope, context);
+    let right = evaluate_if_symbol(right, scopes, current_scope, context);
 
     match left {
         Term::Num(left) => num_equals(left, right),

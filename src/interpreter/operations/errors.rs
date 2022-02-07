@@ -1,4 +1,4 @@
-use crate::{ast::types::*, errors::*};
+use crate::{ast::types::*, errors::*, io_context::IoContext};
 
 macro_rules! panic_oper_not_impl {
     ($oper:expr, $type:expr) => {
@@ -23,13 +23,17 @@ pub fn check_operator_implemented(
     _type: TypeVariant,
     operator: String,
     interface: PrimitiveInterface,
+    context: &mut dyn IoContext,
 ) -> () {
     if !_type.implements_interface(interface.clone()) {
-        runtime_error(OperatorNotImplementedError {
-            _type,
-            operator,
-            interface,
-        })
+        runtime_error(
+            context,
+            OperatorNotImplementedError {
+                _type,
+                operator,
+                interface,
+            },
+        )
     }
 }
 
