@@ -5,7 +5,7 @@ pub mod gt;
 pub mod lt;
 
 use crate::{
-    ast::{math::*, terms::*},
+    ast::{math::*, terms::*, types::PrimitiveInterface::*},
     interpreter::evaluate_if_symbol,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
@@ -14,6 +14,7 @@ use crate::{
 use super::functions::*;
 
 use arithmatic::*;
+use errors::check_operator_implemented;
 
 pub fn evaluate_addend(
     addend: &Addend,
@@ -29,6 +30,9 @@ pub fn evaluate_addend(
             let left = evaluate_if_symbol(left, scopes, current_scope);
             let right = evaluate_if_symbol(right, scopes, current_scope);
 
+            check_operator_implemented(left.get_type(), "+".to_string(), IAdd);
+            check_operator_implemented(right.get_type(), "+".to_string(), IAdd);
+
             do_add(left, right)
         }
         Addend::Sub(left, right) => {
@@ -37,6 +41,9 @@ pub fn evaluate_addend(
 
             let left = evaluate_if_symbol(left, scopes, current_scope);
             let right = evaluate_if_symbol(right, scopes, current_scope);
+
+            check_operator_implemented(left.get_type(), "-".to_string(), ISubtract);
+            check_operator_implemented(right.get_type(), "-".to_string(), ISubtract);
 
             do_subtract(left, right)
         }
@@ -58,6 +65,9 @@ pub fn evaluate_factor(
             let left = evaluate_if_symbol(left, scopes, current_scope);
             let right = evaluate_if_symbol(right, scopes, current_scope);
 
+            check_operator_implemented(left.get_type(), "*".to_string(), IMultiply);
+            check_operator_implemented(right.get_type(), "*".to_string(), IMultiply);
+
             do_multiply(left, right)
         }
         Factor::Div(left, right) => {
@@ -66,6 +76,9 @@ pub fn evaluate_factor(
 
             let left = evaluate_if_symbol(left, scopes, current_scope);
             let right = evaluate_if_symbol(right, scopes, current_scope);
+
+            check_operator_implemented(left.get_type(), "/".to_string(), IDivide);
+            check_operator_implemented(right.get_type(), "/".to_string(), IDivide);
 
             do_divide(left, right)
         }

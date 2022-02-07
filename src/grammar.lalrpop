@@ -93,10 +93,17 @@ PrimitiveType: ast::types::PrimitiveType = {
     "String" => ast::types::PrimitiveType::String,
 }
 
+// TODO: This allows for instance a function two accept two parameters 
+// which implement IAdd but which will throw an error when adding together.
+// Implementing generics with interface constraints might solve this problem.
 PrimitiveInterface: ast::types::PrimitiveInterface = {
+    "IAdd" => ast::types::PrimitiveInterface::IAdd,
     "ICompare" => ast::types::PrimitiveInterface::ICompare,
+    "IDivide" => ast::types::PrimitiveInterface::IDivide,
     "IEqual" => ast::types::PrimitiveInterface::IEqual,
+    "IMultiply" => ast::types::PrimitiveInterface::IMultiply,
     "IPrint" => ast::types::PrimitiveInterface::IPrint,
+    "ISubtract" => ast::types::PrimitiveInterface::ISubtract
 }
 
 Addend: ast::math::Addend = {

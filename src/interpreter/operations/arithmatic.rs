@@ -1,50 +1,65 @@
 use crate::ast::terms::Term;
 
 pub fn do_add(left: Term, right: Term) -> Term {
+    if left.get_type() != right.get_type() {
+        panic!("Cannot add between values of two different types.")
+    }
+
     match left {
         Term::Num(left) => {
             if let Term::Num(right) = right {
                 Term::Num(left + right)
             } else {
-                panic!("todo")
+                unreachable!()
             }
         }
         Term::String(left) => {
             if let Term::String(right) = right {
                 Term::String(left + &right)
             } else {
-                panic!("todo")
+                unreachable!()
             }
         }
-        _ => panic!("todo"),
+        _ => unreachable!(),
     }
 }
 
 pub fn do_subtract(left: Term, right: Term) -> Term {
+    if left.get_type() != right.get_type() {
+        panic!("Cannot subtract between values of two different types.")
+    }
+
     if let Term::Num(left) = left {
         if let Term::Num(right) = right {
             Term::Num(left - right)
         } else {
-            panic!("todo")
+            unreachable!()
         }
     } else {
-        panic!("todo")
+        unreachable!()
     }
 }
 
 pub fn do_multiply(left: Term, right: Term) -> Term {
+    if left.get_type() != right.get_type() {
+        panic!("Cannot multiply between values of two different types.")
+    }
+
     if let Term::Num(left) = left {
         if let Term::Num(right) = right {
             Term::Num(left * right)
         } else {
-            panic!("todo")
+            unreachable!()
         }
     } else {
-        panic!("todo")
+        unreachable!()
     }
 }
 
 pub fn do_divide(left: Term, right: Term) -> Term {
+    if left.get_type() != right.get_type() {
+        panic!("Cannot divide between values of two different types.")
+    }
     if let Term::Num(left) = left {
         if let Term::Num(right) = right {
             if right != 0.0 {
@@ -53,9 +68,9 @@ pub fn do_divide(left: Term, right: Term) -> Term {
                 panic!("Cannot divide by zero.")
             }
         } else {
-            panic!("todo")
+            unreachable!()
         }
     } else {
-        panic!("todo")
+        unreachable!()
     }
 }

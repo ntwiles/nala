@@ -31,9 +31,13 @@ impl TypeVariant {
 
 #[derive(Debug, Clone)]
 pub enum PrimitiveInterface {
+    IAdd,
     ICompare,
+    IDivide,
     IEqual,
+    IMultiply,
     IPrint,
+    ISubtract,
 }
 
 #[derive(Debug, Clone)]
@@ -219,10 +223,15 @@ impl PartialEq for PrimitiveType {
 
 impl PrimitiveInterface {
     pub fn to_string(&self) -> String {
+        // TODO: Can we get the interface name from the enum variant dynamically?
         let type_name = match self {
+            PrimitiveInterface::IAdd => "IAdd",
             PrimitiveInterface::ICompare => "ICompare",
-            PrimitiveInterface::IPrint => "IPrint",
+            PrimitiveInterface::IDivide => "IDivide",
             PrimitiveInterface::IEqual => "IEqual",
+            PrimitiveInterface::IMultiply => "IMultiply",
+            PrimitiveInterface::IPrint => "IPrint",
+            PrimitiveInterface::ISubtract => "ISubtract",
         };
 
         String::from(type_name)
