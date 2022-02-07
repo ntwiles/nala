@@ -14,7 +14,7 @@ use crate::{
 use super::functions::*;
 
 use arithmatic::*;
-use errors::check_operator_implemented;
+use errors::check_operator_implemented_both;
 
 pub fn evaluate_addend(
     addend: &Addend,
@@ -27,8 +27,16 @@ pub fn evaluate_addend(
             let left = evaluate_addend(left, scopes, current_scope, context);
             let right = evaluate_factor(right, scopes, current_scope, context);
 
-            check_operator_implemented(left.get_type(), "+".to_string(), IAdd, context);
-            check_operator_implemented(right.get_type(), "+".to_string(), IAdd, context);
+            let result = check_operator_implemented_both(
+                left.get_type(),
+                right.get_type(),
+                "+".to_string(),
+                IAdd,
+            );
+
+            if let Err(err) = result {
+                return err;
+            }
 
             do_add(left, right)
         }
@@ -36,8 +44,16 @@ pub fn evaluate_addend(
             let left = evaluate_addend(left, scopes, current_scope, context);
             let right = evaluate_factor(right, scopes, current_scope, context);
 
-            check_operator_implemented(left.get_type(), "-".to_string(), ISubtract, context);
-            check_operator_implemented(right.get_type(), "-".to_string(), ISubtract, context);
+            let result = check_operator_implemented_both(
+                left.get_type(),
+                right.get_type(),
+                "-".to_string(),
+                ISubtract,
+            );
+
+            if let Err(err) = result {
+                return err;
+            }
 
             do_subtract(left, right)
         }
@@ -56,8 +72,16 @@ pub fn evaluate_factor(
             let left = evaluate_factor(left, scopes, current_scope, context);
             let right = evaluate_if_symbol(right.clone(), scopes, current_scope, context);
 
-            check_operator_implemented(left.get_type(), "*".to_string(), IMultiply, context);
-            check_operator_implemented(right.get_type(), "*".to_string(), IMultiply, context);
+            let result = check_operator_implemented_both(
+                left.get_type(),
+                right.get_type(),
+                "*".to_string(),
+                IMultiply,
+            );
+
+            if let Err(err) = result {
+                return err;
+            }
 
             do_multiply(left, right)
         }
@@ -65,8 +89,16 @@ pub fn evaluate_factor(
             let left = evaluate_factor(left, scopes, current_scope, context);
             let right = evaluate_if_symbol(right.clone(), scopes, current_scope, context);
 
-            check_operator_implemented(left.get_type(), "/".to_string(), IDivide, context);
-            check_operator_implemented(right.get_type(), "/".to_string(), IDivide, context);
+            let result = check_operator_implemented_both(
+                left.get_type(),
+                right.get_type(),
+                "/".to_string(),
+                IDivide,
+            );
+
+            if let Err(err) = result {
+                return err;
+            }
 
             do_divide(left, right)
         }

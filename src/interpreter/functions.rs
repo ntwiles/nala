@@ -9,20 +9,18 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-pub struct WrongArgTypeForParamError {
-    func_ident: String,
+fn wrong_arg_type_for_param_error(
     arg_value: String,
     arg_type: String,
+    func_ident: String,
     param_type: String,
-}
-
-impl NalaRuntimeError for WrongArgTypeForParamError {
-    fn message(&self) -> String {
-        format!(
+) -> Term {
+    Term::Exception(NalaRuntimeError {
+        message: format!(
             "Passed value `{0}` of type `{1}` to func `{2}` where `{3}` was expected.",
-            self.arg_value, self.arg_type, self.func_ident, self.param_type
-        )
-    }
+            arg_value, arg_type, func_ident, param_type
+        ),
+    })
 }
 
 pub fn interpret_func(func: &Func, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
@@ -109,34 +107,27 @@ pub fn evaluate_call(
                     )
                 }
 
-                let param_args: HashMap<String, Term> = params_vec
-                    .clone()
-                    .iter()
-                    .enumerate()
-                    .map(|(i, Param { ident, param_type })| {
-                        let arg = args.get(i).unwrap();
+                let mut param_args: HashMap<String, Term> = HashMap::new();
 
-                        let arg_type = arg.get_type();
-                        let param_type = param_type.clone();
+                for (i, param) in params_vec.iter().enumerate() {
+                    let arg = args.get(i).unwrap();
 
-                        if !arg_type.is_assignable_to(&param_type) {
-                            runtime_error(
-                                context,
-                                WrongArgTypeForParamError {
-                                    arg_value: arg.clone().to_string(),
-                                    arg_type: arg.get_type().to_string(),
-                                    func_ident: ident.to_owned(),
-                                    param_type: param_type.to_string(),
-                                },
-                            )
-                        }
+                    let arg_type = arg.get_type();
+                    let param_type = param.param_type.clone();
 
-                        // TODO: Should function args be mutable or immutable?
-                        scopes.add_binding(ident, func_scope, arg.clone(), false);
+                    if !arg_type.is_assignable_to(&param_type) {
+                        wrong_arg_type_for_param_error(
+                            arg.clone().to_string(),
+                            arg.get_type().to_string(),
+                            ident.to_owned(),
+                            param_type.to_string(),
+                        );
+                    }
 
-                        (ident.clone(), arg.clone())
-                    })
-                    .collect();
+                    // TODO: Should function args be mutable or immutable?
+                    scopes.add_binding(&param.ident, func_scope, arg.clone(), false);
+                    param_args.entry(param.ident.clone()).or_insert(arg.clone());
+                }
 
                 let block = *block;
 

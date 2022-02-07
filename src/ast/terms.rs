@@ -1,3 +1,5 @@
+use crate::errors::*;
+
 use super::*;
 
 #[derive(Debug, Clone)]
@@ -8,15 +10,17 @@ pub enum SymbolOrTerm {
 
 #[derive(Debug, Clone)]
 pub enum Term {
-    Bool(bool),
-    String(String),
-    Num(f32),
     Array(Vec<Term>),
+    Bool(bool),
     Func(Box<Params>, Box<Block>),
-    Void,
-    Break(Box<Expr>),
-    Type(TypeVariant),
     Kind(String),
+    Num(f32),
+    String(String),
+    Type(TypeVariant),
+
+    Break(Box<Expr>),
+    Exception(NalaRuntimeError),
+    Void,
 }
 
 impl Term {
@@ -31,6 +35,7 @@ impl Term {
             Term::Break(_) => String::from("<Break>"),
             Term::Type(type_kind) => type_kind.to_string(),
             Term::Kind(k) => k.to_owned(),
+            Term::Exception(e) => e.message.clone(),
         }
     }
 
@@ -65,6 +70,7 @@ impl Term {
             Term::Void => TypeVariant::Primitive(PrimitiveType::Void),
             Term::Type(_) => TypeVariant::Primitive(PrimitiveType::Enum),
             Term::Kind(_) => TypeVariant::Primitive(PrimitiveType::Kind),
+            Term::Exception(_) => TypeVariant::Primitive(PrimitiveType::Exception),
         }
     }
 }

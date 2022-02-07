@@ -1,22 +1,22 @@
 use std::collections::HashMap;
 
-use crate::{ast, errors::*, io_context::IoContext};
+use crate::{ast::terms::*, errors::*, io_context::IoContext};
 
 #[derive(Debug)]
 pub struct Scope {
     parent: Option<ScopeId>,
-    bindings: HashMap<String, (ast::terms::Term, String, bool)>,
+    bindings: HashMap<String, (Term, String, bool)>,
 }
 
 impl Scope {
     pub fn new(parent: Option<ScopeId>) -> Scope {
         Scope {
             parent,
-            bindings: HashMap::<String, (ast::terms::Term, String, bool)>::new(),
+            bindings: HashMap::<String, (Term, String, bool)>::new(),
         }
     }
 
-    pub fn add_binding(self: &mut Self, ident: &str, value: ast::terms::Term, is_mutable: bool) {
+    pub fn add_binding(self: &mut Self, ident: &str, value: Term, is_mutable: bool) {
         let type_name = value.get_type().to_string();
 
         self.bindings.insert(
@@ -25,7 +25,7 @@ impl Scope {
         );
     }
 
-    pub fn get_binding(self: &Self, ident: &str) -> Option<(ast::terms::Term, String, bool)> {
+    pub fn get_binding(self: &Self, ident: &str) -> Option<(Term, String, bool)> {
         if let Some(binding) = self.bindings.get(ident) {
             Some(binding.clone())
         } else {
@@ -34,24 +34,16 @@ impl Scope {
     }
 }
 
-pub struct NotFoundInScopeError {
-    ident: String,
+fn not_found_in_scope_error(ident: &str) -> Term {
+    Term::Exception(NalaRuntimeError {
+        message: format!("Identifier '{}' was not found in this scope.", ident),
+    })
 }
 
-impl NalaRuntimeError for NotFoundInScopeError {
-    fn message(&self) -> String {
-        format!("Identifier '{}' was not found in this scope.", self.ident)
-    }
-}
-
-pub struct AssignImmutableBindingError {
-    ident: String,
-}
-
-impl NalaRuntimeError for AssignImmutableBindingError {
-    fn message(&self) -> String {
-        format!("Cannot re-assign to immutable binding {}", self.ident)
-    }
+fn assign_immutable_binding_error(ident: &str) -> Term {
+    Term::Exception(NalaRuntimeError {
+        message: format!("Cannot re-assign to immutable binding {}", ident),
+    })
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -80,7 +72,7 @@ impl Scopes {
         ident: &str,
         current_scope: ScopeId,
         context: &mut dyn IoContext,
-    ) -> Option<ast::terms::Term> {
+    ) -> Option<Term> {
         let scope = self.scopes.get(current_scope.index).unwrap();
 
         match scope.get_binding(&ident) {
@@ -97,15 +89,10 @@ impl Scopes {
         ident: &str,
         starting_scope: ScopeId,
         context: &mut dyn IoContext,
-    ) -> ast::terms::Term {
+    ) -> Term {
         match self.get_maybe_value(ident, starting_scope, context) {
             Some(value) => value,
-            None => runtime_error(
-                context,
-                NotFoundInScopeError {
-                    ident: String::from(ident),
-                },
-            ),
+            None => not_found_in_scope_error(ident),
         }
     }
 
@@ -131,31 +118,27 @@ impl Scopes {
         self: &mut Self,
         ident: &str,
         current_scope: ScopeId,
-        context: &mut dyn IoContext,
-        new_value: ast::terms::Term,
-    ) {
+        new_value: Term,
+    ) -> Term {
         let scope = self.find_scope_with_binding(ident, current_scope);
 
         if let Some(scope) = scope {
             let (_, _, is_mutable) = scope.get_binding(ident).unwrap();
             if is_mutable {
-                scope.add_binding(ident, new_value, true)
+                scope.add_binding(ident, new_value, true);
             } else {
-                runtime_error(
-                    context,
-                    AssignImmutableBindingError {
-                        ident: ident.to_string(),
-                    },
-                )
+                assign_immutable_binding_error(ident);
             }
         }
+
+        Term::Void
     }
 
     pub fn add_binding(
         self: &mut Self,
         ident: &str,
         current_scope: ScopeId,
-        value: ast::terms::Term,
+        value: Term,
         is_mutable: bool,
     ) {
         let scope = self.scopes.get_mut(current_scope.index).unwrap();

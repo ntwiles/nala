@@ -54,7 +54,7 @@ pub fn interpret_assign(
                     // TODO: This doesn't work with bad input.
                     array[index as usize] = term.clone();
 
-                    scopes.mutate_value(&ident, current_scope, context, Term::Array(array));
+                    scopes.mutate_value(&ident, current_scope, Term::Array(array));
                 } else {
                     panic!("Trying to index into a non-Array.")
                 }
@@ -72,7 +72,7 @@ pub fn interpret_assign(
                 let term_type = term.get_type();
 
                 if existing_type == term_type {
-                    scopes.mutate_value(&ident, current_scope, context, term.clone());
+                    scopes.mutate_value(&ident, current_scope, term.clone());
                 } else {
                     panic!(
                         "Cannot assign a value of type {0} where {1} is expected.",

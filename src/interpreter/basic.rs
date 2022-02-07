@@ -90,12 +90,12 @@ pub fn evaluate_expr(
         Expr::Gt(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context);
             let right = evaluate_addend(right, scopes, current_scope, context);
-            evaluate_gt(left, right, context)
+            evaluate_gt(left, right)
         }
         Expr::Lt(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context);
             let right = evaluate_addend(right, scopes, current_scope, context);
-            evaluate_lt(left, right, context)
+            evaluate_lt(left, right)
         }
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
         Expr::KindValue(kind) => evaluate_kind(kind, scopes, current_scope, context),

@@ -1,16 +1,21 @@
-use crate::{
-    ast::{
-        terms::*,
-        types::{PrimitiveInterface::*, PrimitiveType},
-    },
-    io_context::IoContext,
+use crate::ast::{
+    terms::*,
+    types::{PrimitiveInterface::*, PrimitiveType},
 };
 
 use super::errors::*;
 
-pub fn evaluate_lt(left: Term, right: Term, context: &mut dyn IoContext) -> Term {
-    check_operator_implemented(left.get_type(), ">".to_string(), ICompare, context);
-    check_operator_implemented(right.get_type(), ">".to_string(), ICompare, context);
+pub fn evaluate_lt(left: Term, right: Term) -> Term {
+    let result = check_operator_implemented_both(
+        left.get_type(),
+        right.get_type(),
+        ">".to_string(),
+        ICompare,
+    );
+
+    if let Err(err) = result {
+        return err;
+    }
 
     match left {
         Term::Num(left) => num_lt(left, right),
