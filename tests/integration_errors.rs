@@ -11,7 +11,7 @@ fn it_errors_when_indexing_array_with_string() {
 }
 
 #[test]
-#[should_panic(expected = "Passed value `7` of type `Number` to func `len`")]
+#[should_panic(expected = "Wrong value type passed to builtin func len")]
 fn it_errors_when_passing_number_arg_to_len() {
     read_and_execute(&test_path("array-len"), &mut TestContext::new());
 }

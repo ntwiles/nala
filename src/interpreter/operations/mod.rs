@@ -286,6 +286,8 @@ mod tests {
         let operation = Factor::Div(Box::new(left), SymbolOrTerm::Term(right));
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
+
+        let result = evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
+        assert!(matches!(result, Ok(_)));
     }
 }
