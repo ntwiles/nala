@@ -13,17 +13,21 @@ pub fn evaluate_index(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Term {
+) -> Result<Term, Term> {
     match index {
         Index::Index(ident, expr) => {
-            let index = evaluate_expr(expr, scopes, current_scope, context);
+            let result = evaluate_expr(expr, scopes, current_scope, context);
 
-            if let Term::Num(index) = index {
+            if let Err(e) = result {
+                return Err(e);
+            }
+
+            if let Term::Num(index) = result.unwrap() {
                 let array = scopes.get_value(ident, current_scope, context);
                 // TODO: Check that this cast is safe first.
                 let index = index as usize;
                 if let Term::Array(array) = array {
-                    array.get(index).unwrap().clone()
+                    Ok(array.get(index).unwrap().clone())
                 } else {
                     panic!("Cannot index into a value which is not an array.");
                 }
@@ -32,8 +36,8 @@ pub fn evaluate_index(
             }
         }
         Index::SymbolOrTerm(sot) => match sot {
-            SymbolOrTerm::Symbol(ident) => scopes.get_value(ident, current_scope, context),
-            SymbolOrTerm::Term(term) => term.clone(),
+            SymbolOrTerm::Symbol(ident) => Ok(scopes.get_value(ident, current_scope, context)),
+            SymbolOrTerm::Term(term) => Ok(term.clone()),
         },
     }
 }
@@ -43,8 +47,14 @@ pub fn evaluate_array(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Term {
-    let terms = evaluate_elems(&array.elems, scopes, current_scope, context);
+) -> Result<Term, Term> {
+    let result = evaluate_elems(&array.elems, scopes, current_scope, context);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    let terms = result.unwrap();
 
     if let Some(first) = terms.clone().first() {
         let first_type = first.get_type();
@@ -60,5 +70,5 @@ pub fn evaluate_array(
         }
     };
 
-    Term::Array(terms)
+    Ok(Term::Array(terms))
 }

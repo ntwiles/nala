@@ -23,7 +23,11 @@ fn wrong_arg_type_for_param_error(
     })
 }
 
-pub fn interpret_func(func: &Func, scopes: &mut Scopes, current_scope: ScopeId) -> Term {
+pub fn interpret_func(
+    func: &Func,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+) -> Result<Term, Term> {
     let Func {
         ident,
         block,
@@ -45,7 +49,7 @@ pub fn interpret_func(func: &Func, scopes: &mut Scopes, current_scope: ScopeId) 
         }
     }
 
-    Term::Void
+    Ok(Term::Void)
 }
 
 fn check_param_types(params: &Params) -> Result<(), String> {
@@ -87,7 +91,7 @@ pub fn evaluate_call(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Term {
+) -> Result<Term, Term> {
     match call {
         Call::Call(ident, args) => {
             let block = scopes.get_value(ident, current_scope, context);
@@ -96,7 +100,13 @@ pub fn evaluate_call(
                 let func_scope = scopes.new_scope(Some(current_scope));
 
                 let params_vec = evaluate_params(&*params, scopes, func_scope, context);
-                let args = evaluate_elems(&*args, scopes, func_scope, context);
+                let args_result = evaluate_elems(&*args, scopes, func_scope, context);
+
+                if let Err(e) = args_result {
+                    return Err(e);
+                }
+
+                let args = args_result.unwrap();
 
                 if params_vec.len() != args.len() {
                     panic!(
@@ -133,7 +143,7 @@ pub fn evaluate_call(
 
                 match block {
                     Block::NalaBlock(stmts) => interpret_stmts(&stmts, scopes, func_scope, context),
-                    Block::RustBlock(func) => func(param_args, context),
+                    Block::RustBlock(func) => Ok(func(param_args, context)),
                 }
             } else {
                 panic!("Cannot invoke `{0}` because it is not a function.", ident)

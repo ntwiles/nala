@@ -12,7 +12,7 @@ pub fn interpret_declare(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     is_mutable: bool,
-) -> Term {
+) -> Result<Term, Term> {
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
@@ -23,7 +23,7 @@ pub fn interpret_declare(
         scopes.add_binding(&ident, current_scope, term.clone(), is_mutable);
     }
 
-    Term::Void
+    Ok(Term::Void)
 }
 
 pub fn interpret_assign(
@@ -32,17 +32,21 @@ pub fn interpret_assign(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Term {
+) -> Result<Term, Term> {
     match variable {
         SymbolOrIndex::Index(ident, index_expr) => {
             if scopes.binding_exists(&ident, current_scope, context) {
-                let index = evaluate_expr(&index_expr, scopes, current_scope, context);
+                let index_result = evaluate_expr(&index_expr, scopes, current_scope, context);
 
                 if let Term::Void = term {
                     panic!("Cannot assign a value of type Void.");
                 }
 
-                let index = if let Term::Num(index) = index {
+                if index_result.is_err() {
+                    return index_result;
+                }
+
+                let index = if let Term::Num(index) = index_result.unwrap() {
                     index
                 } else {
                     panic!("Index does not resolve to a Number.");
@@ -86,5 +90,5 @@ pub fn interpret_assign(
         }
     }
 
-    Term::Void
+    Ok(Term::Void)
 }

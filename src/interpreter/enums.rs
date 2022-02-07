@@ -11,7 +11,7 @@ pub fn interpret_enum(
     kinds: &KindsDeclare,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-) -> Term {
+) -> Result<Term, Term> {
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
@@ -20,7 +20,7 @@ pub fn interpret_enum(
         scopes.add_binding(&ident, current_scope, enum_term, false);
     }
 
-    Term::Void
+    Ok(Term::Void)
 }
 
 pub fn evaluate_kind(
@@ -28,14 +28,14 @@ pub fn evaluate_kind(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Term {
+) -> Result<Term, Term> {
     match kind {
         KindValue::KindValue(enum_name, kind) => {
             let term = scopes.get_value(enum_name, current_scope, context);
 
             if let Term::Type(TypeVariant::Enum(_, kinds)) = term {
                 if kind_exists(&*kinds, kind) {
-                    Term::Kind(format!("{0}::{1}", enum_name, kind.to_owned()))
+                    Ok(Term::Kind(format!("{0}::{1}", enum_name, kind.to_owned())))
                 } else {
                     panic!("Kind {0} does not exist on Enum {1}", kind, enum_name)
                 }

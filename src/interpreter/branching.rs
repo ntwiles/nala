@@ -12,17 +12,20 @@ pub fn interpret_if(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Term {
-    let resolved = evaluate_expr(&cond, scopes, current_scope, context);
+) -> Result<Term, Term> {
+    let result = evaluate_expr(&cond, scopes, current_scope, context);
 
-    if let Term::Bool(bool) = resolved {
-        let mut result = Term::Void;
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    if let Term::Bool(bool) = result.unwrap() {
         if bool {
             let block_scope = scopes.new_scope(Some(current_scope));
-            result = interpret_block(&block, scopes, block_scope, context)
+            interpret_block(&block, scopes, block_scope, context)
+        } else {
+            Ok(Term::Void)
         }
-
-        result
     } else {
         panic!("Cannot use non-boolean expressions inside 'if' conditions.")
     }
@@ -35,27 +38,38 @@ pub fn interpret_for(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Term {
-    let resolved = evaluate_expr(expr, scopes, current_scope, context);
+) -> Result<Term, Term> {
+    let result = evaluate_expr(expr, scopes, current_scope, context);
 
-    if let Term::Array(array) = resolved {
-        let mut result = Term::Void;
+    if let Err(e) = result {
+        return Err(e);
+    }
 
+    let mut loop_result = Term::Void;
+
+    if let Term::Array(array) = result.unwrap() {
         for (_, item) in array.iter().enumerate() {
             let block_scope = scopes.new_scope(Some(current_scope));
             scopes.add_binding(ident, block_scope, item.clone(), false);
-            result = interpret_block(&block, scopes, block_scope, context);
 
-            if let Term::Break(expr) = result {
+            let result = interpret_block(&block, scopes, block_scope, context);
+
+            if let Err(e) = result {
+                return Err(e);
+            }
+
+            loop_result = result.unwrap();
+
+            if let Term::Break(expr) = loop_result {
                 return evaluate_expr(&*expr, scopes, current_scope, context);
             }
         }
 
-        result
+        Ok(loop_result)
     } else {
         panic!(
             "Cannot iterate over values of non-Array types. Found '{}' of type {:?}",
-            ident, resolved
+            ident, loop_result
         )
     }
 }
@@ -66,10 +80,15 @@ pub fn interpret_wiles(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Term {
+) -> Result<Term, Term> {
     loop {
-        let condition = evaluate_expr(expr, scopes, current_scope, context);
-        let condition = if let Term::Bool(condition) = condition {
+        let result = evaluate_expr(expr, scopes, current_scope, context);
+
+        if let Err(e) = result {
+            return Err(e);
+        }
+
+        let condition = if let Term::Bool(condition) = result.unwrap() {
             condition
         } else {
             panic!("Wiles condition must resolve to a value of type Bool");
@@ -78,7 +97,11 @@ pub fn interpret_wiles(
         if condition {
             let result = interpret_block(block, scopes, current_scope, context);
 
-            if let Term::Break(expr) = result {
+            if let Err(e) = result {
+                return Err(e);
+            }
+
+            if let Term::Break(expr) = result.unwrap() {
                 return evaluate_expr(&*expr, scopes, current_scope, context);
             }
         } else {
@@ -86,5 +109,5 @@ pub fn interpret_wiles(
         }
     }
 
-    Term::Void
+    Ok(Term::Void)
 }

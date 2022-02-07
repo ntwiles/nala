@@ -21,11 +21,21 @@ pub fn evaluate_addend(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Term {
+) -> Result<Term, Term> {
     match addend {
         Addend::Add(left, right) => {
             let left = evaluate_addend(left, scopes, current_scope, context);
+            if let Err(e) = left {
+                return Err(e);
+            }
+
             let right = evaluate_factor(right, scopes, current_scope, context);
+            if let Err(e) = right {
+                return Err(e);
+            }
+
+            let left = left.unwrap();
+            let right = right.unwrap();
 
             let result = check_operator_implemented_both(
                 left.get_type(),
@@ -35,14 +45,24 @@ pub fn evaluate_addend(
             );
 
             if let Err(err) = result {
-                return err;
+                return Err(err);
             }
 
-            do_add(left, right)
+            Ok(do_add(left, right))
         }
         Addend::Sub(left, right) => {
             let left = evaluate_addend(left, scopes, current_scope, context);
+            if let Err(e) = left {
+                return Err(e);
+            }
+
             let right = evaluate_factor(right, scopes, current_scope, context);
+            if let Err(e) = right {
+                return Err(e);
+            }
+
+            let left = left.unwrap();
+            let right = right.unwrap();
 
             let result = check_operator_implemented_both(
                 left.get_type(),
@@ -52,10 +72,10 @@ pub fn evaluate_addend(
             );
 
             if let Err(err) = result {
-                return err;
+                return Err(err);
             }
 
-            do_subtract(left, right)
+            Ok(do_subtract(left, right))
         }
         Addend::Factor(factor) => evaluate_factor(factor, scopes, current_scope, context),
     }
@@ -66,11 +86,17 @@ pub fn evaluate_factor(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Term {
+) -> Result<Term, Term> {
     match factor {
         Factor::Mult(left, right) => {
             let left = evaluate_factor(left, scopes, current_scope, context);
+            if let Err(e) = left {
+                return Err(e);
+            }
+
             let right = evaluate_if_symbol(right.clone(), scopes, current_scope, context);
+
+            let left = left.unwrap();
 
             let result = check_operator_implemented_both(
                 left.get_type(),
@@ -80,14 +106,20 @@ pub fn evaluate_factor(
             );
 
             if let Err(err) = result {
-                return err;
+                return Err(err);
             }
 
-            do_multiply(left, right)
+            Ok(do_multiply(left, right))
         }
         Factor::Div(left, right) => {
             let left = evaluate_factor(left, scopes, current_scope, context);
+            if let Err(e) = left {
+                return Err(e);
+            }
+
             let right = evaluate_if_symbol(right.clone(), scopes, current_scope, context);
+
+            let left = left.unwrap();
 
             let result = check_operator_implemented_both(
                 left.get_type(),
@@ -97,10 +129,10 @@ pub fn evaluate_factor(
             );
 
             if let Err(err) = result {
-                return err;
+                return Err(err);
             }
 
-            do_divide(left, right)
+            Ok(do_divide(left, right))
         }
         Factor::Call(call) => evaluate_call(call, scopes, current_scope, context),
     }
@@ -129,7 +161,9 @@ mod tests {
         let operation = Addend::Add(left, right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_addend(&operation, &mut scopes, top_scope, &mut test_context);
+
+        let actual =
+            evaluate_addend(&operation, &mut scopes, top_scope, &mut test_context).unwrap();
 
         if let Term::Num(actual) = actual {
             assert_eq!(11.0, actual);
@@ -156,7 +190,9 @@ mod tests {
         let operation_b = Addend::Add(Box::new(operation_a), right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_addend(&operation_b, &mut scopes, top_scope, &mut test_context);
+
+        let actual =
+            evaluate_addend(&operation_b, &mut scopes, top_scope, &mut test_context).unwrap();
 
         if let Term::Num(actual) = actual {
             assert_eq!(12.0, actual);
@@ -180,7 +216,9 @@ mod tests {
         let operation = Addend::Sub(Box::new(left), right);
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_addend(&operation, &mut scopes, top_scope, &mut test_context);
+
+        let actual =
+            evaluate_addend(&operation, &mut scopes, top_scope, &mut test_context).unwrap();
 
         if let Term::Num(actual) = actual {
             assert_eq!(2.0, actual);
@@ -201,7 +239,9 @@ mod tests {
         let operation = Factor::Mult(Box::new(left), SymbolOrTerm::Term(right));
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
+
+        let actual =
+            evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context).unwrap();
 
         if let Term::Num(actual) = actual {
             assert_eq!(15.0, actual);
@@ -222,7 +262,9 @@ mod tests {
         let operation = Factor::Div(Box::new(left), SymbolOrTerm::Term(right));
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
-        let actual = evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
+
+        let actual =
+            evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context).unwrap();
 
         if let Term::Num(actual) = actual {
             assert_eq!(2.5, actual);
