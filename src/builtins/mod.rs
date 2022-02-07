@@ -7,14 +7,13 @@ use std::collections::HashMap;
 use crate::{
     ast::{funcs::*, terms::*},
     io_context::IoContext,
-    scope::{ScopeId, Scopes},
 };
 
 use array::*;
 use io::*;
 use math::*;
 
-pub type BuiltinFunc = fn(HashMap<String, Term>, &mut Scopes, ScopeId, &mut dyn IoContext) -> Term;
+pub type BuiltinFunc = fn(HashMap<String, Term>, &mut dyn IoContext) -> Term;
 
 pub fn get_builtins() -> Vec<Func> {
     vec![

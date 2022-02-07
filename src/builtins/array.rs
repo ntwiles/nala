@@ -53,12 +53,7 @@ pub fn get_slice_block() -> Func {
     }
 }
 
-fn builtin_len(
-    args: HashMap<String, Term>,
-    _scopes: &mut Scopes,
-    _current_scope: ScopeId,
-    _context: &mut dyn IoContext,
-) -> Term {
+fn builtin_len(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> Term {
     let array = args.get("array").unwrap();
 
     if let Term::Array(array) = array {
@@ -68,12 +63,7 @@ fn builtin_len(
     }
 }
 
-fn builtin_slice(
-    args: HashMap<String, Term>,
-    _scopes: &mut Scopes,
-    _current_scope: ScopeId,
-    _context: &mut dyn IoContext,
-) -> Term {
+fn builtin_slice(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> Term {
     let array = if let Term::Array(array) = args.get("array").unwrap() {
         array
     } else {

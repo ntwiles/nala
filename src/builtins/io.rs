@@ -38,37 +38,23 @@ pub fn get_readnum_block() -> Func {
     }
 }
 
-fn builtin_print(
-    args: HashMap<String, Term>,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-    context: &mut dyn IoContext,
-) -> Term {
+fn builtin_print(args: HashMap<String, Term>, context: &mut dyn IoContext) -> Term {
     let message = args.get("message").unwrap();
-    let message = evaluate_if_symbol(message.clone(), scopes, current_scope);
     context.print(&message.to_string());
     Term::Void
 }
 
-fn builtin_read(
-    _args: HashMap<String, Term>,
-    _scopes: &mut Scopes,
-    _current_scope: ScopeId,
-    context: &mut dyn IoContext,
-) -> Term {
+fn builtin_read(_args: HashMap<String, Term>, context: &mut dyn IoContext) -> Term {
     let input = context.read();
     Term::String(input.trim().to_string())
 }
 
-fn builtin_readnum(
-    _args: HashMap<String, Term>,
-    _scopes: &mut Scopes,
-    _current_scope: ScopeId,
-    context: &mut dyn IoContext,
-) -> Term {
+fn builtin_readnum(_args: HashMap<String, Term>, context: &mut dyn IoContext) -> Term {
     let mut input = context.read();
+
     input = input.trim().to_string();
     let result = input.parse::<f32>();
+
     match result {
         Ok(num) => Term::Num(num),
         Err(_) => panic!("Could not parse input '{}' as type Num.", input),

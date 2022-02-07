@@ -102,7 +102,7 @@ pub fn evaluate_call(
 
                 if params_vec.len() != args.len() {
                     panic!(
-                        "Called func `{0}` with wrong number of arguments: Expected {1}, got {2}.",
+                        "Called function `{0}` with wrong number of arguments: Expected {1}, got {2}.",
                         ident,
                         params_vec.len(),
                         args.len()
@@ -128,6 +128,9 @@ pub fn evaluate_call(
                             })
                         }
 
+                        // TODO: Should function args be mutable or immutable?
+                        scopes.add_binding(ident, func_scope, arg.clone(), false);
+
                         (ident.clone(), arg.clone())
                     })
                     .collect();
@@ -136,7 +139,7 @@ pub fn evaluate_call(
 
                 match block {
                     Block::NalaBlock(stmts) => interpret_stmts(&stmts, scopes, func_scope, context),
-                    Block::RustBlock(func) => func(param_args, scopes, func_scope, context),
+                    Block::RustBlock(func) => func(param_args, context),
                 }
             } else {
                 panic!("Cannot invoke `{0}` because it is not a function.", ident)

@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use crate::{
     ast::{funcs::*, terms::*, types::*, *},
     io_context::IoContext,
-    scope::{ScopeId, Scopes},
 };
 
 use super::*;
@@ -23,12 +22,7 @@ pub fn get_floor_block() -> Func {
     }
 }
 
-fn builtin_floor(
-    args: HashMap<String, Term>,
-    _scopes: &mut Scopes,
-    _current_scope: ScopeId,
-    _context: &mut dyn IoContext,
-) -> Term {
+fn builtin_floor(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> Term {
     let num = args.get("num").unwrap();
 
     if let Term::Num(num) = num {
