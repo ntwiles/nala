@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use crate::{
     ast::{funcs::*, terms::*, types::*, *},
     io_context::IoContext,
-    scope::{ScopeId, Scopes},
 };
 
 use super::*;

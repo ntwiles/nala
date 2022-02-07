@@ -2,9 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     ast::{funcs::*, terms::*, types::*, *},
-    interpreter::evaluate_if_symbol,
     io_context::IoContext,
-    scope::{ScopeId, Scopes},
 };
 
 pub fn get_print_block() -> Func {
