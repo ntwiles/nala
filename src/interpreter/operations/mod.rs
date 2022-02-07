@@ -27,9 +27,6 @@ pub fn evaluate_addend(
             let left = evaluate_addend(left, scopes, current_scope, context);
             let right = evaluate_factor(right, scopes, current_scope, context);
 
-            let left = evaluate_if_symbol(left, scopes, current_scope, context);
-            let right = evaluate_if_symbol(right, scopes, current_scope, context);
-
             check_operator_implemented(left.get_type(), "+".to_string(), IAdd, context);
             check_operator_implemented(right.get_type(), "+".to_string(), IAdd, context);
 
@@ -38,9 +35,6 @@ pub fn evaluate_addend(
         Addend::Sub(left, right) => {
             let left = evaluate_addend(left, scopes, current_scope, context);
             let right = evaluate_factor(right, scopes, current_scope, context);
-
-            let left = evaluate_if_symbol(left, scopes, current_scope, context);
-            let right = evaluate_if_symbol(right, scopes, current_scope, context);
 
             check_operator_implemented(left.get_type(), "-".to_string(), ISubtract, context);
             check_operator_implemented(right.get_type(), "-".to_string(), ISubtract, context);
@@ -60,10 +54,7 @@ pub fn evaluate_factor(
     match factor {
         Factor::Mult(left, right) => {
             let left = evaluate_factor(left, scopes, current_scope, context);
-            let right = right.clone();
-
-            let left = evaluate_if_symbol(left, scopes, current_scope, context);
-            let right = evaluate_if_symbol(right, scopes, current_scope, context);
+            let right = evaluate_if_symbol(right.clone(), scopes, current_scope, context);
 
             check_operator_implemented(left.get_type(), "*".to_string(), IMultiply, context);
             check_operator_implemented(right.get_type(), "*".to_string(), IMultiply, context);
@@ -72,10 +63,7 @@ pub fn evaluate_factor(
         }
         Factor::Div(left, right) => {
             let left = evaluate_factor(left, scopes, current_scope, context);
-            let right = right.clone();
-
-            let left = evaluate_if_symbol(left, scopes, current_scope, context);
-            let right = evaluate_if_symbol(right, scopes, current_scope, context);
+            let right = evaluate_if_symbol(right.clone(), scopes, current_scope, context);
 
             check_operator_implemented(left.get_type(), "/".to_string(), IDivide, context);
             check_operator_implemented(right.get_type(), "/".to_string(), IDivide, context);
@@ -99,10 +87,12 @@ mod tests {
     pub fn it_evaluates_add_with_2_terms() {
         let mut test_context = TestContext::new();
 
-        let left = Box::new(Addend::Factor(Factor::Call(Call::Index(Index::Term(
-            Term::Num(7.0),
-        )))));
-        let right = Factor::Call(Call::Index(Index::Term(Term::Num(4.0))));
+        let left = Box::new(Addend::Factor(Factor::Call(Call::Index(
+            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(7.0))),
+        ))));
+        let right = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
+            Term::Num(4.0),
+        ))));
 
         let operation = Addend::Add(left, right);
         let mut scopes = Scopes::new();
@@ -120,9 +110,15 @@ mod tests {
     pub fn it_evaluates_add_with_3_terms() {
         let mut test_context = TestContext::new();
 
-        let left = Addend::Factor(Factor::Call(Call::Index(Index::Term(Term::Num(3.0)))));
-        let middle = Factor::Call(Call::Index(Index::Term(Term::Num(5.0))));
-        let right = Factor::Call(Call::Index(Index::Term(Term::Num(4.0))));
+        let left = Addend::Factor(Factor::Call(Call::Index(Index::SymbolOrTerm(
+            SymbolOrTerm::Term(Term::Num(3.0)),
+        ))));
+        let middle = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
+            Term::Num(5.0),
+        ))));
+        let right = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
+            Term::Num(4.0),
+        ))));
 
         let operation_a = Addend::Add(Box::new(left), middle);
         let operation_b = Addend::Add(Box::new(operation_a), right);
@@ -141,8 +137,13 @@ mod tests {
     pub fn it_evaluates_sub() {
         let mut test_context = TestContext::new();
 
-        let left = Addend::Factor(Factor::Call(Call::Index(Index::Term(Term::Num(5.0)))));
-        let right = Factor::Call(Call::Index(Index::Term(Term::Num(3.0))));
+        let left = Addend::Factor(Factor::Call(Call::Index(Index::SymbolOrTerm(
+            SymbolOrTerm::Term(Term::Num(5.0)),
+        ))));
+
+        let right = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
+            Term::Num(3.0),
+        ))));
 
         let operation = Addend::Sub(Box::new(left), right);
         let mut scopes = Scopes::new();
@@ -160,10 +161,12 @@ mod tests {
     pub fn it_evaluates_mult() {
         let mut test_context = TestContext::new();
 
-        let left = Factor::Call(Call::Index(Index::Term(Term::Num(5.0))));
+        let left = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
+            Term::Num(5.0),
+        ))));
         let right = Term::Num(3.0);
 
-        let operation = Factor::Mult(Box::new(left), right);
+        let operation = Factor::Mult(Box::new(left), SymbolOrTerm::Term(right));
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
         let actual = evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
@@ -179,10 +182,12 @@ mod tests {
     pub fn it_evaluates_div() {
         let mut test_context = TestContext::new();
 
-        let left = Factor::Call(Call::Index(Index::Term(Term::Num(5.0))));
+        let left = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
+            Term::Num(5.0),
+        ))));
         let right = Term::Num(2.0);
 
-        let operation = Factor::Div(Box::new(left), right);
+        let operation = Factor::Div(Box::new(left), SymbolOrTerm::Term(right));
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
         let actual = evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
@@ -199,10 +204,12 @@ mod tests {
     pub fn it_disallows_div_by_zero() {
         let mut test_context = TestContext::new();
 
-        let left = Factor::Call(Call::Index(Index::Term(Term::Num(5.0))));
+        let left = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
+            Term::Num(5.0),
+        ))));
         let right = Term::Num(0.0);
 
-        let operation = Factor::Div(Box::new(left), right);
+        let operation = Factor::Div(Box::new(left), SymbolOrTerm::Term(right));
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
         evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);

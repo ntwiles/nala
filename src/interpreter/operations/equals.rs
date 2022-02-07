@@ -1,22 +1,8 @@
-use crate::{
-    ast::{terms::*, types::*},
-    interpreter::evaluate_if_symbol,
-    io_context::IoContext,
-    scope::{ScopeId, Scopes},
-};
+use crate::ast::{terms::*, types::*};
 
 use super::errors::panic_oper_not_impl;
 
-pub fn evaluate_equals(
-    left: Term,
-    right: Term,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-    context: &mut dyn IoContext,
-) -> Term {
-    let left = evaluate_if_symbol(left, scopes, current_scope, context);
-    let right = evaluate_if_symbol(right, scopes, current_scope, context);
-
+pub fn evaluate_equals(left: Term, right: Term) -> Term {
     match left {
         Term::Num(left) => num_equals(left, right),
         Term::String(left) => string_equals(left, right),

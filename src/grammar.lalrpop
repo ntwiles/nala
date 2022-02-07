@@ -113,29 +113,33 @@ Addend: ast::math::Addend = {
 };
 
 Factor: ast::math::Factor = {
-    <l:Factor> "*" <r:Term>  => ast::math::Factor::Mult(Box::new(l), r),
-    <l:Factor> "/" <r:Term> => ast::math::Factor::Div(Box::new(l), r), 
+    <l:Factor> "*" <r:SymbolOrTerm> => ast::math::Factor::Mult(Box::new(l), r),
+    <l:Factor> "/" <r:SymbolOrTerm> => ast::math::Factor::Div(Box::new(l), r), 
     Call => ast::math::Factor::Call(<>),
 };
 
 Call: ast::funcs::Call = {
     <s:Symbol> "(" <e:Elems> ")" => ast::funcs::Call::Call(s, Box::new(e)),
     <s:Symbol> "(" ")" => ast::funcs::Call::Call(s, Box::new(ast::arrays::Elems::Empty)),
-    Index => ast::funcs::Call::Index(<>)
+    <Index> => ast::funcs::Call::Index(<>)
 };
 
 SymbolOrIndex: ast::SymbolOrIndex = {
     <s:Symbol> "[" <e:Expr> "]" => ast::SymbolOrIndex::Index(s, Box::new(e)),
     <Symbol> => ast::SymbolOrIndex::Symbol(<>)
-}
+};
 
 Index: ast::arrays::Index = {
     <s:Symbol> "[" <e:Expr> "]" => ast::arrays::Index::Index(s, Box::new(e)),
-    Term => ast::arrays::Index::Term(<>)
-}
+    <SymbolOrTerm> => ast::arrays::Index::SymbolOrTerm(<>)
+};
+
+SymbolOrTerm: ast::terms::SymbolOrTerm = {
+    <Symbol> => ast::terms::SymbolOrTerm::Symbol(<>),
+    <Term> => ast::terms::SymbolOrTerm::Term(<>)
+};
 
 Term: ast::terms::Term = {
-    Symbol => ast::terms::Term::Symbol(<>),
     Num => ast::terms::Term::Num(<>),
     Str => ast::terms::Term::String(<>)
 };

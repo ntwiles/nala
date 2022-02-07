@@ -1,9 +1,14 @@
 use super::*;
 
 #[derive(Debug, Clone)]
+pub enum SymbolOrTerm {
+    Symbol(String),
+    Term(Term),
+}
+
+#[derive(Debug, Clone)]
 pub enum Term {
     Bool(bool),
-    Symbol(String),
     String(String),
     Num(f32),
     Array(Vec<Term>),
@@ -17,9 +22,6 @@ pub enum Term {
 impl Term {
     pub fn to_string(&self) -> String {
         match self {
-            Term::Symbol(_) => {
-                panic!("Cannot know string representation of un-evaluated symbol.")
-            }
             Term::Array(a) => String::from(format!("Array[{}]", a.len())),
             Term::String(t) => t.to_owned(),
             Term::Num(n) => n.to_string(),
@@ -60,7 +62,6 @@ impl Term {
             Term::Break(_) => TypeVariant::Primitive(PrimitiveType::Break),
             Term::Num(_) => TypeVariant::Primitive(PrimitiveType::Number),
             Term::String(_) => TypeVariant::Primitive(PrimitiveType::String),
-            Term::Symbol(_) => TypeVariant::Primitive(PrimitiveType::Symbol),
             Term::Void => TypeVariant::Primitive(PrimitiveType::Void),
             Term::Type(_) => TypeVariant::Primitive(PrimitiveType::Enum),
             Term::Kind(_) => TypeVariant::Primitive(PrimitiveType::Kind),

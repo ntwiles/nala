@@ -9,7 +9,7 @@ pub enum Addend {
 
 #[derive(Debug, Clone)]
 pub enum Factor {
-    Mult(Box<Factor>, Term),
-    Div(Box<Factor>, Term),
+    Mult(Box<Factor>, SymbolOrTerm),
+    Div(Box<Factor>, SymbolOrTerm),
     Call(Call),
 }
