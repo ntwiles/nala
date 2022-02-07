@@ -22,6 +22,7 @@ impl TypeVariant {
             TypeVariant::Primitive(primitive) => {
                 get_interfaces_for_primitive_type(primitive.clone())
             }
+            TypeVariant::Nested(outer, _inner) => get_interfaces_for_primitive_type(outer.clone()),
             _ => todo!(),
         };
 
@@ -117,6 +118,10 @@ impl PartialEq for Types {
 
 impl TypeVariant {
     pub fn is_assignable_to(&self, other: &Self) -> bool {
+        if let TypeVariant::Interface(i) = other {
+            return self.implements_interface(i.clone());
+        };
+
         match self {
             TypeVariant::Nested(sv, svv) => {
                 if let TypeVariant::Nested(ov, ovv) = other {
@@ -128,9 +133,6 @@ impl TypeVariant {
             TypeVariant::Primitive(sv) => {
                 if let TypeVariant::Primitive(ov) = other {
                     sv.is_assignable_to(ov)
-                } else if let TypeVariant::Interface(i) = other {
-                    let implemented = get_interfaces_for_primitive_type(sv.clone());
-                    implemented.contains(i)
                 } else {
                     false
                 }
