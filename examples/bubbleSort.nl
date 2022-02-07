@@ -32,4 +32,5 @@ func bubbleSort(items: Array<ICompare>) {
 
 const unsorted = [3, 5, 1, 4, 2];
 const sorted = bubbleSort(unsorted);
+
 printArray(sorted, 'Sorted Numbers');

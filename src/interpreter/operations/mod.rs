@@ -132,7 +132,7 @@ pub fn evaluate_factor(
                 return Err(err);
             }
 
-            Ok(do_divide(left, right))
+            do_divide(left, right)
         }
         Factor::Call(call) => evaluate_call(call, scopes, current_scope, context),
     }
@@ -274,7 +274,6 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Cannot divide by zero.")]
     pub fn it_disallows_div_by_zero() {
         let mut test_context = TestContext::new();
 
@@ -287,7 +286,13 @@ mod tests {
         let mut scopes = Scopes::new();
         let top_scope = scopes.new_scope(None);
 
-        let result = evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
-        assert!(matches!(result, Ok(_)));
+        let actual = evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
+        assert!(matches!(actual, Err(Term::Exception(_))));
+
+        if let Term::Exception(error) = actual.unwrap_err() {
+            assert_eq!(error.message, "Cannot divide by zero.");
+        } else {
+            unreachable!();
+        }
     }
 }

@@ -1,4 +1,4 @@
-use crate::ast::terms::Term;
+use crate::{ast::terms::Term, errors::NalaRuntimeError};
 
 pub fn do_add(left: Term, right: Term) -> Term {
     if left.get_type() != right.get_type() {
@@ -56,16 +56,18 @@ pub fn do_multiply(left: Term, right: Term) -> Term {
     }
 }
 
-pub fn do_divide(left: Term, right: Term) -> Term {
+pub fn do_divide(left: Term, right: Term) -> Result<Term, Term> {
     if left.get_type() != right.get_type() {
         panic!("Cannot divide between values of two different types.")
     }
     if let Term::Num(left) = left {
         if let Term::Num(right) = right {
             if right != 0.0 {
-                Term::Num(left / right)
+                Ok(Term::Num(left / right))
             } else {
-                panic!("Cannot divide by zero.")
+                Err(Term::Exception(NalaRuntimeError {
+                    message: "Cannot divide by zero.".to_string(),
+                }))
             }
         } else {
             unreachable!()
