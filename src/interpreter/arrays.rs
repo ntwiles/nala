@@ -20,7 +20,7 @@ pub fn evaluate_index(
             let result = evaluate_expr(expr, scopes, current_scope, context)?;
 
             if let Term::Num(index) = result {
-                let array = scopes.get_value(ident, current_scope, context);
+                let array = scopes.get_value(ident, current_scope, context)?;
                 // TODO: Check that this cast is safe first.
                 let index = index as usize;
                 if let Term::Array(array) = array {
@@ -35,7 +35,7 @@ pub fn evaluate_index(
             }
         }
         Index::SymbolOrTerm(sot) => match sot {
-            SymbolOrTerm::Symbol(ident) => Ok(scopes.get_value(ident, current_scope, context)),
+            SymbolOrTerm::Symbol(ident) => Ok(scopes.get_value(ident, current_scope, context)?),
             SymbolOrTerm::Term(term) => Ok(term.clone()),
         },
     }

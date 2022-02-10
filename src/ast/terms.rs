@@ -1,7 +1,5 @@
 use std::fmt;
 
-use crate::errors::*;
-
 use super::*;
 
 #[derive(Debug, Clone)]
@@ -21,7 +19,6 @@ pub enum Term {
     Type(TypeVariant),
 
     Break(Box<Expr>),
-    Exception(NalaRuntimeError),
     Void,
 }
 
@@ -37,7 +34,6 @@ impl fmt::Display for Term {
             Term::Break(_) => write!(f, "<Break>"),
             Term::Type(type_kind) => write!(f, "{}", type_kind),
             Term::Kind(k) => write!(f, "{}", k),
-            Term::Exception(e) => write!(f, "{}", e.message),
         }
     }
 }
@@ -74,7 +70,6 @@ impl Term {
             Term::Void => TypeVariant::Primitive(PrimitiveType::Void),
             Term::Type(_) => TypeVariant::Primitive(PrimitiveType::Enum),
             Term::Kind(_) => TypeVariant::Primitive(PrimitiveType::Kind),
-            Term::Exception(_) => TypeVariant::Primitive(PrimitiveType::Exception),
         }
     }
 }

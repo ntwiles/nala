@@ -34,16 +34,16 @@ impl Scope {
     }
 }
 
-fn not_found_in_scope_error(ident: &str) -> Term {
-    Term::Exception(NalaRuntimeError {
+fn not_found_in_scope_error(ident: &str) -> NalaRuntimeError {
+    NalaRuntimeError {
         message: format!("Identifier '{}' was not found in this scope.", ident),
-    })
+    }
 }
 
-fn assign_immutable_binding_error(ident: &str) -> Term {
-    Term::Exception(NalaRuntimeError {
+fn assign_immutable_binding_error(ident: &str) -> NalaRuntimeError {
+    NalaRuntimeError {
         message: format!("Cannot re-assign to immutable binding {}", ident),
-    })
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -78,7 +78,7 @@ impl Scopes {
         match scope.get_binding(&ident) {
             Some((value, _, _)) => Some(value),
             None => match scope.parent {
-                Some(parent_scope) => Some(self.get_value(ident, parent_scope, context)),
+                Some(parent_scope) => self.get_maybe_value(ident, parent_scope, context),
                 None => None,
             },
         }
@@ -89,10 +89,10 @@ impl Scopes {
         ident: &str,
         starting_scope: ScopeId,
         context: &mut dyn IoContext,
-    ) -> Term {
+    ) -> Result<Term, NalaRuntimeError> {
         match self.get_maybe_value(ident, starting_scope, context) {
-            Some(value) => value,
-            None => not_found_in_scope_error(ident),
+            Some(value) => Ok(value),
+            None => Err(not_found_in_scope_error(ident)),
         }
     }
 

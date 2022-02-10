@@ -32,7 +32,7 @@ pub fn evaluate_kind(
 ) -> Result<Term, NalaRuntimeError> {
     match kind {
         KindValue::KindValue(enum_name, kind) => {
-            let term = scopes.get_value(enum_name, current_scope, context);
+            let term = scopes.get_value(enum_name, current_scope, context)?;
 
             if let Term::Type(TypeVariant::Enum(_, kinds)) = term {
                 if kind_exists(&*kinds, kind) {

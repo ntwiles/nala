@@ -51,7 +51,7 @@ pub fn interpret_assign(
                     panic!("Index does not resolve to a Number.");
                 };
 
-                let array = scopes.get_value(&ident, current_scope, context);
+                let array = scopes.get_value(&ident, current_scope, context)?;
 
                 if let Term::Array(mut array) = array {
                     // TODO: This doesn't work with bad input.
@@ -69,7 +69,7 @@ pub fn interpret_assign(
                     panic!("Cannot assign a value of type Void.");
                 }
 
-                let existing = scopes.get_value(ident, current_scope, context);
+                let existing = scopes.get_value(ident, current_scope, context)?;
 
                 let existing_type = existing.get_type();
                 let term_type = term.get_type();

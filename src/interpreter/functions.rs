@@ -95,7 +95,7 @@ pub fn evaluate_call(
 ) -> Result<Term, NalaRuntimeError> {
     match call {
         Call::Call(ident, args) => {
-            let block = scopes.get_value(ident, current_scope, context);
+            let block = scopes.get_value(ident, current_scope, context)?;
 
             if let Term::Func(params, block) = block {
                 let func_scope = scopes.new_scope(Some(current_scope));

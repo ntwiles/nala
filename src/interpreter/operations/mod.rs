@@ -63,7 +63,7 @@ pub fn evaluate_factor(
     match factor {
         Factor::Mult(left, right) => {
             let left = evaluate_factor(left, scopes, current_scope, context)?;
-            let right = evaluate_if_symbol(right.clone(), scopes, current_scope, context);
+            let right = evaluate_if_symbol(right.clone(), scopes, current_scope, context)?;
 
             check_operator_implemented_both(
                 left.get_type(),
@@ -76,7 +76,7 @@ pub fn evaluate_factor(
         }
         Factor::Div(left, right) => {
             let left = evaluate_factor(left, scopes, current_scope, context)?;
-            let right = evaluate_if_symbol(right.clone(), scopes, current_scope, context);
+            let right = evaluate_if_symbol(right.clone(), scopes, current_scope, context)?;
 
             check_operator_implemented_both(
                 left.get_type(),

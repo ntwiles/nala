@@ -51,10 +51,10 @@ pub fn evaluate_if_symbol(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
-) -> Term {
+) -> Result<Term, NalaRuntimeError> {
     match sot {
-        SymbolOrTerm::Symbol(ident) => scopes.get_value(&ident, current_scope, context),
-        SymbolOrTerm::Term(term) => term.clone(),
+        SymbolOrTerm::Symbol(ident) => Ok(scopes.get_value(&ident, current_scope, context)?),
+        SymbolOrTerm::Term(term) => Ok(term.clone()),
     }
 }
 
