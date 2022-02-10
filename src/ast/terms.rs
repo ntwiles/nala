@@ -23,8 +23,8 @@ pub enum Term {
     Void,
 }
 
-impl Term {
-    pub fn to_string(&self) -> String {
+impl ToString for Term {
+    fn to_string(&self) -> String {
         match self {
             Term::Array(a) => String::from(format!("Array[{}]", a.len())),
             Term::String(t) => t.to_owned(),
@@ -38,7 +38,9 @@ impl Term {
             Term::Exception(e) => e.message.clone(),
         }
     }
+}
 
+impl Term {
     pub fn get_type(&self) -> TypeVariant {
         match self {
             Term::Array(items) => {

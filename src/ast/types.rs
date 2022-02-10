@@ -77,13 +77,6 @@ impl Types {
         }
     }
 
-    pub fn to_string(&self) -> String {
-        match self {
-            Types::Type(s) => s.to_string(),
-            Types::Types(ss, s) => format!("{0}, {1}", ss.to_string(), s.to_string()),
-        }
-    }
-
     pub fn from_vec(types: Vec<TypeVariant>) -> Types {
         match types.len() {
             1 => Types::Type(types.first().unwrap().clone()),
@@ -92,6 +85,15 @@ impl Types {
                 let remaining = Types::from_vec(types[..types.len() - 1].to_owned());
                 Types::Types(Box::new(remaining), last.clone())
             }
+        }
+    }
+}
+
+impl ToString for Types {
+    fn to_string(&self) -> String {
+        match self {
+            Types::Type(s) => s.to_string(),
+            Types::Types(ss, s) => format!("{0}, {1}", ss.to_string(), s.to_string()),
         }
     }
 }
@@ -149,8 +151,10 @@ impl TypeVariant {
             }
         }
     }
+}
 
-    pub fn to_string(&self) -> String {
+impl ToString for TypeVariant {
+    fn to_string(&self) -> String {
         match self {
             TypeVariant::Nested(v, vv) => format!("{0}<{1}>", v.to_string(), vv.to_string()),
             TypeVariant::Primitive(v) => v.to_string(),
@@ -199,8 +203,10 @@ impl PrimitiveType {
     pub fn is_assignable_to(&self, param: &Self) -> bool {
         self.to_string() == param.to_string()
     }
+}
 
-    pub fn to_string(&self) -> String {
+impl ToString for PrimitiveType {
+    fn to_string(&self) -> String {
         let type_name = match self {
             PrimitiveType::Array => "Array",
             PrimitiveType::Bool => "Bool",
@@ -226,8 +232,8 @@ impl PartialEq for PrimitiveType {
     }
 }
 
-impl PrimitiveInterface {
-    pub fn to_string(&self) -> String {
+impl ToString for PrimitiveInterface {
+    fn to_string(&self) -> String {
         // TODO: Can we get the interface name from the enum variant dynamically?
         let type_name = match self {
             PrimitiveInterface::IAdd => "IAdd",
@@ -242,7 +248,6 @@ impl PrimitiveInterface {
         String::from(type_name)
     }
 }
-
 impl PartialEq for PrimitiveInterface {
     fn eq(&self, other: &Self) -> bool {
         self.to_string() == other.to_string()
