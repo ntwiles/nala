@@ -9,9 +9,11 @@ fn test_path(name: &str) -> String {
 }
 
 #[test]
-#[should_panic(expected = "Cannot index using non-numeric value.")]
 fn it_errors_when_indexing_array_with_string() {
-    read_and_execute(&test_path("array-index-string"), &mut TestContext::new());
+    let expected_message = regex!("Cannot index using non-numeric value.");
+    let result = read_and_execute(&test_path("array-index-string"), &mut TestContext::new());
+    assert!(matches!(result.clone(), Err(_)));
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
 
 #[test]

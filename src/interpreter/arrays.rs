@@ -33,7 +33,9 @@ pub fn evaluate_index(
                     panic!("Cannot index into a value which is not an array.");
                 }
             } else {
-                panic!("Cannot index using non-numeric value.");
+                Err(NalaRuntimeError {
+                    message: "Cannot index using non-numeric value.".to_owned(),
+                })
             }
         }
         Index::SymbolOrTerm(sot) => match sot {
