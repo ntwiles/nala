@@ -94,8 +94,8 @@ impl Types {
 impl fmt::Display for Types {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Types::Type(s) => write!(f, "{}", s.to_string()),
-            Types::Types(ss, s) => write!(f, "{0}, {1}", ss.to_string(), s.to_string()),
+            Types::Type(s) => write!(f, "{}", s),
+            Types::Types(ss, s) => write!(f, "{0}, {1}", ss, s),
         }
     }
 }
@@ -172,22 +172,14 @@ impl PartialEq for TypeVariant {
                 if let TypeVariant::Nested(ov, og) = other {
                     return mv == ov && mg == og;
                 } else {
-                    panic!(
-                        "Cannot compare between types `{0}` and `{1}`.",
-                        self.to_string(),
-                        other.to_string()
-                    )
+                    panic!("Cannot compare between types `{0}` and `{1}`.", self, other)
                 }
             }
             TypeVariant::Primitive(me) => {
                 if let TypeVariant::Primitive(other) = other {
                     return me == other;
                 } else {
-                    panic!(
-                        "Cannot compare between types `{0}` and `{1}`.",
-                        self.to_string(),
-                        other.to_string()
-                    )
+                    panic!("Cannot compare between types `{0}` and `{1}`.", self, other)
                 }
             }
             TypeVariant::Enum(_, _) => {

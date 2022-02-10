@@ -80,8 +80,7 @@ pub fn interpret_assign(
                     return Err(NalaRuntimeError {
                         message: format!(
                             "Cannot assign a value of type {0} where {1} is expected.",
-                            term_type.to_string(),
-                            existing_type.to_string()
+                            term_type, existing_type
                         ),
                     });
                 }

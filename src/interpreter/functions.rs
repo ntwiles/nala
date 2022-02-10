@@ -77,8 +77,7 @@ fn check_param_type(param_type: &TypeVariant) -> Result<(), String> {
             _ => {
                 let message = format!(
                     "Type `{0}` does not support nesting. Type `{0}<{1}>` is invalid.",
-                    outer.to_string(),
-                    inner.to_string()
+                    outer, inner
                 );
                 Err(message)
             }

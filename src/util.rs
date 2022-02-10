@@ -11,8 +11,7 @@ macro_rules! assert_regex_match {
         if !$re.is_match($str) {
             panic!(
                 "\nString does not match regex. \n  String: {0} \n  Regex: {1}",
-                $str,
-                $re.to_string(),
+                $str, $re,
             )
         }
     };

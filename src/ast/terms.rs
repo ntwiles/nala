@@ -32,10 +32,10 @@ impl fmt::Display for Term {
             Term::String(t) => write!(f, "{}", t),
             Term::Num(n) => write!(f, "{}", n),
             Term::Bool(b) => write!(f, "{}", b),
-            Term::Func(_, _) => write!(f, "[{}]", self.get_type().to_string()),
+            Term::Func(_, _) => write!(f, "[{}]", self.get_type()),
             Term::Void => write!(f, "<Void>"),
             Term::Break(_) => write!(f, "<Break>"),
-            Term::Type(type_kind) => write!(f, "{}", type_kind.to_string()),
+            Term::Type(type_kind) => write!(f, "{}", type_kind),
             Term::Kind(k) => write!(f, "{}", k),
             Term::Exception(e) => write!(f, "{}", e.message),
         }

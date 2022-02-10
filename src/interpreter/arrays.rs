@@ -55,8 +55,8 @@ pub fn evaluate_array(
         for term in terms.clone() {
             if term.get_type() != first_type {
                 let message = format!("Arrays can contain elements of only a single type. Found elements of types `{0}` and `{1}`.",
-                first_type.to_string(),
-                term.get_type().to_string());
+                first_type,
+                term.get_type());
 
                 return Err(NalaRuntimeError { message });
             }
