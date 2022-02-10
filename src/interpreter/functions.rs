@@ -45,7 +45,9 @@ pub fn interpret_func(
         if result.is_ok() {
             scopes.add_binding(&ident, current_scope, Term::Func(*params, *block), false);
         } else {
-            panic!("{}", result.unwrap_err())
+            return Err(NalaRuntimeError {
+                message: result.unwrap_err(),
+            });
         }
     }
 

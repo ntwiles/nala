@@ -51,7 +51,10 @@ fn it_errors_when_assigning_type_void() {
 }
 
 #[test]
-#[should_panic(expected = "Type `Bool` does not support nesting. Type `Bool<String>` is invalid.")]
 fn it_errors_when_passing_primitive_when_nested_is_expected() {
-    read_and_execute(&test_path("nested-types"), &mut TestContext::new());
+    let expected_message =
+        regex!("Type `Bool` does not support nesting. Type `Bool<String>` is invalid.");
+    let result = read_and_execute(&test_path("nested-types"), &mut TestContext::new());
+    assert!(matches!(result.clone(), Err(_)));
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
