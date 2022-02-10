@@ -1,3 +1,5 @@
+use std::fmt;
+
 use super::*;
 
 use crate::types::get_interfaces_for_primitive_type;
@@ -89,11 +91,11 @@ impl Types {
     }
 }
 
-impl ToString for Types {
-    fn to_string(&self) -> String {
+impl fmt::Display for Types {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Types::Type(s) => s.to_string(),
-            Types::Types(ss, s) => format!("{0}, {1}", ss.to_string(), s.to_string()),
+            Types::Type(s) => write!(f, "{}", s.to_string()),
+            Types::Types(ss, s) => write!(f, "{0}, {1}", ss.to_string(), s.to_string()),
         }
     }
 }
@@ -152,13 +154,13 @@ impl TypeVariant {
     }
 }
 
-impl ToString for TypeVariant {
-    fn to_string(&self) -> String {
+impl fmt::Display for TypeVariant {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            TypeVariant::Nested(v, vv) => format!("{0}<{1}>", v.to_string(), vv.to_string()),
-            TypeVariant::Primitive(v) => v.to_string(),
+            TypeVariant::Nested(v, vv) => write!(f, "{0}<{1}>", v, vv),
+            TypeVariant::Primitive(v) => write!(f, "{}", v),
             TypeVariant::Enum(_, _) => todo!(),
-            TypeVariant::Interface(i) => i.to_string(),
+            TypeVariant::Interface(i) => write!(f, "{}", i),
         }
     }
 }
@@ -204,8 +206,8 @@ impl PrimitiveType {
     }
 }
 
-impl ToString for PrimitiveType {
-    fn to_string(&self) -> String {
+impl fmt::Display for PrimitiveType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let type_name = match self {
             PrimitiveType::Array => "Array",
             PrimitiveType::Bool => "Bool",
@@ -221,7 +223,7 @@ impl ToString for PrimitiveType {
             PrimitiveType::Unknown => "<Unknown>",
         };
 
-        String::from(type_name)
+        write!(f, "{}", type_name)
     }
 }
 
@@ -231,9 +233,9 @@ impl PartialEq for PrimitiveType {
     }
 }
 
-impl ToString for PrimitiveInterface {
-    fn to_string(&self) -> String {
-        format!("{:?}", self)
+impl fmt::Display for PrimitiveInterface {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
     }
 }
 impl PartialEq for PrimitiveInterface {

@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::errors::*;
 
 use super::*;
@@ -23,19 +25,19 @@ pub enum Term {
     Void,
 }
 
-impl ToString for Term {
-    fn to_string(&self) -> String {
+impl fmt::Display for Term {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::Array(a) => String::from(format!("Array[{}]", a.len())),
-            Term::String(t) => t.to_owned(),
-            Term::Num(n) => n.to_string(),
-            Term::Bool(b) => b.to_string(),
-            Term::Func(_, _) => String::from(format!("[{}]", self.get_type().to_string())),
-            Term::Void => String::from("<Void>"),
-            Term::Break(_) => String::from("<Break>"),
-            Term::Type(type_kind) => type_kind.to_string(),
-            Term::Kind(k) => k.to_owned(),
-            Term::Exception(e) => e.message.clone(),
+            Term::Array(a) => write!(f, "Array[{}]", a.len()),
+            Term::String(t) => write!(f, "{}", t),
+            Term::Num(n) => write!(f, "{}", n),
+            Term::Bool(b) => write!(f, "{}", b),
+            Term::Func(_, _) => write!(f, "[{}]", self.get_type().to_string()),
+            Term::Void => write!(f, "<Void>"),
+            Term::Break(_) => write!(f, "<Break>"),
+            Term::Type(type_kind) => write!(f, "{}", type_kind.to_string()),
+            Term::Kind(k) => write!(f, "{}", k),
+            Term::Exception(e) => write!(f, "{}", e.message),
         }
     }
 }
