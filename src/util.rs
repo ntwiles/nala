@@ -1,12 +1,11 @@
-// TODO: Ignoring several warnings here that don't make sense, look into this.
-#[allow(unused_macros)]
+#[macro_export]
 macro_rules! regex {
     ($pattern:literal) => {
         regex::Regex::new($pattern).unwrap()
     };
 }
 
-#[allow(unused_macros)]
+#[macro_export]
 macro_rules! assert_regex_match {
     ($re:ident, $str:expr) => {
         if !$re.is_match($str) {
@@ -20,4 +19,4 @@ macro_rules! assert_regex_match {
 }
 
 #[allow(unused_imports)]
-pub(crate) use {assert_regex_match, regex};
+pub use {assert_regex_match, regex};

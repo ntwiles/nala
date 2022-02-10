@@ -9,6 +9,7 @@ mod variables;
 use crate::{
     ast::{terms::*, *},
     builtins::*,
+    errors::NalaRuntimeError,
     io_context::IoContext,
     scope::*,
 };
@@ -17,7 +18,10 @@ use basic::*;
 use functions::*;
 use variables::*;
 
-pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
+pub fn interpret_tree(
+    program: Program,
+    context: &mut impl IoContext,
+) -> Result<Term, NalaRuntimeError> {
     let mut scopes = Scopes::new();
 
     let top_scope = scopes.new_scope(None);
@@ -36,14 +40,9 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
         }
     }
 
-    let result = match program {
+    match program {
         Program::Block(block) => interpret_block(&block, &mut scopes, top_scope, context),
         Program::Stmts(stmts) => interpret_stmts(&stmts, &mut scopes, top_scope, context),
-    };
-
-    match result {
-        Ok(_) => println!("Execution completed."),
-        Err(e) => println!("Nala Runtime Error: {0}", e.message),
     }
 }
 

@@ -1,4 +1,8 @@
-use library::{io_context::TestContext, test_util::read_and_execute};
+use library::{
+    io_context::TestContext,
+    test_util::read_and_execute,
+    util::{assert_regex_match, regex},
+};
 
 fn test_path(name: &str) -> String {
     format!("tests/nala/integration_errors/{}.nl", name)
@@ -17,9 +21,11 @@ fn it_errors_when_passing_number_arg_to_len() {
 }
 
 #[test]
-#[should_panic(expected = "Arrays can contain elements of only a single type.")]
 fn it_errors_when_declaring_array_multiple_types() {
-    read_and_execute(&test_path("array-multiple-types"), &mut TestContext::new());
+    let expected_message = regex!("Arrays can contain elements of only a single type.");
+    let result = read_and_execute(&test_path("array-multiple-types"), &mut TestContext::new());
+    assert!(matches!(result.clone(), Err(_)));
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
 
 #[test]

@@ -1,9 +1,15 @@
 // TODO: This is only used inside tests/ , see if theres a way to keep this over there.
 use std::fs;
 
-use crate::{interpreter::interpret_tree, io_context::TestContext, parser};
+use crate::{
+    ast::terms::Term, errors::NalaRuntimeError, interpreter::interpret_tree,
+    io_context::TestContext, parser,
+};
 
-pub fn read_and_execute(path: &str, test_context: &mut TestContext) {
+pub fn read_and_execute(
+    path: &str,
+    test_context: &mut TestContext,
+) -> Result<Term, NalaRuntimeError> {
     let code = if let Ok(code) = fs::read_to_string(path) {
         code
     } else {

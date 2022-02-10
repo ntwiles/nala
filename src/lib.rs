@@ -11,7 +11,7 @@ pub mod parser;
 pub mod scope;
 pub mod test_util;
 mod types;
-mod util;
+pub mod util;
 
 use interpreter::*;
 use io_context::ConsoleContext;
@@ -22,7 +22,7 @@ pub fn main(path: &str) -> () {
     let code = fs::read_to_string(path);
     let mut context = ConsoleContext {};
 
-    let result = match code {
+    let parse_result = match code {
         Ok(code) => parse_code(code),
         Err(err) => {
             println!("Error loading nala file: {}", err);
@@ -30,14 +30,21 @@ pub fn main(path: &str) -> () {
         }
     };
 
-    match result {
-        Ok(parsed) => interpret_tree(parsed, &mut context),
-        Err(message) => println!(
+    if parse_result.is_err() {
+        let message = parse_result.unwrap_err();
+        println!(
             "{}",
             format!(
                 "Parse Error:\n  file:\n    {0} \n  message:\n    {1}",
                 path, message
             )
-        ),
+        );
+
+        return;
+    }
+
+    match interpret_tree(parse_result.unwrap(), &mut context) {
+        Ok(_) => println!("Execution completed."),
+        Err(e) => println!("Nala Runtime Error: {0}", e.message),
     }
 }
