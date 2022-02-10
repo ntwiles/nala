@@ -96,18 +96,10 @@ pub fn evaluate_expr(
             evaluate_gt(left, right)
         }
         Expr::Lt(left, right) => {
-            let left = evaluate_expr(left, scopes, current_scope, context);
-            let right = evaluate_addend(right, scopes, current_scope, context);
+            let left = evaluate_expr(left, scopes, current_scope, context)?;
+            let right = evaluate_addend(right, scopes, current_scope, context)?;
 
-            if let Err(e) = left {
-                return Err(e);
-            }
-
-            if let Err(e) = right {
-                return Err(e);
-            }
-
-            evaluate_lt(left.unwrap(), right.unwrap())
+            evaluate_lt(left, right)
         }
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
         Expr::KindValue(kind) => evaluate_kind(kind, scopes, current_scope, context),
@@ -128,15 +120,7 @@ pub fn evaluate_elems(
             elems.push(expr_result);
             Ok(elems)
         }
-        Elems::Expr(expr) => {
-            let result = evaluate_expr(&expr, scopes, current_scope, context);
-
-            if let Err(e) = result {
-                return Err(e);
-            }
-
-            Ok(vec![result.unwrap()])
-        }
+        Elems::Expr(expr) => Ok(vec![evaluate_expr(&expr, scopes, current_scope, context)?]),
         Elems::Empty => Ok(vec![]),
     }
 }

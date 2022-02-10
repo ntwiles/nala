@@ -47,13 +47,7 @@ pub fn evaluate_array(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Result<Term, NalaRuntimeError> {
-    let result = evaluate_elems(&array.elems, scopes, current_scope, context);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
-    let terms = result.unwrap();
+    let terms = evaluate_elems(&array.elems, scopes, current_scope, context)?;
 
     if let Some(first) = terms.clone().first() {
         let first_type = first.get_type();

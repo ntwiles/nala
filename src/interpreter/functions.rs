@@ -102,13 +102,7 @@ pub fn evaluate_call(
                 let func_scope = scopes.new_scope(Some(current_scope));
 
                 let params_vec = evaluate_params(&*params, scopes, func_scope, context);
-                let args_result = evaluate_elems(&*args, scopes, func_scope, context);
-
-                if let Err(e) = args_result {
-                    return Err(e);
-                }
-
-                let args = args_result.unwrap();
+                let args = evaluate_elems(&*args, scopes, func_scope, context)?;
 
                 if params_vec.len() != args.len() {
                     panic!(
