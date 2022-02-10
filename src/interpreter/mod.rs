@@ -44,7 +44,6 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
     match result {
         Ok(_) => println!("Execution completed."),
         Err(e) => println!("Nala Runtime Error: {0}", e.message),
-        _ => panic!("Passed a non-Exception value to Result::Err."),
     }
 }
 

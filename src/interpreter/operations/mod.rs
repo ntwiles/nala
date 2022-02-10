@@ -290,10 +290,7 @@ mod tests {
         let actual = evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
         assert!(matches!(actual, Err(_)));
 
-        if let error = actual.unwrap_err() {
-            assert_eq!(error.message, "Cannot divide by zero.");
-        } else {
-            unreachable!();
-        }
+        let error = actual.unwrap_err();
+        assert_eq!(error.message, "Cannot divide by zero.");
     }
 }
