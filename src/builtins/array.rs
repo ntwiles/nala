@@ -5,8 +5,6 @@ use crate::{
     io_context::IoContext,
 };
 
-use super::*;
-
 pub fn get_len_block() -> Func {
     let inner_type = Types::Type(TypeVariant::Primitive(PrimitiveType::Number));
 
@@ -58,7 +56,7 @@ fn builtin_len(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> Ter
     if let Term::Array(array) = array {
         Term::Num(array.len() as f32)
     } else {
-        panic_bad_args("len");
+        unreachable!()
     }
 }
 
@@ -66,19 +64,19 @@ fn builtin_slice(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> T
     let array = if let Term::Array(array) = args.get("array").unwrap() {
         array
     } else {
-        panic_bad_args("slice")
+        unreachable!()
     };
 
     let start = if let Term::Num(start) = args.get("start").unwrap() {
         *start as usize
     } else {
-        panic_bad_args("slice")
+        unreachable!()
     };
 
     let end = if let Term::Num(end) = args.get("end").unwrap() {
         *end as usize
     } else {
-        panic_bad_args("slice")
+        unreachable!()
     };
 
     Term::Array(array[start..end].to_owned())

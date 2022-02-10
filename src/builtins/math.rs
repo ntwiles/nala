@@ -5,8 +5,6 @@ use crate::{
     io_context::IoContext,
 };
 
-use super::*;
-
 pub fn get_floor_block() -> Func {
     let num_param = Param {
         ident: String::from("num"),
@@ -28,6 +26,6 @@ fn builtin_floor(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> T
     if let Term::Num(num) = num {
         Term::Num(num.floor())
     } else {
-        panic_bad_args("floor")
+        unreachable!()
     }
 }
