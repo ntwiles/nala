@@ -17,14 +17,13 @@ pub fn evaluate_index(
 ) -> Result<Term, NalaRuntimeError> {
     match index {
         Index::Index(ident, expr) => {
-            let result = evaluate_expr(expr, scopes, current_scope, context)?;
+            let index = evaluate_expr(expr, scopes, current_scope, context)?;
 
-            if let Term::Num(index) = result {
+            if let Term::Num(index) = index {
                 let array = scopes.get_value(ident, current_scope, context)?;
-                // TODO: Check that this cast is safe first.
-                let index = index as usize;
+
                 if let Term::Array(array) = array {
-                    Ok(array.get(index).unwrap().clone())
+                    Ok(array.get(index as usize).unwrap().clone())
                 } else {
                     panic!("Cannot index into a value which is not an array.");
                 }

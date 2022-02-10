@@ -54,9 +54,7 @@ pub fn interpret_assign(
                 let array = scopes.get_value(&ident, current_scope, context)?;
 
                 if let Term::Array(mut array) = array {
-                    // TODO: This doesn't work with bad input.
                     array[index as usize] = term.clone();
-
                     scopes.mutate_value(&ident, current_scope, Term::Array(array));
                 } else {
                     panic!("Trying to index into a non-Array.")
