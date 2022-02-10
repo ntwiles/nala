@@ -26,32 +26,32 @@ Stmt: ast::Stmt = {
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
     "func" <s:Symbol> "(" <p:Params> ")" <b:Block> => ast::Stmt::Func(ast::funcs::Func{ ident: s, params: Box::new(p), block: Box::new(b)}),
     "func" <s:Symbol> "(" ")" <b:Block> => ast::Stmt::Func(ast::funcs::Func { ident: s, params: Box::new(ast::funcs::Params::Empty), block: Box::new(b)}),
-    "enum" <s:Symbol> "{" <k:KindsDeclare> "}" => ast::Stmt::Enum(s, Box::new(k)),
+    "enum" <s:Symbol> "{" <v:VariantsDeclare> "}" => ast::Stmt::Enum(s, Box::new(v)),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
     <s:SymbolOrIndex> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <e:Expr> ";" => ast::Stmt::Expr(e),
 };
 
-KindsDeclare: ast::KindsDeclare = {
-    <kk:KindsDeclare> "," <k:KindDeclare> => ast::KindsDeclare::Kinds(Box::new(kk), k),
-    <KindDeclare> => ast::KindsDeclare::Kind(<>)
+VariantsDeclare: ast::VariantsDeclare = {
+    <vv:VariantsDeclare> "," <v:VariantDeclare> => ast::VariantsDeclare::Variants(Box::new(vv), v),
+    <VariantDeclare> => ast::VariantsDeclare::Variant(<>)
 };
 
-KindDeclare: ast::KindDeclare = {
-    <Symbol> => ast::KindDeclare::Empty(<>)
+VariantDeclare: ast::VariantDeclare = {
+    <Symbol> => ast::VariantDeclare::Empty(<>)
 };
 
 Expr: ast::Expr = {
-    <l:Expr> "==" <k:KindValue> => ast::Expr::Eq(Box::new(l), k),
+    <l:Expr> "==" <k:VariantValue> => ast::Expr::Eq(Box::new(l), k),
     <l:Expr> ">" <r:Addend> => ast::Expr::Gt(Box::new(l), r),
     <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
-    KindValue => ast::Expr::KindValue(<>),
+    VariantValue => ast::Expr::VariantValue(<>),
     Array => ast::Expr::Array(<>),
 };
 
-KindValue: ast::KindValue = {
-    <e:Symbol> "::" <k:Symbol> => ast::KindValue::KindValue(e, k),
-    Addend => ast::KindValue::Addend(<>),
+VariantValue: ast::VariantValue = {
+    <e:Symbol> "::" <k:Symbol> => ast::VariantValue::VariantValue(e, k),
+    Addend => ast::VariantValue::Addend(<>),
 }
 
 
@@ -93,8 +93,8 @@ PrimitiveType: ast::types::PrimitiveType = {
     "String" => ast::types::PrimitiveType::String,
 }
 
-// TODO: This allows for instance a function two accept two parameters 
-// which implement IAdd but which will throw an error when adding together.
+// TODO: This allows for example a function to accept two arguments 
+// which each implement IAdd, but which will throw an error when adding together.
 // Implementing generics with interface constraints might solve this problem.
 PrimitiveInterface: ast::types::PrimitiveInterface = {
     "IAdd" => ast::types::PrimitiveInterface::IAdd,

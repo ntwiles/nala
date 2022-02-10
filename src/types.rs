@@ -5,7 +5,7 @@ pub fn get_interfaces_for_primitive_type(primitive: PrimitiveType) -> Vec<Primit
         PrimitiveType::Array => vec![IPrint],
         PrimitiveType::Bool => vec![IPrint],
         PrimitiveType::Func => vec![IPrint],
-        PrimitiveType::Kind => vec![IPrint],
+        PrimitiveType::Variant => vec![IPrint],
         PrimitiveType::Number => vec![
             IAdd, ICompare, IDivide, IEqual, IMultiply, IPrint, ISubtract,
         ],

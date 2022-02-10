@@ -40,7 +40,7 @@ pub enum Stmt {
     Assign(SymbolOrIndex, Expr),
     Break(Expr),
     Declare(String, Expr, bool),
-    Enum(String, Box<KindsDeclare>),
+    Enum(String, Box<VariantsDeclare>),
     Expr(Expr),
     For(String, Expr, Box<Block>),
     Func(Func),
@@ -56,28 +56,27 @@ pub enum Stmts {
 
 #[derive(Debug, Clone)]
 pub enum Expr {
-    Eq(Box<Expr>, KindValue),
+    Eq(Box<Expr>, VariantValue),
     Gt(Box<Expr>, Addend),
     Lt(Box<Expr>, Addend),
-    KindValue(KindValue),
+    VariantValue(VariantValue),
     Array(Array),
 }
 
-// TODO: 'Kind' here and below refers to enum variants; give these a better name.
 #[derive(Debug, Clone)]
-pub enum KindsDeclare {
-    Kinds(Box<KindsDeclare>, KindDeclare),
-    Kind(KindDeclare),
+pub enum VariantsDeclare {
+    Variants(Box<VariantsDeclare>, VariantDeclare),
+    Variant(VariantDeclare),
 }
 
 #[derive(Debug, Clone)]
-pub enum KindDeclare {
+pub enum VariantDeclare {
     Empty(String),
 }
 
 #[derive(Debug, Clone)]
-pub enum KindValue {
-    KindValue(String, String),
+pub enum VariantValue {
+    VariantValue(String, String),
     Addend(Addend),
 }
 

@@ -13,7 +13,7 @@ pub enum Term {
     Array(Vec<Term>),
     Bool(bool),
     Func(Box<Params>, Box<Block>),
-    Kind(String),
+    Variant(String),
     Num(f32),
     String(String),
     Type(TypeVariant),
@@ -33,7 +33,7 @@ impl fmt::Display for Term {
             Term::Void => write!(f, "<Void>"),
             Term::Break(_) => write!(f, "<Break>"),
             Term::Type(type_kind) => write!(f, "{}", type_kind),
-            Term::Kind(k) => write!(f, "{}", k),
+            Term::Variant(k) => write!(f, "{}", k),
         }
     }
 }
@@ -69,7 +69,7 @@ impl Term {
             Term::String(_) => TypeVariant::Primitive(PrimitiveType::String),
             Term::Void => TypeVariant::Primitive(PrimitiveType::Void),
             Term::Type(_) => TypeVariant::Primitive(PrimitiveType::Enum),
-            Term::Kind(_) => TypeVariant::Primitive(PrimitiveType::Kind),
+            Term::Variant(_) => TypeVariant::Primitive(PrimitiveType::Variant),
         }
     }
 }

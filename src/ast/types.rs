@@ -13,7 +13,7 @@ pub enum Types {
 #[derive(Debug, Clone)]
 pub enum TypeVariant {
     Nested(PrimitiveType, Box<Types>),
-    Enum(String, Box<KindsDeclare>),
+    Enum(String, Box<VariantsDeclare>),
     Primitive(PrimitiveType),
     Interface(PrimitiveInterface),
 }
@@ -55,7 +55,7 @@ pub enum PrimitiveType {
     Symbol,
     Void,
     Enum,
-    Kind,
+    Variant,
     Unknown,
 }
 
@@ -211,7 +211,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Symbol => "<Symbol>",
             PrimitiveType::Void => "<Void>",
             PrimitiveType::Enum => "<Enum>",
-            PrimitiveType::Kind => "Kind",
+            PrimitiveType::Variant => "Variant",
             PrimitiveType::Unknown => "<Unknown>",
         };
 

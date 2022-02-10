@@ -72,7 +72,7 @@ fn interpret_stmt(
         Stmt::Func(func) => interpret_func(func, scopes, current_scope),
         Stmt::Expr(expr) => evaluate_expr(expr, scopes, current_scope, context),
         Stmt::Break(expr) => Ok(Term::Break(Box::new(expr.clone()))),
-        Stmt::Enum(ident, kinds) => interpret_enum(ident, kinds, scopes, current_scope),
+        Stmt::Enum(ident, variants) => interpret_enum(ident, variants, scopes, current_scope),
     }
 }
 
@@ -85,7 +85,7 @@ pub fn evaluate_expr(
     match expr {
         Expr::Eq(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context)?;
-            let right = evaluate_kind(right, scopes, current_scope, context)?;
+            let right = evaluate_variant(right, scopes, current_scope, context)?;
 
             Ok(evaluate_equals(left, right))
         }
@@ -102,7 +102,7 @@ pub fn evaluate_expr(
             evaluate_lt(left, right)
         }
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
-        Expr::KindValue(kind) => evaluate_kind(kind, scopes, current_scope, context),
+        Expr::VariantValue(variant) => evaluate_variant(variant, scopes, current_scope, context),
     }
 }
 

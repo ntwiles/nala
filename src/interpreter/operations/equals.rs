@@ -7,7 +7,7 @@ pub fn evaluate_equals(left: Term, right: Term) -> Term {
         Term::Num(left) => num_equals(left, right),
         Term::String(left) => string_equals(left, right),
         Term::Bool(left) => bool_equals(left, right),
-        Term::Kind(left) => kind_equals(left, right),
+        Term::Variant(left) => variant_equals(left, right),
         other => panic_oper_not_impl!("==", other.get_type().to_string()),
     }
 }
@@ -36,10 +36,10 @@ fn bool_equals(left: bool, right: Term) -> Term {
     }
 }
 
-fn kind_equals(left: String, right: Term) -> Term {
-    if let Term::Kind(right) = right {
+fn variant_equals(left: String, right: Term) -> Term {
+    if let Term::Variant(right) = right {
         Term::Bool(left == right)
     } else {
-        panic_oper_not_impl!("==", PrimitiveType::Kind, right.get_type())
+        panic_oper_not_impl!("==", PrimitiveType::Variant, right.get_type())
     }
 }
