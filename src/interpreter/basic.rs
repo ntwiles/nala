@@ -39,8 +39,8 @@ pub fn interpret_stmts(
         Stmts::Stmts(stmts, stmt) => {
             let result = interpret_stmts(&*stmts, scopes, current_scope, context);
 
-            if let Err(e) = result {
-                return Err(e);
+            if result.is_err() {
+                return result;
             }
 
             let result = result.unwrap();
@@ -160,19 +160,19 @@ pub fn evaluate_elems(
     match elems {
         Elems::Elems(elems, expr) => {
             let elems_result = evaluate_elems(elems, scopes, current_scope, context);
-            let result = evaluate_expr(&expr, scopes, current_scope, context);
+            let expr_result = evaluate_expr(&expr, scopes, current_scope, context);
 
             if elems_result.is_err() {
                 return elems_result;
             }
 
-            if let Err(e) = result {
+            if let Err(e) = expr_result {
                 return Err(e);
             }
 
             let mut elems = elems_result.unwrap();
 
-            elems.push(result.unwrap());
+            elems.push(expr_result.unwrap());
             Ok(elems)
         }
         Elems::Expr(expr) => {

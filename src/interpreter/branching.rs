@@ -16,8 +16,8 @@ pub fn interpret_if(
 ) -> Result<Term, NalaRuntimeError> {
     let result = evaluate_expr(&cond, scopes, current_scope, context);
 
-    if let Err(e) = result {
-        return Err(e);
+    if result.is_err() {
+        return result;
     }
 
     if let Term::Bool(bool) = result.unwrap() {
@@ -55,8 +55,8 @@ pub fn interpret_for(
 
             let result = interpret_block(&block, scopes, block_scope, context);
 
-            if let Err(e) = result {
-                return Err(e);
+            if result.is_err() {
+                return result;
             }
 
             loop_result = result.unwrap();
@@ -98,8 +98,8 @@ pub fn interpret_wiles(
         if condition {
             let result = interpret_block(block, scopes, current_scope, context);
 
-            if let Err(e) = result {
-                return Err(e);
+            if result.is_err() {
+                return result;
             }
 
             if let Term::Break(expr) = result.unwrap() {

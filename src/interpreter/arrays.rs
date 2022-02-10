@@ -19,8 +19,8 @@ pub fn evaluate_index(
         Index::Index(ident, expr) => {
             let result = evaluate_expr(expr, scopes, current_scope, context);
 
-            if let Err(e) = result {
-                return Err(e);
+            if result.is_err() {
+                return result;
             }
 
             if let Term::Num(index) = result.unwrap() {
