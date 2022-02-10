@@ -9,6 +9,7 @@ use super::{
 
 use crate::{
     ast::{arrays::*, terms::*, *},
+    errors::NalaRuntimeError,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -18,7 +19,7 @@ pub fn interpret_block(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     if let Block::NalaBlock(stmts) = block {
         interpret_stmts(stmts, scopes, current_scope, context)
     } else {
@@ -33,7 +34,7 @@ pub fn interpret_stmts(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     match stmts {
         Stmts::Stmts(stmts, stmt) => {
             let result = interpret_stmts(&*stmts, scopes, current_scope, context);
@@ -59,7 +60,7 @@ fn interpret_stmt(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     match stmt {
         Stmt::Declare(ident, expr, is_mutable) => {
             let result = evaluate_expr(expr, scopes, current_scope, context);
@@ -102,7 +103,7 @@ pub fn evaluate_expr(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     match expr {
         Expr::Eq(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context);
@@ -129,7 +130,7 @@ pub fn evaluate_expr(
                 return Err(e);
             }
 
-            Ok(evaluate_gt(left.unwrap(), right.unwrap()))
+            evaluate_gt(left.unwrap(), right.unwrap())
         }
         Expr::Lt(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context);
@@ -143,7 +144,7 @@ pub fn evaluate_expr(
                 return Err(e);
             }
 
-            Ok(evaluate_lt(left.unwrap(), right.unwrap()))
+            evaluate_lt(left.unwrap(), right.unwrap())
         }
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
         Expr::KindValue(kind) => evaluate_kind(kind, scopes, current_scope, context),
@@ -155,7 +156,7 @@ pub fn evaluate_elems(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Vec<Term>, Term> {
+) -> Result<Vec<Term>, NalaRuntimeError> {
     match elems {
         Elems::Elems(elems, expr) => {
             let elems_result = evaluate_elems(elems, scopes, current_scope, context);

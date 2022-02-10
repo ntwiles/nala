@@ -27,7 +27,7 @@ pub fn interpret_func(
     func: &Func,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     let Func {
         ident,
         block,
@@ -91,7 +91,7 @@ pub fn evaluate_call(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     match call {
         Call::Call(ident, args) => {
             let block = scopes.get_value(ident, current_scope, context);

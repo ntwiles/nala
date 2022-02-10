@@ -2,6 +2,7 @@ use super::basic::*;
 
 use crate::{
     ast::{terms::*, *},
+    errors::NalaRuntimeError,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -12,7 +13,7 @@ pub fn interpret_declare(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     is_mutable: bool,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
@@ -32,7 +33,7 @@ pub fn interpret_assign(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     match variable {
         SymbolOrIndex::Index(ident, index_expr) => {
             if scopes.binding_exists(&ident, current_scope, context) {

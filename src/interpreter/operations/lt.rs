@@ -1,11 +1,14 @@
-use crate::ast::{
-    terms::*,
-    types::{PrimitiveInterface::*, PrimitiveType},
+use crate::{
+    ast::{
+        terms::*,
+        types::{PrimitiveInterface::*, PrimitiveType},
+    },
+    errors::*,
 };
 
 use super::errors::*;
 
-pub fn evaluate_lt(left: Term, right: Term) -> Term {
+pub fn evaluate_lt(left: Term, right: Term) -> Result<Term, NalaRuntimeError> {
     let result = check_operator_implemented_both(
         left.get_type(),
         right.get_type(),
@@ -13,14 +16,14 @@ pub fn evaluate_lt(left: Term, right: Term) -> Term {
         ICompare,
     );
 
-    if let Err(err) = result {
-        return err;
+    if result.is_err() {
+        return result;
     }
 
     match left {
-        Term::Num(left) => num_lt(left, right),
-        Term::String(left) => string_lt(left, right),
-        Term::Bool(left) => bool_lt(left, right),
+        Term::Num(left) => Ok(num_lt(left, right)),
+        Term::String(left) => Ok(string_lt(left, right)),
+        Term::Bool(left) => Ok(bool_lt(left, right)),
         left => panic_oper_not_impl!("<", left.get_type()),
     }
 }

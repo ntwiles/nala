@@ -24,16 +24,14 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
 
     // Builtin functions.
     for func in get_builtins().iter() {
-        if let Err(Term::Exception(e)) = interpret_func(&func, &mut scopes, top_scope) {
+        if let Err(e) = interpret_func(&func, &mut scopes, top_scope) {
             panic!("Error loading Nala builtins: {0}", e.message)
         }
     }
 
     // Builtin constants.
     for (ident, term) in get_constants().iter() {
-        if let Err(Term::Exception(e)) =
-            interpret_declare(ident, &term, &mut scopes, top_scope, false)
-        {
+        if let Err(e) = interpret_declare(ident, &term, &mut scopes, top_scope, false) {
             panic!("Error loading Nala constants: {0}", e.message)
         }
     }
@@ -45,7 +43,7 @@ pub fn interpret_tree(program: Program, context: &mut impl IoContext) {
 
     match result {
         Ok(_) => println!("Execution completed."),
-        Err(Term::Exception(e)) => println!("Nala Runtime Error: {0}", e.message),
+        Err(e) => println!("Nala Runtime Error: {0}", e.message),
         _ => panic!("Passed a non-Exception value to Result::Err."),
     }
 }

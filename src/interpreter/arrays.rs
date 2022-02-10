@@ -2,6 +2,7 @@ use std::usize;
 
 use crate::{
     ast::{arrays::*, terms::*},
+    errors::NalaRuntimeError,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -13,7 +14,7 @@ pub fn evaluate_index(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     match index {
         Index::Index(ident, expr) => {
             let result = evaluate_expr(expr, scopes, current_scope, context);
@@ -47,7 +48,7 @@ pub fn evaluate_array(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     let result = evaluate_elems(&array.elems, scopes, current_scope, context);
 
     if let Err(e) = result {

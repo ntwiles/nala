@@ -56,7 +56,7 @@ pub fn do_multiply(left: Term, right: Term) -> Term {
     }
 }
 
-pub fn do_divide(left: Term, right: Term) -> Result<Term, Term> {
+pub fn do_divide(left: Term, right: Term) -> Result<Term, NalaRuntimeError> {
     if left.get_type() != right.get_type() {
         panic!("Cannot divide between values of two different types.")
     }
@@ -65,9 +65,9 @@ pub fn do_divide(left: Term, right: Term) -> Result<Term, Term> {
             if right != 0.0 {
                 Ok(Term::Num(left / right))
             } else {
-                Err(Term::Exception(NalaRuntimeError {
+                Err(NalaRuntimeError {
                     message: "Cannot divide by zero.".to_string(),
-                }))
+                })
             }
         } else {
             unreachable!()

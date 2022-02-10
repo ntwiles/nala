@@ -1,5 +1,6 @@
 use crate::{
     ast::{terms::*, types::*, *},
+    errors::NalaRuntimeError,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -11,7 +12,7 @@ pub fn interpret_enum(
     kinds: &KindsDeclare,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
@@ -28,7 +29,7 @@ pub fn evaluate_kind(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     match kind {
         KindValue::KindValue(enum_name, kind) => {
             let term = scopes.get_value(enum_name, current_scope, context);

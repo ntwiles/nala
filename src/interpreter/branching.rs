@@ -2,6 +2,7 @@ use super::basic::*;
 
 use crate::{
     ast::{terms::*, *},
+    errors::NalaRuntimeError,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -12,7 +13,7 @@ pub fn interpret_if(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     let result = evaluate_expr(&cond, scopes, current_scope, context);
 
     if let Err(e) = result {
@@ -38,11 +39,11 @@ pub fn interpret_for(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     let result = evaluate_expr(expr, scopes, current_scope, context);
 
-    if let Err(e) = result {
-        return Err(e);
+    if result.is_err() {
+        return result;
     }
 
     let mut loop_result = Term::Void;
@@ -80,12 +81,12 @@ pub fn interpret_wiles(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     loop {
         let result = evaluate_expr(expr, scopes, current_scope, context);
 
-        if let Err(e) = result {
-            return Err(e);
+        if result.is_err() {
+            return result;
         }
 
         let condition = if let Term::Bool(condition) = result.unwrap() {

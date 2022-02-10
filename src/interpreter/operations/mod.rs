@@ -6,6 +6,7 @@ pub mod lt;
 
 use crate::{
     ast::{math::*, terms::*, types::PrimitiveInterface::*},
+    errors::NalaRuntimeError,
     interpreter::evaluate_if_symbol,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
@@ -21,7 +22,7 @@ pub fn evaluate_addend(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     match addend {
         Addend::Add(left, right) => {
             let left = evaluate_addend(left, scopes, current_scope, context);
@@ -86,7 +87,7 @@ pub fn evaluate_factor(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     match factor {
         Factor::Mult(left, right) => {
             let left = evaluate_factor(left, scopes, current_scope, context);
@@ -287,9 +288,9 @@ mod tests {
         let top_scope = scopes.new_scope(None);
 
         let actual = evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
-        assert!(matches!(actual, Err(Term::Exception(_))));
+        assert!(matches!(actual, Err(_)));
 
-        if let Term::Exception(error) = actual.unwrap_err() {
+        if let error = actual.unwrap_err() {
             assert_eq!(error.message, "Cannot divide by zero.");
         } else {
             unreachable!();

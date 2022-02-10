@@ -27,14 +27,14 @@ pub fn check_operator_implemented_both(
     right: TypeVariant,
     operator: String,
     interface: PrimitiveInterface,
-) -> Result<Term, Term> {
+) -> Result<Term, NalaRuntimeError> {
     let left = check_operator_implemented(left, operator.clone(), interface.clone());
     let right = check_operator_implemented(right, operator, interface);
 
-    return if let Term::Exception(_) = left.clone() {
-        Err(left)
-    } else if let Term::Exception(_) = right.clone() {
-        Err(right)
+    return if let Term::Exception(e) = left.clone() {
+        Err(e)
+    } else if let Term::Exception(e) = right.clone() {
+        Err(e)
     } else {
         Ok(Term::Void)
     };
