@@ -43,9 +43,11 @@ fn it_errors_when_assigning_wrong_type() {
 }
 
 #[test]
-#[should_panic(expected = "Cannot declare a variable with a value of type Void.")]
 fn it_errors_when_assigning_type_void() {
-    read_and_execute(&test_path("assign-void"), &mut TestContext::new());
+    let expected_message = regex!("Cannot declare a variable with a value of type Void.");
+    let result = read_and_execute(&test_path("assign-void"), &mut TestContext::new());
+    assert!(matches!(result.clone(), Err(_)));
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
 
 #[test]

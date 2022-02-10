@@ -18,7 +18,9 @@ pub fn interpret_declare(
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
         if let Term::Void = term {
-            panic!("Cannot declare a variable with a value of type Void.");
+            return Err(NalaRuntimeError {
+                message: "Cannot declare a variable with a value of type Void.".to_string(),
+            });
         }
 
         scopes.add_binding(&ident, current_scope, term.clone(), is_mutable);
