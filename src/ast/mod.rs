@@ -27,9 +27,11 @@ pub enum Block {
 }
 
 impl Debug for Block {
-    fn fmt(&self, _formatter: &mut Formatter) -> Result<(), Error> {
-        // TODO: Implement this properly.
-        Ok(())
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        match self {
+            Block::NalaBlock(_) => write!(f, "<NalaBlock>"),
+            Block::RustBlock(_) => write!(f, "<RustBlock>"),
+        }
     }
 }
 
