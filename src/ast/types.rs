@@ -134,7 +134,6 @@ impl TypeVariant {
                 }
             }
             TypeVariant::Primitive(sv) => {
-                println!("Left is primitive");
                 if let TypeVariant::Primitive(ov) = other {
                     sv.is_assignable_to(ov)
                 } else {

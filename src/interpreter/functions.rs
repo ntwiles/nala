@@ -127,14 +127,6 @@ pub fn evaluate_call(
                     let arg_type = arg.get_type();
                     let param_type = param.param_type.clone();
 
-                    println!(
-                        "Passed arg `{0}: {3}` to `{1}: {2}`",
-                        arg.to_string(),
-                        param.ident,
-                        param_type.to_string(),
-                        arg_type.to_string()
-                    );
-
                     if !arg_type.is_assignable_to(&param_type) {
                         return Err(wrong_arg_type_for_param_error(
                             arg.clone().to_string(),
