@@ -37,13 +37,7 @@ pub fn interpret_stmts(
 ) -> Result<Term, NalaRuntimeError> {
     match stmts {
         Stmts::Stmts(stmts, stmt) => {
-            let result = interpret_stmts(&*stmts, scopes, current_scope, context);
-
-            if result.is_err() {
-                return result;
-            }
-
-            let result = result.unwrap();
+            let result = interpret_stmts(&*stmts, scopes, current_scope, context)?;
 
             if let Term::Void = result {
                 interpret_stmt(stmt, scopes, current_scope, context)
@@ -63,28 +57,12 @@ fn interpret_stmt(
 ) -> Result<Term, NalaRuntimeError> {
     match stmt {
         Stmt::Declare(ident, expr, is_mutable) => {
-            let result = evaluate_expr(expr, scopes, current_scope, context);
-
-            if result.is_err() {
-                return result;
-            }
-
-            interpret_declare(
-                ident,
-                &result.unwrap(),
-                scopes,
-                current_scope,
-                is_mutable.clone(),
-            )
+            let result = evaluate_expr(expr, scopes, current_scope, context)?;
+            interpret_declare(ident, &result, scopes, current_scope, is_mutable.clone())
         }
         Stmt::Assign(ident, expr) => {
-            let result = evaluate_expr(expr, scopes, current_scope, context);
-
-            if result.is_err() {
-                return result;
-            }
-
-            interpret_assign(ident, &result.unwrap(), scopes, current_scope, context)
+            let result = evaluate_expr(expr, scopes, current_scope, context)?;
+            interpret_assign(ident, &result, scopes, current_scope, context)
         }
         Stmt::If(cond, block) => interpret_if(cond, block, scopes, current_scope, context),
         Stmt::For(ident, expr, block) => {
@@ -106,31 +84,16 @@ pub fn evaluate_expr(
 ) -> Result<Term, NalaRuntimeError> {
     match expr {
         Expr::Eq(left, right) => {
-            let left = evaluate_expr(left, scopes, current_scope, context);
-            let right = evaluate_kind(right, scopes, current_scope, context);
+            let left = evaluate_expr(left, scopes, current_scope, context)?;
+            let right = evaluate_kind(right, scopes, current_scope, context)?;
 
-            if left.is_err() {
-                return left;
-            }
-            if right.is_err() {
-                return right;
-            }
-
-            Ok(evaluate_equals(left.unwrap(), right.unwrap()))
+            Ok(evaluate_equals(left, right))
         }
         Expr::Gt(left, right) => {
-            let left = evaluate_expr(left, scopes, current_scope, context);
-            let right = evaluate_addend(right, scopes, current_scope, context);
+            let left = evaluate_expr(left, scopes, current_scope, context)?;
+            let right = evaluate_addend(right, scopes, current_scope, context)?;
 
-            if let Err(e) = left {
-                return Err(e);
-            }
-
-            if let Err(e) = right {
-                return Err(e);
-            }
-
-            evaluate_gt(left.unwrap(), right.unwrap())
+            evaluate_gt(left, right)
         }
         Expr::Lt(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context);
@@ -159,20 +122,10 @@ pub fn evaluate_elems(
 ) -> Result<Vec<Term>, NalaRuntimeError> {
     match elems {
         Elems::Elems(elems, expr) => {
-            let elems_result = evaluate_elems(elems, scopes, current_scope, context);
-            let expr_result = evaluate_expr(&expr, scopes, current_scope, context);
+            let mut elems = evaluate_elems(elems, scopes, current_scope, context)?;
+            let expr_result = evaluate_expr(&expr, scopes, current_scope, context)?;
 
-            if elems_result.is_err() {
-                return elems_result;
-            }
-
-            if let Err(e) = expr_result {
-                return Err(e);
-            }
-
-            let mut elems = elems_result.unwrap();
-
-            elems.push(expr_result.unwrap());
+            elems.push(expr_result);
             Ok(elems)
         }
         Elems::Expr(expr) => {

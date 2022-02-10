@@ -39,17 +39,13 @@ pub fn interpret_assign(
     match variable {
         SymbolOrIndex::Index(ident, index_expr) => {
             if scopes.binding_exists(&ident, current_scope, context) {
-                let index_result = evaluate_expr(&index_expr, scopes, current_scope, context);
+                let index_result = evaluate_expr(&index_expr, scopes, current_scope, context)?;
 
                 if let Term::Void = term {
                     panic!("Cannot assign a value of type Void.");
                 }
 
-                if index_result.is_err() {
-                    return index_result;
-                }
-
-                let index = if let Term::Num(index) = index_result.unwrap() {
+                let index = if let Term::Num(index) = index_result {
                     index
                 } else {
                     panic!("Index does not resolve to a Number.");

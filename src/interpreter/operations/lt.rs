@@ -9,16 +9,7 @@ use crate::{
 use super::errors::*;
 
 pub fn evaluate_lt(left: Term, right: Term) -> Result<Term, NalaRuntimeError> {
-    let result = check_operator_implemented_both(
-        left.get_type(),
-        right.get_type(),
-        ">".to_string(),
-        ICompare,
-    );
-
-    if result.is_err() {
-        return result;
-    }
+    check_operator_implemented_both(left.get_type(), right.get_type(), ">".to_string(), ICompare)?;
 
     match left {
         Term::Num(left) => Ok(num_lt(left, right)),

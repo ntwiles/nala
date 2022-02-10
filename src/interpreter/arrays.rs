@@ -17,13 +17,9 @@ pub fn evaluate_index(
 ) -> Result<Term, NalaRuntimeError> {
     match index {
         Index::Index(ident, expr) => {
-            let result = evaluate_expr(expr, scopes, current_scope, context);
+            let result = evaluate_expr(expr, scopes, current_scope, context)?;
 
-            if result.is_err() {
-                return result;
-            }
-
-            if let Term::Num(index) = result.unwrap() {
+            if let Term::Num(index) = result {
                 let array = scopes.get_value(ident, current_scope, context);
                 // TODO: Check that this cast is safe first.
                 let index = index as usize;
