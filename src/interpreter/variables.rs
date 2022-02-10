@@ -79,11 +79,13 @@ pub fn interpret_assign(
                 if existing_type == term_type {
                     scopes.mutate_value(&ident, current_scope, term.clone());
                 } else {
-                    panic!(
-                        "Cannot assign a value of type {0} where {1} is expected.",
-                        term_type.to_string(),
-                        existing_type.to_string()
-                    )
+                    return Err(NalaRuntimeError {
+                        message: format!(
+                            "Cannot assign a value of type {0} where {1} is expected.",
+                            term_type.to_string(),
+                            existing_type.to_string()
+                        ),
+                    });
                 }
             } else {
                 panic!("Unknown identifier `{}`", ident);

@@ -35,9 +35,11 @@ fn it_errors_when_declaring_array_multiple_types() {
 }
 
 #[test]
-#[should_panic(expected = "Cannot assign a value of type String where Number is expected.")]
 fn it_errors_when_assigning_wrong_type() {
-    read_and_execute(&test_path("assign-types"), &mut TestContext::new());
+    let expected_message = regex!("Cannot assign a value of type String where Number is expected.");
+    let result = read_and_execute(&test_path("assign-types"), &mut TestContext::new());
+    assert!(matches!(result.clone(), Err(_)));
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
 
 #[test]
