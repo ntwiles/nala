@@ -14,13 +14,13 @@ fn wrong_arg_type_for_param_error(
     arg_type: String,
     func_ident: String,
     param_type: String,
-) -> Term {
-    Term::Exception(NalaRuntimeError {
+) -> NalaRuntimeError {
+    NalaRuntimeError {
         message: format!(
             "Passed value `{0}` of type `{1}` to func `{2}` where `{3}` was expected.",
             arg_value, arg_type, func_ident, param_type
         ),
-    })
+    }
 }
 
 pub fn interpret_func(
@@ -125,13 +125,21 @@ pub fn evaluate_call(
                     let arg_type = arg.get_type();
                     let param_type = param.param_type.clone();
 
+                    println!(
+                        "Passed arg `{0}: {3}` to `{1}: {2}`",
+                        arg.to_string(),
+                        param.ident,
+                        param_type.to_string(),
+                        arg_type.to_string()
+                    );
+
                     if !arg_type.is_assignable_to(&param_type) {
-                        wrong_arg_type_for_param_error(
+                        return Err(wrong_arg_type_for_param_error(
                             arg.clone().to_string(),
                             arg.get_type().to_string(),
                             ident.to_owned(),
                             param_type.to_string(),
-                        );
+                        ));
                     }
 
                     // TODO: Should function args be mutable or immutable?
