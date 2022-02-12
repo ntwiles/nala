@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::{basic::*, objects::*};
+use super::{arrays::*, basic::*, objects::*};
 
 use crate::{
     ast::{funcs::*, terms::*, types::*, *},
@@ -147,6 +147,7 @@ pub fn evaluate_call(
         Call::MemberAccess(member_access) => {
             evaluate_member_access(member_access, scopes, current_scope, context)
         }
+        Call::Index(index) => evaluate_index(index, scopes, current_scope, context),
     }
 }
 

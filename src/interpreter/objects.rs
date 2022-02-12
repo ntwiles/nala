@@ -27,6 +27,23 @@ pub fn evaluate_member_access(
     context: &mut impl IoContext,
 ) -> Result<Term, NalaRuntimeError> {
     match member_access {
+        MemberAccess::MemberAccesses(parents, child) => {
+            let object = evaluate_member_access(parents, scopes, current_scope, context)?;
+
+            if let Term::Reference(reference) = object {
+                let object = Arc::clone(&reference);
+
+                if object.contains_key(child) {
+                    Ok(object[child].clone())
+                } else {
+                    Err(NalaRuntimeError {
+                        message: format!("Member `{0}` does not exist on object.", child),
+                    })
+                }
+            } else {
+                todo!()
+            }
+        }
         MemberAccess::MemberAccess(parent, child) => {
             let object = scopes.get_value(parent, current_scope, context)?;
 

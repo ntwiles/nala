@@ -19,6 +19,7 @@ pub struct KeyValuePair {
 
 #[derive(Debug, Clone)]
 pub enum MemberAccess {
+    MemberAccesses(Box<MemberAccess>, String),
     MemberAccess(String, String),
     Index(Index),
 }

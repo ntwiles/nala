@@ -139,12 +139,13 @@ Factor: ast::math::Factor = {
 Call: ast::funcs::Call = {
     <s:Symbol> "(" <e:Elems> ")" => ast::funcs::Call::Call(s, Box::new(e)),
     <s:Symbol> "(" ")" => ast::funcs::Call::Call(s, Box::new(ast::arrays::Elems::Empty)),
-    <MemberAccess> => ast::funcs::Call::MemberAccess(<>)
+    <MemberAccess> => ast::funcs::Call::MemberAccess(<>),
+    <Index> => ast::funcs::Call::Index(<>)
 };
 
 MemberAccess: ast::objects::MemberAccess = {
-    <s:Symbol> "." <ss:Symbol> => ast::objects::MemberAccess::MemberAccess(s, ss),
-    <Index> => ast::objects::MemberAccess::Index(<>)
+    <m:MemberAccess> "." <s:Symbol> => ast::objects::MemberAccess::MemberAccesses(Box::new(m), s),
+    <s:Symbol> "." <ss:Symbol> => ast::objects::MemberAccess::MemberAccess(s, ss)
 }
 
 Index: ast::arrays::Index = {

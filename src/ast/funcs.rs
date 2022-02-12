@@ -51,4 +51,5 @@ pub struct Param {
 pub enum Call {
     Call(String, Box<Elems>),
     MemberAccess(MemberAccess),
+    Index(Index),
 }
