@@ -3,6 +3,7 @@ pub mod basic;
 mod branching;
 mod enums;
 mod functions;
+mod objects;
 mod operations;
 mod variables;
 

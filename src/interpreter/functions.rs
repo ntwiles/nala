@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::{arrays::*, basic::*};
+use super::{basic::*, objects::*};
 
 use crate::{
     ast::{funcs::*, terms::*, types::*, *},
@@ -144,7 +144,9 @@ pub fn evaluate_call(
                 panic!("Cannot invoke `{0}` because it is not a function.", ident)
             }
         }
-        Call::Index(index) => evaluate_index(index, scopes, current_scope, context),
+        Call::MemberAccess(member_access) => {
+            evaluate_member_access(member_access, scopes, current_scope, context)
+        }
     }
 }
 

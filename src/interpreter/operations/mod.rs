@@ -96,7 +96,7 @@ mod tests {
     use super::*;
 
     use crate::{
-        ast::{arrays::*, funcs::*},
+        ast::{arrays::*, funcs::*, objects::*},
         io_context::TestContext,
     };
 
@@ -104,12 +104,12 @@ mod tests {
     pub fn it_evaluates_add_with_2_terms() {
         let mut test_context = TestContext::new();
 
-        let left = Box::new(Addend::Factor(Factor::Call(Call::Index(
-            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(7.0))),
+        let left = Box::new(Addend::Factor(Factor::Call(Call::MemberAccess(
+            MemberAccess::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(7.0)))),
         ))));
-        let right = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
-            Term::Num(4.0),
-        ))));
+        let right = Factor::Call(Call::MemberAccess(MemberAccess::Index(
+            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(4.0))),
+        )));
 
         let operation = Addend::Add(left, right);
         let mut scopes = Scopes::new();
@@ -129,15 +129,15 @@ mod tests {
     pub fn it_evaluates_add_with_3_terms() {
         let mut test_context = TestContext::new();
 
-        let left = Addend::Factor(Factor::Call(Call::Index(Index::SymbolOrTerm(
-            SymbolOrTerm::Term(Term::Num(3.0)),
+        let left = Addend::Factor(Factor::Call(Call::MemberAccess(MemberAccess::Index(
+            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(3.0))),
         ))));
-        let middle = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
-            Term::Num(5.0),
-        ))));
-        let right = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
-            Term::Num(4.0),
-        ))));
+        let middle = Factor::Call(Call::MemberAccess(MemberAccess::Index(
+            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(5.0))),
+        )));
+        let right = Factor::Call(Call::MemberAccess(MemberAccess::Index(
+            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(4.0))),
+        )));
 
         let operation_a = Addend::Add(Box::new(left), middle);
         let operation_b = Addend::Add(Box::new(operation_a), right);
@@ -158,13 +158,13 @@ mod tests {
     pub fn it_evaluates_sub() {
         let mut test_context = TestContext::new();
 
-        let left = Addend::Factor(Factor::Call(Call::Index(Index::SymbolOrTerm(
-            SymbolOrTerm::Term(Term::Num(5.0)),
+        let left = Addend::Factor(Factor::Call(Call::MemberAccess(MemberAccess::Index(
+            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(5.0))),
         ))));
 
-        let right = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
-            Term::Num(3.0),
-        ))));
+        let right = Factor::Call(Call::MemberAccess(MemberAccess::Index(
+            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(3.0))),
+        )));
 
         let operation = Addend::Sub(Box::new(left), right);
         let mut scopes = Scopes::new();
@@ -184,9 +184,9 @@ mod tests {
     pub fn it_evaluates_mult() {
         let mut test_context = TestContext::new();
 
-        let left = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
-            Term::Num(5.0),
-        ))));
+        let left = Factor::Call(Call::MemberAccess(MemberAccess::Index(
+            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(5.0))),
+        )));
         let right = Term::Num(3.0);
 
         let operation = Factor::Mult(Box::new(left), SymbolOrTerm::Term(right));
@@ -207,9 +207,9 @@ mod tests {
     pub fn it_evaluates_div() {
         let mut test_context = TestContext::new();
 
-        let left = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
-            Term::Num(5.0),
-        ))));
+        let left = Factor::Call(Call::MemberAccess(MemberAccess::Index(
+            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(5.0))),
+        )));
         let right = Term::Num(2.0);
 
         let operation = Factor::Div(Box::new(left), SymbolOrTerm::Term(right));
@@ -230,9 +230,9 @@ mod tests {
     pub fn it_disallows_div_by_zero() {
         let mut test_context = TestContext::new();
 
-        let left = Factor::Call(Call::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(
-            Term::Num(5.0),
-        ))));
+        let left = Factor::Call(Call::MemberAccess(MemberAccess::Index(
+            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(5.0))),
+        )));
         let right = Term::Num(0.0);
 
         let operation = Factor::Div(Box::new(left), SymbolOrTerm::Term(right));

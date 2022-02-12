@@ -3,6 +3,7 @@ use super::{
     branching::*,
     enums::*,
     functions::*,
+    objects::*,
     operations::{equals::*, gt::*, lt::*, *},
     variables::*,
 };
@@ -102,6 +103,7 @@ pub fn evaluate_expr(
             evaluate_lt(left, right)
         }
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
+        Expr::Object(object) => evaluate_object(object, scopes, current_scope, context),
         Expr::VariantValue(variant) => evaluate_variant(variant, scopes, current_scope, context),
     }
 }

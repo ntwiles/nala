@@ -32,6 +32,11 @@ Stmt: ast::Stmt = {
     <e:Expr> ";" => ast::Stmt::Expr(e),
 };
 
+SymbolOrIndex: ast::SymbolOrIndex = {
+    <s:Symbol> "[" <e:Expr> "]" => ast::SymbolOrIndex::Index(s, Box::new(e)),
+    <Symbol> => ast::SymbolOrIndex::Symbol(<>)
+};
+
 VariantsDeclare: ast::VariantsDeclare = {
     <vv:VariantsDeclare> "," <v:VariantDeclare> => ast::VariantsDeclare::Variants(Box::new(vv), v),
     <VariantDeclare> => ast::VariantsDeclare::Variant(<>)
@@ -47,6 +52,7 @@ Expr: ast::Expr = {
     <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
     VariantValue => ast::Expr::VariantValue(<>),
     Array => ast::Expr::Array(<>),
+    Object => ast::Expr::Object(<>),
 };
 
 VariantValue: ast::VariantValue = {
@@ -54,6 +60,18 @@ VariantValue: ast::VariantValue = {
     Addend => ast::VariantValue::Addend(<>),
 }
 
+Object: ast::objects::Object = {
+    "{" <KeyValuePairs> "}" => ast::objects::Object { entries: Box::new(<>)}
+}
+
+KeyValuePairs: ast::objects::KeyValuePairs = {
+    <kk:KeyValuePairs> "," <k:KeyValuePair> => ast::objects::KeyValuePairs::KeyValuePairs(Box::new(kk), k),
+    <KeyValuePair> => ast::objects::KeyValuePairs::KeyValuePair(<>),
+};
+
+KeyValuePair: ast::objects::KeyValuePair = {
+    <s:Symbol> ":" <e:Expr> => ast::objects::KeyValuePair{ key: s, value: Box::new(e)}
+}
 
 Array: ast::arrays::Array = {
     "[" <Elems> "]" => ast::arrays::Array { elems: Box::new(<>) },
@@ -121,13 +139,13 @@ Factor: ast::math::Factor = {
 Call: ast::funcs::Call = {
     <s:Symbol> "(" <e:Elems> ")" => ast::funcs::Call::Call(s, Box::new(e)),
     <s:Symbol> "(" ")" => ast::funcs::Call::Call(s, Box::new(ast::arrays::Elems::Empty)),
-    <Index> => ast::funcs::Call::Index(<>)
+    <MemberAccess> => ast::funcs::Call::MemberAccess(<>)
 };
 
-SymbolOrIndex: ast::SymbolOrIndex = {
-    <s:Symbol> "[" <e:Expr> "]" => ast::SymbolOrIndex::Index(s, Box::new(e)),
-    <Symbol> => ast::SymbolOrIndex::Symbol(<>)
-};
+MemberAccess: ast::objects::MemberAccess = {
+    <s:Symbol> "." <ss:Symbol> => ast::objects::MemberAccess::MemberAccess(s, ss),
+    <Index> => ast::objects::MemberAccess::Index(<>)
+}
 
 Index: ast::arrays::Index = {
     <s:Symbol> "[" <e:Expr> "]" => ast::arrays::Index::Index(s, Box::new(e)),

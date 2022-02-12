@@ -57,6 +57,7 @@ pub enum PrimitiveType {
     Enum,
     Variant,
     Unknown,
+    Reference,
 }
 
 impl Types {
@@ -213,6 +214,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Enum => "<Enum>",
             PrimitiveType::Variant => "Variant",
             PrimitiveType::Unknown => "<Unknown>",
+            PrimitiveType::Reference => "<Reference>",
         };
 
         write!(f, "{}", type_name)

@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{collections::HashMap, fmt, sync::Arc};
 
 use super::*;
 
@@ -15,6 +15,7 @@ pub enum Term {
     Func(Box<Params>, Box<Block>),
     Variant(String),
     Num(f32),
+    Reference(Arc<HashMap<String, Term>>),
     String(String),
     Type(TypeVariant),
 
@@ -34,6 +35,7 @@ impl fmt::Display for Term {
             Term::Break(_) => write!(f, "<Break>"),
             Term::Type(type_kind) => write!(f, "{}", type_kind),
             Term::Variant(k) => write!(f, "{}", k),
+            Term::Reference(_) => write!(f, "<Object>"),
         }
     }
 }
@@ -70,6 +72,7 @@ impl Term {
             Term::Void => TypeVariant::Primitive(PrimitiveType::Void),
             Term::Type(_) => TypeVariant::Primitive(PrimitiveType::Enum),
             Term::Variant(_) => TypeVariant::Primitive(PrimitiveType::Variant),
+            Term::Reference(_) => TypeVariant::Primitive(PrimitiveType::Reference),
         }
     }
 }

@@ -50,5 +50,5 @@ pub struct Param {
 #[derive(Debug, Clone)]
 pub enum Call {
     Call(String, Box<Elems>),
-    Index(Index),
+    MemberAccess(MemberAccess),
 }

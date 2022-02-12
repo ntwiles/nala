@@ -1,6 +1,7 @@
 pub mod arrays;
 pub mod funcs;
 pub mod math;
+pub mod objects;
 pub mod terms;
 pub mod types;
 
@@ -11,6 +12,7 @@ use crate::builtins::BuiltinFunc;
 use arrays::*;
 use funcs::*;
 use math::*;
+use objects::*;
 use terms::*;
 use types::*;
 
@@ -61,6 +63,7 @@ pub enum Expr {
     Lt(Box<Expr>, Addend),
     VariantValue(VariantValue),
     Array(Array),
+    Object(Object),
 }
 
 #[derive(Debug, Clone)]
