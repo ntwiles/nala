@@ -101,138 +101,61 @@ mod tests {
 
     use crate::io_context::TestContext;
 
-    #[test]
-    pub fn it_evaluates_add_with_2_terms() {
-        let mut test_context = TestContext::new();
+    macro_rules! interpret {
+        ($tree: expr, $interpreter: expr) => {{
+            let mut test_context = TestContext::new();
 
-        let nala = "7.0 + 4.0";
-
-        let parsed = grammar::AddendParser::new().parse(nala);
-
-        let actual = if let Ok(parsed) = parsed {
             let mut scopes = Scopes::new();
             let top_scope = scopes.new_scope(None);
+            $interpreter($tree, &mut scopes, top_scope, &mut test_context)
+        }};
 
-            evaluate_addend(&parsed, &mut scopes, top_scope, &mut test_context).unwrap()
-        } else {
-            panic!()
-        };
+        ($tree: expr, $interpreter: expr, $context: expr) => {{
+            let mut scopes = Scopes::new();
+            let top_scope = scopes.new_scope(None);
+            $interpreter($tree, &mut scopes, top_scope, &mut $context)
+        }};
+    }
 
-        if let Term::Num(actual) = actual {
-            assert_eq!(11.0, actual);
-        } else {
-            panic!();
-        }
+    #[test]
+    pub fn it_evaluates_add_with_2_terms() {
+        let parsed = grammar::AddendParser::new().parse("7.0 + 4.0");
+        let result = interpret!(&parsed.unwrap(), evaluate_addend).unwrap();
+        assert_eq!(Term::Num(11.0), result);
     }
 
     #[test]
     pub fn it_evaluates_add_with_3_terms() {
-        let mut test_context = TestContext::new();
-
-        let nala = "3.0 + 5.0 + 4.0";
-        let parsed = grammar::AddendParser::new().parse(nala);
-
-        let actual = if let Ok(parsed) = parsed {
-            let mut scopes = Scopes::new();
-            let top_scope = scopes.new_scope(None);
-
-            evaluate_addend(&parsed, &mut scopes, top_scope, &mut test_context).unwrap()
-        } else {
-            panic!()
-        };
-
-        if let Term::Num(actual) = actual {
-            assert_eq!(12.0, actual);
-        } else {
-            panic!();
-        }
+        let parsed = grammar::AddendParser::new().parse("3.0 + 5.0 + 4.0");
+        let result = interpret!(&parsed.unwrap(), evaluate_addend).unwrap();
+        assert_eq!(Term::Num(12.0), result);
     }
 
     #[test]
     pub fn it_evaluates_sub() {
-        let mut test_context = TestContext::new();
-
-        let nala = "5 - 3";
-
-        let parsed = grammar::AddendParser::new().parse(nala);
-
-        let actual = if let Ok(parsed) = parsed {
-            let mut scopes = Scopes::new();
-            let top_scope = scopes.new_scope(None);
-
-            evaluate_addend(&parsed, &mut scopes, top_scope, &mut test_context).unwrap()
-        } else {
-            panic!();
-        };
-
-        if let Term::Num(actual) = actual {
-            assert_eq!(2.0, actual);
-        } else {
-            panic!();
-        }
+        let parsed = grammar::AddendParser::new().parse("5 - 3").unwrap();
+        let result = interpret!(&parsed, evaluate_addend).unwrap();
+        assert_eq!(Term::Num(2.0), result);
     }
 
     #[test]
     pub fn it_evaluates_mult() {
-        let mut test_context = TestContext::new();
-
-        let nala = "5.0 * 3.0";
-        let parsed = grammar::FactorParser::new().parse(nala);
-
-        let actual = if let Ok(parsed) = parsed {
-            let mut scopes = Scopes::new();
-            let top_scope = scopes.new_scope(None);
-
-            evaluate_factor(&parsed, &mut scopes, top_scope, &mut test_context).unwrap()
-        } else {
-            panic!();
-        };
-
-        if let Term::Num(actual) = actual {
-            assert_eq!(15.0, actual);
-        } else {
-            panic!();
-        }
+        let parsed = grammar::FactorParser::new().parse("5.0 * 3.0").unwrap();
+        let result = interpret!(&parsed, evaluate_factor).unwrap();
+        assert_eq!(Term::Num(15.0), result);
     }
 
     #[test]
     pub fn it_evaluates_div() {
-        let mut test_context = TestContext::new();
-
-        let nala = "5.0 / 2.0";
-        let parsed = grammar::FactorParser::new().parse(nala);
-
-        let actual = if let Ok(parsed) = parsed {
-            let mut scopes = Scopes::new();
-            let top_scope = scopes.new_scope(None);
-
-            evaluate_factor(&parsed, &mut scopes, top_scope, &mut test_context).unwrap()
-        } else {
-            panic!();
-        };
-
-        if let Term::Num(actual) = actual {
-            assert_eq!(2.5, actual);
-        } else {
-            panic!();
-        }
+        let parsed = grammar::FactorParser::new().parse("5.0 / 2.0").unwrap();
+        let result = interpret!(&parsed, evaluate_factor).unwrap();
+        assert_eq!(Term::Num(2.5), result);
     }
 
     #[test]
     pub fn it_disallows_div_by_zero() {
-        let mut test_context = TestContext::new();
-
-        let nala = "5.0 / 0.0";
-        let parsed = grammar::FactorParser::new().parse(nala);
-
-        let actual = if let Ok(parsed) = parsed {
-            let mut scopes = Scopes::new();
-            let top_scope = scopes.new_scope(None);
-
-            evaluate_factor(&parsed, &mut scopes, top_scope, &mut test_context)
-        } else {
-            panic!();
-        };
+        let parsed = grammar::FactorParser::new().parse("5.0 / 0.0").unwrap();
+        let actual = interpret!(&parsed, evaluate_factor);
 
         assert!(matches!(actual, Err(_)));
 

@@ -76,3 +76,22 @@ impl Term {
         }
     }
 }
+
+impl PartialEq for Term {
+    fn eq(&self, right: &Term) -> bool {
+        match self {
+            Term::Num(left) => {
+                if let Term::Num(right) = right {
+                    left == right
+                } else {
+                    false
+                }
+            }
+            _ => todo!(),
+        }
+    }
+
+    fn ne(&self, _right: &Term) -> bool {
+        todo!()
+    }
+}
