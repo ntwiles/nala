@@ -143,6 +143,8 @@ Call: ast::funcs::Call = {
     <Index> => ast::funcs::Call::Index(<>)
 };
 
+// TODO: This doesn't support indexing at the end of a member access chain. 
+// Might just be as simple as using <SymbolOrIndex>?
 MemberAccess: ast::objects::MemberAccess = {
     <m:MemberAccess> "." <s:Symbol> => ast::objects::MemberAccess::MemberAccesses(Box::new(m), s),
     <s:Symbol> "." <ss:Symbol> => ast::objects::MemberAccess::MemberAccess(s, ss)

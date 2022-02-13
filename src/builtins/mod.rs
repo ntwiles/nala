@@ -1,4 +1,5 @@
 mod array;
+mod http;
 mod io;
 mod math;
 
@@ -10,6 +11,7 @@ use crate::{
 };
 
 use array::*;
+use http::*;
 use io::*;
 use math::*;
 
@@ -23,5 +25,6 @@ pub fn get_builtins() -> Vec<Func> {
         get_read_block(),
         get_readnum_block(),
         get_slice_block(),
+        get_request_block(),
     ]
 }
