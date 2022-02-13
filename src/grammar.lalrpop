@@ -124,13 +124,13 @@ PrimitiveInterface: ast::types::PrimitiveInterface = {
     "ISubtract" => ast::types::PrimitiveInterface::ISubtract
 }
 
-Addend: ast::math::Addend = {
+pub Addend: ast::math::Addend = {
     <l:Addend> "+" <r:Factor> => ast::math::Addend::Add(Box::new(l), r),
     <l:Addend> "-" <r:Factor> => ast::math::Addend::Sub(Box::new(l), r),
     Factor =>  ast::math::Addend::Factor(<>)
 };
 
-Factor: ast::math::Factor = {
+pub Factor: ast::math::Factor = {
     <l:Factor> "*" <r:SymbolOrTerm> => ast::math::Factor::Mult(Box::new(l), r),
     <l:Factor> "/" <r:SymbolOrTerm> => ast::math::Factor::Div(Box::new(l), r), 
     Call => ast::math::Factor::Call(<>),

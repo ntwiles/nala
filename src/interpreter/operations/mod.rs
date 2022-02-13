@@ -93,30 +93,30 @@ pub fn evaluate_factor(
 
 #[cfg(test)]
 mod tests {
+    lalrpop_mod!(pub grammar);
+
+    use lalrpop_util::lalrpop_mod;
+
     use super::*;
 
-    use crate::{
-        ast::{arrays::*, funcs::*, objects::*},
-        io_context::TestContext,
-    };
+    use crate::io_context::TestContext;
 
     #[test]
     pub fn it_evaluates_add_with_2_terms() {
         let mut test_context = TestContext::new();
 
-        let left = Box::new(Addend::Factor(Factor::Call(Call::MemberAccess(
-            MemberAccess::Index(Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(7.0)))),
-        ))));
-        let right = Factor::Call(Call::MemberAccess(MemberAccess::Index(
-            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(4.0))),
-        )));
+        let nala = "7.0 + 4.0";
 
-        let operation = Addend::Add(left, right);
-        let mut scopes = Scopes::new();
-        let top_scope = scopes.new_scope(None);
+        let parsed = grammar::AddendParser::new().parse(nala);
 
-        let actual =
-            evaluate_addend(&operation, &mut scopes, top_scope, &mut test_context).unwrap();
+        let actual = if let Ok(parsed) = parsed {
+            let mut scopes = Scopes::new();
+            let top_scope = scopes.new_scope(None);
+
+            evaluate_addend(&parsed, &mut scopes, top_scope, &mut test_context).unwrap()
+        } else {
+            panic!()
+        };
 
         if let Term::Num(actual) = actual {
             assert_eq!(11.0, actual);
@@ -129,23 +129,17 @@ mod tests {
     pub fn it_evaluates_add_with_3_terms() {
         let mut test_context = TestContext::new();
 
-        let left = Addend::Factor(Factor::Call(Call::MemberAccess(MemberAccess::Index(
-            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(3.0))),
-        ))));
-        let middle = Factor::Call(Call::MemberAccess(MemberAccess::Index(
-            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(5.0))),
-        )));
-        let right = Factor::Call(Call::MemberAccess(MemberAccess::Index(
-            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(4.0))),
-        )));
+        let nala = "3.0 + 5.0 + 4.0";
+        let parsed = grammar::AddendParser::new().parse(nala);
 
-        let operation_a = Addend::Add(Box::new(left), middle);
-        let operation_b = Addend::Add(Box::new(operation_a), right);
-        let mut scopes = Scopes::new();
-        let top_scope = scopes.new_scope(None);
+        let actual = if let Ok(parsed) = parsed {
+            let mut scopes = Scopes::new();
+            let top_scope = scopes.new_scope(None);
 
-        let actual =
-            evaluate_addend(&operation_b, &mut scopes, top_scope, &mut test_context).unwrap();
+            evaluate_addend(&parsed, &mut scopes, top_scope, &mut test_context).unwrap()
+        } else {
+            panic!()
+        };
 
         if let Term::Num(actual) = actual {
             assert_eq!(12.0, actual);
@@ -158,20 +152,18 @@ mod tests {
     pub fn it_evaluates_sub() {
         let mut test_context = TestContext::new();
 
-        let left = Addend::Factor(Factor::Call(Call::MemberAccess(MemberAccess::Index(
-            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(5.0))),
-        ))));
+        let nala = "5 - 3";
 
-        let right = Factor::Call(Call::MemberAccess(MemberAccess::Index(
-            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(3.0))),
-        )));
+        let parsed = grammar::AddendParser::new().parse(nala);
 
-        let operation = Addend::Sub(Box::new(left), right);
-        let mut scopes = Scopes::new();
-        let top_scope = scopes.new_scope(None);
+        let actual = if let Ok(parsed) = parsed {
+            let mut scopes = Scopes::new();
+            let top_scope = scopes.new_scope(None);
 
-        let actual =
-            evaluate_addend(&operation, &mut scopes, top_scope, &mut test_context).unwrap();
+            evaluate_addend(&parsed, &mut scopes, top_scope, &mut test_context).unwrap()
+        } else {
+            panic!();
+        };
 
         if let Term::Num(actual) = actual {
             assert_eq!(2.0, actual);
@@ -184,17 +176,17 @@ mod tests {
     pub fn it_evaluates_mult() {
         let mut test_context = TestContext::new();
 
-        let left = Factor::Call(Call::MemberAccess(MemberAccess::Index(
-            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(5.0))),
-        )));
-        let right = Term::Num(3.0);
+        let nala = "5.0 * 3.0";
+        let parsed = grammar::FactorParser::new().parse(nala);
 
-        let operation = Factor::Mult(Box::new(left), SymbolOrTerm::Term(right));
-        let mut scopes = Scopes::new();
-        let top_scope = scopes.new_scope(None);
+        let actual = if let Ok(parsed) = parsed {
+            let mut scopes = Scopes::new();
+            let top_scope = scopes.new_scope(None);
 
-        let actual =
-            evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context).unwrap();
+            evaluate_factor(&parsed, &mut scopes, top_scope, &mut test_context).unwrap()
+        } else {
+            panic!();
+        };
 
         if let Term::Num(actual) = actual {
             assert_eq!(15.0, actual);
@@ -207,17 +199,17 @@ mod tests {
     pub fn it_evaluates_div() {
         let mut test_context = TestContext::new();
 
-        let left = Factor::Call(Call::MemberAccess(MemberAccess::Index(
-            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(5.0))),
-        )));
-        let right = Term::Num(2.0);
+        let nala = "5.0 / 2.0";
+        let parsed = grammar::FactorParser::new().parse(nala);
 
-        let operation = Factor::Div(Box::new(left), SymbolOrTerm::Term(right));
-        let mut scopes = Scopes::new();
-        let top_scope = scopes.new_scope(None);
+        let actual = if let Ok(parsed) = parsed {
+            let mut scopes = Scopes::new();
+            let top_scope = scopes.new_scope(None);
 
-        let actual =
-            evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context).unwrap();
+            evaluate_factor(&parsed, &mut scopes, top_scope, &mut test_context).unwrap()
+        } else {
+            panic!();
+        };
 
         if let Term::Num(actual) = actual {
             assert_eq!(2.5, actual);
@@ -230,16 +222,18 @@ mod tests {
     pub fn it_disallows_div_by_zero() {
         let mut test_context = TestContext::new();
 
-        let left = Factor::Call(Call::MemberAccess(MemberAccess::Index(
-            Index::SymbolOrTerm(SymbolOrTerm::Term(Term::Num(5.0))),
-        )));
-        let right = Term::Num(0.0);
+        let nala = "5.0 / 0.0";
+        let parsed = grammar::FactorParser::new().parse(nala);
 
-        let operation = Factor::Div(Box::new(left), SymbolOrTerm::Term(right));
-        let mut scopes = Scopes::new();
-        let top_scope = scopes.new_scope(None);
+        let actual = if let Ok(parsed) = parsed {
+            let mut scopes = Scopes::new();
+            let top_scope = scopes.new_scope(None);
 
-        let actual = evaluate_factor(&operation, &mut scopes, top_scope, &mut test_context);
+            evaluate_factor(&parsed, &mut scopes, top_scope, &mut test_context)
+        } else {
+            panic!();
+        };
+
         assert!(matches!(actual, Err(_)));
 
         let error = actual.unwrap_err();
