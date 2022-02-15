@@ -55,7 +55,7 @@ pub fn interpret_assign(
 
                 let array = scopes.get_value(&ident, current_scope, context)?;
 
-                if let Term::Array(mut array) = array {
+                if let Term::Array(array) = array {
                     let array = Arc::clone(&array);
                     let mut array = array.lock().unwrap();
                     array[index as usize] = term.clone();

@@ -5,7 +5,7 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-use super::operations::*;
+use super::{basic::*, operations::*};
 
 pub fn interpret_enum(
     ident: &String,
@@ -36,11 +36,31 @@ pub fn evaluate_variant(
 
             if let Term::Type(TypeVariant::Enum(_, variants)) = term {
                 if variant_exists(&*variants, variant) {
-                    Ok(Term::Variant(format!(
-                        "{0}::{1}",
-                        enum_name,
-                        variant.to_owned()
-                    )))
+                    Ok(Term::Variant(
+                        format!("{0}::{1}", enum_name, variant.to_owned()),
+                        None,
+                    ))
+                } else {
+                    panic!(
+                        "Enum variant {0} does not exist on Enum {1}",
+                        variant, enum_name
+                    )
+                }
+            } else {
+                panic!("{} is not an Enum value.", enum_name);
+            }
+        }
+        VariantValue::VariantValueWithData(enum_name, variant, data) => {
+            let term = scopes.get_value(enum_name, current_scope, context)?;
+
+            if let Term::Type(TypeVariant::Enum(_, variants)) = term {
+                if variant_exists(&*variants, variant) {
+                    let data = evaluate_expr(data, scopes, current_scope, context)?;
+
+                    Ok(Term::Variant(
+                        format!("{0}::{1}({2})", enum_name, variant, data),
+                        Some(Box::new(data)),
+                    ))
                 } else {
                     panic!(
                         "Enum variant {0} does not exist on Enum {1}",
@@ -57,7 +77,8 @@ pub fn evaluate_variant(
 
 fn compare_variant(variant: &VariantDeclare, name: &String) -> bool {
     match variant {
-        VariantDeclare::Empty(variant_name) => variant_name == name,
+        VariantDeclare::Empty(variant) => variant == name,
+        VariantDeclare::Data(variant, _) => variant == name,
     }
 }
 

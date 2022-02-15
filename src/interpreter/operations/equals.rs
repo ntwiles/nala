@@ -7,7 +7,7 @@ pub fn evaluate_equals(left: Term, right: Term) -> Term {
         Term::Num(left) => num_equals(left, right),
         Term::String(left) => string_equals(left, right),
         Term::Bool(left) => bool_equals(left, right),
-        Term::Variant(left) => variant_equals(left, right),
+        Term::Variant(left, data) => variant_equals(left, data, right),
         other => panic_oper_not_impl!("==", other.get_type().to_string()),
     }
 }
@@ -36,9 +36,21 @@ fn bool_equals(left: bool, right: Term) -> Term {
     }
 }
 
-fn variant_equals(left: String, right: Term) -> Term {
-    if let Term::Variant(right) = right {
-        Term::Bool(left == right)
+fn variant_equals(left: String, left_data: Option<Box<Term>>, right: Term) -> Term {
+    if let Term::Variant(right, right_data) = right {
+        if let Some(right_data) = right_data {
+            let variants_match = left == right;
+
+            let data_matches = if let Some(left_data) = left_data {
+                left_data == right_data
+            } else {
+                false
+            };
+
+            Term::Bool(variants_match)
+        } else {
+            Term::Bool(left == right)
+        }
     } else {
         panic_oper_not_impl!("==", PrimitiveType::Variant, right.get_type())
     }

@@ -75,11 +75,13 @@ pub enum VariantsDeclare {
 #[derive(Debug, Clone)]
 pub enum VariantDeclare {
     Empty(String),
+    Data(String, TypeVariant),
 }
 
 #[derive(Debug, Clone)]
 pub enum VariantValue {
     VariantValue(String, String),
+    VariantValueWithData(String, String, Box<Expr>),
     Addend(Addend),
 }
 

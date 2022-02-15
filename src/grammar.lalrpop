@@ -44,7 +44,8 @@ VariantsDeclare: ast::VariantsDeclare = {
 };
 
 VariantDeclare: ast::VariantDeclare = {
-    <Symbol> => ast::VariantDeclare::Empty(<>)
+    <Symbol> => ast::VariantDeclare::Empty(<>),
+    <s:Symbol> "(" <t:Type> ")" => ast::VariantDeclare::Data(s, t)
 };
 
 Expr: ast::Expr = {
@@ -57,7 +58,9 @@ Expr: ast::Expr = {
 };
 
 VariantValue: ast::VariantValue = {
-    <e:Symbol> "::" <k:Symbol> => ast::VariantValue::VariantValue(e, k),
+    <s:Symbol> "::" <v:Symbol> => ast::VariantValue::VariantValue(s, v),
+    <s:Symbol> "::" <v:Symbol> "(" <e:Expr> ")" => ast::VariantValue::VariantValueWithData(s, v, Box::new(e)),
+
     Addend => ast::VariantValue::Addend(<>),
 }
 
