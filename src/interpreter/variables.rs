@@ -89,31 +89,24 @@ pub fn interpret_assign(
             }
         }
         AssignTarget::MemberAccess(member_access) => {
-            if let MemberAccess::MemberAccesses(parents, child) = member_access {
-                let parent = evaluate_member_access(parents, scopes, current_scope, context)?;
-
-                println!("Interpreting");
-
-                let parent = if let Term::Object(object) = parent {
-                    object
-                } else {
-                    todo!()
-                };
-
-                // parent.insert(child, term);
-
-                // parent.get_mut(child).unwrap() = term.clone()
-            } else if let MemberAccess::MemberAccess(parent, child) = member_access {
-                let parent = scopes.get_value(parent, current_scope, context)?;
-
-                if let Term::Object(parent) = parent {
-                    let parent = Arc::clone(&parent);
-                    let mut parent = parent.lock().unwrap();
-                    parent.insert(child.to_string(), term.clone());
-                } else {
-                    todo!()
+            let (parent, child) = match member_access {
+                MemberAccess::MemberAccesses(parents, child) => (
+                    evaluate_member_access(parents, scopes, current_scope, context)?,
+                    child,
+                ),
+                MemberAccess::MemberAccess(parent, child) => {
+                    (scopes.get_value(parent, current_scope, context)?, child)
                 }
-            }
+                _ => todo!(),
+            };
+
+            if let Term::Object(parent) = parent {
+                let parent = Arc::clone(&parent);
+                let mut parent = parent.lock().unwrap();
+                parent.insert(child.to_string(), term.clone());
+            } else {
+                todo!()
+            };
         }
     }
 
