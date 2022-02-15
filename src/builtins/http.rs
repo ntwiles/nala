@@ -8,7 +8,7 @@ use crate::{
 pub fn get_request_block() -> Func {
     let params = Params::Param(Param {
         ident: String::from("options"),
-        param_type: TypeVariant::Primitive(PrimitiveType::Reference),
+        param_type: TypeVariant::Primitive(PrimitiveType::Object),
     });
 
     Func {
@@ -21,7 +21,7 @@ pub fn get_request_block() -> Func {
 fn builtin_request(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> Term {
     let options = args.get("options").unwrap();
 
-    let options = if let Term::Reference(reference) = options {
+    let options = if let Term::Object(reference) = options {
         Arc::clone(&reference)
     } else {
         unreachable!()

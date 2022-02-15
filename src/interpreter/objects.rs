@@ -17,7 +17,7 @@ pub fn evaluate_object(
 ) -> Result<Term, NalaRuntimeError> {
     let object: HashMap<String, Term> =
         evaluate_object_entries(&mut *object.entries.clone(), scopes, current_scope, context)?;
-    Ok(Term::Reference(Arc::new(object)))
+    Ok(Term::Object(Arc::new(object)))
 }
 
 pub fn evaluate_member_access(
@@ -30,7 +30,7 @@ pub fn evaluate_member_access(
         MemberAccess::MemberAccesses(parents, child) => {
             let object = evaluate_member_access(parents, scopes, current_scope, context)?;
 
-            if let Term::Reference(reference) = object {
+            if let Term::Object(reference) = object {
                 let object = Arc::clone(&reference);
 
                 if object.contains_key(child) {
@@ -47,7 +47,7 @@ pub fn evaluate_member_access(
         MemberAccess::MemberAccess(parent, child) => {
             let object = scopes.get_value(parent, current_scope, context)?;
 
-            if let Term::Reference(reference) = object {
+            if let Term::Object(reference) = object {
                 let object = Arc::clone(&reference);
 
                 if object.contains_key(child) {
