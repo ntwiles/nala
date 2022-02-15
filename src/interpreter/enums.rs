@@ -37,7 +37,8 @@ pub fn evaluate_variant(
             if let Term::Type(TypeVariant::Enum(_, variants)) = term {
                 if variant_exists(&*variants, variant) {
                     Ok(Term::Variant(
-                        format!("{0}::{1}", enum_name, variant.to_owned()),
+                        enum_name.to_owned(),
+                        variant.to_owned(),
                         None,
                     ))
                 } else {
@@ -58,7 +59,8 @@ pub fn evaluate_variant(
                     let data = evaluate_expr(data, scopes, current_scope, context)?;
 
                     Ok(Term::Variant(
-                        format!("{0}::{1}({2})", enum_name, variant, data),
+                        enum_name.to_owned(),
+                        variant.to_owned(),
                         Some(Box::new(data)),
                     ))
                 } else {

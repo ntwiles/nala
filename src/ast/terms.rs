@@ -17,7 +17,7 @@ pub enum Term {
     Array(Arc<Mutex<Vec<Term>>>),
     Bool(bool),
     Func(Box<Params>, Box<Block>),
-    Variant(String, Option<Box<Term>>),
+    Variant(String, String, Option<Box<Term>>),
     Num(f32),
     Object(Arc<Mutex<HashMap<String, Term>>>),
     String(String),
@@ -35,14 +35,14 @@ impl fmt::Display for Term {
                 let a = a.lock().unwrap();
                 write!(f, "<Array[{}]>", a.len())
             }
-            Term::String(t) => write!(f, "'{}'", t),
+            Term::String(t) => write!(f, "{}", t),
             Term::Num(n) => write!(f, "{}", n),
             Term::Bool(b) => write!(f, "{}", b),
             Term::Func(_, _) => write!(f, "[{}]", self.get_type()),
             Term::Void => write!(f, "<Void>"),
             Term::Break(_) => write!(f, "<Break>"),
             Term::Type(type_kind) => write!(f, "{}", type_kind),
-            Term::Variant(v, d) => write!(f, "{}", v),
+            Term::Variant(e, v, d) => write!(f, "{0}::{1}", e, v),
             Term::Object(_) => write!(f, "<Object>"),
         }
     }
@@ -81,7 +81,7 @@ impl Term {
             Term::String(_) => TypeVariant::Primitive(PrimitiveType::String),
             Term::Void => TypeVariant::Primitive(PrimitiveType::Void),
             Term::Type(_) => TypeVariant::Primitive(PrimitiveType::Enum),
-            Term::Variant(_, _) => TypeVariant::Primitive(PrimitiveType::Variant),
+            Term::Variant(_, _, _) => TypeVariant::Primitive(PrimitiveType::Variant),
             Term::Object(_) => TypeVariant::Primitive(PrimitiveType::Object),
         }
     }

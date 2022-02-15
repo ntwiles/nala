@@ -2,6 +2,7 @@ pub mod arrays;
 pub mod funcs;
 pub mod math;
 pub mod objects;
+pub mod patterns;
 pub mod terms;
 pub mod types;
 
@@ -13,6 +14,7 @@ use arrays::*;
 use funcs::*;
 use math::*;
 use objects::*;
+use patterns::*;
 use terms::*;
 use types::*;
 
@@ -59,6 +61,7 @@ pub enum Stmts {
 #[derive(Debug, Clone)]
 pub enum Expr {
     Eq(Box<Expr>, VariantValue),
+    IsPattern(Box<Expr>, Pattern),
     Gt(Box<Expr>, Addend),
     Lt(Box<Expr>, Addend),
     VariantValue(VariantValue),

@@ -5,6 +5,7 @@ use super::{
     functions::*,
     objects::*,
     operations::{equals::*, gt::*, lt::*, *},
+    patterns::*,
     variables::*,
 };
 
@@ -105,6 +106,9 @@ pub fn evaluate_expr(
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
         Expr::Object(object) => evaluate_object(object, scopes, current_scope, context),
         Expr::VariantValue(variant) => evaluate_variant(variant, scopes, current_scope, context),
+        Expr::IsPattern(expr, pattern) => {
+            evaluate_is_pattern(expr, pattern, scopes, current_scope, context)
+        }
     }
 }
 

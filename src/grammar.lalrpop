@@ -48,7 +48,9 @@ VariantDeclare: ast::VariantDeclare = {
     <s:Symbol> "(" <t:Type> ")" => ast::VariantDeclare::Data(s, t)
 };
 
+// TODO: We're using VariantValue for equals, that should be pattern matching instead.
 Expr: ast::Expr = {
+    <l:Expr> "is" <p:Pattern> => ast::Expr::IsPattern(Box::new(l), p),
     <l:Expr> "==" <k:VariantValue> => ast::Expr::Eq(Box::new(l), k),
     <l:Expr> ">" <r:Addend> => ast::Expr::Gt(Box::new(l), r),
     <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
@@ -56,6 +58,10 @@ Expr: ast::Expr = {
     Array => ast::Expr::Array(<>),
     Object => ast::Expr::Object(<>),
 };
+
+Pattern: ast::patterns::Pattern = {
+    <e:Symbol> "::" <v:Symbol> "(" "$" ")" => ast::patterns::Pattern::Enum(e, v)
+}
 
 VariantValue: ast::VariantValue = {
     <s:Symbol> "::" <v:Symbol> => ast::VariantValue::VariantValue(s, v),
