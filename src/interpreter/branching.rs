@@ -1,5 +1,5 @@
 use super::basic::*;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use crate::{
     ast::{terms::*, *},
