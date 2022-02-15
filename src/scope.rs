@@ -42,7 +42,7 @@ fn not_found_in_scope_error(ident: &str) -> NalaRuntimeError {
 
 fn assign_immutable_binding_error(ident: &str) -> NalaRuntimeError {
     NalaRuntimeError {
-        message: format!("Cannot re-assign to immutable binding {}", ident),
+        message: format!("Cannot re-assign to immutable binding `{}`.", ident),
     }
 }
 
@@ -119,19 +119,21 @@ impl Scopes {
         ident: &str,
         current_scope: ScopeId,
         new_value: Term,
-    ) -> Term {
+    ) -> Result<Term, NalaRuntimeError> {
         let scope = self.find_scope_with_binding(ident, current_scope);
 
         if let Some(scope) = scope {
             let (_, _, is_mutable) = scope.get_binding(ident).unwrap();
             if is_mutable {
-                scope.add_binding(ident, new_value, true);
+                scope.add_binding(ident, new_value, true)
             } else {
-                assign_immutable_binding_error(ident);
+                return Err(assign_immutable_binding_error(ident));
             }
+        } else {
+            todo!()
         }
 
-        Term::Void
+        Ok(Term::Void)
     }
 
     pub fn add_binding(
