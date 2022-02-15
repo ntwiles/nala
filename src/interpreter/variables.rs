@@ -32,14 +32,14 @@ pub fn interpret_declare(
 }
 
 pub fn interpret_assign(
-    variable: &AssignTarget,
+    variable: &PlaceExpression,
     term: &Term,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Result<Term, NalaRuntimeError> {
     match variable {
-        AssignTarget::Index(ident, index_expr) => {
+        PlaceExpression::Index(ident, index_expr) => {
             if scopes.binding_exists(&ident, current_scope, context) {
                 let index_result = evaluate_expr(&index_expr, scopes, current_scope, context)?;
 
@@ -65,7 +65,7 @@ pub fn interpret_assign(
                 }
             }
         }
-        AssignTarget::Symbol(ident) => {
+        PlaceExpression::Symbol(ident) => {
             if scopes.binding_exists(&ident, current_scope, context) {
                 if let Term::Void = term {
                     panic!("Cannot assign a value of type Void.");
@@ -90,7 +90,7 @@ pub fn interpret_assign(
                 panic!("Unknown identifier `{}`", ident);
             }
         }
-        AssignTarget::MemberAccess(member_access) => {
+        PlaceExpression::MemberAccess(member_access) => {
             let (parent, child) = match member_access {
                 MemberAccess::MemberAccesses(parents, child) => (
                     evaluate_member_access(parents, scopes, current_scope, context)?,

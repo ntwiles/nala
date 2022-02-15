@@ -28,14 +28,14 @@ Stmt: ast::Stmt = {
     "func" <s:Symbol> "(" ")" <b:Block> => ast::Stmt::Func(ast::funcs::Func { ident: s, params: Box::new(ast::funcs::Params::Empty), block: Box::new(b)}),
     "enum" <s:Symbol> "{" <v:VariantsDeclare> "}" => ast::Stmt::Enum(s, Box::new(v)),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
-    <s:AssignTarget> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
+    <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <e:Expr> ";" => ast::Stmt::Expr(e),
 };
 
-AssignTarget: ast::AssignTarget = {
-    <s:Symbol> "[" <e:Expr> "]" => ast::AssignTarget::Index(s, Box::new(e)),
-    <Symbol> => ast::AssignTarget::Symbol(<>),
-    <MemberAccess> => ast::AssignTarget::MemberAccess(<>),
+PlaceExpression: ast::PlaceExpression = {
+    <s:Symbol> "[" <e:Expr> "]" => ast::PlaceExpression::Index(s, Box::new(e)),
+    <Symbol> => ast::PlaceExpression::Symbol(<>),
+    <MemberAccess> => ast::PlaceExpression::MemberAccess(<>),
 };
 
 VariantsDeclare: ast::VariantsDeclare = {

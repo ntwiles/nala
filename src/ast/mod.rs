@@ -39,7 +39,7 @@ impl Debug for Block {
 
 #[derive(Debug, Clone)]
 pub enum Stmt {
-    Assign(AssignTarget, Expr),
+    Assign(PlaceExpression, Expr),
     Break(Expr),
     Declare(String, Expr, bool),
     Enum(String, Box<VariantsDeclare>),
@@ -84,7 +84,7 @@ pub enum VariantValue {
 }
 
 #[derive(Debug, Clone)]
-pub enum AssignTarget {
+pub enum PlaceExpression {
     Symbol(String),
     Index(String, Box<Expr>),
     MemberAccess(MemberAccess),
