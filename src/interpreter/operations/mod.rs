@@ -35,7 +35,7 @@ pub fn evaluate_addend(
                 IAdd,
             )?;
 
-            Ok(do_add(left, right))
+            do_add(left, right)
         }
         Addend::Sub(left, right) => {
             let left = evaluate_addend(left, scopes, current_scope, context)?;
@@ -48,7 +48,7 @@ pub fn evaluate_addend(
                 ISubtract,
             )?;
 
-            Ok(do_subtract(left, right))
+            do_subtract(left, right)
         }
         Addend::Factor(factor) => evaluate_factor(factor, scopes, current_scope, context),
     }
@@ -72,7 +72,7 @@ pub fn evaluate_factor(
                 IMultiply,
             )?;
 
-            Ok(do_multiply(left, right))
+            do_multiply(left, right)
         }
         Factor::Div(left, right) => {
             let left = evaluate_factor(left, scopes, current_scope, context)?;

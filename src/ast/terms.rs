@@ -42,7 +42,7 @@ impl fmt::Display for Term {
             Term::Void => write!(f, "<Void>"),
             Term::Break(_) => write!(f, "<Break>"),
             Term::Type(type_kind) => write!(f, "{}", type_kind),
-            Term::Variant(e, v, d) => write!(f, "{0}::{1}", e, v),
+            Term::Variant(e, v, _) => write!(f, "{0}::{1}", e, v),
             Term::Object(_) => write!(f, "<Object>"),
         }
     }

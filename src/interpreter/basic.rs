@@ -109,6 +109,9 @@ pub fn evaluate_expr(
         Expr::IsPattern(expr, pattern) => {
             evaluate_is_pattern(expr, pattern, scopes, current_scope, context)
         }
+        Expr::Unwrap(expr, pattern) => {
+            evaluate_unwrap(expr, pattern, scopes, current_scope, context)
+        }
     }
 }
 

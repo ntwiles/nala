@@ -67,6 +67,7 @@ pub enum Expr {
     VariantValue(VariantValue),
     Array(Array),
     Object(Object),
+    Unwrap(Box<Expr>, Pattern),
 }
 
 #[derive(Debug, Clone)]

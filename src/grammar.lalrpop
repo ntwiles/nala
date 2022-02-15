@@ -54,13 +54,19 @@ Expr: ast::Expr = {
     <l:Expr> "==" <k:VariantValue> => ast::Expr::Eq(Box::new(l), k),
     <l:Expr> ">" <r:Addend> => ast::Expr::Gt(Box::new(l), r),
     <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
+    "unwrap" <e:Expr> "as" <p:Pattern> => ast::Expr::Unwrap(Box::new(e), p),
     VariantValue => ast::Expr::VariantValue(<>),
     Array => ast::Expr::Array(<>),
     Object => ast::Expr::Object(<>),
 };
 
 Pattern: ast::patterns::Pattern = {
-    <e:Symbol> "::" <v:Symbol> "(" "$" ")" => ast::patterns::Pattern::Enum(e, v)
+    <e:Symbol> "::" <v:Symbol> "(" <c:PatternCapture> ")" => ast::patterns::Pattern::Enum(e, v, c)
+}
+
+PatternCapture: ast::patterns::Capture = {
+    "$" => ast::patterns::Capture::Capture,
+    "_" => ast::patterns::Capture::NoCapture,
 }
 
 VariantValue: ast::VariantValue = {

@@ -17,11 +17,15 @@ func indexOf(haystack: Array<IEqual>, needle: IEqual ) {
     Option::None;
 }
 
-const names = [ 'Nathan', 'Sam', 'Patrick', 'Liz' ];
-const numbers = [ 42, 69, 420 ];
+const names = [ 'Jimmy', 'Kim', 'Howard', 'Lalo' ];
 
-const indexOfString = indexOf(names, 'Jay');
-const indexOfNum = indexOf(numbers, 420);
+const result = indexOf(names, 'Howard');
 
-print(indexOfString);
-print(indexOfNum);
+if (result is Option::Some($)) {
+    const index = unwrap result as Option::Some(_);
+    print(index);
+}
+
+if (result is Option::Some(_)) {
+    print('Found it! Who cares where.');
+}
