@@ -1,4 +1,5 @@
 use super::basic::*;
+use std::sync::{Arc, Mutex};
 
 use crate::{
     ast::{terms::*, *},
@@ -41,6 +42,9 @@ pub fn interpret_for(
     let mut loop_result = Term::Void;
 
     if let Term::Array(array) = result {
+        let array = Arc::clone(&array);
+        let array = array.lock().unwrap();
+
         for (_, item) in array.iter().enumerate() {
             let block_scope = scopes.new_scope(Some(current_scope));
             scopes.add_binding(ident, block_scope, item.clone(), false);

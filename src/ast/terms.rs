@@ -14,7 +14,7 @@ pub enum SymbolOrTerm {
 
 #[derive(Debug, Clone)]
 pub enum Term {
-    Array(Vec<Term>),
+    Array(Arc<Mutex<Vec<Term>>>),
     Bool(bool),
     Func(Box<Params>, Box<Block>),
     Variant(String),
@@ -30,7 +30,11 @@ pub enum Term {
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::Array(a) => write!(f, "Array[{}]", a.len()),
+            Term::Array(a) => {
+                let a = Arc::clone(a);
+                let a = a.lock().unwrap();
+                write!(f, "<Array[{}]>", a.len())
+            }
             Term::String(t) => write!(f, "{}", t),
             Term::Num(n) => write!(f, "{}", n),
             Term::Bool(b) => write!(f, "{}", b),
@@ -48,6 +52,8 @@ impl Term {
     pub fn get_type(&self) -> TypeVariant {
         match self {
             Term::Array(items) => {
+                let items = Arc::clone(items);
+                let items = items.lock().unwrap();
                 let elem_type = if items.len() > 0 {
                     items.first().unwrap().get_type()
                 } else {

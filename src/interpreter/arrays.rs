@@ -1,4 +1,7 @@
-use std::usize;
+use std::{
+    sync::{Arc, Mutex},
+    usize,
+};
 
 use crate::{
     ast::{arrays::*, terms::*},
@@ -23,6 +26,8 @@ pub fn evaluate_index(
                 let array = scopes.get_value(ident, current_scope, context)?;
 
                 if let Term::Array(array) = array {
+                    let array = Arc::clone(&array);
+                    let array = array.lock().unwrap();
                     Ok(array.get(index as usize).unwrap().clone())
                 } else {
                     panic!("Cannot index into a value which is not an array.");
@@ -62,5 +67,5 @@ pub fn evaluate_array(
         }
     };
 
-    Ok(Term::Array(terms))
+    Ok(Term::Array(Arc::new(Mutex::new(terms))))
 }

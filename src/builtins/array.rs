@@ -1,4 +1,7 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 use crate::{
     ast::{funcs::*, terms::*, types::*, *},
@@ -54,6 +57,8 @@ fn builtin_len(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> Ter
     let array = args.get("array").unwrap();
 
     if let Term::Array(array) = array {
+        let array = Arc::clone(array);
+        let array = array.lock().unwrap();
         Term::Num(array.len() as f32)
     } else {
         unreachable!()
@@ -79,5 +84,8 @@ fn builtin_slice(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> T
         unreachable!()
     };
 
-    Term::Array(array[start..end].to_owned())
+    let array = Arc::clone(array);
+    let array = array.lock().unwrap();
+
+    Term::Array(Arc::new(Mutex::new(array[start..end].to_owned())))
 }
