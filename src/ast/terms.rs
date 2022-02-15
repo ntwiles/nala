@@ -1,4 +1,8 @@
-use std::{collections::HashMap, fmt, sync::Arc};
+use std::{
+    collections::HashMap,
+    fmt,
+    sync::{Arc, Mutex},
+};
 
 use super::*;
 
@@ -15,7 +19,7 @@ pub enum Term {
     Func(Box<Params>, Box<Block>),
     Variant(String),
     Num(f32),
-    Object(Arc<HashMap<String, Term>>),
+    Object(Arc<Mutex<HashMap<String, Term>>>),
     String(String),
     Type(TypeVariant),
 

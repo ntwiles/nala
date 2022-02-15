@@ -1,7 +1,9 @@
-use super::basic::*;
+use std::sync::Arc;
+
+use super::{basic::*, objects::*};
 
 use crate::{
-    ast::{terms::*, *},
+    ast::{objects::*, terms::*, *},
     errors::NalaRuntimeError,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
@@ -30,14 +32,14 @@ pub fn interpret_declare(
 }
 
 pub fn interpret_assign(
-    variable: &SymbolOrIndex,
+    variable: &AssignTarget,
     term: &Term,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Result<Term, NalaRuntimeError> {
     match variable {
-        SymbolOrIndex::Index(ident, index_expr) => {
+        AssignTarget::Index(ident, index_expr) => {
             if scopes.binding_exists(&ident, current_scope, context) {
                 let index_result = evaluate_expr(&index_expr, scopes, current_scope, context)?;
 
@@ -61,7 +63,7 @@ pub fn interpret_assign(
                 }
             }
         }
-        SymbolOrIndex::Symbol(ident) => {
+        AssignTarget::Symbol(ident) => {
             if scopes.binding_exists(&ident, current_scope, context) {
                 if let Term::Void = term {
                     panic!("Cannot assign a value of type Void.");
@@ -84,6 +86,33 @@ pub fn interpret_assign(
                 }
             } else {
                 panic!("Unknown identifier `{}`", ident);
+            }
+        }
+        AssignTarget::MemberAccess(member_access) => {
+            if let MemberAccess::MemberAccesses(parents, child) = member_access {
+                let parent = evaluate_member_access(parents, scopes, current_scope, context)?;
+
+                println!("Interpreting");
+
+                let parent = if let Term::Object(object) = parent {
+                    object
+                } else {
+                    todo!()
+                };
+
+                // parent.insert(child, term);
+
+                // parent.get_mut(child).unwrap() = term.clone()
+            } else if let MemberAccess::MemberAccess(parent, child) = member_access {
+                let parent = scopes.get_value(parent, current_scope, context)?;
+
+                if let Term::Object(parent) = parent {
+                    let parent = Arc::clone(&parent);
+                    let mut parent = parent.lock().unwrap();
+                    parent.insert(child.to_string(), term.clone());
+                } else {
+                    todo!()
+                }
             }
         }
     }

@@ -1,4 +1,7 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 use crate::{
     ast::{objects::*, terms::Term},
@@ -8,17 +11,6 @@ use crate::{
 };
 
 use super::{arrays::evaluate_index, basic::evaluate_expr};
-
-pub fn evaluate_object(
-    object: &Object,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-    context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
-    let object: HashMap<String, Term> =
-        evaluate_object_entries(&mut *object.entries.clone(), scopes, current_scope, context)?;
-    Ok(Term::Object(Arc::new(object)))
-}
 
 pub fn evaluate_member_access(
     member_access: &MemberAccess,
@@ -32,6 +24,7 @@ pub fn evaluate_member_access(
 
             if let Term::Object(reference) = object {
                 let object = Arc::clone(&reference);
+                let object = object.lock().unwrap();
 
                 if object.contains_key(child) {
                     Ok(object[child].clone())
@@ -49,6 +42,7 @@ pub fn evaluate_member_access(
 
             if let Term::Object(reference) = object {
                 let object = Arc::clone(&reference);
+                let object = object.lock().unwrap();
 
                 if object.contains_key(child) {
                     Ok(object[child].clone())
@@ -66,6 +60,17 @@ pub fn evaluate_member_access(
         }
         MemberAccess::Index(index) => evaluate_index(index, scopes, current_scope, context),
     }
+}
+
+pub fn evaluate_object(
+    object: &Object,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut impl IoContext,
+) -> Result<Term, NalaRuntimeError> {
+    let object: HashMap<String, Term> =
+        evaluate_object_entries(&mut *object.entries.clone(), scopes, current_scope, context)?;
+    Ok(Term::Object(Arc::new(Mutex::new(object))))
 }
 
 fn evaluate_object_entries(

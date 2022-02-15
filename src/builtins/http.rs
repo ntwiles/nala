@@ -21,11 +21,13 @@ pub fn get_request_block() -> Func {
 fn builtin_request(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> Term {
     let options = args.get("options").unwrap();
 
-    let options = if let Term::Object(reference) = options {
+    let mutex = if let Term::Object(reference) = options {
         Arc::clone(&reference)
     } else {
         unreachable!()
     };
+
+    let options = mutex.lock().unwrap();
 
     let url = if let Term::String(url) = options["url"].clone() {
         url
