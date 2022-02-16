@@ -25,7 +25,8 @@ impl TypeVariant {
                 get_interfaces_for_primitive_type(primitive.clone())
             }
             TypeVariant::Nested(outer, _inner) => get_interfaces_for_primitive_type(outer.clone()),
-            _ => todo!(),
+            TypeVariant::Enum(_enum_name, _variants) => todo!(),
+            TypeVariant::Interface(_interface) => todo!(),
         };
 
         interfaces.contains(&interface)

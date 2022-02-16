@@ -130,7 +130,7 @@ impl Scopes {
                 return Err(assign_immutable_binding_error(ident));
             }
         } else {
-            todo!()
+            return Err(not_found_in_scope_error(ident));
         }
 
         Ok(Term::Void)
