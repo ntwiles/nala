@@ -5,17 +5,18 @@ use super::*;
 use crate::types::get_interfaces_for_primitive_type;
 
 #[derive(Debug, Clone)]
-pub enum Types {
-    Types(Box<Types>, TypeVariant),
-    Type(TypeVariant),
+pub enum TypeVariants {
+    TypeVariants(Box<TypeVariants>, TypeVariant),
+    TypeVariant(TypeVariant),
 }
 
 #[derive(Debug, Clone)]
 pub enum TypeVariant {
-    Nested(PrimitiveType, Box<Types>),
+    Nested(PrimitiveType, Box<TypeVariants>),
     Enum(String, Box<VariantsDeclare>),
     Primitive(PrimitiveType),
     Interface(PrimitiveInterface),
+    Symbol(String),
 }
 
 impl TypeVariant {
@@ -27,6 +28,7 @@ impl TypeVariant {
             TypeVariant::Nested(outer, _inner) => get_interfaces_for_primitive_type(outer.clone()),
             TypeVariant::Enum(_enum_name, _variants) => todo!(),
             TypeVariant::Interface(_interface) => todo!(),
+            TypeVariant::Symbol(_ident) => todo!(),
         };
 
         interfaces.contains(&interface)
@@ -62,18 +64,18 @@ pub enum PrimitiveType {
     Object,
 }
 
-impl Types {
+impl TypeVariants {
     pub fn are_assignable_to(&self, other: &Self) -> bool {
         match self {
-            Types::Types(svv, sv) => {
-                if let Types::Types(ovv, ov) = other {
+            TypeVariants::TypeVariants(svv, sv) => {
+                if let TypeVariants::TypeVariants(ovv, ov) = other {
                     sv.is_assignable_to(ov) && svv.are_assignable_to(ovv)
                 } else {
                     false
                 }
             }
-            Types::Type(sv) => {
-                if let Types::Type(ov) = other {
+            TypeVariants::TypeVariant(sv) => {
+                if let TypeVariants::TypeVariant(ov) = other {
                     sv.is_assignable_to(ov)
                 } else {
                     false
@@ -82,39 +84,39 @@ impl Types {
         }
     }
 
-    pub fn from_vec(types: Vec<TypeVariant>) -> Types {
+    pub fn from_vec(types: Vec<TypeVariant>) -> TypeVariants {
         match types.len() {
-            1 => Types::Type(types.first().unwrap().clone()),
+            1 => TypeVariants::TypeVariant(types.first().unwrap().clone()),
             _ => {
                 let last = types.last().unwrap();
-                let remaining = Types::from_vec(types[..types.len() - 1].to_owned());
-                Types::Types(Box::new(remaining), last.clone())
+                let remaining = TypeVariants::from_vec(types[..types.len() - 1].to_owned());
+                TypeVariants::TypeVariants(Box::new(remaining), last.clone())
             }
         }
     }
 }
 
-impl fmt::Display for Types {
+impl fmt::Display for TypeVariants {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Types::Type(s) => write!(f, "{}", s),
-            Types::Types(ss, s) => write!(f, "{0}, {1}", ss, s),
+            TypeVariants::TypeVariant(s) => write!(f, "{}", s),
+            TypeVariants::TypeVariants(ss, s) => write!(f, "{0}, {1}", ss, s),
         }
     }
 }
 
-impl PartialEq for Types {
+impl PartialEq for TypeVariants {
     fn eq(&self, other: &Self) -> bool {
         return match self {
-            Types::Types(mvv, mv) => {
-                if let Types::Types(ovv, ov) = other {
+            TypeVariants::TypeVariants(mvv, mv) => {
+                if let TypeVariants::TypeVariants(ovv, ov) = other {
                     ovv == mvv && ov == mv
                 } else {
                     false
                 }
             }
-            Types::Type(mv) => {
-                if let Types::Type(ov) = other {
+            TypeVariants::TypeVariant(mv) => {
+                if let TypeVariants::TypeVariant(ov) = other {
                     mv == ov
                 } else {
                     false
@@ -153,6 +155,7 @@ impl TypeVariant {
                     false
                 }
             }
+            TypeVariant::Symbol(_) => todo!(),
         }
     }
 }
@@ -164,6 +167,7 @@ impl fmt::Display for TypeVariant {
             TypeVariant::Primitive(v) => write!(f, "{}", v),
             TypeVariant::Enum(_, _) => todo!(),
             TypeVariant::Interface(i) => write!(f, "{}", i),
+            TypeVariant::Symbol(i) => write!(f, "{}", i),
         }
     }
 }
@@ -185,12 +189,9 @@ impl PartialEq for TypeVariant {
                     panic!("Cannot compare between types `{0}` and `{1}`.", self, other)
                 }
             }
-            TypeVariant::Enum(_, _) => {
-                todo!()
-            }
-            TypeVariant::Interface(_) => {
-                todo!()
-            }
+            TypeVariant::Enum(_, _) => todo!(),
+            TypeVariant::Interface(_) => todo!(),
+            TypeVariant::Symbol(_) => todo!(),
         }
     }
 }

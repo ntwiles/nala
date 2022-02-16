@@ -46,7 +46,7 @@ VariantsDeclare: ast::VariantsDeclare = {
 
 VariantDeclare: ast::VariantDeclare = {
     <Symbol> => ast::VariantDeclare::Empty(<>),
-    <s:Symbol> "(" <t:Type> ")" => ast::VariantDeclare::Data(s, t)
+    <s:Symbol> "(" <t:TypeVariant> ")" => ast::VariantDeclare::Data(s, t)
 };
 
 // TODO: We're using VariantValue for equals, that should be pattern matching instead.
@@ -116,18 +116,20 @@ Params: ast::funcs::Params = {
 }
 
 Param: ast::funcs::Param = {
-    <s:Symbol> ":" <t:Type> => ast::funcs::Param { ident: s, param_type: t }
+    <s:Symbol> ":" <t:TypeVariant> => ast::funcs::Param { ident: s, param_type: t }
 }
 
-Types: ast::types::Types = {
-    <tt:Types> "," <t:Type> => ast::types::Types::Types(Box::new(tt), t),
-    <Type> => ast::types::Types::Type(<>)
+TypeVariants: ast::types::TypeVariants = {
+    <tt:TypeVariants> "," <t:TypeVariant> => ast::types::TypeVariants::TypeVariants(Box::new(tt), t),
+    <TypeVariant> => ast::types::TypeVariants::TypeVariant(<>)
 }
 
-Type: ast::types::TypeVariant = {
-    <p:PrimitiveType> "<" <tt:Types> ">" => ast::types::TypeVariant::Nested(p, Box::new(tt)),
+TypeVariant: ast::types::TypeVariant = {
+    // TODO: This should actually be <t:TypeVariant> "<" <tt:TypeVariants> ">" 
+    <p:PrimitiveType> "<" <tt:TypeVariants> ">" => ast::types::TypeVariant::Nested(p, Box::new(tt)),
     <PrimitiveType> => ast::types::TypeVariant::Primitive(<>),
-    <PrimitiveInterface> => ast::types::TypeVariant::Interface(<>)
+    <PrimitiveInterface> => ast::types::TypeVariant::Interface(<>),
+    <Symbol> => ast::types::TypeVariant::Symbol(<>),
 }
 
 PrimitiveType: ast::types::PrimitiveType = {
