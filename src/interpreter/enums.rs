@@ -42,30 +42,32 @@ pub fn evaluate_variant(
 
     let term = scopes.get_value(enum_name, current_scope, context)?;
 
-    if let Term::Type(TypeVariant::Enum(_, variants)) = term {
-        if variant_exists(&*variants, variant) {
-            let data = if let Some(data) = data {
-                Some(Box::new(evaluate_expr(
-                    data,
-                    scopes,
-                    current_scope,
-                    context,
-                )?))
-            } else {
-                None
-            };
+    if let Term::Type(TypeVariant::Enum(_enum_name, variants)) = term {
+        let existing_variant = find_variant(&*variants, variant)?;
 
-            Ok(Term::Variant(
-                enum_name.to_owned(),
-                variant.to_owned(),
-                data,
-            ))
+        let existing_data_type = if let VariantDeclare::Data(_, data) = existing_variant {
+            Some(data)
         } else {
-            panic!(
-                "Enum variant {0} does not exist on Enum {1}",
-                variant, enum_name
-            )
-        }
+            None
+        };
+
+        let data = if let Some(data) = data {
+            let data = evaluate_expr(data, scopes, current_scope, context)?;
+
+            if !(existing_data_type.unwrap() == data.get_type()) {
+                panic!("Created variant with wrong data type!");
+            }
+
+            Some(Box::new(data))
+        } else {
+            None
+        };
+
+        Ok(Term::Variant(
+            enum_name.to_owned(),
+            variant.to_owned(),
+            data,
+        ))
     } else {
         panic!("{} is not an Enum value.", enum_name);
     }
@@ -78,11 +80,24 @@ fn compare_variant(variant: &VariantDeclare, name: &String) -> bool {
     }
 }
 
-fn variant_exists(variants: &VariantsDeclare, needle: &String) -> bool {
+fn find_variant(
+    variants: &VariantsDeclare,
+    needle: &String,
+) -> Result<VariantDeclare, NalaRuntimeError> {
     match variants {
         VariantsDeclare::Variants(variants, variant) => {
-            compare_variant(variant, needle) || variant_exists(variants, needle)
+            if compare_variant(variant, needle) {
+                Ok(variant.clone())
+            } else {
+                find_variant(variants, needle)
+            }
         }
-        VariantsDeclare::Variant(variant) => compare_variant(variant, needle),
+        VariantsDeclare::Variant(variant) => {
+            if compare_variant(variant, needle) {
+                Ok(variant.clone())
+            } else {
+                todo!()
+            }
+        }
     }
 }
