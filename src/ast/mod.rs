@@ -44,6 +44,8 @@ pub enum Stmt {
     Assign(PlaceExpression, Expr),
     Break(Expr),
     Declare(String, Expr, bool),
+    PatternDeclare(String, Pattern),
+    //TODO: Rename this to EnumDeclare
     Enum(String, Box<VariantsDeclare>),
     Expr(Expr),
     For(String, Expr, Box<Block>),
@@ -61,13 +63,13 @@ pub enum Stmts {
 #[derive(Debug, Clone)]
 pub enum Expr {
     Eq(Box<Expr>, VariantValue),
-    IsPattern(Box<Expr>, Pattern),
+    IsPattern(IsPattern),
     Gt(Box<Expr>, Addend),
     Lt(Box<Expr>, Addend),
     VariantValue(VariantValue),
     Array(Array),
     Object(Object),
-    Unwrap(Box<Expr>, Pattern),
+    Unwrap(Unwrap),
 }
 
 #[derive(Debug, Clone)]

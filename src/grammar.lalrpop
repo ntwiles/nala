@@ -21,6 +21,7 @@ pub Stmts: ast::Stmts = {
 Stmt: ast::Stmt = {
     "const" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, false),
     "mut" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, true),
+    "pattern" <s:Symbol> "=" <p:Pattern> ";" => ast::Stmt::PatternDeclare(s, p),
     "if" "(" <e:Expr> ")" <b:Block> => ast::Stmt::If(e, Box::new(b)),
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
@@ -50,14 +51,24 @@ VariantDeclare: ast::VariantDeclare = {
 
 // TODO: We're using VariantValue for equals, that should be pattern matching instead.
 Expr: ast::Expr = {
-    <l:Expr> "is" <p:Pattern> => ast::Expr::IsPattern(Box::new(l), p),
+    <IsPattern> => ast::Expr::IsPattern(<>),
     <l:Expr> "==" <k:VariantValue> => ast::Expr::Eq(Box::new(l), k),
     <l:Expr> ">" <r:Addend> => ast::Expr::Gt(Box::new(l), r),
     <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
-    "unwrap" <e:Expr> "as" <p:Pattern> => ast::Expr::Unwrap(Box::new(e), p),
+    <Unwrap> => ast::Expr::Unwrap(<>),
     VariantValue => ast::Expr::VariantValue(<>),
     Array => ast::Expr::Array(<>),
     Object => ast::Expr::Object(<>),
+};
+
+Unwrap: ast::patterns::Unwrap = {
+    "unwrap" <e:Expr> "as" <p:Pattern> => ast::patterns::Unwrap::Literal(Box::new(e), p),
+    "unwrap" <e:Expr> "as" <s:Symbol> => ast::patterns::Unwrap::Symbol(Box::new(e), s),
+};
+
+IsPattern: ast::patterns::IsPattern = {
+    <l:Expr> "is" <p:Pattern> => ast::patterns::IsPattern::Literal(Box::new(l), p),
+    <l:Expr> "is" <s:Symbol> => ast::patterns::IsPattern::Symbol(Box::new(l), s),
 };
 
 Pattern: ast::patterns::Pattern = {

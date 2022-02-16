@@ -3,17 +3,34 @@ use crate::ast::patterns::*;
 use super::*;
 
 pub fn evaluate_is_pattern(
-    expr: &Expr,
-    pattern: &Pattern,
+    is_pattern: &IsPattern,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Result<Term, NalaRuntimeError> {
+    let (expr, pattern) = match is_pattern {
+        IsPattern::Literal(expr, pattern) => (expr, pattern.clone()),
+        IsPattern::Symbol(expr, ident) => {
+            let pattern = scopes.get_value(ident, current_scope, context)?;
+
+            if let Term::Pattern(pattern) = pattern {
+                (expr, pattern)
+            } else {
+                return Err(NalaRuntimeError {
+                    message: format!(
+                        "Expected pattern provided to pattern declaration, instead got {}",
+                        0
+                    ),
+                });
+            }
+        }
+    };
+
     let term = evaluate_expr(expr, scopes, current_scope, context)?;
-    Ok(Term::Bool(is_pattern(&term, pattern)))
+    Ok(Term::Bool(check_is_pattern(&term, &pattern)))
 }
 
-fn is_pattern(term: &Term, pattern: &Pattern) -> bool {
+fn check_is_pattern(term: &Term, pattern: &Pattern) -> bool {
     match pattern {
         Pattern::Enum(patt_enum_name, patt_variant, _) => {
             if let Term::Variant(enum_name, variant, _) = term {
@@ -28,15 +45,32 @@ fn is_pattern(term: &Term, pattern: &Pattern) -> bool {
 }
 
 pub fn evaluate_unwrap(
-    expr: &Expr,
-    pattern: &Pattern,
+    unwrap: &Unwrap,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Result<Term, NalaRuntimeError> {
+    let (expr, pattern) = match unwrap {
+        Unwrap::Literal(expr, pattern) => (expr, pattern.clone()),
+        Unwrap::Symbol(expr, ident) => {
+            let pattern = scopes.get_value(ident, current_scope, context)?;
+
+            if let Term::Pattern(pattern) = pattern {
+                (expr, pattern)
+            } else {
+                return Err(NalaRuntimeError {
+                    message: format!(
+                        "Expected pattern provided to pattern declaration, instead got {}",
+                        0
+                    ),
+                });
+            }
+        }
+    };
+
     let term = evaluate_expr(expr, scopes, current_scope, context)?;
 
-    if !is_pattern(&term, pattern) {
+    if !check_is_pattern(&term, &pattern) {
         return Err(NalaRuntimeError {
             message: format!("Expression does not match pattern."),
         });

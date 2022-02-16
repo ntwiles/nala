@@ -18,14 +18,11 @@ func indexOf(haystack: Array<IEqual>, needle: IEqual ) {
 }
 
 const names = [ 'Jimmy', 'Kim', 'Howard', 'Lalo' ];
-
 const result = indexOf(names, 'Howard');
 
-if (result is Option::Some($)) {
-    const index = unwrap result as Option::Some(_);
-    print(index);
-}
+pattern some = Option::Some($);
 
-if (result is Option::Some(_)) {
-    print('Found it! Who cares where.');
+if (result is some) {
+    const index = unwrap result as some;
+    print(index);
 }

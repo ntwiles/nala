@@ -51,6 +51,7 @@ pub enum PrimitiveType {
     Exception,
     Func,
     Number,
+    Pattern,
     String,
     Symbol,
     Void,
@@ -205,16 +206,17 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Array => "Array",
             PrimitiveType::Bool => "Bool",
             PrimitiveType::Break => "<Break>",
+            PrimitiveType::Enum => "<Enum>",
             PrimitiveType::Exception => "<Exception>",
             PrimitiveType::Func => "Func",
             PrimitiveType::Number => "Number",
+            PrimitiveType::Object => "<Object>",
+            PrimitiveType::Pattern => "Pattern",
             PrimitiveType::String => "String",
             PrimitiveType::Symbol => "<Symbol>",
-            PrimitiveType::Void => "<Void>",
-            PrimitiveType::Enum => "<Enum>",
             PrimitiveType::Variant => "Variant",
+            PrimitiveType::Void => "<Void>",
             PrimitiveType::Unknown => "<Unknown>",
-            PrimitiveType::Object => "<Object>",
         };
 
         write!(f, "{}", type_name)

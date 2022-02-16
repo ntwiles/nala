@@ -62,6 +62,13 @@ fn interpret_stmt(
             let result = evaluate_expr(expr, scopes, current_scope, context)?;
             interpret_declare(ident, &result, scopes, current_scope, is_mutable.clone())
         }
+        Stmt::PatternDeclare(ident, pattern) => interpret_declare(
+            ident,
+            &Term::Pattern(pattern.clone()),
+            scopes,
+            current_scope,
+            false,
+        ),
         Stmt::Assign(ident, expr) => {
             let result = evaluate_expr(expr, scopes, current_scope, context)?;
             interpret_assign(ident, &result, scopes, current_scope, context)
@@ -106,12 +113,10 @@ pub fn evaluate_expr(
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
         Expr::Object(object) => evaluate_object(object, scopes, current_scope, context),
         Expr::VariantValue(variant) => evaluate_variant(variant, scopes, current_scope, context),
-        Expr::IsPattern(expr, pattern) => {
-            evaluate_is_pattern(expr, pattern, scopes, current_scope, context)
+        Expr::IsPattern(is_pattern) => {
+            evaluate_is_pattern(is_pattern, scopes, current_scope, context)
         }
-        Expr::Unwrap(expr, pattern) => {
-            evaluate_unwrap(expr, pattern, scopes, current_scope, context)
-        }
+        Expr::Unwrap(unwrap) => evaluate_unwrap(unwrap, scopes, current_scope, context),
     }
 }
 

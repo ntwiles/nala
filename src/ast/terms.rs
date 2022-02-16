@@ -20,6 +20,7 @@ pub enum Term {
     Variant(String, String, Option<Box<Term>>),
     Num(f32),
     Object(Arc<Mutex<HashMap<String, Term>>>),
+    Pattern(Pattern),
     String(String),
     Type(TypeVariant),
 
@@ -35,15 +36,16 @@ impl fmt::Display for Term {
                 let a = a.lock().unwrap();
                 write!(f, "<Array[{}]>", a.len())
             }
-            Term::String(t) => write!(f, "{}", t),
-            Term::Num(n) => write!(f, "{}", n),
             Term::Bool(b) => write!(f, "{}", b),
-            Term::Func(_, _) => write!(f, "[{}]", self.get_type()),
-            Term::Void => write!(f, "<Void>"),
             Term::Break(_) => write!(f, "<Break>"),
+            Term::Func(_, _) => write!(f, "[{}]", self.get_type()),
+            Term::Num(n) => write!(f, "{}", n),
+            Term::Object(_) => write!(f, "<Object>"),
+            Term::Pattern(_) => write!(f, "<Pattern>"),
+            Term::String(t) => write!(f, "{}", t),
             Term::Type(type_kind) => write!(f, "{}", type_kind),
             Term::Variant(e, v, _) => write!(f, "{0}::{1}", e, v),
-            Term::Object(_) => write!(f, "<Object>"),
+            Term::Void => write!(f, "<Void>"),
         }
     }
 }
@@ -64,6 +66,8 @@ impl Term {
                 let elem_type = Types::Type(elem_type);
                 TypeVariant::Nested(PrimitiveType::Array, Box::new(elem_type))
             }
+            Term::Bool(_) => TypeVariant::Primitive(PrimitiveType::Bool),
+            Term::Break(_) => TypeVariant::Primitive(PrimitiveType::Break),
             Term::Func(params, _) => {
                 let params = params.to_vec();
                 if params.len() > 0 {
@@ -75,14 +79,14 @@ impl Term {
                     TypeVariant::Primitive(PrimitiveType::Func)
                 }
             }
-            Term::Bool(_) => TypeVariant::Primitive(PrimitiveType::Bool),
-            Term::Break(_) => TypeVariant::Primitive(PrimitiveType::Break),
+
             Term::Num(_) => TypeVariant::Primitive(PrimitiveType::Number),
+            Term::Object(_) => TypeVariant::Primitive(PrimitiveType::Object),
+            Term::Pattern(_) => TypeVariant::Primitive(PrimitiveType::Pattern),
             Term::String(_) => TypeVariant::Primitive(PrimitiveType::String),
-            Term::Void => TypeVariant::Primitive(PrimitiveType::Void),
             Term::Type(_) => TypeVariant::Primitive(PrimitiveType::Enum),
             Term::Variant(_, _, _) => TypeVariant::Primitive(PrimitiveType::Variant),
-            Term::Object(_) => TypeVariant::Primitive(PrimitiveType::Object),
+            Term::Void => TypeVariant::Primitive(PrimitiveType::Void),
         }
     }
 }
