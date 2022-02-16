@@ -30,50 +30,44 @@ pub fn evaluate_variant(
     current_scope: ScopeId,
     context: &mut impl IoContext,
 ) -> Result<Term, NalaRuntimeError> {
-    match variant {
-        VariantValue::VariantValue(enum_name, variant) => {
-            let term = scopes.get_value(enum_name, current_scope, context)?;
-
-            if let Term::Type(TypeVariant::Enum(_, variants)) = term {
-                if variant_exists(&*variants, variant) {
-                    Ok(Term::Variant(
-                        enum_name.to_owned(),
-                        variant.to_owned(),
-                        None,
-                    ))
-                } else {
-                    panic!(
-                        "Enum variant {0} does not exist on Enum {1}",
-                        variant, enum_name
-                    )
-                }
-            } else {
-                panic!("{} is not an Enum value.", enum_name);
-            }
+    let (enum_name, variant, data) = match variant {
+        VariantValue::Addend(addend) => {
+            return evaluate_addend(addend, scopes, current_scope, context)
         }
+        VariantValue::VariantValue(enum_name, variant) => (enum_name, variant, None),
         VariantValue::VariantValueWithData(enum_name, variant, data) => {
-            let term = scopes.get_value(enum_name, current_scope, context)?;
-
-            if let Term::Type(TypeVariant::Enum(_, variants)) = term {
-                if variant_exists(&*variants, variant) {
-                    let data = evaluate_expr(data, scopes, current_scope, context)?;
-
-                    Ok(Term::Variant(
-                        enum_name.to_owned(),
-                        variant.to_owned(),
-                        Some(Box::new(data)),
-                    ))
-                } else {
-                    panic!(
-                        "Enum variant {0} does not exist on Enum {1}",
-                        variant, enum_name
-                    )
-                }
-            } else {
-                panic!("{} is not an Enum value.", enum_name);
-            }
+            (enum_name, variant, Some(data))
         }
-        VariantValue::Addend(addend) => evaluate_addend(addend, scopes, current_scope, context),
+    };
+
+    let term = scopes.get_value(enum_name, current_scope, context)?;
+
+    if let Term::Type(TypeVariant::Enum(_, variants)) = term {
+        if variant_exists(&*variants, variant) {
+            let data = if let Some(data) = data {
+                Some(Box::new(evaluate_expr(
+                    data,
+                    scopes,
+                    current_scope,
+                    context,
+                )?))
+            } else {
+                None
+            };
+
+            Ok(Term::Variant(
+                enum_name.to_owned(),
+                variant.to_owned(),
+                data,
+            ))
+        } else {
+            panic!(
+                "Enum variant {0} does not exist on Enum {1}",
+                variant, enum_name
+            )
+        }
+    } else {
+        panic!("{} is not an Enum value.", enum_name);
     }
 }
 
