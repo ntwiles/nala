@@ -11,10 +11,10 @@ Nala is an interpreted, expression-oriented programming language with terse synt
 - [x] Functions (first-class citizens).
 - [x] Strict nomitive type system.
 - [x] Object literals and member access.
-- [ ] Pattern matching. (Started)
+- [x] Patterns (first-class-citizens).
 - [ ] Garbage collection.
 - [ ] Generics.
-- [ ] Enum types with data. (Started)
+- [x] Enum types with data.
 - [ ] Error recovery.
 - [ ] Function pipelines.
 - [ ] Async / await.
