@@ -5,10 +5,10 @@ enum FooKind {
 
 const kind = FooKind::Bar;
 
-if (kind == FooKind::Baz) {
+if (kind is FooKind::Baz) {
     print('should not print');
 }
 
-if (kind == FooKind::Bar) {
+if (kind is FooKind::Bar) {
     print('should print');
 }

@@ -62,7 +62,7 @@ pub enum Stmts {
 
 #[derive(Debug, Clone)]
 pub enum Expr {
-    Eq(Box<Expr>, VariantValue),
+    Eq(Box<Expr>, Addend),
     IsPattern(IsPattern),
     Gt(Box<Expr>, Addend),
     Lt(Box<Expr>, Addend),

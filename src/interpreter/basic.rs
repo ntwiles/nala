@@ -94,7 +94,7 @@ pub fn evaluate_expr(
     match expr {
         Expr::Eq(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context)?;
-            let right = evaluate_variant(right, scopes, current_scope, context)?;
+            let right = evaluate_addend(right, scopes, current_scope, context)?;
 
             Ok(evaluate_equals(left, right))
         }

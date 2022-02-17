@@ -79,7 +79,7 @@ pub fn evaluate_unwrap(
     match pattern {
         Pattern::Enum(_patt_enum_name, _patt_variant, patt_capture) => {
             if let Term::Variant(_enum_name, _variant, data) = term {
-                if let Capture::Capture = patt_capture {
+                if let Some(Capture::Capture) = patt_capture {
                     if let Some(data) = data {
                         Ok(*data)
                     } else {

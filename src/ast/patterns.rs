@@ -14,7 +14,7 @@ pub enum IsPattern {
 
 #[derive(Debug, Clone)]
 pub enum Pattern {
-    Enum(String, String, Capture),
+    Enum(String, String, Option<Capture>),
 }
 
 #[derive(Debug, Clone)]

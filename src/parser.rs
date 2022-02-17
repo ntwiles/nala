@@ -5,6 +5,7 @@ use lalrpop_util::lalrpop_mod;
 
 use crate::ast::*;
 
+// TODO: Get error line numbers working properly.
 pub fn parse_code(code: String) -> Result<Program, String> {
     match ProgramParser::new().parse(&code) {
         Ok(parsed) => Ok(parsed),
