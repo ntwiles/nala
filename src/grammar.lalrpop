@@ -139,6 +139,7 @@ PrimitiveType: ast::types::PrimitiveType = {
 // TODO: This allows for example a function to accept two arguments 
 // which each implement IAdd, but which will throw an error when adding together.
 // Implementing generics with interface constraints might solve this problem.
+// In the meantime, we should not allow function params bound to interfaces.
 PrimitiveInterface: ast::types::PrimitiveInterface = {
     "IAdd" => ast::types::PrimitiveInterface::IAdd,
     "ICompare" => ast::types::PrimitiveInterface::ICompare,
