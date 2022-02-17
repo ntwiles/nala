@@ -15,7 +15,7 @@ pub fn get_print_block() -> Func {
 
     Func {
         ident: "print".to_string(),
-        params: Box::new(params),
+        params: Some(params),
         block: Box::new(Block::RustBlock(builtin_print)),
     }
 }
@@ -23,7 +23,7 @@ pub fn get_print_block() -> Func {
 pub fn get_read_block() -> Func {
     Func {
         ident: "read".to_string(),
-        params: Box::new(Params::Empty),
+        params: Some(Params::Empty),
         block: Box::new(Block::RustBlock(builtin_read)),
     }
 }
@@ -31,7 +31,7 @@ pub fn get_read_block() -> Func {
 pub fn get_readnum_block() -> Func {
     Func {
         ident: "readnum".to_string(),
-        params: Box::new(Params::Empty),
+        params: Some(Params::Empty),
         block: Box::new(Block::RustBlock(builtin_readnum)),
     }
 }

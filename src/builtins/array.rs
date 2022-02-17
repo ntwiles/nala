@@ -20,7 +20,7 @@ pub fn get_len_block() -> Func {
 
     Func {
         ident: "len".to_string(),
-        params: Box::new(params),
+        params: Some(params),
         block: Box::new(Block::RustBlock(builtin_len)),
     }
 }
@@ -50,7 +50,7 @@ pub fn get_slice_block() -> Func {
 
     Func {
         ident: "slice".to_string(),
-        params: Box::new(params),
+        params: Some(params),
         block: Box::new(Block::RustBlock(builtin_slice)),
     }
 }

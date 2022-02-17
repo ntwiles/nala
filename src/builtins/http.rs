@@ -13,7 +13,7 @@ pub fn get_request_block() -> Func {
 
     Func {
         ident: "request".to_string(),
-        params: Box::new(params),
+        params: Some(params),
         block: Box::new(Block::RustBlock(builtin_request)),
     }
 }

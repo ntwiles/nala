@@ -38,12 +38,12 @@ pub fn interpret_func(
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
         let block = Box::new(block.clone());
-        let params = Box::new(params.clone());
+        let params = params.clone();
 
-        let result = check_param_types(&*params);
+        let result = check_param_types(params.clone());
 
         if result.is_ok() {
-            scopes.add_binding(&ident, current_scope, Term::Func(*params, *block), false);
+            scopes.add_binding(&ident, current_scope, Term::Func(params, *block), false);
         } else {
             return Err(NalaRuntimeError {
                 message: result.unwrap_err(),
@@ -54,17 +54,23 @@ pub fn interpret_func(
     Ok(Term::Void)
 }
 
-fn check_param_types(params: &Params) -> Result<(), String> {
+fn check_param_types(params: Option<Params>) -> Result<(), String> {
+    if let None = params {
+        return Ok(());
+    };
+
+    let params = params.unwrap();
+
     match params {
         Params::Params(params, Param { param_type, .. }) => {
-            match check_param_types(params) {
+            match check_param_types(Some(*params)) {
                 Ok(_) => (),
                 Err(err) => return Err(err),
             };
 
-            check_param_type(param_type)
+            check_param_type(&param_type)
         }
-        Params::Param(Param { param_type, .. }) => check_param_type(param_type),
+        Params::Param(Param { param_type, .. }) => check_param_type(&param_type),
         Params::Empty => Ok(()),
     }
 }
@@ -100,7 +106,12 @@ pub fn evaluate_call(
             if let Term::Func(params, block) = block {
                 let func_scope = scopes.new_scope(Some(current_scope));
 
-                let params_vec = evaluate_params(&*params, scopes, func_scope, context);
+                let params_vec = if let Some(params) = params {
+                    evaluate_params(&params, scopes, func_scope, context)
+                } else {
+                    vec![]
+                };
+
                 let args = evaluate_elems(&*args, scopes, func_scope, context)?;
 
                 if params_vec.len() != args.len() {

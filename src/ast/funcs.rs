@@ -4,7 +4,7 @@ use super::*;
 #[derive(Debug, Clone)]
 pub struct Func {
     pub ident: String,
-    pub params: Box<Params>,
+    pub params: Option<Params>,
     pub block: Box<Block>,
 }
 

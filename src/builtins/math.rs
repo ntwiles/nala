@@ -15,7 +15,7 @@ pub fn get_floor_block() -> Func {
 
     Func {
         ident: "floor".to_string(),
-        params: Box::new(params),
+        params: Some(params),
         block: Box::new(Block::RustBlock(builtin_floor)),
     }
 }

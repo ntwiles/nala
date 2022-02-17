@@ -16,7 +16,7 @@ pub enum SymbolOrTerm {
 pub enum Term {
     Array(Arc<Mutex<Vec<Term>>>),
     Bool(bool),
-    Func(Box<Params>, Box<Block>),
+    Func(Option<Params>, Box<Block>),
     Variant(String, String, Option<Box<Term>>),
     Num(f32),
     Object(Arc<Mutex<HashMap<String, Term>>>),
@@ -69,7 +69,12 @@ impl Term {
             Term::Bool(_) => TypeVariant::Primitive(PrimitiveType::Bool),
             Term::Break(_) => TypeVariant::Primitive(PrimitiveType::Break),
             Term::Func(params, _) => {
-                let params = params.to_vec();
+                let params = if let Some(params) = params {
+                    params.to_vec()
+                } else {
+                    vec![]
+                };
+
                 if params.len() > 0 {
                     let param_types: Vec<TypeVariant> =
                         params.iter().map(|p| p.clone().param_type).collect();
