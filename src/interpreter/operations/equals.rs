@@ -60,6 +60,7 @@ fn variant_equals(
             Term::Bool(enums_match && variants_match)
         }
     } else {
-        panic_oper_not_impl!("==", PrimitiveType::Variant, right.get_type())
+        // TODO: Using PrimitiveType::String as placeholder. Correct this.
+        panic_oper_not_impl!("==", PrimitiveType::String, right.get_type())
     }
 }

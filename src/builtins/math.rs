@@ -8,7 +8,7 @@ use crate::{
 pub fn get_floor_block() -> Func {
     let num_param = Param {
         ident: String::from("num"),
-        param_type: TypeVariant::Primitive(PrimitiveType::Number),
+        param_type: TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
     };
 
     let params = Params::Param(num_param);

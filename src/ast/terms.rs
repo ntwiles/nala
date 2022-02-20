@@ -4,6 +4,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+use crate::errors::NalaRuntimeError;
+
 use super::*;
 
 #[derive(Debug, Clone)]
@@ -26,6 +28,16 @@ pub enum Term {
 
     Break(Box<Expr>),
     Void,
+}
+
+impl Term {
+    pub fn unwrap_variant(&self) -> Result<(String, String, Option<Box<Term>>), NalaRuntimeError> {
+        if let Term::Variant(enum_name, variant_name, data) = self {
+            Ok((enum_name.to_owned(), variant_name.to_owned(), data.clone()))
+        } else {
+            todo!()
+        }
+    }
 }
 
 impl fmt::Display for Term {
@@ -60,14 +72,17 @@ impl Term {
                     items.first().unwrap().get_type()
                 } else {
                     // TODO: We need to get rid of the Unknown primitive type and solve this problem another way.
-                    TypeVariant::Primitive(PrimitiveType::Unknown)
+                    TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Unknown))
                 };
 
                 let elem_type = TypeVariants::TypeVariant(elem_type);
-                TypeVariant::Nested(PrimitiveType::Array, Box::new(elem_type))
+                TypeVariant::Nested(
+                    Type::PrimitiveType(PrimitiveType::Array),
+                    Box::new(elem_type),
+                )
             }
-            Term::Bool(_) => TypeVariant::Primitive(PrimitiveType::Bool),
-            Term::Break(_) => TypeVariant::Primitive(PrimitiveType::Break),
+            Term::Bool(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Bool)),
+            Term::Break(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Break)),
             Term::Func(params, _) => {
                 let params = if let Some(params) = params {
                     params.to_vec()
@@ -79,19 +94,24 @@ impl Term {
                     let param_types: Vec<TypeVariant> =
                         params.iter().map(|p| p.clone().param_type).collect();
                     let param_types = TypeVariants::from_vec(param_types);
-                    TypeVariant::Nested(PrimitiveType::Func, Box::new(param_types))
+                    TypeVariant::Nested(
+                        Type::PrimitiveType(PrimitiveType::Func),
+                        Box::new(param_types),
+                    )
                 } else {
-                    TypeVariant::Primitive(PrimitiveType::Func)
+                    TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Func))
                 }
             }
 
-            Term::Num(_) => TypeVariant::Primitive(PrimitiveType::Number),
-            Term::Object(_) => TypeVariant::Primitive(PrimitiveType::Object),
-            Term::Pattern(_) => TypeVariant::Primitive(PrimitiveType::Pattern),
-            Term::String(_) => TypeVariant::Primitive(PrimitiveType::String),
-            Term::Type(_) => TypeVariant::Primitive(PrimitiveType::Enum),
-            Term::Variant(_, _, _) => TypeVariant::Primitive(PrimitiveType::Variant),
-            Term::Void => TypeVariant::Primitive(PrimitiveType::Void),
+            Term::Num(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
+            Term::Object(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Object)),
+            Term::Pattern(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Pattern)),
+            Term::String(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::String)),
+            Term::Type(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Enum)),
+            Term::Variant(enum_name, _, _) => {
+                TypeVariant::Type(Type::UserDefined(enum_name.to_owned()))
+            }
+            Term::Void => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Void)),
         }
     }
 }

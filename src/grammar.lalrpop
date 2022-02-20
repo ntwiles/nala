@@ -69,8 +69,9 @@ IsPattern: ast::patterns::IsPattern = {
 };
 
 Pattern: ast::patterns::Pattern = {
-    <e:Symbol> "::" <v:Symbol> <c:("(" <PatternCapture> ")")?> => ast::patterns::Pattern::Enum(e, v, c)
-}
+    <e:Symbol> "::" <v:Symbol> <p:("(" <Pattern> ")")?> => ast::patterns::Pattern::Enum(e, v, Box::new(p)),
+    <PatternCapture> => ast::patterns::Pattern::Capture(<>)
+};
 
 PatternCapture: ast::patterns::Capture = {
     "$" => ast::patterns::Capture::Capture,
@@ -122,10 +123,14 @@ TypeVariants: ast::types::TypeVariants = {
 }
 
 TypeVariant: ast::types::TypeVariant = {
-    <p:PrimitiveType> "<" <tt:TypeVariants> ">" => ast::types::TypeVariant::Nested(p, Box::new(tt)),
-    <PrimitiveType> => ast::types::TypeVariant::Primitive(<>),
+    <t:Type> "<" <tt:TypeVariants> ">" => ast::types::TypeVariant::Nested(t, Box::new(tt)),
+    <Type> => ast::types::TypeVariant::Type(<>),
     <PrimitiveInterface> => ast::types::TypeVariant::Interface(<>),
-    <Symbol> => ast::types::TypeVariant::Symbol(<>),
+}
+
+Type: ast::types::Type = {
+    <PrimitiveType> => ast::types::Type::PrimitiveType(<>),
+    <Symbol> => ast::types::Type::UserDefined(<>),
 }
 
 PrimitiveType: ast::types::PrimitiveType = {

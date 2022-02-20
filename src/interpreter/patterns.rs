@@ -41,6 +41,9 @@ fn check_is_pattern(term: &Term, pattern: &Pattern) -> bool {
                 false
             }
         }
+        Pattern::Capture(_capture) => {
+            todo!()
+        }
     }
 }
 
@@ -76,22 +79,25 @@ pub fn evaluate_unwrap(
         });
     };
 
+    unwrap_with_pattern(term, pattern)
+}
+
+fn unwrap_with_pattern(term: Term, pattern: Pattern) -> Result<Term, NalaRuntimeError> {
     match pattern {
-        Pattern::Enum(_patt_enum_name, _patt_variant, patt_capture) => {
-            if let Term::Variant(_enum_name, _variant, data) = term {
-                if let Some(Capture::Capture) = patt_capture {
-                    if let Some(data) = data {
-                        Ok(*data)
-                    } else {
-                        Err(NalaRuntimeError {
-                            message: "Nothing to capture!".to_string(),
-                        })
-                    }
-                } else {
-                    Ok(Term::Void)
-                }
+        Pattern::Enum(_patt_enum_name, _patt_variant, patt_data) => {
+            let (_enum_name, _variant, data) = term.unwrap_variant()?;
+
+            if let Some(patt_data) = *patt_data {
+                unwrap_with_pattern(*data.unwrap(), patt_data)
             } else {
-                unreachable!()
+                Ok(Term::Void)
+            }
+        }
+        Pattern::Capture(capture) => {
+            if let Capture::Capture = capture {
+                Ok(term)
+            } else {
+                Ok(Term::Void)
             }
         }
     }

@@ -6,7 +6,7 @@ pub mod patterns;
 pub mod terms;
 pub mod types;
 
-use std::fmt::{Debug, Error, Formatter};
+use std::fmt;
 
 use crate::builtins::BuiltinFunc;
 
@@ -30,8 +30,8 @@ pub enum Block {
     RustBlock(BuiltinFunc),
 }
 
-impl Debug for Block {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+impl fmt::Debug for Block {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match self {
             Block::NalaBlock(_) => write!(f, "<NalaBlock>"),
             Block::RustBlock(_) => write!(f, "<RustBlock>"),
@@ -78,10 +78,28 @@ pub enum VariantsDeclare {
     Variant(VariantDeclare),
 }
 
+impl fmt::Display for VariantsDeclare {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            VariantsDeclare::Variants(_variants, _variant) => todo!(),
+            VariantsDeclare::Variant(variant) => write!(f, "{}", variant),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum VariantDeclare {
     Empty(String),
     Data(String, TypeVariant),
+}
+
+impl fmt::Display for VariantDeclare {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            VariantDeclare::Data(variant, data_type) => write!(f, "{0}({1})", variant, data_type),
+            VariantDeclare::Empty(variant) => write!(f, "{}", variant),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]

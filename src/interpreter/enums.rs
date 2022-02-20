@@ -45,7 +45,7 @@ pub fn evaluate_variant(
     if let Term::Type(TypeVariant::Enum(_enum_name, variants)) = term {
         let existing_variant = find_variant(&*variants, variant)?;
 
-        let existing_data_type = if let VariantDeclare::Data(_, data) = existing_variant {
+        let expected_data_type = if let VariantDeclare::Data(_, data) = existing_variant {
             Some(data)
         } else {
             None
@@ -54,8 +54,17 @@ pub fn evaluate_variant(
         let data = if let Some(data) = data {
             let data = evaluate_expr(data, scopes, current_scope, context)?;
 
-            if !(existing_data_type.unwrap() == data.get_type()) {
-                panic!("Created variant with wrong data type!");
+            // TODO: Proper error message instead of unwrap.
+            let expected_data_type = expected_data_type.unwrap();
+
+            if !(data.get_type().is_assignable_to(&expected_data_type)) {
+                return Err(NalaRuntimeError {
+                    message: format!(
+                        "Created variant with wrong data type! Expected `{0}` but got `{1}`",
+                        expected_data_type,
+                        data.get_type()
+                    ),
+                });
             }
 
             Some(Box::new(data))

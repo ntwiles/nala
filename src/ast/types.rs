@@ -12,26 +12,93 @@ pub enum TypeVariants {
 
 #[derive(Debug, Clone)]
 pub enum TypeVariant {
-    Nested(PrimitiveType, Box<TypeVariants>),
+    Nested(Type, Box<TypeVariants>),
     Enum(String, Box<VariantsDeclare>),
-    Primitive(PrimitiveType),
+    Type(Type),
     Interface(PrimitiveInterface),
-    Symbol(String),
 }
 
 impl TypeVariant {
     pub fn implements_interface(&self, interface: PrimitiveInterface) -> bool {
-        let interfaces = match self {
-            TypeVariant::Primitive(primitive) => {
-                get_interfaces_for_primitive_type(primitive.clone())
-            }
-            TypeVariant::Nested(outer, _inner) => get_interfaces_for_primitive_type(outer.clone()),
+        match self {
+            TypeVariant::Type(the_type) => match the_type {
+                Type::PrimitiveType(primitive) => {
+                    get_interfaces_for_primitive_type(primitive.clone()).contains(&interface)
+                }
+                Type::UserDefined(name) => {
+                    if let PrimitiveInterface::IPrint = interface {
+                        true
+                    } else {
+                        false
+                    }
+                }
+            },
+            TypeVariant::Nested(outer, _inner) => match outer {
+                Type::PrimitiveType(outer) => {
+                    get_interfaces_for_primitive_type(outer.clone()).contains(&interface)
+                }
+                Type::UserDefined(_name) => todo!(),
+            },
             TypeVariant::Enum(_enum_name, _variants) => todo!(),
             TypeVariant::Interface(_interface) => todo!(),
-            TypeVariant::Symbol(_ident) => todo!(),
-        };
+        }
+    }
+}
 
-        interfaces.contains(&interface)
+#[derive(Debug, Clone)]
+pub enum Type {
+    PrimitiveType(PrimitiveType),
+    UserDefined(String),
+}
+
+impl Type {
+    pub fn is_assignable_to(&self, other: &Self) -> bool {
+        match self {
+            Type::PrimitiveType(sp) => {
+                if let Type::PrimitiveType(op) = other {
+                    sp.is_assignable_to(op)
+                } else {
+                    false
+                }
+            }
+            Type::UserDefined(st) => {
+                if let Type::UserDefined(ot) = other {
+                    st == ot
+                } else {
+                    false
+                }
+            }
+        }
+    }
+}
+
+impl fmt::Display for Type {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Type::PrimitiveType(primitive) => write!(f, "{}", primitive),
+            Type::UserDefined(the_type) => write!(f, "{}", the_type),
+        }
+    }
+}
+
+impl PartialEq for Type {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            Type::PrimitiveType(sp) => {
+                if let Type::PrimitiveType(op) = other {
+                    sp == op
+                } else {
+                    false
+                }
+            }
+            Type::UserDefined(sp) => {
+                if let Type::UserDefined(op) = other {
+                    sp == op
+                } else {
+                    false
+                }
+            }
+        }
     }
 }
 
@@ -59,7 +126,6 @@ pub enum PrimitiveType {
     Symbol,
     Void,
     Enum,
-    Variant,
     Unknown,
     Object,
 }
@@ -140,13 +206,19 @@ impl TypeVariant {
                     false
                 }
             }
-            TypeVariant::Primitive(sv) => {
-                if let TypeVariant::Primitive(ov) = other {
-                    sv.is_assignable_to(ov)
-                } else {
+            TypeVariant::Type(st) => match other {
+                TypeVariant::Type(ot) => st.is_assignable_to(ot),
+                TypeVariant::Enum(_other_enum_name, _other_variants) => {
+                    // if let PrimitiveType::Variant = sv {
+                    //     println!("{}", sv);
+                    //     false
+                    // } else {
+                    //     false
+                    // }
                     false
                 }
-            }
+                _ => false,
+            },
             TypeVariant::Enum(_, _) => todo!(),
             TypeVariant::Interface(i) => {
                 if let TypeVariant::Interface(other) = other {
@@ -155,7 +227,6 @@ impl TypeVariant {
                     false
                 }
             }
-            TypeVariant::Symbol(_) => todo!(),
         }
     }
 }
@@ -164,10 +235,9 @@ impl fmt::Display for TypeVariant {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             TypeVariant::Nested(v, vv) => write!(f, "{0}<{1}>", v, vv),
-            TypeVariant::Primitive(v) => write!(f, "{}", v),
-            TypeVariant::Enum(_, _) => todo!(),
+            TypeVariant::Type(t) => write!(f, "{}", t),
+            TypeVariant::Enum(v, vv) => write!(f, "{0}::{1}", v, vv),
             TypeVariant::Interface(i) => write!(f, "{}", i),
-            TypeVariant::Symbol(i) => write!(f, "{}", i),
         }
     }
 }
@@ -177,27 +247,33 @@ impl PartialEq for TypeVariant {
         match self {
             TypeVariant::Nested(mv, mg) => {
                 if let TypeVariant::Nested(ov, og) = other {
-                    return mv == ov && mg == og;
+                    mv == ov && mg == og
                 } else {
-                    panic!("Cannot compare between types `{0}` and `{1}`.", self, other)
+                    false
                 }
             }
-            TypeVariant::Primitive(me) => {
-                if let TypeVariant::Primitive(other) = other {
-                    return me == other;
+            TypeVariant::Type(me) => {
+                if let TypeVariant::Type(other) = other {
+                    me == other
                 } else {
-                    panic!("Cannot compare between types `{0}` and `{1}`.", self, other)
+                    false
                 }
             }
-            TypeVariant::Enum(_, _) => todo!(),
+            TypeVariant::Enum(mn, _) => {
+                if let TypeVariant::Enum(on, _) = other {
+                    mn == on
+                } else {
+                    false
+                }
+            }
             TypeVariant::Interface(_) => todo!(),
-            TypeVariant::Symbol(_) => todo!(),
         }
     }
 }
 
 impl PrimitiveType {
-    pub fn is_assignable_to(&self, param: &Self) -> bool {
+    pub fn is_assignable_to(&self, param: &PrimitiveType) -> bool {
+        // TODO: Not a good way to compare types.
         self.to_string() == param.to_string()
     }
 }
@@ -216,7 +292,6 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Pattern => "Pattern",
             PrimitiveType::String => "String",
             PrimitiveType::Symbol => "<Symbol>",
-            PrimitiveType::Variant => "Variant",
             PrimitiveType::Void => "<Void>",
             PrimitiveType::Unknown => "<Unknown>",
         };

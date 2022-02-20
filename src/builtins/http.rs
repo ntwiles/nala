@@ -8,7 +8,7 @@ use crate::{
 pub fn get_request_block() -> Func {
     let params = Params::Param(Param {
         ident: String::from("options"),
-        param_type: TypeVariant::Primitive(PrimitiveType::Object),
+        param_type: TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Object)),
     });
 
     Func {

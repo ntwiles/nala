@@ -9,9 +9,14 @@ use crate::{
 };
 
 pub fn get_len_block() -> Func {
-    let inner_type = TypeVariants::TypeVariant(TypeVariant::Primitive(PrimitiveType::Number));
+    let inner_type = TypeVariants::TypeVariant(TypeVariant::Type(Type::PrimitiveType(
+        PrimitiveType::Number,
+    )));
 
-    let outer_type = TypeVariant::Nested(PrimitiveType::Array, Box::new(inner_type));
+    let outer_type = TypeVariant::Nested(
+        Type::PrimitiveType(PrimitiveType::Array),
+        Box::new(inner_type),
+    );
 
     let params = Params::Param(Param {
         ident: String::from("array"),
@@ -29,21 +34,21 @@ pub fn get_slice_block() -> Func {
     let array_param = Param {
         ident: String::from("array"),
         param_type: TypeVariant::Nested(
-            PrimitiveType::Array,
-            Box::new(TypeVariants::TypeVariant(TypeVariant::Primitive(
-                PrimitiveType::Number,
+            Type::PrimitiveType(PrimitiveType::Array),
+            Box::new(TypeVariants::TypeVariant(TypeVariant::Type(
+                Type::PrimitiveType(PrimitiveType::Number),
             ))),
         ),
     };
 
     let start_param = Param {
         ident: String::from("start"),
-        param_type: TypeVariant::Primitive(PrimitiveType::Number),
+        param_type: TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
     };
 
     let end_param = Param {
         ident: String::from("end"),
-        param_type: TypeVariant::Primitive(PrimitiveType::Number),
+        param_type: TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
     };
 
     let params = Params::from_vec(vec![array_param, start_param, end_param]);
