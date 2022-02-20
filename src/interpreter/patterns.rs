@@ -41,9 +41,7 @@ fn check_is_pattern(term: &Term, pattern: &Pattern) -> bool {
                 false
             }
         }
-        Pattern::Capture(_capture) => {
-            todo!()
-        }
+        Pattern::Capture(capture) => true,
     }
 }
 

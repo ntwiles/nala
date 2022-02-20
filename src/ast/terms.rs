@@ -56,7 +56,15 @@ impl fmt::Display for Term {
             Term::Pattern(_) => write!(f, "<Pattern>"),
             Term::String(t) => write!(f, "{}", t),
             Term::Type(type_kind) => write!(f, "{}", type_kind),
-            Term::Variant(e, v, _) => write!(f, "{0}::{1}", e, v),
+            Term::Variant(e, v, d) => {
+                let d = if let Some(d) = d {
+                    format!("({0})", d)
+                } else {
+                    "".to_string()
+                };
+
+                write!(f, "{0}::{1}{2}", e, v, d)
+            }
             Term::Void => write!(f, "<Void>"),
         }
     }
