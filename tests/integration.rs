@@ -1,5 +1,3 @@
-extern crate test_util;
-
 use nala_interpreter::io_context::TestContext;
 use test_util::parse_and_interpret;
 
