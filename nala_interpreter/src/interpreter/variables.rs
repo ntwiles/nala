@@ -99,7 +99,9 @@ pub fn interpret_assign(
                 MemberAccess::MemberAccess(parent, child) => {
                     (scopes.get_value(parent, current_scope, context)?, child)
                 }
-                _ => todo!(),
+                MemberAccess::Index(_index) => {
+                    todo!();
+                }
             };
 
             if let Term::Object(parent) = parent {

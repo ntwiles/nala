@@ -25,7 +25,7 @@ Stmt: ast::Stmt = {
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
     "func" <s:Symbol> "(" <p:Params?> ")" <b:Block> => ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, block: Box::new(b)}),
-    "enum" <s:Symbol> "{" <v:VariantsDeclare> "}" => ast::Stmt::Enum(s, Box::new(v)),
+    "enum" <s:Symbol> "{" <v:VariantsDeclare> "}" => ast::Stmt::EnumDeclare(s, Box::new(v)),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
     <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <e:Expr> ";" => ast::Stmt::Expr(e),

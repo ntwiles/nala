@@ -81,7 +81,9 @@ fn interpret_stmt(
         Stmt::Func(func) => interpret_func(func, scopes, current_scope),
         Stmt::Expr(expr) => evaluate_expr(expr, scopes, current_scope, context),
         Stmt::Break(expr) => Ok(Term::Break(Box::new(expr.clone()))),
-        Stmt::Enum(ident, variants) => interpret_enum(ident, variants, scopes, current_scope),
+        Stmt::EnumDeclare(ident, variants) => {
+            interpret_enum(ident, variants, scopes, current_scope)
+        }
     }
 }
 

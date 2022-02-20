@@ -54,8 +54,16 @@ pub fn evaluate_variant(
         let data = if let Some(data) = data {
             let data = evaluate_expr(data, scopes, current_scope, context)?;
 
-            // TODO: Proper error message instead of unwrap.
-            let expected_data_type = expected_data_type.unwrap();
+            let expected_data_type = if let Some(data_type) = expected_data_type {
+                data_type
+            } else {
+                return Err(NalaRuntimeError {
+                    message: format!(
+                        "Passed data type {0} when none was expected!",
+                        data.get_type()
+                    ),
+                });
+            };
 
             if !(data.get_type().is_assignable_to(&expected_data_type)) {
                 return Err(NalaRuntimeError {

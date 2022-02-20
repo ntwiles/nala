@@ -562,3 +562,17 @@ fn it_runs_wiles_basic() {
     assert!(parse_and_interpret(nala, &mut test_context).is_ok());
     assert_eq!(test_context.get_output(), vec!["h", "e", "l", "l"]);
 }
+
+#[test]
+fn it_allows_assign_to_index_place_expression() {
+    let mut test_context = TestContext::new();
+
+    let nala = r#"
+        const letters = [ 'h', 'e', 'l', 'l', 'o'];
+        letters[0] = 'j';
+        print(letters[0]);
+    "#;
+
+    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
+    assert_eq!(test_context.get_output(), vec!["j"]);
+}

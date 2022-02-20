@@ -149,7 +149,6 @@ pub fn evaluate_call(
                         ));
                     }
 
-                    // TODO: Should function args be mutable or immutable?
                     scopes.add_binding(&param.ident, func_scope, arg.clone(), false);
                     param_args.entry(param.ident.clone()).or_insert(arg.clone());
                 }

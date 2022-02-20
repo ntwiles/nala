@@ -35,7 +35,7 @@ impl Term {
         if let Term::Variant(enum_name, variant_name, data) = self {
             Ok((enum_name.to_owned(), variant_name.to_owned(), data.clone()))
         } else {
-            todo!()
+            panic!("Term `{}` is not a Variant!", self);
         }
     }
 }

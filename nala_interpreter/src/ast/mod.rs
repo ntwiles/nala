@@ -44,8 +44,7 @@ pub enum Stmt {
     Break(Expr),
     Declare(String, Expr, bool),
     PatternDeclare(String, Pattern),
-    //TODO: Rename this to EnumDeclare
-    Enum(String, Box<VariantsDeclare>),
+    EnumDeclare(String, Box<VariantsDeclare>),
     Expr(Expr),
     For(String, Expr, Box<Block>),
     Func(Func),
