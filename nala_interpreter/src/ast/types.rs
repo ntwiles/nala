@@ -37,7 +37,7 @@ impl TypeVariant {
                 Type::PrimitiveType(outer) => {
                     get_interfaces_for_primitive_type(outer.clone()).contains(&interface)
                 }
-                Type::UserDefined(_name) => todo!(),
+                Type::UserDefined(_name) => false,
             },
             TypeVariant::Enum(_enum_name, _variants) => todo!(),
             TypeVariant::Interface(_interface) => todo!(),
