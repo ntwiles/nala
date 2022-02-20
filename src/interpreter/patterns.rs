@@ -41,7 +41,7 @@ fn check_is_pattern(term: &Term, pattern: &Pattern) -> bool {
                 false
             }
         }
-        Pattern::Capture(capture) => true,
+        Pattern::Capture(_capture) => true,
     }
 }
 
