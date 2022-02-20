@@ -10,7 +10,7 @@ use super::{
 };
 
 use crate::{
-    ast::{arrays::*, terms::*, *},
+    ast::{terms::*, *},
     errors::NalaRuntimeError,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
@@ -123,20 +123,19 @@ pub fn evaluate_expr(
 }
 
 pub fn evaluate_elems(
-    elems: &Elems,
+    elems: &Vec<Expr>,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<Vec<Value>, NalaRuntimeError> {
-    match elems {
-        Elems::Elems(elems, expr) => {
-            let mut elems = evaluate_elems(elems, scopes, current_scope, context)?;
-            let expr_result = evaluate_expr(&expr, scopes, current_scope, context)?;
+    let results: Vec<Result<Value, NalaRuntimeError>> = elems
+        .iter()
+        .map(|e| evaluate_expr(e, scopes, current_scope, context))
+        .collect();
 
-            elems.push(expr_result);
-            Ok(elems)
-        }
-        Elems::Expr(expr) => Ok(vec![evaluate_expr(&expr, scopes, current_scope, context)?]),
-        Elems::Empty => Ok(vec![]),
+    if let Some(Err(err)) = results.iter().find(|r| r.is_err()) {
+        Err(err.clone())
+    } else {
+        Ok(results.into_iter().map(|r| r.unwrap()).collect())
     }
 }

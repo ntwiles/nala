@@ -2,16 +2,7 @@ use super::*;
 
 #[derive(Debug, Clone)]
 pub struct Array {
-    pub elems: Box<Elems>,
-}
-
-// TODO: Implement this as a Vec<Expr> instead of a linked list.
-// This should remain as a linked list in the grammar.
-#[derive(Debug, Clone)]
-pub enum Elems {
-    Elems(Box<Elems>, Expr),
-    Expr(Expr),
-    Empty,
+    pub elems: Vec<Expr>,
 }
 
 #[derive(Debug, Clone)]

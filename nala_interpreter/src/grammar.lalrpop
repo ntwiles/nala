@@ -99,14 +99,10 @@ KeyValuePair: ast::objects::KeyValuePair = {
 }
 
 Array: ast::arrays::Array = {
-    "[" <Elems> "]" => ast::arrays::Array { elems: Box::new(<>) },
-    "[" "]" => ast::arrays::Array { elems: Box::new(ast::arrays::Elems::Empty) },
+    "[" <Elems> "]" => ast::arrays::Array { elems: <> },
 };
 
-Elems: ast::arrays::Elems = {
-    <ee:Elems> "," <e:Expr> => ast::arrays::Elems::Elems(Box::new(ee), e),
-    <Expr> => ast::arrays::Elems::Expr(<>),
-};
+Elems = Comma<Expr>;
 
 Params: ast::funcs::Params = {
     <pp:Params> "," <p:Param> => ast::funcs::Params::Params(Box::new(pp), p),
@@ -165,8 +161,7 @@ pub Factor: ast::math::Factor = {
 };
 
 Call: ast::funcs::Call = {
-    <s:Symbol> "(" <e:Elems> ")" => ast::funcs::Call::Call(s, Box::new(e)),
-    <s:Symbol> "(" ")" => ast::funcs::Call::Call(s, Box::new(ast::arrays::Elems::Empty)),
+    <s:Symbol> "(" <e:Elems> ")" => ast::funcs::Call::Call(s, e),
     <MemberAccess> => ast::funcs::Call::MemberAccess(<>),
     <Term> => ast::funcs::Call::Term(<>)
 };
