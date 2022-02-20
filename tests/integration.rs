@@ -1,4 +1,7 @@
-use library::{io_context::TestContext, test_util::parse_and_interpret};
+extern crate test_util;
+
+use nala_interpreter::io_context::TestContext;
+use test_util::parse_and_interpret;
 
 #[test]
 fn it_runs_array_empty() {

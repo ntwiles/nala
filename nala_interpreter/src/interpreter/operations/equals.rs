@@ -1,6 +1,6 @@
 use crate::ast::{terms::*, types::*};
 
-use super::errors::panic_oper_not_impl;
+use super::errors::{panic_oper_not_impl, panic_oper_not_impl_for};
 
 pub fn evaluate_equals(left: Term, right: Term) -> Term {
     match left {
@@ -10,7 +10,7 @@ pub fn evaluate_equals(left: Term, right: Term) -> Term {
         Term::Variant(left_enum, left_variant, data) => {
             variant_equals(left_enum, left_variant, data, right)
         }
-        other => panic_oper_not_impl!("==", other.get_type().to_string()),
+        other => panic_oper_not_impl("==", &other.get_type()),
     }
 }
 
@@ -18,7 +18,11 @@ fn num_equals(left: f32, right: Term) -> Term {
     if let Term::Num(right) = right {
         Term::Bool(left == right)
     } else {
-        panic_oper_not_impl!("==", PrimitiveType::Number, right.get_type())
+        panic_oper_not_impl_for(
+            "==",
+            &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
+            &right.get_type(),
+        )
     }
 }
 
@@ -26,7 +30,11 @@ fn string_equals(left: String, right: Term) -> Term {
     if let Term::String(right) = right {
         Term::Bool(left == right)
     } else {
-        panic_oper_not_impl!("==", PrimitiveType::String, right.get_type())
+        panic_oper_not_impl_for(
+            "==",
+            &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::String)),
+            &right.get_type(),
+        )
     }
 }
 
@@ -34,7 +42,11 @@ fn bool_equals(left: bool, right: Term) -> Term {
     if let Term::Bool(right) = right {
         Term::Bool(left == right)
     } else {
-        panic_oper_not_impl!("==", PrimitiveType::Bool, right.get_type())
+        panic_oper_not_impl_for(
+            "==",
+            &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Bool)),
+            &right.get_type(),
+        )
     }
 }
 
@@ -61,6 +73,10 @@ fn variant_equals(
         }
     } else {
         // TODO: Using PrimitiveType::String as placeholder. Correct this.
-        panic_oper_not_impl!("==", PrimitiveType::String, right.get_type())
+        panic_oper_not_impl_for(
+            "==",
+            &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::String)),
+            &right.get_type(),
+        )
     }
 }

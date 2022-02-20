@@ -1,8 +1,8 @@
 use std::env;
 
-use library;
+use nala_interpreter;
 
 fn main() -> () {
     let args: Vec<String> = env::args().collect();
-    library::main(&args[1]);
+    nala_interpreter::main(&args[1]);
 }

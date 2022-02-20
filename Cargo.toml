@@ -4,19 +4,12 @@ version = "0.1.0"
 authors = ["Nathan Wiles <ntwiles@gmail.com>"]
 edition = "2018"
 
-[lib]
-name = "library"
-path = "src/lib.rs"
-
-[[bin]]
-name = "nala"
-path = "src/main.rs"
-
-[build-dependencies]
-lalrpop = "0.19.6"
-
 [dependencies]
-lalrpop-util = "0.19.6"
-regex = "1.5.4"
-reqwest = { version = "0.11", features = ["blocking", "json"] }
 tokio = { version = "1", features = ["full"] }
+nala_interpreter = { path = "nala_interpreter"}
+
+[dev-dependencies]
+test_util = { path = "test_util" }
+regex = "1.5.4"
+
+

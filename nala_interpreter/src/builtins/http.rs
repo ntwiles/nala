@@ -1,5 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
+use reqwest;
+
 use crate::{
     ast::{funcs::*, terms::*, types::*, *},
     io_context::IoContext,

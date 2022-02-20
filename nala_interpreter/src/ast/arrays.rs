@@ -1,4 +1,4 @@
-use super::*;
+use super::{terms::*, *};
 
 #[derive(Debug, Clone)]
 pub struct Array {

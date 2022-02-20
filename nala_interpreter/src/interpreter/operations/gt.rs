@@ -1,7 +1,7 @@
 use crate::{
     ast::{
         terms::*,
-        types::{PrimitiveInterface::*, PrimitiveType},
+        types::{PrimitiveInterface::*, *},
     },
     errors::*,
 };
@@ -14,12 +14,20 @@ pub fn evaluate_gt(left: Term, right: Term) -> Result<Term, NalaRuntimeError> {
     match left {
         Term::Num(left) => match right {
             Term::Num(right) => Ok(Term::Bool(left > right)),
-            right => panic_oper_not_impl!(">", PrimitiveType::Number, right.get_type()),
+            right => panic_oper_not_impl_for(
+                ">",
+                &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
+                &right.get_type(),
+            ),
         },
         Term::String(left) => match right {
             Term::String(right) => Ok(Term::Bool(left > right)),
-            right => panic_oper_not_impl!(">", PrimitiveType::String, right.get_type()),
+            right => panic_oper_not_impl_for(
+                ">",
+                &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::String)),
+                &right.get_type(),
+            ),
         },
-        left => panic_oper_not_impl!(">", left.get_type()),
+        left => panic_oper_not_impl(">", &left.get_type()),
     }
 }

@@ -1,6 +1,7 @@
-// TODO: This is only used inside tests/ , see if theres a way to keep this over there.
+extern crate nala_interpreter;
+extern crate regex;
 
-use crate::{
+use nala_interpreter::{
     ast::terms::Term, errors::NalaRuntimeError, interpreter::interpret_tree,
     io_context::TestContext, parser,
 };
@@ -24,4 +25,23 @@ pub fn parse_and_interpret(
         Ok(parsed) => interpret_tree(parsed, test_context),
         Err(_) => panic!("Could not parse nala!"),
     }
+}
+
+#[macro_export]
+macro_rules! rgx {
+    ($pattern:literal) => {
+        Regex::new($pattern).unwrap()
+    };
+}
+
+#[macro_export]
+macro_rules! assert_regex_match {
+    ($re:ident, $str:expr) => {
+        if !$re.is_match($str) {
+            panic!(
+                "\nString does not match regex. \n  String: {0} \n  Regex: {1}",
+                $str, $re,
+            )
+        }
+    };
 }

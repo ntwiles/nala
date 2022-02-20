@@ -1,5 +1,4 @@
-use super::types::*;
-use super::*;
+use super::{arrays::*, objects::*, types::*, *};
 
 #[derive(Debug, Clone)]
 pub struct Func {

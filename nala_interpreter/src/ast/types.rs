@@ -25,7 +25,7 @@ impl TypeVariant {
                 Type::PrimitiveType(primitive) => {
                     get_interfaces_for_primitive_type(primitive.clone()).contains(&interface)
                 }
-                Type::UserDefined(name) => {
+                Type::UserDefined(_name) => {
                     if let PrimitiveInterface::IPrint = interface {
                         true
                     } else {

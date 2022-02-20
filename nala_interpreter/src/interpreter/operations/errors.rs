@@ -3,20 +3,18 @@ use crate::{
     errors::*,
 };
 
-macro_rules! panic_oper_not_impl {
-    ($oper:expr, $type:expr) => {
-        panic!(
-            "Operator `{0}` is not implemented for type {1}.",
-            $oper, $type,
-        )
-    };
+pub fn panic_oper_not_impl(oper: &str, the_type: &TypeVariant) -> ! {
+    panic!(
+        "Operator `{0}` is not implemented for type {1}.",
+        oper, the_type,
+    )
+}
 
-    ($oper:expr, $left:expr, $right:expr) => {
-        panic!(
-            "Operator `{0}` is not implemented for types {1} and {2}.",
-            $oper, $left, $right
-        )
-    };
+pub fn panic_oper_not_impl_for(oper: &str, left: &TypeVariant, right: &TypeVariant) -> ! {
+    panic!(
+        "Operator `{0}` is not implemented for types {1} and {2}.",
+        oper, left, right
+    )
 }
 
 pub fn check_operator_implemented_both(
@@ -64,5 +62,3 @@ fn operator_not_implemented_error(
         )
     }
 }
-
-pub(crate) use panic_oper_not_impl;

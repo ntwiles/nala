@@ -10,10 +10,10 @@ use crate::{
     io_context::IoContext,
 };
 
-use array::*;
-use http::*;
-use io::*;
-use math::*;
+use self::array::*;
+use self::http::*;
+use self::io::*;
+use self::math::*;
 
 pub type BuiltinFunc = fn(HashMap<String, Term>, &mut dyn IoContext) -> Term;
 

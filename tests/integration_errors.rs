@@ -1,12 +1,10 @@
-use library::{
-    io_context::TestContext,
-    test_util::parse_and_interpret,
-    util::{assert_regex_match, regex},
-};
+use nala_interpreter::io_context::TestContext;
+use regex::Regex;
+use test_util::{assert_regex_match, parse_and_interpret, rgx};
 
 #[test]
 fn it_errors_when_indexing_array_with_string() {
-    let expected_message = regex!("Cannot index using non-numeric value.");
+    let expected_message = rgx!("Cannot index using non-numeric value.");
 
     let nala = r#"
         const nums = [0, 1, 2, 3];
@@ -21,9 +19,8 @@ fn it_errors_when_indexing_array_with_string() {
 
 #[test]
 fn it_errors_when_passing_number_arg_to_len() {
-    let expected_message = regex!(
-        "Passed value `7` of type `Number` to func `len` where `Array<Number>` was expected."
-    );
+    let expected_message =
+        rgx!("Passed value `7` of type `Number` to func `len` where `Array<Number>` was expected.");
 
     let nala = r#"
         const num = 7;
@@ -39,7 +36,7 @@ fn it_errors_when_passing_number_arg_to_len() {
 
 #[test]
 fn it_errors_when_declaring_array_multiple_types() {
-    let expected_message = regex!("Arrays can contain elements of only a single type.");
+    let expected_message = rgx!("Arrays can contain elements of only a single type.");
 
     let nala = "const bad = [0, '1'];";
     let result = parse_and_interpret(nala, &mut TestContext::new());
@@ -50,7 +47,7 @@ fn it_errors_when_declaring_array_multiple_types() {
 
 #[test]
 fn it_errors_when_assigning_wrong_type() {
-    let expected_message = regex!("Cannot assign a value of type String where Number is expected.");
+    let expected_message = rgx!("Cannot assign a value of type String where Number is expected.");
 
     let nala = r#"
         mut num = 7;
@@ -65,7 +62,7 @@ fn it_errors_when_assigning_wrong_type() {
 
 #[test]
 fn it_errors_when_assigning_type_void() {
-    let expected_message = regex!("Cannot declare a variable with a value of type Void.");
+    let expected_message = rgx!("Cannot declare a variable with a value of type Void.");
 
     let nala = r#"
         func returnVoid() {
@@ -84,7 +81,7 @@ fn it_errors_when_assigning_type_void() {
 #[test]
 fn it_errors_when_passing_primitive_when_nested_is_expected() {
     let expected_message =
-        regex!("Type `Bool` does not support nesting. Type `Bool<String>` is invalid.");
+        rgx!("Type `Bool` does not support nesting. Type `Bool<String>` is invalid.");
 
     let nala = r#"
         func bad(arg: Bool<String>) {

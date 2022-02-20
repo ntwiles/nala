@@ -10,13 +10,12 @@ use std::fmt;
 
 use crate::builtins::BuiltinFunc;
 
-use arrays::*;
-use funcs::*;
-use math::*;
-use objects::*;
-use patterns::*;
-use terms::*;
-use types::*;
+use self::arrays::*;
+use self::funcs::*;
+use self::math::*;
+use self::objects::*;
+use self::patterns::*;
+use self::types::*;
 
 #[derive(Debug)]
 pub enum Program {

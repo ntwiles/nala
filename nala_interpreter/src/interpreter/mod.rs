@@ -16,9 +16,9 @@ use crate::{
     scope::*,
 };
 
+use self::functions::*;
+use self::variables::*;
 use basic::*;
-use functions::*;
-use variables::*;
 
 pub fn interpret_tree(
     program: Program,

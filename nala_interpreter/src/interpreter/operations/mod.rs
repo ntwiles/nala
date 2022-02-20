@@ -14,8 +14,8 @@ use crate::{
 
 use super::functions::*;
 
-use arithmatic::*;
-use errors::check_operator_implemented_both;
+use self::arithmatic::*;
+use self::errors::check_operator_implemented_both;
 
 pub fn evaluate_addend(
     addend: &Addend,
