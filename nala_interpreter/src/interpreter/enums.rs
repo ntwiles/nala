@@ -9,14 +9,14 @@ use super::{basic::*, operations::*};
 
 pub fn interpret_enum(
     ident: &String,
-    variants: &VariantsDeclare,
+    variants: &Vec<VariantDeclare>,
     scopes: &mut Scopes,
     current_scope: ScopeId,
 ) -> Result<Value, NalaRuntimeError> {
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
-        let enum_type = TypeVariant::Enum(ident.to_owned(), Box::new(variants.clone()));
+        let enum_type = TypeVariant::Enum(ident.to_owned(), variants.clone());
         let enum_value = Value::Type(enum_type);
         scopes.add_binding(&ident, current_scope, enum_value, false);
     }
@@ -43,7 +43,7 @@ pub fn evaluate_variant(
     let value = scopes.get_value(enum_name, current_scope, context)?;
 
     if let Value::Type(TypeVariant::Enum(_enum_name, variants)) = value {
-        let existing_variant = find_variant(&*variants, variant)?;
+        let existing_variant = find_variant(&variants, variant)?;
 
         let expected_data_type = if let VariantDeclare::Data(_, data) = existing_variant {
             Some(data)
@@ -98,23 +98,12 @@ fn compare_variant(variant: &VariantDeclare, name: &String) -> bool {
 }
 
 fn find_variant(
-    variants: &VariantsDeclare,
+    variants: &Vec<VariantDeclare>,
     needle: &String,
 ) -> Result<VariantDeclare, NalaRuntimeError> {
-    match variants {
-        VariantsDeclare::Variants(variants, variant) => {
-            if compare_variant(variant, needle) {
-                Ok(variant.clone())
-            } else {
-                find_variant(variants, needle)
-            }
-        }
-        VariantsDeclare::Variant(variant) => {
-            if compare_variant(variant, needle) {
-                Ok(variant.clone())
-            } else {
-                todo!()
-            }
-        }
+    let result = variants.iter().find(|v| compare_variant(v, needle));
+    match result {
+        Some(variant) => Ok(variant.clone()),
+        None => todo!(),
     }
 }

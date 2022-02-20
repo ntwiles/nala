@@ -7,7 +7,7 @@ use crate::types::get_interfaces_for_primitive_type;
 #[derive(Debug, Clone)]
 pub enum TypeVariant {
     Nested(Type, Vec<TypeVariant>),
-    Enum(String, Box<VariantsDeclare>),
+    Enum(String, Vec<VariantDeclare>),
     Type(Type),
     Interface(PrimitiveInterface),
 }
@@ -186,7 +186,21 @@ impl fmt::Display for TypeVariant {
                 write!(f, "{0}<{1}>", v, children)
             }
             TypeVariant::Type(t) => write!(f, "{}", t),
-            TypeVariant::Enum(v, vv) => write!(f, "{0}::{1}", v, vv),
+            TypeVariant::Enum(v, vv) => {
+                let children = vv
+                    .iter()
+                    .map(|vv| vv.to_string())
+                    .collect::<Vec<String>>()
+                    .join(",");
+
+                let children = if children.len() > 0 {
+                    format!("({})", children)
+                } else {
+                    "".to_owned()
+                };
+
+                write!(f, "{0}::{1}", v, children)
+            }
             TypeVariant::Interface(i) => write!(f, "{}", i),
         }
     }

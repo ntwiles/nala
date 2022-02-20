@@ -44,7 +44,7 @@ pub enum Stmt {
     Break(Expr),
     Declare(String, Expr, bool),
     PatternDeclare(String, Pattern),
-    EnumDeclare(String, Box<VariantsDeclare>),
+    EnumDeclare(String, Vec<VariantDeclare>),
     Expr(Expr),
     For(String, Expr, Box<Block>),
     Func(Func),
@@ -70,23 +70,6 @@ pub enum Expr {
     Array(Array),
     Object(Object),
     Unwrap(Unwrap),
-}
-
-// TODO: Implement this as a Vec<VariantDeclare> instead of a linked list.
-// This should remain as a linked list in the grammar.
-#[derive(Debug, Clone)]
-pub enum VariantsDeclare {
-    Variants(Box<VariantsDeclare>, VariantDeclare),
-    Variant(VariantDeclare),
-}
-
-impl fmt::Display for VariantsDeclare {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            VariantsDeclare::Variants(_variants, _variant) => todo!(),
-            VariantsDeclare::Variant(variant) => write!(f, "{}", variant),
-        }
-    }
 }
 
 #[derive(Debug, Clone)]
