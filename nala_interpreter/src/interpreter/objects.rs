@@ -49,6 +49,8 @@ pub fn evaluate_member_access(
                 let object = Arc::clone(&reference);
                 let object = object.lock().unwrap();
 
+                println!("Object: {:?}", object.clone());
+
                 if object.contains_key(child) {
                     Ok(object[child].clone())
                 } else {
@@ -74,29 +76,37 @@ pub fn evaluate_object(
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let object: HashMap<String, Value> =
-        evaluate_object_entries(&mut *object.entries.clone(), scopes, current_scope, context)?;
+        evaluate_object_entries(&object.entries, scopes, current_scope, context)?;
+
+    println!("Object ok! {:?}", object);
+
     Ok(Value::Object(Arc::new(Mutex::new(object))))
 }
 
 fn evaluate_object_entries(
-    entries: &mut KeyValuePairs,
+    entries: &Vec<KeyValuePair>,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<HashMap<String, Value>, NalaRuntimeError> {
-    match entries {
-        KeyValuePairs::KeyValuePairs(entries, entry) => {
-            let mut entries = evaluate_object_entries(entries, scopes, current_scope, context)?;
-            let entry = evaluate_object_entry(entry, scopes, current_scope, context)?;
-            entries.extend(entry);
-            Ok(entries)
+    let results: Vec<Result<(String, Value), NalaRuntimeError>> = entries
+        .iter()
+        .map(|kvp| evaluate_object_entry(kvp, scopes, current_scope, context))
+        .collect();
+
+    println!("Results: {:?}", results);
+
+    if let Some(Err(error)) = results.iter().find(|r| r.is_err()) {
+        Err(error.clone())
+    } else {
+        let mut object = HashMap::<String, Value>::new();
+
+        for result in results {
+            let (key, value) = result.clone().unwrap();
+            object.insert(key, value);
         }
-        KeyValuePairs::KeyValuePair(entry) => Ok(evaluate_object_entry(
-            entry,
-            scopes,
-            current_scope,
-            context,
-        )?),
+
+        Ok(object)
     }
 }
 
@@ -105,9 +115,7 @@ fn evaluate_object_entry(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
-) -> Result<HashMap<String, Value>, NalaRuntimeError> {
+) -> Result<(String, Value), NalaRuntimeError> {
     let value = evaluate_expr(&*entry.value, scopes, current_scope, context)?;
-    let mut map = HashMap::<String, Value>::new();
-    map.insert(entry.key.clone(), value);
-    Ok(map)
+    Ok((entry.key.clone(), value))
 }

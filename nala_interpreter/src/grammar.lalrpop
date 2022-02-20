@@ -83,13 +83,10 @@ VariantValue: ast::VariantValue = {
 }
 
 Object: ast::objects::Object = {
-    "{" <KeyValuePairs> "}" => ast::objects::Object { entries: Box::new(<>)}
+    "{" <KeyValuePairs> "}" => ast::objects::Object { entries: <>}
 }
 
-KeyValuePairs: ast::objects::KeyValuePairs = {
-    <kk:KeyValuePairs> "," <k:KeyValuePair> => ast::objects::KeyValuePairs::KeyValuePairs(Box::new(kk), k),
-    <KeyValuePair> => ast::objects::KeyValuePairs::KeyValuePair(<>),
-};
+KeyValuePairs = Comma<KeyValuePair>;
 
 KeyValuePair: ast::objects::KeyValuePair = {
     <s:Symbol> ":" <e:Expr> => ast::objects::KeyValuePair{ key: s, value: Box::new(e)}

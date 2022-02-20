@@ -2,15 +2,7 @@ use super::*;
 
 #[derive(Debug, Clone)]
 pub struct Object {
-    pub entries: Box<KeyValuePairs>,
-}
-
-// TODO: Implement this as a Vec<KeyValuePair> instead of a linked list.
-// This should remain as a linked list in the grammar.
-#[derive(Debug, Clone)]
-pub enum KeyValuePairs {
-    KeyValuePairs(Box<KeyValuePairs>, KeyValuePair),
-    KeyValuePair(KeyValuePair),
+    pub entries: Vec<KeyValuePair>,
 }
 
 #[derive(Debug, Clone)]
