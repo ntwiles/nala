@@ -1,5 +1,6 @@
 use nala_interpreter::io_context::TestContext;
-use test_util::parse_and_interpret;
+use regex::Regex;
+use test_util::{assert_regex_match, parse_and_interpret, rgx};
 
 #[test]
 fn it_runs_array_index_assign() {
@@ -88,4 +89,47 @@ fn it_allows_assign_to_index_place_expression() {
 
     assert!(parse_and_interpret(nala, &mut test_context).is_ok());
     assert_eq!(test_context.get_output(), vec!["j"]);
+}
+
+#[test]
+fn it_errors_when_indexing_array_with_string() {
+    let expected_message = rgx!("Cannot index using non-numeric value.");
+
+    let nala = r#"
+        const nums = [0, 1, 2, 3];
+        print(nums['0']);
+    "#;
+
+    let result = parse_and_interpret(nala, &mut TestContext::new());
+
+    assert!(result.is_err());
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
+}
+
+#[test]
+fn it_errors_when_passing_number_arg_to_len() {
+    let expected_message =
+        rgx!("Passed value `7` of type `Number` to func `len` where `Array<Number>` was expected.");
+
+    let nala = r#"
+        const num = 7;
+        const length = len(num);
+        print(length);
+    "#;
+
+    let result = parse_and_interpret(nala, &mut TestContext::new());
+
+    assert!(result.is_err());
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
+}
+
+#[test]
+fn it_errors_when_declaring_array_multiple_types() {
+    let expected_message = rgx!("Arrays can contain elements of only a single type.");
+
+    let nala = "const bad = [0, '1'];";
+    let result = parse_and_interpret(nala, &mut TestContext::new());
+
+    assert!(result.is_err());
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }

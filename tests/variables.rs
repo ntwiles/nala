@@ -1,5 +1,6 @@
 use nala_interpreter::io_context::TestContext;
-use test_util::parse_and_interpret;
+use regex::Regex;
+use test_util::{assert_regex_match, parse_and_interpret, rgx};
 
 #[test]
 fn it_runs_declare_and_multiply() {
@@ -52,4 +53,37 @@ fn it_runs_string_special_chars() {
 
     assert!(parse_and_interpret(nala, &mut test_context).is_ok());
     assert_eq!(test_context.get_output(), vec!["!@#$%^&*()_+-=;:\""]);
+}
+
+#[test]
+fn it_errors_when_assigning_wrong_type() {
+    let expected_message = rgx!("Cannot assign a value of type String where Number is expected.");
+
+    let nala = r#"
+        mut num = 7;
+        num = 'hello';
+    "#;
+
+    let result = parse_and_interpret(nala, &mut TestContext::new());
+
+    assert!(result.is_err());
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
+}
+
+#[test]
+fn it_errors_when_assigning_type_void() {
+    let expected_message = rgx!("Cannot declare a variable with a value of type Void.");
+
+    let nala = r#"
+        func returnVoid() {
+            const void = 'void';
+        }
+        
+        const void = returnVoid();
+    "#;
+
+    let result = parse_and_interpret(nala, &mut TestContext::new());
+
+    assert!(result.is_err());
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
