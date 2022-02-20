@@ -105,3 +105,19 @@ fn it_errors_when_passing_primitive_when_nested_is_expected() {
     assert!(result.is_err());
     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
+
+#[test]
+fn it_prints_function_type_correctly() {
+    let mut test_context = TestContext::new();
+
+    let nala = r#"
+        func foo(input: String) {
+            'foo';
+        }
+        
+        print(foo);
+    "#;
+
+    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
+    assert_eq!(test_context.get_output(), vec!["Func<String>"]);
+}

@@ -57,7 +57,20 @@ impl fmt::Display for Value {
             }
             Value::Bool(b) => write!(f, "{}", b),
             Value::Break(_) => write!(f, "<Break>"),
-            Value::Func(_, _) => todo!(),
+            Value::Func(params, _) => {
+                if let Some(params) = params {
+                    let params = params
+                        .to_vec()
+                        .iter()
+                        .map(|p| p.param_type.to_string())
+                        .collect::<Vec<String>>()
+                        .join(",");
+
+                    write!(f, "Func<{}>", params)
+                } else {
+                    write!(f, "Func<>")
+                }
+            }
             Value::Num(n) => write!(f, "{}", n),
             // TODO: Do we really want to just print <Object> here?
             Value::Object(_) => write!(f, "<Object>"),
