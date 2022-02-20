@@ -54,24 +54,13 @@ pub fn interpret_func(
     Ok(Value::Void)
 }
 
-fn check_param_types(params: Option<Params>) -> Result<(), String> {
-    if let None = params {
-        return Ok(());
-    };
+fn check_param_types(params: Vec<Param>) -> Result<(), String> {
+    let mut results = params.iter().map(|p| check_param_type(&p.param_type));
 
-    let params = params.unwrap();
-
-    match params {
-        Params::Params(params, Param { param_type, .. }) => {
-            match check_param_types(Some(*params)) {
-                Ok(_) => (),
-                Err(err) => return Err(err),
-            };
-
-            check_param_type(&param_type)
-        }
-        Params::Param(Param { param_type, .. }) => check_param_type(&param_type),
-        Params::Empty => Ok(()),
+    if let Some(Err(err)) = results.find(|r| r.is_err()) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -126,26 +115,20 @@ pub fn evaluate_call(
             if let Value::Func(params, block) = block {
                 let func_scope = scopes.new_scope(Some(current_scope));
 
-                let params_vec = if let Some(params) = params {
-                    evaluate_params(&params, scopes, func_scope, context)
-                } else {
-                    vec![]
-                };
-
                 let args = evaluate_elems(&*args, scopes, func_scope, context)?;
 
-                if params_vec.len() != args.len() {
+                if params.len() != args.len() {
                     panic!(
                         "Called function `{0}` with wrong number of arguments: Expected {1}, got {2}.",
                         ident,
-                        params_vec.len(),
+                        params.len(),
                         args.len()
                     )
                 }
 
                 let mut param_args: HashMap<String, Value> = HashMap::new();
 
-                for (i, param) in params_vec.iter().enumerate() {
+                for (i, param) in params.iter().enumerate() {
                     let arg = args.get(i).unwrap();
 
                     let arg_type = arg.get_type();
@@ -179,22 +162,5 @@ pub fn evaluate_call(
         }
         Call::Index(index) => evaluate_index(index, scopes, current_scope, context),
         Call::Term(term) => evaluate_term(term.clone(), scopes, current_scope, context),
-    }
-}
-
-pub fn evaluate_params(
-    params: &Params,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-    context: &mut dyn IoContext,
-) -> Vec<Param> {
-    match params {
-        Params::Params(params, param) => {
-            let mut params = evaluate_params(params, scopes, current_scope, context);
-            params.push(param.to_owned());
-            params
-        }
-        Params::Param(param) => vec![param.to_owned()],
-        Params::Empty => vec![],
     }
 }

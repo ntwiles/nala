@@ -11,11 +11,9 @@ pub fn get_print_block() -> Func {
         param_type: TypeVariant::Interface(PrimitiveInterface::IPrint),
     };
 
-    let params = Params::Param(message_param);
-
     Func {
         ident: "print".to_string(),
-        params: Some(params),
+        params: vec![message_param],
         block: Box::new(Block::RustBlock(builtin_print)),
     }
 }
@@ -23,7 +21,7 @@ pub fn get_print_block() -> Func {
 pub fn get_read_block() -> Func {
     Func {
         ident: "read".to_string(),
-        params: Some(Params::Empty),
+        params: vec![],
         block: Box::new(Block::RustBlock(builtin_read)),
     }
 }
@@ -31,7 +29,7 @@ pub fn get_read_block() -> Func {
 pub fn get_readnum_block() -> Func {
     Func {
         ident: "readnum".to_string(),
-        params: Some(Params::Empty),
+        params: vec![],
         block: Box::new(Block::RustBlock(builtin_readnum)),
     }
 }

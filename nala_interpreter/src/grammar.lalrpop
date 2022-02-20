@@ -24,7 +24,7 @@ Stmt: ast::Stmt = {
     "if" "(" <e:Expr> ")" <b:Block> => ast::Stmt::If(e, Box::new(b)),
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
-    "func" <s:Symbol> "(" <p:Params?> ")" <b:Block> => ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, block: Box::new(b)}),
+    "func" <s:Symbol> "(" <p:Params> ")" <b:Block> => ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, block: Box::new(b)}),
     "enum" <s:Symbol> "{" <v:VariantsDeclare> "}" => ast::Stmt::EnumDeclare(s, Box::new(v)),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
     <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
@@ -104,10 +104,7 @@ Array: ast::arrays::Array = {
 
 Elems = Comma<Expr>;
 
-Params: ast::funcs::Params = {
-    <pp:Params> "," <p:Param> => ast::funcs::Params::Params(Box::new(pp), p),
-    <Param> => ast::funcs::Params::Param(<>)
-}
+Params = Comma<Param>;
 
 Param: ast::funcs::Param = {
     <s:Symbol> ":" <t:TypeVariant> => ast::funcs::Param { ident: s, param_type: t }

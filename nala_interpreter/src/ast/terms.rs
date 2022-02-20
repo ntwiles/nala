@@ -23,7 +23,7 @@ pub enum Term {
 pub enum Value {
     Array(Arc<Mutex<Vec<Value>>>),
     Bool(bool),
-    Func(Option<Params>, Box<Block>),
+    Func(Vec<Param>, Box<Block>),
     Variant(String, String, Option<Box<Value>>),
     Num(f32),
     Object(Arc<Mutex<HashMap<String, Value>>>),
@@ -64,18 +64,14 @@ impl fmt::Display for Value {
             Value::Bool(b) => write!(f, "{}", b),
             Value::Break(_) => write!(f, "<Break>"),
             Value::Func(params, _) => {
-                if let Some(params) = params {
-                    let params = params
-                        .to_vec()
-                        .iter()
-                        .map(|p| p.param_type.to_string())
-                        .collect::<Vec<String>>()
-                        .join(",");
+                let params = params
+                    .to_vec()
+                    .iter()
+                    .map(|p| p.param_type.to_string())
+                    .collect::<Vec<String>>()
+                    .join(",");
 
-                    write!(f, "Func<{}>", params)
-                } else {
-                    write!(f, "Func<>")
-                }
+                write!(f, "Func<{}>", params)
             }
             Value::Num(n) => write!(f, "{}", n),
             // TODO: Do we really want to just print <Object> here?
@@ -116,12 +112,6 @@ impl Value {
             Value::Bool(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Bool)),
             Value::Break(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Break)),
             Value::Func(params, _) => {
-                let params = if let Some(params) = params {
-                    params.to_vec()
-                } else {
-                    vec![]
-                };
-
                 if params.len() > 0 {
                     let param_types: Vec<TypeVariant> =
                         params.iter().map(|p| p.clone().param_type).collect();

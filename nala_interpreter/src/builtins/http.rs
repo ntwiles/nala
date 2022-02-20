@@ -8,14 +8,14 @@ use crate::{
 };
 
 pub fn get_request_block() -> Func {
-    let params = Params::Param(Param {
+    let params = vec![Param {
         ident: String::from("options"),
         param_type: TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Object)),
-    });
+    }];
 
     Func {
         ident: "request".to_string(),
-        params: Some(params),
+        params,
         block: Box::new(Block::RustBlock(builtin_request)),
     }
 }

@@ -14,14 +14,14 @@ pub fn get_len_block() -> Func {
     let outer_type =
         TypeVariant::Nested(Type::PrimitiveType(PrimitiveType::Array), vec![inner_type]);
 
-    let params = Params::Param(Param {
+    let params = vec![Param {
         ident: String::from("array"),
         param_type: outer_type,
-    });
+    }];
 
     Func {
         ident: "len".to_string(),
-        params: Some(params),
+        params,
         block: Box::new(Block::RustBlock(builtin_len)),
     }
 }
@@ -47,11 +47,9 @@ pub fn get_slice_block() -> Func {
         param_type: TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
     };
 
-    let params = Params::from_vec(vec![array_param, start_param, end_param]);
-
     Func {
         ident: "slice".to_string(),
-        params: Some(params),
+        params: vec![array_param, start_param, end_param],
         block: Box::new(Block::RustBlock(builtin_slice)),
     }
 }
