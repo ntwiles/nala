@@ -23,7 +23,7 @@ use basic::*;
 pub fn interpret_tree(
     program: Program,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     let mut scopes = Scopes::new();
 
     let top_scope = scopes.new_scope(None);
@@ -48,22 +48,22 @@ pub fn interpret_tree(
     }
 }
 
-pub fn evaluate_if_symbol(
-    sot: SymbolOrTerm,
+pub fn evaluate_term(
+    term: Term,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
-) -> Result<Term, NalaRuntimeError> {
-    match sot {
-        SymbolOrTerm::Symbol(ident) => Ok(scopes.get_value(&ident, current_scope, context)?),
-        SymbolOrTerm::Term(term) => Ok(term.clone()),
+) -> Result<Value, NalaRuntimeError> {
+    match term {
+        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, context)?),
+        Term::Value(value) => Ok(value),
     }
 }
 
-fn get_constants() -> Vec<(String, Term)> {
+fn get_constants() -> Vec<(String, Value)> {
     let constants = vec![
-        (String::from("true"), Term::Bool(true)),
-        (String::from("false"), Term::Bool(false)),
+        (String::from("true"), Value::Bool(true)),
+        (String::from("false"), Value::Bool(false)),
     ];
     constants
 }

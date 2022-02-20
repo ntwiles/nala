@@ -27,7 +27,7 @@ pub fn interpret_func(
     func: &Func,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     let Func {
         ident,
         block,
@@ -43,7 +43,7 @@ pub fn interpret_func(
         let result = check_param_types(params.clone());
 
         if result.is_ok() {
-            scopes.add_binding(&ident, current_scope, Term::Func(params, *block), false);
+            scopes.add_binding(&ident, current_scope, Value::Func(params, *block), false);
         } else {
             return Err(NalaRuntimeError {
                 message: result.unwrap_err(),
@@ -51,7 +51,7 @@ pub fn interpret_func(
         }
     }
 
-    Ok(Term::Void)
+    Ok(Value::Void)
 }
 
 fn check_param_types(params: Option<Params>) -> Result<(), String> {
@@ -107,12 +107,12 @@ pub fn evaluate_call(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     match call {
         Call::Call(ident, args) => {
             let block = scopes.get_value(ident, current_scope, context)?;
 
-            if let Term::Func(params, block) = block {
+            if let Value::Func(params, block) = block {
                 let func_scope = scopes.new_scope(Some(current_scope));
 
                 let params_vec = if let Some(params) = params {
@@ -132,7 +132,7 @@ pub fn evaluate_call(
                     )
                 }
 
-                let mut param_args: HashMap<String, Term> = HashMap::new();
+                let mut param_args: HashMap<String, Value> = HashMap::new();
 
                 for (i, param) in params_vec.iter().enumerate() {
                     let arg = args.get(i).unwrap();

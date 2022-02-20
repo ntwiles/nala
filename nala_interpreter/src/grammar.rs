@@ -15806,7 +15806,7 @@ fn __action92<
     (_, __0, _): (usize, f32, usize),
 ) -> ast::terms::Term
 {
-    ast::terms::Term::Num(__0)
+    ast::terms::Value::Num(__0)
 }
 
 #[allow(unused_variables)]
@@ -15817,7 +15817,7 @@ fn __action93<
     (_, __0, _): (usize, String, usize),
 ) -> ast::terms::Term
 {
-    ast::terms::Term::String(__0)
+    ast::terms::Value::String(__0)
 }
 
 #[allow(unused_variables)]

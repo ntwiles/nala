@@ -60,32 +60,32 @@ pub fn get_slice_block() -> Func {
     }
 }
 
-fn builtin_len(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> Term {
+fn builtin_len(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> Value {
     let array = args.get("array").unwrap();
 
-    if let Term::Array(array) = array {
+    if let Value::Array(array) = array {
         let array = Arc::clone(array);
         let array = array.lock().unwrap();
-        Term::Num(array.len() as f32)
+        Value::Num(array.len() as f32)
     } else {
         unreachable!()
     }
 }
 
-fn builtin_slice(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> Term {
-    let array = if let Term::Array(array) = args.get("array").unwrap() {
+fn builtin_slice(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> Value {
+    let array = if let Value::Array(array) = args.get("array").unwrap() {
         array
     } else {
         unreachable!()
     };
 
-    let start = if let Term::Num(start) = args.get("start").unwrap() {
+    let start = if let Value::Num(start) = args.get("start").unwrap() {
         *start as usize
     } else {
         unreachable!()
     };
 
-    let end = if let Term::Num(end) = args.get("end").unwrap() {
+    let end = if let Value::Num(end) = args.get("end").unwrap() {
         *end as usize
     } else {
         unreachable!()
@@ -94,5 +94,5 @@ fn builtin_slice(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> T
     let array = Arc::clone(array);
     let array = array.lock().unwrap();
 
-    Term::Array(Arc::new(Mutex::new(array[start..end].to_owned())))
+    Value::Array(Arc::new(Mutex::new(array[start..end].to_owned())))
 }

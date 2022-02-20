@@ -15,5 +15,5 @@ pub enum Elems {
 #[derive(Debug, Clone)]
 pub enum Index {
     Index(String, Box<Expr>),
-    SymbolOrTerm(SymbolOrTerm),
+    Term(Term),
 }

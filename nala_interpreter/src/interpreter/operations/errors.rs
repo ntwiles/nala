@@ -1,5 +1,5 @@
 use crate::{
-    ast::{terms::Term, types::*},
+    ast::{terms::Value, types::*},
     errors::*,
 };
 
@@ -22,22 +22,22 @@ pub fn check_operator_implemented_both(
     right: TypeVariant,
     operator: String,
     interface: PrimitiveInterface,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     check_operator_implemented(left, operator.clone(), interface.clone())?;
     check_operator_implemented(right, operator, interface)?;
 
-    Ok(Term::Void)
+    Ok(Value::Void)
 }
 
 pub fn check_operator_implemented(
     _type: TypeVariant,
     operator: String,
     interface: PrimitiveInterface,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     if !_type.implements_interface(interface.clone()) {
         Err(operator_not_implemented_error(_type, operator, interface))
     } else {
-        Ok(Term::Void)
+        Ok(Value::Void)
     }
 }
 

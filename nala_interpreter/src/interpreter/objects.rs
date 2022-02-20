@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    ast::{objects::*, terms::Term},
+    ast::{objects::*, terms::Value},
     errors::NalaRuntimeError,
     io_context::IoContext,
     scope::*,
@@ -17,12 +17,12 @@ pub fn evaluate_member_access(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     match member_access {
         MemberAccess::MemberAccesses(parents, child) => {
             let object = evaluate_member_access(parents, scopes, current_scope, context)?;
 
-            if let Term::Object(reference) = object {
+            if let Value::Object(reference) = object {
                 let object = Arc::clone(&reference);
                 let object = object.lock().unwrap();
 
@@ -40,7 +40,7 @@ pub fn evaluate_member_access(
         MemberAccess::MemberAccess(parent, child) => {
             let object = scopes.get_value(parent, current_scope, context)?;
 
-            if let Term::Object(reference) = object {
+            if let Value::Object(reference) = object {
                 let object = Arc::clone(&reference);
                 let object = object.lock().unwrap();
 
@@ -67,10 +67,10 @@ pub fn evaluate_object(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
-    let object: HashMap<String, Term> =
+) -> Result<Value, NalaRuntimeError> {
+    let object: HashMap<String, Value> =
         evaluate_object_entries(&mut *object.entries.clone(), scopes, current_scope, context)?;
-    Ok(Term::Object(Arc::new(Mutex::new(object))))
+    Ok(Value::Object(Arc::new(Mutex::new(object))))
 }
 
 fn evaluate_object_entries(
@@ -78,7 +78,7 @@ fn evaluate_object_entries(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<HashMap<String, Term>, NalaRuntimeError> {
+) -> Result<HashMap<String, Value>, NalaRuntimeError> {
     match entries {
         KeyValuePairs::KeyValuePairs(entries, entry) => {
             let mut entries = evaluate_object_entries(entries, scopes, current_scope, context)?;
@@ -100,9 +100,9 @@ fn evaluate_object_entry(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<HashMap<String, Term>, NalaRuntimeError> {
+) -> Result<HashMap<String, Value>, NalaRuntimeError> {
     let value = evaluate_expr(&*entry.value, scopes, current_scope, context)?;
-    let mut map = HashMap::<String, Term>::new();
+    let mut map = HashMap::<String, Value>::new();
     map.insert(entry.key.clone(), value);
     Ok(map)
 }

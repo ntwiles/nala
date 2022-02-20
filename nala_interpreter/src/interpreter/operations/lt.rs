@@ -7,20 +7,20 @@ use crate::{
     interpreter::operations::errors::*,
 };
 
-pub fn evaluate_lt(left: Term, right: Term) -> Result<Term, NalaRuntimeError> {
+pub fn evaluate_lt(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
     check_operator_implemented_both(left.get_type(), right.get_type(), ">".to_string(), ICompare)?;
 
     match left {
-        Term::Num(left) => Ok(num_lt(left, right)),
-        Term::String(left) => Ok(string_lt(left, right)),
-        Term::Bool(left) => Ok(bool_lt(left, right)),
+        Value::Num(left) => Ok(num_lt(left, right)),
+        Value::String(left) => Ok(string_lt(left, right)),
+        Value::Bool(left) => Ok(bool_lt(left, right)),
         left => panic_oper_not_impl("<", &left.get_type()),
     }
 }
 
-fn num_lt(left: f32, right: Term) -> Term {
+fn num_lt(left: f32, right: Value) -> Value {
     match right {
-        Term::Num(right) => Term::Bool(left < right),
+        Value::Num(right) => Value::Bool(left < right),
         right => panic_oper_not_impl_for(
             "<",
             &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
@@ -29,9 +29,9 @@ fn num_lt(left: f32, right: Term) -> Term {
     }
 }
 
-fn string_lt(left: String, right: Term) -> Term {
+fn string_lt(left: String, right: Value) -> Value {
     match right {
-        Term::String(right) => Term::Bool(left < right),
+        Value::String(right) => Value::Bool(left < right),
         right => panic_oper_not_impl_for(
             "<",
             &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::String)),
@@ -40,9 +40,9 @@ fn string_lt(left: String, right: Term) -> Term {
     }
 }
 
-fn bool_lt(left: bool, right: Term) -> Term {
+fn bool_lt(left: bool, right: Value) -> Value {
     match right {
-        Term::Bool(right) => Term::Bool(left < right),
+        Value::Bool(right) => Value::Bool(left < right),
         right => panic_oper_not_impl_for(
             "<",
             &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Bool)),

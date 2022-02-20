@@ -20,11 +20,11 @@ pub fn get_floor_block() -> Func {
     }
 }
 
-fn builtin_floor(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> Term {
+fn builtin_floor(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> Value {
     let num = args.get("num").unwrap();
 
-    if let Term::Num(num) = num {
-        Term::Num(num.floor())
+    if let Value::Num(num) = num {
+        Value::Num(num.floor())
     } else {
         unreachable!()
     }

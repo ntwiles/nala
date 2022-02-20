@@ -12,16 +12,16 @@ pub fn interpret_enum(
     variants: &VariantsDeclare,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
         let enum_type = TypeVariant::Enum(ident.to_owned(), Box::new(variants.clone()));
-        let enum_term = Term::Type(enum_type);
+        let enum_term = Value::Type(enum_type);
         scopes.add_binding(&ident, current_scope, enum_term, false);
     }
 
-    Ok(Term::Void)
+    Ok(Value::Void)
 }
 
 pub fn evaluate_variant(
@@ -29,7 +29,7 @@ pub fn evaluate_variant(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     let (enum_name, variant, data) = match variant {
         VariantValue::Addend(addend) => {
             return evaluate_addend(addend, scopes, current_scope, context)
@@ -42,7 +42,7 @@ pub fn evaluate_variant(
 
     let term = scopes.get_value(enum_name, current_scope, context)?;
 
-    if let Term::Type(TypeVariant::Enum(_enum_name, variants)) = term {
+    if let Value::Type(TypeVariant::Enum(_enum_name, variants)) = term {
         let existing_variant = find_variant(&*variants, variant)?;
 
         let expected_data_type = if let VariantDeclare::Data(_, data) = existing_variant {
@@ -80,7 +80,7 @@ pub fn evaluate_variant(
             None
         };
 
-        Ok(Term::Variant(
+        Ok(Value::Variant(
             enum_name.to_owned(),
             variant.to_owned(),
             data,

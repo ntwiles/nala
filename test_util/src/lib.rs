@@ -2,14 +2,14 @@ extern crate nala_interpreter;
 extern crate regex;
 
 use nala_interpreter::{
-    ast::terms::Term, errors::NalaRuntimeError, interpreter::interpret_tree,
+    ast::terms::Value, errors::NalaRuntimeError, interpreter::interpret_tree,
     io_context::TestContext, parser,
 };
 
 pub fn parse_and_interpret(
     nala: &str,
     test_context: &mut TestContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     let lines = nala.trim_start().trim_end().split("\n");
     let output: String = lines
         .enumerate()

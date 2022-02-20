@@ -20,10 +20,10 @@ pub fn get_request_block() -> Func {
     }
 }
 
-fn builtin_request(args: HashMap<String, Term>, _context: &mut dyn IoContext) -> Term {
+fn builtin_request(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> Value {
     let options = args.get("options").unwrap();
 
-    let mutex = if let Term::Object(reference) = options {
+    let mutex = if let Value::Object(reference) = options {
         Arc::clone(&reference)
     } else {
         unreachable!()
@@ -31,19 +31,19 @@ fn builtin_request(args: HashMap<String, Term>, _context: &mut dyn IoContext) ->
 
     let options = mutex.lock().unwrap();
 
-    let url = if let Term::String(url) = options["url"].clone() {
+    let url = if let Value::String(url) = options["url"].clone() {
         url
     } else {
         todo!()
     };
 
-    let method = if let Term::String(method) = options["method"].clone() {
+    let method = if let Value::String(method) = options["method"].clone() {
         method
     } else {
         todo!()
     };
 
-    let body = if let Term::String(body) = options["body"].clone() {
+    let body = if let Value::String(body) = options["body"].clone() {
         Some(body)
     } else {
         None
@@ -67,8 +67,8 @@ fn builtin_request(args: HashMap<String, Term>, _context: &mut dyn IoContext) ->
     let response = client.send();
 
     if let Ok(response) = response {
-        Term::String(response.text().unwrap())
+        Value::String(response.text().unwrap())
     } else {
-        Term::Void
+        Value::Void
     }
 }

@@ -15,7 +15,7 @@ use self::http::*;
 use self::io::*;
 use self::math::*;
 
-pub type BuiltinFunc = fn(HashMap<String, Term>, &mut dyn IoContext) -> Term;
+pub type BuiltinFunc = fn(HashMap<String, Value>, &mut dyn IoContext) -> Value;
 
 pub fn get_builtins() -> Vec<Func> {
     vec![

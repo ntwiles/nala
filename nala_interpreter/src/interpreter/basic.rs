@@ -21,7 +21,7 @@ pub fn interpret_block(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     if let Block::NalaBlock(stmts) = block {
         interpret_stmts(stmts, scopes, current_scope, context)
     } else {
@@ -36,12 +36,12 @@ pub fn interpret_stmts(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     match stmts {
         Stmts::Stmts(stmts, stmt) => {
             let result = interpret_stmts(&*stmts, scopes, current_scope, context)?;
 
-            if let Term::Void = result {
+            if let Value::Void = result {
                 interpret_stmt(stmt, scopes, current_scope, context)
             } else {
                 Ok(result)
@@ -56,7 +56,7 @@ fn interpret_stmt(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     match stmt {
         Stmt::Declare(ident, expr, is_mutable) => {
             let result = evaluate_expr(expr, scopes, current_scope, context)?;
@@ -64,7 +64,7 @@ fn interpret_stmt(
         }
         Stmt::PatternDeclare(ident, pattern) => interpret_declare(
             ident,
-            &Term::Pattern(pattern.clone()),
+            &Value::Pattern(pattern.clone()),
             scopes,
             current_scope,
             false,
@@ -80,7 +80,7 @@ fn interpret_stmt(
         Stmt::Wiles(expr, block) => interpret_wiles(&expr, block, scopes, current_scope, context),
         Stmt::Func(func) => interpret_func(func, scopes, current_scope),
         Stmt::Expr(expr) => evaluate_expr(expr, scopes, current_scope, context),
-        Stmt::Break(expr) => Ok(Term::Break(Box::new(expr.clone()))),
+        Stmt::Break(expr) => Ok(Value::Break(Box::new(expr.clone()))),
         Stmt::EnumDeclare(ident, variants) => {
             interpret_enum(ident, variants, scopes, current_scope)
         }
@@ -92,7 +92,7 @@ pub fn evaluate_expr(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     match expr {
         Expr::Eq(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context)?;
@@ -127,7 +127,7 @@ pub fn evaluate_elems(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Vec<Term>, NalaRuntimeError> {
+) -> Result<Vec<Value>, NalaRuntimeError> {
     match elems {
         Elems::Elems(elems, expr) => {
             let mut elems = evaluate_elems(elems, scopes, current_scope, context)?;

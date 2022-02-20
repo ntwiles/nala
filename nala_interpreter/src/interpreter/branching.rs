@@ -14,15 +14,15 @@ pub fn interpret_if(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     let result = evaluate_expr(&cond, scopes, current_scope, context)?;
 
-    if let Term::Bool(bool) = result {
+    if let Value::Bool(bool) = result {
         if bool {
             let block_scope = scopes.new_scope(Some(current_scope));
             interpret_block(&block, scopes, block_scope, context)
         } else {
-            Ok(Term::Void)
+            Ok(Value::Void)
         }
     } else {
         panic!("Cannot use non-boolean expressions inside 'if' conditions.")
@@ -36,12 +36,12 @@ pub fn interpret_for(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     let result = evaluate_expr(expr, scopes, current_scope, context)?;
 
-    let mut loop_result = Term::Void;
+    let mut loop_result = Value::Void;
 
-    if let Term::Array(array) = result {
+    if let Value::Array(array) = result {
         let array = Arc::clone(&array);
         let array = array.lock().unwrap();
 
@@ -51,7 +51,7 @@ pub fn interpret_for(
 
             loop_result = interpret_block(&block, scopes, block_scope, context)?;
 
-            if let Term::Break(expr) = loop_result {
+            if let Value::Break(expr) = loop_result {
                 return evaluate_expr(&*expr, scopes, current_scope, context);
             }
         }
@@ -71,11 +71,11 @@ pub fn interpret_wiles(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     loop {
         let result = evaluate_expr(expr, scopes, current_scope, context)?;
 
-        let condition = if let Term::Bool(condition) = result {
+        let condition = if let Value::Bool(condition) = result {
             condition
         } else {
             panic!("Wiles condition must resolve to a value of type Bool");
@@ -84,7 +84,7 @@ pub fn interpret_wiles(
         if condition {
             let result = interpret_block(block, scopes, current_scope, context)?;
 
-            if let Term::Break(expr) = result {
+            if let Value::Break(expr) = result {
                 return evaluate_expr(&*expr, scopes, current_scope, context);
             }
         } else {
@@ -92,5 +92,5 @@ pub fn interpret_wiles(
         }
     }
 
-    Ok(Term::Void)
+    Ok(Value::Void)
 }

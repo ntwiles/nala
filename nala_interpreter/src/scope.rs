@@ -5,18 +5,18 @@ use crate::{ast::terms::*, errors::*, io_context::IoContext};
 #[derive(Debug)]
 pub struct Scope {
     parent: Option<ScopeId>,
-    bindings: HashMap<String, (Term, String, bool)>,
+    bindings: HashMap<String, (Value, String, bool)>,
 }
 
 impl Scope {
     pub fn new(parent: Option<ScopeId>) -> Scope {
         Scope {
             parent,
-            bindings: HashMap::<String, (Term, String, bool)>::new(),
+            bindings: HashMap::<String, (Value, String, bool)>::new(),
         }
     }
 
-    pub fn add_binding(self: &mut Self, ident: &str, value: Term, is_mutable: bool) {
+    pub fn add_binding(self: &mut Self, ident: &str, value: Value, is_mutable: bool) {
         let type_name = value.get_type().to_string();
 
         self.bindings.insert(
@@ -25,7 +25,7 @@ impl Scope {
         );
     }
 
-    pub fn get_binding(self: &Self, ident: &str) -> Option<(Term, String, bool)> {
+    pub fn get_binding(self: &Self, ident: &str) -> Option<(Value, String, bool)> {
         if let Some(binding) = self.bindings.get(ident) {
             Some(binding.clone())
         } else {
@@ -72,7 +72,7 @@ impl Scopes {
         ident: &str,
         current_scope: ScopeId,
         context: &mut dyn IoContext,
-    ) -> Option<Term> {
+    ) -> Option<Value> {
         let scope = self.scopes.get(current_scope.index).unwrap();
 
         match scope.get_binding(&ident) {
@@ -89,7 +89,7 @@ impl Scopes {
         ident: &str,
         starting_scope: ScopeId,
         context: &mut dyn IoContext,
-    ) -> Result<Term, NalaRuntimeError> {
+    ) -> Result<Value, NalaRuntimeError> {
         match self.get_maybe_value(ident, starting_scope, context) {
             Some(value) => Ok(value),
             None => Err(not_found_in_scope_error(ident)),
@@ -118,8 +118,8 @@ impl Scopes {
         self: &mut Self,
         ident: &str,
         current_scope: ScopeId,
-        new_value: Term,
-    ) -> Result<Term, NalaRuntimeError> {
+        new_value: Value,
+    ) -> Result<Value, NalaRuntimeError> {
         let scope = self.find_scope_with_binding(ident, current_scope);
 
         if let Some(scope) = scope {
@@ -133,14 +133,14 @@ impl Scopes {
             return Err(not_found_in_scope_error(ident));
         }
 
-        Ok(Term::Void)
+        Ok(Value::Void)
     }
 
     pub fn add_binding(
         self: &mut Self,
         ident: &str,
         current_scope: ScopeId,
-        value: Term,
+        value: Value,
         is_mutable: bool,
     ) {
         let scope = self.scopes.get_mut(current_scope.index).unwrap();

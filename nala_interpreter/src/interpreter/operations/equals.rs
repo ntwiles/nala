@@ -2,21 +2,21 @@ use crate::ast::{terms::*, types::*};
 
 use super::errors::{panic_oper_not_impl, panic_oper_not_impl_for};
 
-pub fn evaluate_equals(left: Term, right: Term) -> Term {
+pub fn evaluate_equals(left: Value, right: Value) -> Value {
     match left {
-        Term::Num(left) => num_equals(left, right),
-        Term::String(left) => string_equals(left, right),
-        Term::Bool(left) => bool_equals(left, right),
-        Term::Variant(left_enum, left_variant, data) => {
+        Value::Num(left) => num_equals(left, right),
+        Value::String(left) => string_equals(left, right),
+        Value::Bool(left) => bool_equals(left, right),
+        Value::Variant(left_enum, left_variant, data) => {
             variant_equals(left_enum, left_variant, data, right)
         }
         other => panic_oper_not_impl("==", &other.get_type()),
     }
 }
 
-fn num_equals(left: f32, right: Term) -> Term {
-    if let Term::Num(right) = right {
-        Term::Bool(left == right)
+fn num_equals(left: f32, right: Value) -> Value {
+    if let Value::Num(right) = right {
+        Value::Bool(left == right)
     } else {
         panic_oper_not_impl_for(
             "==",
@@ -26,9 +26,9 @@ fn num_equals(left: f32, right: Term) -> Term {
     }
 }
 
-fn string_equals(left: String, right: Term) -> Term {
-    if let Term::String(right) = right {
-        Term::Bool(left == right)
+fn string_equals(left: String, right: Value) -> Value {
+    if let Value::String(right) = right {
+        Value::Bool(left == right)
     } else {
         panic_oper_not_impl_for(
             "==",
@@ -38,9 +38,9 @@ fn string_equals(left: String, right: Term) -> Term {
     }
 }
 
-fn bool_equals(left: bool, right: Term) -> Term {
-    if let Term::Bool(right) = right {
-        Term::Bool(left == right)
+fn bool_equals(left: bool, right: Value) -> Value {
+    if let Value::Bool(right) = right {
+        Value::Bool(left == right)
     } else {
         panic_oper_not_impl_for(
             "==",
@@ -53,10 +53,10 @@ fn bool_equals(left: bool, right: Term) -> Term {
 fn variant_equals(
     left_enum: String,
     left_variant: String,
-    left_data: Option<Box<Term>>,
-    right: Term,
-) -> Term {
-    if let Term::Variant(right_enum, right_variant, right_data) = right {
+    left_data: Option<Box<Value>>,
+    right: Value,
+) -> Value {
+    if let Value::Variant(right_enum, right_variant, right_data) = right {
         let enums_match = left_enum == right_enum;
         let variants_match = left_variant == right_variant;
 
@@ -67,9 +67,9 @@ fn variant_equals(
                 false
             };
 
-            Term::Bool(enums_match && variants_match && data_matches)
+            Value::Bool(enums_match && variants_match && data_matches)
         } else {
-            Term::Bool(enums_match && variants_match)
+            Value::Bool(enums_match && variants_match)
         }
     } else {
         // TODO: Using PrimitiveType::String as placeholder. Correct this.

@@ -7,7 +7,7 @@ pub mod lt;
 use crate::{
     ast::{math::*, terms::*, types::PrimitiveInterface::*},
     errors::NalaRuntimeError,
-    interpreter::evaluate_if_symbol,
+    interpreter::evaluate_term,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -22,7 +22,7 @@ pub fn evaluate_addend(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     match addend {
         Addend::Add(left, right) => {
             let left = evaluate_addend(left, scopes, current_scope, context)?;
@@ -59,11 +59,11 @@ pub fn evaluate_factor(
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut impl IoContext,
-) -> Result<Term, NalaRuntimeError> {
+) -> Result<Value, NalaRuntimeError> {
     match factor {
         Factor::Mult(left, right) => {
             let left = evaluate_factor(left, scopes, current_scope, context)?;
-            let right = evaluate_if_symbol(right.clone(), scopes, current_scope, context)?;
+            let right = evaluate_term(right.clone(), scopes, current_scope, context)?;
 
             check_operator_implemented_both(
                 left.get_type(),
@@ -76,7 +76,7 @@ pub fn evaluate_factor(
         }
         Factor::Div(left, right) => {
             let left = evaluate_factor(left, scopes, current_scope, context)?;
-            let right = evaluate_if_symbol(right.clone(), scopes, current_scope, context)?;
+            let right = evaluate_term(right.clone(), scopes, current_scope, context)?;
 
             check_operator_implemented_both(
                 left.get_type(),
@@ -121,35 +121,35 @@ mod tests {
     pub fn it_evaluates_add_with_2_terms() {
         let parsed = grammar::AddendParser::new().parse("7.0 + 4.0");
         let result = interpret!(&parsed.unwrap(), evaluate_addend).unwrap();
-        assert_eq!(Term::Num(11.0), result);
+        assert_eq!(Value::Num(11.0), result);
     }
 
     #[test]
     pub fn it_evaluates_add_with_3_terms() {
         let parsed = grammar::AddendParser::new().parse("3.0 + 5.0 + 4.0");
         let result = interpret!(&parsed.unwrap(), evaluate_addend).unwrap();
-        assert_eq!(Term::Num(12.0), result);
+        assert_eq!(Value::Num(12.0), result);
     }
 
     #[test]
     pub fn it_evaluates_sub() {
         let parsed = grammar::AddendParser::new().parse("5 - 3").unwrap();
         let result = interpret!(&parsed, evaluate_addend).unwrap();
-        assert_eq!(Term::Num(2.0), result);
+        assert_eq!(Value::Num(2.0), result);
     }
 
     #[test]
     pub fn it_evaluates_mult() {
         let parsed = grammar::FactorParser::new().parse("5.0 * 3.0").unwrap();
         let result = interpret!(&parsed, evaluate_factor).unwrap();
-        assert_eq!(Term::Num(15.0), result);
+        assert_eq!(Value::Num(15.0), result);
     }
 
     #[test]
     pub fn it_evaluates_div() {
         let parsed = grammar::FactorParser::new().parse("5.0 / 2.0").unwrap();
         let result = interpret!(&parsed, evaluate_factor).unwrap();
-        assert_eq!(Term::Num(2.5), result);
+        assert_eq!(Value::Num(2.5), result);
     }
 
     #[test]
