@@ -1,4 +1,4 @@
-use super::{arrays::*, objects::*, types::*, *};
+use super::{arrays::*, objects::*, terms::*, types::*, *};
 
 #[derive(Debug, Clone)]
 pub struct Func {
@@ -51,4 +51,5 @@ pub enum Call {
     Call(String, Box<Elems>),
     MemberAccess(MemberAccess),
     Index(Index),
+    Term(Term),
 }

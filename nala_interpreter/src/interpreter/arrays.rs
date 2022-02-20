@@ -10,13 +10,13 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-use super::{basic::*, *};
+use super::basic::*;
 
 pub fn evaluate_index(
     index: &Index,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match index {
         Index::Index(ident, expr) => {
@@ -38,7 +38,6 @@ pub fn evaluate_index(
                 })
             }
         }
-        Index::Term(term) => Ok(evaluate_term(term.clone(), scopes, current_scope, context)?),
     }
 }
 
@@ -46,7 +45,7 @@ pub fn evaluate_array(
     array: &Array,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let values = evaluate_elems(&array.elems, scopes, current_scope, context)?;
 

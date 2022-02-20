@@ -20,7 +20,7 @@ pub fn interpret_block(
     block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     if let Block::NalaBlock(stmts) = block {
         interpret_stmts(stmts, scopes, current_scope, context)
@@ -35,7 +35,7 @@ pub fn interpret_stmts(
     stmts: &Stmts,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match stmts {
         Stmts::Stmts(stmts, stmt) => {
@@ -55,7 +55,7 @@ fn interpret_stmt(
     stmt: &Stmt,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match stmt {
         Stmt::Declare(ident, expr, is_mutable) => {
@@ -91,7 +91,7 @@ pub fn evaluate_expr(
     expr: &Expr,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match expr {
         Expr::Eq(left, right) => {
@@ -126,7 +126,7 @@ pub fn evaluate_elems(
     elems: &Elems,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Vec<Value>, NalaRuntimeError> {
     match elems {
         Elems::Elems(elems, expr) => {

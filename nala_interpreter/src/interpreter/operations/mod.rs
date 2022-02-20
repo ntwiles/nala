@@ -21,7 +21,7 @@ pub fn evaluate_addend(
     addend: &Addend,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match addend {
         Addend::Add(left, right) => {
@@ -58,7 +58,7 @@ pub fn evaluate_factor(
     factor: &Factor,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match factor {
         Factor::Mult(left, right) => {

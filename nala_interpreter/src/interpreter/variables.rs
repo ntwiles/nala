@@ -36,7 +36,7 @@ pub fn interpret_assign(
     value: &Value,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match variable {
         PlaceExpression::Index(ident, index_expr) => {

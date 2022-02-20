@@ -16,7 +16,7 @@ pub fn evaluate_member_access(
     member_access: &MemberAccess,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match member_access {
         MemberAccess::MemberAccesses(parents, child) => {
@@ -66,7 +66,7 @@ pub fn evaluate_object(
     object: &Object,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let object: HashMap<String, Value> =
         evaluate_object_entries(&mut *object.entries.clone(), scopes, current_scope, context)?;
@@ -77,7 +77,7 @@ fn evaluate_object_entries(
     entries: &mut KeyValuePairs,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<HashMap<String, Value>, NalaRuntimeError> {
     match entries {
         KeyValuePairs::KeyValuePairs(entries, entry) => {
@@ -99,7 +99,7 @@ fn evaluate_object_entry(
     entry: &KeyValuePair,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<HashMap<String, Value>, NalaRuntimeError> {
     let value = evaluate_expr(&*entry.value, scopes, current_scope, context)?;
     let mut map = HashMap::<String, Value>::new();

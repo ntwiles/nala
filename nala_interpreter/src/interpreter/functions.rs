@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::{arrays::*, basic::*, objects::*};
+use super::{arrays::*, basic::*, objects::*, *};
 
 use crate::{
     ast::{funcs::*, terms::*, types::*, *},
@@ -106,7 +106,7 @@ pub fn evaluate_call(
     call: &Call,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match call {
         Call::Call(ident, args) => {
@@ -167,6 +167,7 @@ pub fn evaluate_call(
             evaluate_member_access(member_access, scopes, current_scope, context)
         }
         Call::Index(index) => evaluate_index(index, scopes, current_scope, context),
+        Call::Term(term) => evaluate_term(term.clone(), scopes, current_scope, context),
     }
 }
 
@@ -174,7 +175,7 @@ pub fn evaluate_params(
     params: &Params,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Vec<Param> {
     match params {
         Params::Params(params, param) => {

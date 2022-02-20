@@ -16,8 +16,7 @@ use crate::{
     scope::*,
 };
 
-use self::functions::*;
-use self::variables::*;
+use self::{arrays::*, functions::*, variables::*};
 use basic::*;
 
 pub fn interpret_tree(
@@ -56,6 +55,7 @@ pub fn evaluate_term(
 ) -> Result<Value, NalaRuntimeError> {
     match term {
         Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, context)?),
+        Term::Index(index) => Ok(evaluate_index(&index, scopes, current_scope, context)?),
         Term::Value(value) => Ok(value),
     }
 }

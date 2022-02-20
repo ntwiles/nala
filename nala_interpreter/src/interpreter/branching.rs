@@ -13,7 +13,7 @@ pub fn interpret_if(
     block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let result = evaluate_expr(&cond, scopes, current_scope, context)?;
 
@@ -35,7 +35,7 @@ pub fn interpret_for(
     block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let result = evaluate_expr(expr, scopes, current_scope, context)?;
 
@@ -70,7 +70,7 @@ pub fn interpret_wiles(
     block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     loop {
         let result = evaluate_expr(expr, scopes, current_scope, context)?;

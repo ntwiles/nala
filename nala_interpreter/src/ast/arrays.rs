@@ -1,4 +1,4 @@
-use super::{terms::*, *};
+use super::*;
 
 #[derive(Debug, Clone)]
 pub struct Array {
@@ -15,5 +15,4 @@ pub enum Elems {
 #[derive(Debug, Clone)]
 pub enum Index {
     Index(String, Box<Expr>),
-    Term(Term),
 }

@@ -171,7 +171,7 @@ Call: ast::funcs::Call = {
     <s:Symbol> "(" <e:Elems> ")" => ast::funcs::Call::Call(s, Box::new(e)),
     <s:Symbol> "(" ")" => ast::funcs::Call::Call(s, Box::new(ast::arrays::Elems::Empty)),
     <MemberAccess> => ast::funcs::Call::MemberAccess(<>),
-    <Index> => ast::funcs::Call::Index(<>)
+    <Term> => ast::funcs::Call::Term(<>)
 };
 
 // TODO: This doesn't support indexing at the end of a member access chain. 
@@ -183,10 +183,10 @@ MemberAccess: ast::objects::MemberAccess = {
 
 Index: ast::arrays::Index = {
     <s:Symbol> "[" <e:Expr> "]" => ast::arrays::Index::Index(s, Box::new(e)),
-    <Term> => ast::arrays::Index::Term(<>)
 };
 
 Term: ast::terms::Term = {
+    Index => ast::terms::Term::Index(<>),
     Symbol => ast::terms::Term::Identifier(<>),
     Value => ast::terms::Term::Value(<>),
 };

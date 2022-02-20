@@ -6,7 +6,7 @@ pub fn evaluate_is_pattern(
     is_pattern: &IsPattern,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let (expr, pattern) = match is_pattern {
         IsPattern::Literal(expr, pattern) => (expr, pattern.clone()),
@@ -49,7 +49,7 @@ pub fn evaluate_unwrap(
     unwrap: &Unwrap,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let (expr, pattern) = match unwrap {
         Unwrap::Literal(expr, pattern) => (expr, pattern.clone()),

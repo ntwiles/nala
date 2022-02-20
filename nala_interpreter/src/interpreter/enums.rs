@@ -28,7 +28,7 @@ pub fn evaluate_variant(
     variant: &VariantValue,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut impl IoContext,
+    context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let (enum_name, variant, data) = match variant {
         VariantValue::Addend(addend) => {
