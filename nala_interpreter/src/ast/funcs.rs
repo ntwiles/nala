@@ -7,6 +7,8 @@ pub struct Func {
     pub block: Box<Block>,
 }
 
+// TODO: Implement this as a Vec<Param> instead of a linked list.
+// This should remain as a linked list in the grammar.
 #[derive(Debug, Clone)]
 pub enum Params {
     Params(Box<Params>, Param),

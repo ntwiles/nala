@@ -4,6 +4,8 @@ use super::*;
 
 use crate::types::get_interfaces_for_primitive_type;
 
+// TODO: Implement this as a Vec<TypeVariant> instead of a linked list.
+// This should remain as a linked list in the grammar.
 #[derive(Debug, Clone)]
 pub enum TypeVariants {
     TypeVariants(Box<TypeVariants>, TypeVariant),

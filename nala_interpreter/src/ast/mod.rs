@@ -52,6 +52,8 @@ pub enum Stmt {
     Wiles(Expr, Box<Block>),
 }
 
+// TODO: Implement this as a Vec<Stmt> instead of a linked list.
+// This should remain as a linked list in the grammar.
 #[derive(Debug, Clone)]
 pub enum Stmts {
     Stmts(Box<Stmts>, Stmt),
@@ -70,6 +72,8 @@ pub enum Expr {
     Unwrap(Unwrap),
 }
 
+// TODO: Implement this as a Vec<VariantDeclare> instead of a linked list.
+// This should remain as a linked list in the grammar.
 #[derive(Debug, Clone)]
 pub enum VariantsDeclare {
     Variants(Box<VariantsDeclare>, VariantDeclare),
