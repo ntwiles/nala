@@ -83,7 +83,7 @@ pub fn evaluate_unwrap(
 fn unwrap_with_pattern(value: Value, pattern: Pattern) -> Result<Value, NalaRuntimeError> {
     match pattern {
         Pattern::Enum(_patt_enum_name, _patt_variant, patt_data) => {
-            let (_enum_name, _variant, data) = value.unwrap_variant()?;
+            let (_enum_name, _variant, data) = value.unwrap_variant();
 
             if let Some(patt_data) = *patt_data {
                 unwrap_with_pattern(*data.unwrap(), patt_data)

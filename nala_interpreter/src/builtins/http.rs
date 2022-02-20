@@ -31,17 +31,8 @@ fn builtin_request(args: HashMap<String, Value>, _context: &mut dyn IoContext) -
 
     let options = mutex.lock().unwrap();
 
-    let url = if let Value::String(url) = options["url"].clone() {
-        url
-    } else {
-        todo!()
-    };
-
-    let method = if let Value::String(method) = options["method"].clone() {
-        method
-    } else {
-        todo!()
-    };
+    let url = options["url"].unwrap_string();
+    let method = options["method"].unwrap_string();
 
     let body = if let Value::String(body) = options["body"].clone() {
         Some(body)

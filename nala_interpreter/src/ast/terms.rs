@@ -4,8 +4,6 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::errors::NalaRuntimeError;
-
 use super::*;
 
 #[derive(Debug, Clone)]
@@ -38,9 +36,17 @@ pub enum Value {
 }
 
 impl Value {
-    pub fn unwrap_variant(&self) -> Result<(String, String, Option<Box<Value>>), NalaRuntimeError> {
+    pub fn unwrap_string(&self) -> String {
+        if let Value::String(string) = self {
+            string.to_owned()
+        } else {
+            panic!("Term `{}` is not a String!", self);
+        }
+    }
+
+    pub fn unwrap_variant(&self) -> (String, String, Option<Box<Value>>) {
         if let Value::Variant(enum_name, variant_name, data) = self {
-            Ok((enum_name.to_owned(), variant_name.to_owned(), data.clone()))
+            (enum_name.to_owned(), variant_name.to_owned(), data.clone())
         } else {
             panic!("Term `{}` is not a Variant!", self);
         }
