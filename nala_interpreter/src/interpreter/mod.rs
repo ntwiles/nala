@@ -36,8 +36,8 @@ pub fn interpret_tree(
     }
 
     // Builtin constants.
-    for (ident, term) in get_constants().iter() {
-        if let Err(e) = interpret_declare(ident, &term, &mut scopes, top_scope, false) {
+    for (ident, value) in get_constants().iter() {
+        if let Err(e) = interpret_declare(ident, &value, &mut scopes, top_scope, false) {
             panic!("Error loading Nala constants: {0}", e.message)
         }
     }

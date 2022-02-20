@@ -17,8 +17,8 @@ pub fn interpret_enum(
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
         let enum_type = TypeVariant::Enum(ident.to_owned(), Box::new(variants.clone()));
-        let enum_term = Value::Type(enum_type);
-        scopes.add_binding(&ident, current_scope, enum_term, false);
+        let enum_value = Value::Type(enum_type);
+        scopes.add_binding(&ident, current_scope, enum_value, false);
     }
 
     Ok(Value::Void)
@@ -40,9 +40,9 @@ pub fn evaluate_variant(
         }
     };
 
-    let term = scopes.get_value(enum_name, current_scope, context)?;
+    let value = scopes.get_value(enum_name, current_scope, context)?;
 
-    if let Value::Type(TypeVariant::Enum(_enum_name, variants)) = term {
+    if let Value::Type(TypeVariant::Enum(_enum_name, variants)) = value {
         let existing_variant = find_variant(&*variants, variant)?;
 
         let expected_data_type = if let VariantDeclare::Data(_, data) = existing_variant {

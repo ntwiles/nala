@@ -26,8 +26,8 @@ pub fn evaluate_is_pattern(
         }
     };
 
-    let term = evaluate_expr(expr, scopes, current_scope, context)?;
-    Ok(Value::Bool(check_is_pattern(&term, &pattern)))
+    let value = evaluate_expr(expr, scopes, current_scope, context)?;
+    Ok(Value::Bool(check_is_pattern(&value, &pattern)))
 }
 
 fn check_is_pattern(value: &Value, pattern: &Pattern) -> bool {
@@ -69,15 +69,15 @@ pub fn evaluate_unwrap(
         }
     };
 
-    let term = evaluate_expr(expr, scopes, current_scope, context)?;
+    let value = evaluate_expr(expr, scopes, current_scope, context)?;
 
-    if !check_is_pattern(&term, &pattern) {
+    if !check_is_pattern(&value, &pattern) {
         return Err(NalaRuntimeError {
             message: format!("Expression does not match pattern."),
         });
     };
 
-    unwrap_with_pattern(term, pattern)
+    unwrap_with_pattern(value, pattern)
 }
 
 fn unwrap_with_pattern(value: Value, pattern: Pattern) -> Result<Value, NalaRuntimeError> {
