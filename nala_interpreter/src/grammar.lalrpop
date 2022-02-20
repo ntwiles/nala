@@ -185,6 +185,7 @@ Index: ast::arrays::Index = {
     <s:Symbol> "[" <e:Expr> "]" => ast::arrays::Index::Index(s, Box::new(e)),
 };
 
+// TODO: Index operations are non-terminal.
 Term: ast::terms::Term = {
     Index => ast::terms::Term::Index(<>),
     Symbol => ast::terms::Term::Identifier(<>),

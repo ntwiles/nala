@@ -1,52 +1,21 @@
 use crate::ast::{terms::*, types::*};
 
-use super::errors::{panic_oper_not_impl, panic_oper_not_impl_for};
+use super::errors::panic_oper_not_impl_for;
 
 pub fn evaluate_equals(left: Value, right: Value) -> Value {
-    match left {
-        Value::Num(left) => num_equals(left, right),
-        Value::String(left) => string_equals(left, right),
-        Value::Bool(left) => bool_equals(left, right),
-        Value::Variant(left_enum, left_variant, data) => {
-            variant_equals(left_enum, left_variant, data, right)
-        }
-        other => panic_oper_not_impl("==", &other.get_type()),
-    }
-}
-
-fn num_equals(left: f32, right: Value) -> Value {
-    if let Value::Num(right) = right {
-        Value::Bool(left == right)
-    } else {
+    if left.get_type() != right.get_type() {
         panic_oper_not_impl_for(
             "==",
             &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
             &right.get_type(),
         )
     }
-}
 
-fn string_equals(left: String, right: Value) -> Value {
-    if let Value::String(right) = right {
-        Value::Bool(left == right)
-    } else {
-        panic_oper_not_impl_for(
-            "==",
-            &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::String)),
-            &right.get_type(),
-        )
-    }
-}
-
-fn bool_equals(left: bool, right: Value) -> Value {
-    if let Value::Bool(right) = right {
-        Value::Bool(left == right)
-    } else {
-        panic_oper_not_impl_for(
-            "==",
-            &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Bool)),
-            &right.get_type(),
-        )
+    match left {
+        Value::Variant(left_enum, left_variant, data) => {
+            variant_equals(left_enum, left_variant, data, right)
+        }
+        _ => Value::Bool(left == right),
     }
 }
 
@@ -72,10 +41,9 @@ fn variant_equals(
             Value::Bool(enums_match && variants_match)
         }
     } else {
-        // TODO: Using PrimitiveType::String as placeholder. Correct this.
         panic_oper_not_impl_for(
             "==",
-            &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::String)),
+            &TypeVariant::Type(Type::UserDefined(left_enum)),
             &right.get_type(),
         )
     }

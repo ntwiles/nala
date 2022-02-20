@@ -148,6 +148,13 @@ impl PartialEq for Value {
                     false
                 }
             }
+            Value::Bool(left) => {
+                if let Value::Bool(right) = right {
+                    left == right
+                } else {
+                    false
+                }
+            }
             _ => todo!(),
         }
     }
