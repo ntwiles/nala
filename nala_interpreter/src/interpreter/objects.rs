@@ -34,7 +34,12 @@ pub fn evaluate_member_access(
                     })
                 }
             } else {
-                todo!()
+                Err(NalaRuntimeError {
+                    message: format!(
+                        "Cannot access member `{0}` of non-Object `{1}`.",
+                        child, object
+                    ),
+                })
             }
         }
         MemberAccess::MemberAccess(parent, child) => {
