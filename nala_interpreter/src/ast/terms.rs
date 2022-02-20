@@ -59,7 +59,9 @@ impl fmt::Display for Value {
             Value::Break(_) => write!(f, "<Break>"),
             Value::Func(_, _) => todo!(),
             Value::Num(n) => write!(f, "{}", n),
+            // TODO: Do we really want to just print <Object> here?
             Value::Object(_) => write!(f, "<Object>"),
+            // TODO: Do we really want to just print <Pattern> here?
             Value::Pattern(_) => write!(f, "<Pattern>"),
             Value::String(t) => write!(f, "{}", t),
             Value::Type(type_kind) => write!(f, "{}", type_kind),
