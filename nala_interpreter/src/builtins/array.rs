@@ -9,14 +9,10 @@ use crate::{
 };
 
 pub fn get_len_block() -> Func {
-    let inner_type = TypeVariants::TypeVariant(TypeVariant::Type(Type::PrimitiveType(
-        PrimitiveType::Number,
-    )));
+    let inner_type = TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number));
 
-    let outer_type = TypeVariant::Nested(
-        Type::PrimitiveType(PrimitiveType::Array),
-        Box::new(inner_type),
-    );
+    let outer_type =
+        TypeVariant::Nested(Type::PrimitiveType(PrimitiveType::Array), vec![inner_type]);
 
     let params = Params::Param(Param {
         ident: String::from("array"),
@@ -35,9 +31,9 @@ pub fn get_slice_block() -> Func {
         ident: String::from("array"),
         param_type: TypeVariant::Nested(
             Type::PrimitiveType(PrimitiveType::Array),
-            Box::new(TypeVariants::TypeVariant(TypeVariant::Type(
-                Type::PrimitiveType(PrimitiveType::Number),
-            ))),
+            vec![TypeVariant::Type(Type::PrimitiveType(
+                PrimitiveType::Number,
+            ))],
         ),
     };
 

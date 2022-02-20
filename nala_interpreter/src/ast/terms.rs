@@ -111,11 +111,7 @@ impl Value {
                     TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Unknown))
                 };
 
-                let elem_type = TypeVariants::TypeVariant(elem_type);
-                TypeVariant::Nested(
-                    Type::PrimitiveType(PrimitiveType::Array),
-                    Box::new(elem_type),
-                )
+                TypeVariant::Nested(Type::PrimitiveType(PrimitiveType::Array), vec![elem_type])
             }
             Value::Bool(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Bool)),
             Value::Break(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Break)),
@@ -129,11 +125,7 @@ impl Value {
                 if params.len() > 0 {
                     let param_types: Vec<TypeVariant> =
                         params.iter().map(|p| p.clone().param_type).collect();
-                    let param_types = TypeVariants::from_vec(param_types);
-                    TypeVariant::Nested(
-                        Type::PrimitiveType(PrimitiveType::Func),
-                        Box::new(param_types),
-                    )
+                    TypeVariant::Nested(Type::PrimitiveType(PrimitiveType::Func), param_types)
                 } else {
                     TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Func))
                 }

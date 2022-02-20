@@ -117,13 +117,10 @@ Param: ast::funcs::Param = {
     <s:Symbol> ":" <t:TypeVariant> => ast::funcs::Param { ident: s, param_type: t }
 }
 
-TypeVariants: ast::types::TypeVariants = {
-    <tt:TypeVariants> "," <t:TypeVariant> => ast::types::TypeVariants::TypeVariants(Box::new(tt), t),
-    <TypeVariant> => ast::types::TypeVariants::TypeVariant(<>)
-}
+TypeVariants = Comma<TypeVariant>;
 
 TypeVariant: ast::types::TypeVariant = {
-    <t:Type> "<" <tt:TypeVariants> ">" => ast::types::TypeVariant::Nested(t, Box::new(tt)),
+    <t:Type> "<" <tt:TypeVariants> ">" => ast::types::TypeVariant::Nested(t, tt),
     <Type> => ast::types::TypeVariant::Type(<>),
     <PrimitiveInterface> => ast::types::TypeVariant::Interface(<>),
 }
@@ -207,4 +204,14 @@ Num: f32 = {
 
 Str: String = {
     r"'[^']*'" => String::from_str(&<>[1..<>.len() - 1]).unwrap(),
+};
+
+Comma<T>: Vec<T> = { // (1)
+    <mut v:(<T> ",")*> <e:T?> => match e { // (2)
+        None => v,
+        Some(e) => {
+            v.push(e);
+            v
+        }
+    }
 };

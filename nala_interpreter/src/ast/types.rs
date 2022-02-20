@@ -4,17 +4,9 @@ use super::*;
 
 use crate::types::get_interfaces_for_primitive_type;
 
-// TODO: Implement this as a Vec<TypeVariant> instead of a linked list.
-// This should remain as a linked list in the grammar.
-#[derive(Debug, Clone)]
-pub enum TypeVariants {
-    TypeVariants(Box<TypeVariants>, TypeVariant),
-    TypeVariant(TypeVariant),
-}
-
 #[derive(Debug, Clone)]
 pub enum TypeVariant {
-    Nested(Type, Box<TypeVariants>),
+    Nested(Type, Vec<TypeVariant>),
     Enum(String, Box<VariantsDeclare>),
     Type(Type),
     Interface(PrimitiveInterface),
@@ -132,68 +124,6 @@ pub enum PrimitiveType {
     Object,
 }
 
-impl TypeVariants {
-    pub fn are_assignable_to(&self, other: &Self) -> bool {
-        match self {
-            TypeVariants::TypeVariants(svv, sv) => {
-                if let TypeVariants::TypeVariants(ovv, ov) = other {
-                    sv.is_assignable_to(ov) && svv.are_assignable_to(ovv)
-                } else {
-                    false
-                }
-            }
-            TypeVariants::TypeVariant(sv) => {
-                if let TypeVariants::TypeVariant(ov) = other {
-                    sv.is_assignable_to(ov)
-                } else {
-                    false
-                }
-            }
-        }
-    }
-
-    pub fn from_vec(types: Vec<TypeVariant>) -> TypeVariants {
-        match types.len() {
-            1 => TypeVariants::TypeVariant(types.first().unwrap().clone()),
-            _ => {
-                let last = types.last().unwrap();
-                let remaining = TypeVariants::from_vec(types[..types.len() - 1].to_owned());
-                TypeVariants::TypeVariants(Box::new(remaining), last.clone())
-            }
-        }
-    }
-}
-
-impl fmt::Display for TypeVariants {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            TypeVariants::TypeVariant(s) => write!(f, "{}", s),
-            TypeVariants::TypeVariants(ss, s) => write!(f, "{0}, {1}", ss, s),
-        }
-    }
-}
-
-impl PartialEq for TypeVariants {
-    fn eq(&self, other: &Self) -> bool {
-        return match self {
-            TypeVariants::TypeVariants(mvv, mv) => {
-                if let TypeVariants::TypeVariants(ovv, ov) = other {
-                    ovv == mvv && ov == mv
-                } else {
-                    false
-                }
-            }
-            TypeVariants::TypeVariant(mv) => {
-                if let TypeVariants::TypeVariant(ov) = other {
-                    mv == ov
-                } else {
-                    false
-                }
-            }
-        };
-    }
-}
-
 impl TypeVariant {
     pub fn is_assignable_to(&self, other: &Self) -> bool {
         if let TypeVariant::Interface(i) = other {
@@ -203,7 +133,18 @@ impl TypeVariant {
         match self {
             TypeVariant::Nested(sv, svv) => {
                 if let TypeVariant::Nested(ov, ovv) = other {
-                    sv.is_assignable_to(ov) && svv.are_assignable_to(ovv)
+                    if !sv.is_assignable_to(ov) {
+                        return false;
+                    }
+
+                    for (i, si) in svv.iter().enumerate() {
+                        let oi = &ovv[i];
+                        if !si.is_assignable_to(&oi) {
+                            return false;
+                        }
+                    }
+
+                    true
                 } else {
                     false
                 }
@@ -236,7 +177,14 @@ impl TypeVariant {
 impl fmt::Display for TypeVariant {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            TypeVariant::Nested(v, vv) => write!(f, "{0}<{1}>", v, vv),
+            TypeVariant::Nested(v, vv) => {
+                let children = vv
+                    .iter()
+                    .map(|vv| vv.to_string())
+                    .collect::<Vec<String>>()
+                    .join(",");
+                write!(f, "{0}<{1}>", v, children)
+            }
             TypeVariant::Type(t) => write!(f, "{}", t),
             TypeVariant::Enum(v, vv) => write!(f, "{0}::{1}", v, vv),
             TypeVariant::Interface(i) => write!(f, "{}", i),

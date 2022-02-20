@@ -80,9 +80,15 @@ fn check_param_type(param_type: &TypeVariant) -> Result<(), String> {
         let outer = if let Type::PrimitiveType(outer) = outer {
             outer
         } else {
+            let inners = inner
+                .iter()
+                .map(|i| i.to_string())
+                .collect::<Vec<String>>()
+                .join(", ");
+
             return Err(format!(
                 "Type `{0}` does not support nesting. Type `{0}<{1}>` is invalid.",
-                outer, inner
+                outer, inners
             ));
         };
 
@@ -90,11 +96,16 @@ fn check_param_type(param_type: &TypeVariant) -> Result<(), String> {
             PrimitiveType::Array => Ok(()),
             PrimitiveType::Func => Ok(()),
             _ => {
-                let message = format!(
+                let inners = inner
+                    .iter()
+                    .map(|i| i.to_string())
+                    .collect::<Vec<String>>()
+                    .join(", ");
+
+                Err(format!(
                     "Type `{0}` does not support nesting. Type `{0}<{1}>` is invalid.",
-                    outer, inner
-                );
-                Err(message)
+                    outer, inners
+                ))
             }
         };
     }
