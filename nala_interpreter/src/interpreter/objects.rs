@@ -49,8 +49,6 @@ pub fn evaluate_member_access(
                 let object = Arc::clone(&reference);
                 let object = object.lock().unwrap();
 
-                println!("Object: {:?}", object.clone());
-
                 if object.contains_key(child) {
                     Ok(object[child].clone())
                 } else {
@@ -78,8 +76,6 @@ pub fn evaluate_object(
     let object: HashMap<String, Value> =
         evaluate_object_entries(&object.entries, scopes, current_scope, context)?;
 
-    println!("Object ok! {:?}", object);
-
     Ok(Value::Object(Arc::new(Mutex::new(object))))
 }
 
@@ -93,8 +89,6 @@ fn evaluate_object_entries(
         .iter()
         .map(|kvp| evaluate_object_entry(kvp, scopes, current_scope, context))
         .collect();
-
-    println!("Results: {:?}", results);
 
     if let Some(Err(error)) = results.iter().find(|r| r.is_err()) {
         Err(error.clone())
