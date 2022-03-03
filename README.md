@@ -1,8 +1,6 @@
-# Introduction
-
 Nala is an interpreted, expression-oriented programming language with terse syntax designed for quick use in prototyping console applications and in manipulating data.
 
-# Features
+## Features
 
 - [x] Basic console i/o.
 - [x] Lexical scope.
@@ -21,7 +19,7 @@ Nala is an interpreted, expression-oriented programming language with terse synt
 - [ ] Async / await.
 - [ ] Module and package systems.
 
-# Usage
+## Usage
 
 Parse and interpret in the console any `.nl` file with the following command:
 
@@ -29,15 +27,15 @@ Parse and interpret in the console any `.nl` file with the following command:
 cargo run path/to/script.nl
 ```
 
-## Eamples
+### Examples
 
 Example scripts are provided in the `examples/` directory. 
 
 Within that directory, `sandbox.nl` will be ignored by git.
-# Documentation
+## Documentation
 
 Documentation can be found on the [Nala Wiki](https://github.com/ntwiles/nala-rust/wiki).
 
-# Syntax Highlighting
+## Syntax Highlighting
 
 Syntax highlighting is available in the form of a VS Code extension [here](https://github.com/ntwiles/nala-vscode-extension).
