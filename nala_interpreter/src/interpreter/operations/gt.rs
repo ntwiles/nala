@@ -1,16 +1,11 @@
 use crate::{
-    ast::{
-        terms::*,
-        types::{PrimitiveInterface::*, *},
-    },
+    ast::{terms::*, types::*},
     errors::*,
 };
 
 use super::errors::*;
 
 pub fn evaluate_gt(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
-    check_operator_implemented_both(left.get_type(), right.get_type(), ">".to_string(), ICompare)?;
-
     match left {
         Value::Num(left) => match right {
             Value::Num(right) => Ok(Value::Bool(left > right)),

@@ -8,7 +8,7 @@ use crate::{
 pub fn get_print_block() -> Func {
     let message_param = Param {
         ident: String::from("message"),
-        param_type: TypeVariant::Interface(PrimitiveInterface::IPrint),
+        param_type: TypeVariant::Type(Type::PrimitiveType(PrimitiveType::String)),
     };
 
     Func {

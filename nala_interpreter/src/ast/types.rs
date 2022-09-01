@@ -1,40 +1,9 @@
 use std::fmt;
 
-use super::*;
-
-use crate::types::get_interfaces_for_primitive_type;
-
 #[derive(Debug, Clone)]
 pub enum TypeVariant {
     Nested(Type, Vec<TypeVariant>),
     Type(Type),
-    Interface(PrimitiveInterface),
-}
-
-impl TypeVariant {
-    pub fn implements_interface(&self, interface: PrimitiveInterface) -> bool {
-        match self {
-            TypeVariant::Type(the_type) => match the_type {
-                Type::PrimitiveType(primitive) => {
-                    get_interfaces_for_primitive_type(primitive.clone()).contains(&interface)
-                }
-                Type::UserDefined(_name) => {
-                    if let PrimitiveInterface::IPrint = interface {
-                        true
-                    } else {
-                        false
-                    }
-                }
-            },
-            TypeVariant::Nested(outer, _inner) => match outer {
-                Type::PrimitiveType(outer) => {
-                    get_interfaces_for_primitive_type(outer.clone()).contains(&interface)
-                }
-                Type::UserDefined(_name) => false,
-            },
-            TypeVariant::Interface(_interface) => todo!(),
-        }
-    }
 }
 
 #[derive(Debug, Clone)]
@@ -95,17 +64,6 @@ impl PartialEq for Type {
 }
 
 #[derive(Debug, Clone)]
-pub enum PrimitiveInterface {
-    IAdd,
-    ICompare,
-    IDivide,
-    IEqual,
-    IMultiply,
-    IPrint,
-    ISubtract,
-}
-
-#[derive(Debug, Clone)]
 pub enum PrimitiveType {
     Array,
     Bool,
@@ -116,16 +74,11 @@ pub enum PrimitiveType {
     String,
     Symbol,
     Void,
-    Unknown,
     Object,
 }
 
 impl TypeVariant {
     pub fn is_assignable_to(&self, other: &Self) -> bool {
-        if let TypeVariant::Interface(i) = other {
-            return self.implements_interface(i.clone());
-        };
-
         match self {
             TypeVariant::Nested(sv, svv) => {
                 if let TypeVariant::Nested(ov, ovv) = other {
@@ -149,13 +102,6 @@ impl TypeVariant {
                 TypeVariant::Type(ot) => st.is_assignable_to(ot),
                 _ => false,
             },
-            TypeVariant::Interface(i) => {
-                if let TypeVariant::Interface(other) = other {
-                    i == other
-                } else {
-                    false
-                }
-            }
         }
     }
 }
@@ -172,7 +118,6 @@ impl fmt::Display for TypeVariant {
                 write!(f, "{0}<{1}>", v, children)
             }
             TypeVariant::Type(t) => write!(f, "{}", t),
-            TypeVariant::Interface(i) => write!(f, "{}", i),
         }
     }
 }
@@ -194,7 +139,6 @@ impl PartialEq for TypeVariant {
                     false
                 }
             }
-            TypeVariant::Interface(_) => todo!(),
         }
     }
 }
@@ -219,7 +163,6 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::String => "String",
             PrimitiveType::Symbol => "<Symbol>",
             PrimitiveType::Void => "<Void>",
-            PrimitiveType::Unknown => "<Unknown>",
         };
 
         write!(f, "{}", type_name)
@@ -227,17 +170,6 @@ impl fmt::Display for PrimitiveType {
 }
 
 impl PartialEq for PrimitiveType {
-    fn eq(&self, other: &Self) -> bool {
-        self.to_string() == other.to_string()
-    }
-}
-
-impl fmt::Display for PrimitiveInterface {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
-impl PartialEq for PrimitiveInterface {
     fn eq(&self, other: &Self) -> bool {
         self.to_string() == other.to_string()
     }

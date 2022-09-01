@@ -100,8 +100,7 @@ impl Value {
                 let elem_type = if items.len() > 0 {
                     items.first().unwrap().get_type()
                 } else {
-                    // TODO: We need to get rid of the Unknown primitive type and solve this problem another way.
-                    TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Unknown))
+                    todo!("Handle the case where trying to get the type of an empty array.")
                 };
 
                 TypeVariant::Nested(Type::PrimitiveType(PrimitiveType::Array), vec![elem_type])

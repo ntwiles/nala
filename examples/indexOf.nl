@@ -17,4 +17,4 @@ func indexOfString(haystack: Array<String>, needle: String ) {
 const names = [ 'Jimmy', 'Kim', 'Howard', 'Lalo' ];
 const index = indexOfString(names, 'Howard');
 
-print(index);
+print('test');

@@ -31,8 +31,8 @@ Stmt: ast::Stmt = {
 
 PlaceExpression: ast::PlaceExpression = {
     <s:Symbol> "[" <e:Expr> "]" => ast::PlaceExpression::Index(s, Box::new(e)),
-    <Symbol> => ast::PlaceExpression::Symbol(<>),
     <MemberAccess> => ast::PlaceExpression::MemberAccess(<>),
+    <Symbol> => ast::PlaceExpression::Symbol(<>),
 };
 
 VariantsDeclare = Comma<VariantDeclare>;
@@ -66,7 +66,6 @@ Array: ast::arrays::Array = {
 };
 
 Elems = Comma<Expr>;
-
 Params = Comma<Param>;
 
 Param: ast::funcs::Param = {
@@ -78,7 +77,6 @@ TypeVariants = Comma<TypeVariant>;
 TypeVariant: ast::types::TypeVariant = {
     <t:Type> "<" <tt:TypeVariants> ">" => ast::types::TypeVariant::Nested(t, tt),
     <Type> => ast::types::TypeVariant::Type(<>),
-    <PrimitiveInterface> => ast::types::TypeVariant::Interface(<>),
 }
 
 Type: ast::types::Type = {
@@ -92,20 +90,6 @@ PrimitiveType: ast::types::PrimitiveType = {
     "Func" => ast::types::PrimitiveType::Func,
     "Number" => ast::types::PrimitiveType::Number,
     "String" => ast::types::PrimitiveType::String,
-}
-
-// TODO: This allows for example a function to accept two arguments 
-// which each implement IAdd, but which will throw an error when adding together.
-// Implementing generics with interface constraints might solve this problem.
-// In the meantime, we should not allow function params bound to interfaces.
-PrimitiveInterface: ast::types::PrimitiveInterface = {
-    "IAdd" => ast::types::PrimitiveInterface::IAdd,
-    "ICompare" => ast::types::PrimitiveInterface::ICompare,
-    "IDivide" => ast::types::PrimitiveInterface::IDivide,
-    "IEqual" => ast::types::PrimitiveInterface::IEqual,
-    "IMultiply" => ast::types::PrimitiveInterface::IMultiply,
-    "IPrint" => ast::types::PrimitiveInterface::IPrint,
-    "ISubtract" => ast::types::PrimitiveInterface::ISubtract
 }
 
 pub Addend: ast::math::Addend = {

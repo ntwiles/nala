@@ -5,7 +5,7 @@ pub mod gt;
 pub mod lt;
 
 use crate::{
-    ast::{math::*, terms::*, types::PrimitiveInterface::*},
+    ast::{math::*, terms::*},
     errors::NalaRuntimeError,
     interpreter::evaluate_term,
     io_context::IoContext,
@@ -15,7 +15,6 @@ use crate::{
 use super::functions::*;
 
 use self::arithmatic::*;
-use self::errors::check_operator_implemented_both;
 
 pub fn evaluate_addend(
     addend: &Addend,
@@ -28,25 +27,11 @@ pub fn evaluate_addend(
             let left = evaluate_addend(left, scopes, current_scope, context)?;
             let right = evaluate_factor(right, scopes, current_scope, context)?;
 
-            check_operator_implemented_both(
-                left.get_type(),
-                right.get_type(),
-                "+".to_string(),
-                IAdd,
-            )?;
-
             do_add(left, right)
         }
         Addend::Sub(left, right) => {
             let left = evaluate_addend(left, scopes, current_scope, context)?;
             let right = evaluate_factor(right, scopes, current_scope, context)?;
-
-            check_operator_implemented_both(
-                left.get_type(),
-                right.get_type(),
-                "-".to_string(),
-                ISubtract,
-            )?;
 
             do_subtract(left, right)
         }
@@ -65,25 +50,11 @@ pub fn evaluate_factor(
             let left = evaluate_factor(left, scopes, current_scope, context)?;
             let right = evaluate_term(right.clone(), scopes, current_scope, context)?;
 
-            check_operator_implemented_both(
-                left.get_type(),
-                right.get_type(),
-                "*".to_string(),
-                IMultiply,
-            )?;
-
             do_multiply(left, right)
         }
         Factor::Div(left, right) => {
             let left = evaluate_factor(left, scopes, current_scope, context)?;
             let right = evaluate_term(right.clone(), scopes, current_scope, context)?;
-
-            check_operator_implemented_both(
-                left.get_type(),
-                right.get_type(),
-                "/".to_string(),
-                IDivide,
-            )?;
 
             do_divide(left, right)
         }

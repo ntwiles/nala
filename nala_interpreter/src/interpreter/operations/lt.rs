@@ -1,15 +1,10 @@
 use crate::{
-    ast::{
-        terms::*,
-        types::{PrimitiveInterface::*, *},
-    },
+    ast::{terms::*, types::*},
     errors::*,
     interpreter::operations::errors::*,
 };
 
 pub fn evaluate_lt(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
-    check_operator_implemented_both(left.get_type(), right.get_type(), ">".to_string(), ICompare)?;
-
     match left {
         Value::Num(left) => Ok(num_lt(left, right)),
         Value::String(left) => Ok(string_lt(left, right)),
