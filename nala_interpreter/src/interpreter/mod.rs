@@ -1,11 +1,9 @@
 mod arrays;
 pub mod basic;
 mod branching;
-mod enums;
 mod functions;
 mod objects;
 mod operations;
-mod patterns;
 mod variables;
 
 use crate::{

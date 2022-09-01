@@ -1,28 +1,20 @@
 
-enum Option {
-    Some(Number),
-    None
-}
 
-func indexOf(haystack: Array<IEqual>, needle: IEqual ) {
+func indexOfString(haystack: Array<String>, needle: String ) {
     mut i = 0;
+
     for item in haystack {
         if (item == needle) {
-            break(Option::Some(i));
+            break(i);
         }
 
         i = i + 1;
     }
 
-    Option::None;
+    -1;
 }
 
 const names = [ 'Jimmy', 'Kim', 'Howard', 'Lalo' ];
-const result = indexOf(names, 'Howard');
+const index = indexOfString(names, 'Howard');
 
-pattern some = Option::Some($);
-
-if (result is some) {
-    const index = unwrap result as some;
-    print(index);
-}
+print(index);

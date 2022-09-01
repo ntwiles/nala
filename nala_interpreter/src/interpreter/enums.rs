@@ -7,23 +7,6 @@ use crate::{
 
 use super::{basic::*, operations::*};
 
-pub fn interpret_enum(
-    ident: &String,
-    variants: &Vec<VariantDeclare>,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-) -> Result<Value, NalaRuntimeError> {
-    if scopes.binding_exists_local(&ident, current_scope) {
-        panic!("Binding for {} already exists in local scope.", ident);
-    } else {
-        let enum_type = TypeVariant::Enum(ident.to_owned(), variants.clone());
-        let enum_value = Value::Type(enum_type);
-        scopes.add_binding(&ident, current_scope, enum_value, false);
-    }
-
-    Ok(Value::Void)
-}
-
 pub fn evaluate_variant(
     variant: &VariantValue,
     scopes: &mut Scopes,

@@ -27,7 +27,6 @@ pub enum Value {
     Variant(String, String, Option<Box<Value>>),
     Num(f32),
     Object(Arc<Mutex<HashMap<String, Value>>>),
-    Pattern(Pattern),
     String(String),
     Type(TypeVariant),
 
@@ -76,8 +75,6 @@ impl fmt::Display for Value {
             Value::Num(n) => write!(f, "{}", n),
             // TODO: Do we really want to just print <Object> here?
             Value::Object(_) => write!(f, "<Object>"),
-            // TODO: Do we really want to just print <Pattern> here?
-            Value::Pattern(_) => write!(f, "<Pattern>"),
             Value::String(t) => write!(f, "{}", t),
             Value::Type(type_kind) => write!(f, "{}", type_kind),
             Value::Variant(e, v, d) => {
@@ -120,12 +117,10 @@ impl Value {
                     TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Func))
                 }
             }
-
+            Value::Type(_) => todo!("What is this?"),
             Value::Num(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
             Value::Object(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Object)),
-            Value::Pattern(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Pattern)),
             Value::String(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::String)),
-            Value::Type(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Enum)),
             Value::Variant(enum_name, _, _) => {
                 TypeVariant::Type(Type::UserDefined(enum_name.to_owned()))
             }

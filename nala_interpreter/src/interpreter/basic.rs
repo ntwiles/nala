@@ -1,11 +1,9 @@
 use super::{
     arrays::*,
     branching::*,
-    enums::*,
     functions::*,
     objects::*,
     operations::{equals::*, gt::*, lt::*, *},
-    patterns::*,
     variables::*,
 };
 
@@ -62,13 +60,6 @@ fn interpret_stmt(
             let result = evaluate_expr(expr, scopes, current_scope, context)?;
             interpret_declare(ident, &result, scopes, current_scope, is_mutable.clone())
         }
-        Stmt::PatternDeclare(ident, pattern) => interpret_declare(
-            ident,
-            &Value::Pattern(pattern.clone()),
-            scopes,
-            current_scope,
-            false,
-        ),
         Stmt::Assign(ident, expr) => {
             let result = evaluate_expr(expr, scopes, current_scope, context)?;
             interpret_assign(ident, &result, scopes, current_scope, context)
@@ -81,9 +72,6 @@ fn interpret_stmt(
         Stmt::Func(func) => interpret_func(func, scopes, current_scope),
         Stmt::Expr(expr) => evaluate_expr(expr, scopes, current_scope, context),
         Stmt::Break(expr) => Ok(Value::Break(Box::new(expr.clone()))),
-        Stmt::EnumDeclare(ident, variants) => {
-            interpret_enum(ident, variants, scopes, current_scope)
-        }
     }
 }
 
@@ -94,6 +82,7 @@ pub fn evaluate_expr(
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match expr {
+        Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope, context),
         Expr::Eq(left, right) => {
             let left = evaluate_expr(left, scopes, current_scope, context)?;
             let right = evaluate_addend(right, scopes, current_scope, context)?;
@@ -114,11 +103,6 @@ pub fn evaluate_expr(
         }
         Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
         Expr::Object(object) => evaluate_object(object, scopes, current_scope, context),
-        Expr::VariantValue(variant) => evaluate_variant(variant, scopes, current_scope, context),
-        Expr::IsPattern(is_pattern) => {
-            evaluate_is_pattern(is_pattern, scopes, current_scope, context)
-        }
-        Expr::Unwrap(unwrap) => evaluate_unwrap(unwrap, scopes, current_scope, context),
     }
 }
 

@@ -7,7 +7,6 @@ use crate::types::get_interfaces_for_primitive_type;
 #[derive(Debug, Clone)]
 pub enum TypeVariant {
     Nested(Type, Vec<TypeVariant>),
-    Enum(String, Vec<VariantDeclare>),
     Type(Type),
     Interface(PrimitiveInterface),
 }
@@ -33,7 +32,6 @@ impl TypeVariant {
                 }
                 Type::UserDefined(_name) => false,
             },
-            TypeVariant::Enum(_enum_name, _variants) => todo!(),
             TypeVariant::Interface(_interface) => todo!(),
         }
     }
@@ -115,11 +113,9 @@ pub enum PrimitiveType {
     Exception,
     Func,
     Number,
-    Pattern,
     String,
     Symbol,
     Void,
-    Enum,
     Unknown,
     Object,
 }
@@ -151,18 +147,8 @@ impl TypeVariant {
             }
             TypeVariant::Type(st) => match other {
                 TypeVariant::Type(ot) => st.is_assignable_to(ot),
-                TypeVariant::Enum(_other_enum_name, _other_variants) => {
-                    // if let PrimitiveType::Variant = sv {
-                    //     println!("{}", sv);
-                    //     false
-                    // } else {
-                    //     false
-                    // }
-                    false
-                }
                 _ => false,
             },
-            TypeVariant::Enum(_, _) => todo!(),
             TypeVariant::Interface(i) => {
                 if let TypeVariant::Interface(other) = other {
                     i == other
@@ -186,21 +172,6 @@ impl fmt::Display for TypeVariant {
                 write!(f, "{0}<{1}>", v, children)
             }
             TypeVariant::Type(t) => write!(f, "{}", t),
-            TypeVariant::Enum(v, vv) => {
-                let children = vv
-                    .iter()
-                    .map(|vv| vv.to_string())
-                    .collect::<Vec<String>>()
-                    .join(",");
-
-                let children = if children.len() > 0 {
-                    format!("({})", children)
-                } else {
-                    "".to_owned()
-                };
-
-                write!(f, "{0}::{1}", v, children)
-            }
             TypeVariant::Interface(i) => write!(f, "{}", i),
         }
     }
@@ -223,13 +194,6 @@ impl PartialEq for TypeVariant {
                     false
                 }
             }
-            TypeVariant::Enum(mn, _) => {
-                if let TypeVariant::Enum(on, _) = other {
-                    mn == on
-                } else {
-                    false
-                }
-            }
             TypeVariant::Interface(_) => todo!(),
         }
     }
@@ -248,12 +212,10 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Array => "Array",
             PrimitiveType::Bool => "Bool",
             PrimitiveType::Break => "<Break>",
-            PrimitiveType::Enum => "<Enum>",
             PrimitiveType::Exception => "<Exception>",
             PrimitiveType::Func => "Func",
             PrimitiveType::Number => "Number",
             PrimitiveType::Object => "<Object>",
-            PrimitiveType::Pattern => "Pattern",
             PrimitiveType::String => "String",
             PrimitiveType::Symbol => "<Symbol>",
             PrimitiveType::Void => "<Void>",

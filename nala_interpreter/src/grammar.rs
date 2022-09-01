@@ -58,7 +58,6 @@ mod __parse__Addend {
         Variant30(ast::types::Type),
         Variant31(ast::types::TypeVariant),
         Variant32(ast::types::TypeVariants),
-        Variant33(ast::patterns::Unwrap),
         Variant34(ast::VariantDeclare),
         Variant35(ast::VariantValue),
         Variant36(ast::VariantsDeclare),

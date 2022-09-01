@@ -20,12 +20,10 @@ pub Stmts: ast::Stmts = {
 Stmt: ast::Stmt = {
     "const" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, false),
     "mut" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, true),
-    "pattern" <s:Symbol> "=" <p:Pattern> ";" => ast::Stmt::PatternDeclare(s, p),
     "if" "(" <e:Expr> ")" <b:Block> => ast::Stmt::If(e, Box::new(b)),
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
     "func" <s:Symbol> "(" <p:Params> ")" <b:Block> => ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, block: Box::new(b)}),
-    "enum" <s:Symbol> "{" <v:VariantsDeclare> "}" => ast::Stmt::EnumDeclare(s,v),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
     <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <e:Expr> ";" => ast::Stmt::Expr(e),
@@ -45,42 +43,13 @@ VariantDeclare: ast::VariantDeclare = {
 };
 
 Expr: ast::Expr = {
-    <IsPattern> => ast::Expr::IsPattern(<>),
     <l:Expr> "==" <r:Addend> => ast::Expr::Eq(Box::new(l), r),
     <l:Expr> ">" <r:Addend> => ast::Expr::Gt(Box::new(l), r),
     <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
-    <Unwrap> => ast::Expr::Unwrap(<>),
-    VariantValue => ast::Expr::VariantValue(<>),
+    Addend => ast::Expr::Addend(<>),
     Array => ast::Expr::Array(<>),
     Object => ast::Expr::Object(<>),
 };
-
-Unwrap: ast::patterns::Unwrap = {
-    "unwrap" <e:Expr> "as" <p:Pattern> => ast::patterns::Unwrap::Literal(Box::new(e), p),
-    "unwrap" <e:Expr> "as" <s:Symbol> => ast::patterns::Unwrap::Symbol(Box::new(e), s),
-};
-
-IsPattern: ast::patterns::IsPattern = {
-    <l:Expr> "is" <p:Pattern> => ast::patterns::IsPattern::Literal(Box::new(l), p),
-    <l:Expr> "is" <s:Symbol> => ast::patterns::IsPattern::Symbol(Box::new(l), s),
-};
-
-Pattern: ast::patterns::Pattern = {
-    <e:Symbol> "::" <v:Symbol> <p:("(" <Pattern> ")")?> => ast::patterns::Pattern::Enum(e, v, Box::new(p)),
-    <PatternCapture> => ast::patterns::Pattern::Capture(<>)
-};
-
-PatternCapture: ast::patterns::Capture = {
-    "$" => ast::patterns::Capture::Capture,
-    "_" => ast::patterns::Capture::NoCapture,
-}
-
-VariantValue: ast::VariantValue = {
-    <s:Symbol> "::" <v:Symbol> => ast::VariantValue::VariantValue(s, v),
-    <s:Symbol> "::" <v:Symbol> "(" <e:Expr> ")" => ast::VariantValue::VariantValueWithData(s, v, Box::new(e)),
-
-    Addend => ast::VariantValue::Addend(<>),
-}
 
 Object: ast::objects::Object = {
     "{" <KeyValuePairs> "}" => ast::objects::Object { entries: <>}
