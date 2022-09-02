@@ -30,8 +30,8 @@ Stmt: ast::Stmt = {
 };
 
 PlaceExpression: ast::PlaceExpression = {
-    <s:Symbol> "[" <e:Expr> "]" => ast::PlaceExpression::Index(s, Box::new(e)),
-    <MemberAccess> => ast::PlaceExpression::MemberAccess(<>),
+    <p:PlaceExpression> "[" <e:Expr> "]" => ast::PlaceExpression::Index(Box::new(p), Box::new(e)),
+    <MemberAccess> => ast::PlaceExpression::MemberAccess(Box::new(<>)),
     <Symbol> => ast::PlaceExpression::Symbol(<>),
 };
 
@@ -41,6 +41,8 @@ VariantDeclare: ast::VariantDeclare = {
     <Symbol> => ast::VariantDeclare::Empty(<>),
     <s:Symbol> "(" <t:TypeVariant> ")" => ast::VariantDeclare::Data(s, t)
 };
+
+Elems = Comma<Expr>;
 
 Expr: ast::Expr = {
     <l:Expr> "==" <r:Addend> => ast::Expr::Eq(Box::new(l), r),
@@ -65,7 +67,6 @@ Array: ast::arrays::Array = {
     "[" <Elems> "]" => ast::arrays::Array { elems: <> },
 };
 
-Elems = Comma<Expr>;
 Params = Comma<Param>;
 
 Param: ast::funcs::Param = {
@@ -101,29 +102,21 @@ pub Addend: ast::math::Addend = {
 pub Factor: ast::math::Factor = {
     <l:Factor> "*" <t:Term> => ast::math::Factor::Mult(Box::new(l), t),
     <l:Factor> "/" <t:Term> => ast::math::Factor::Div(Box::new(l), t), 
-    Call => ast::math::Factor::Call(<>),
+    Invocation => ast::math::Factor::Invocation(<>),
 };
 
-Call: ast::funcs::Call = {
-    <s:Symbol> "(" <e:Elems> ")" => ast::funcs::Call::Call(s, e),
-    <MemberAccess> => ast::funcs::Call::MemberAccess(<>),
-    <Term> => ast::funcs::Call::Term(<>)
+Invocation: ast::funcs::Invocation = {
+    <p:PlaceExpression> "(" <e:Elems> ")" => ast::funcs::Invocation::Invocation(p, e),
+    <PlaceExpression> => ast::funcs::Invocation::PlaceExpression(<>),
+    <Value> => ast::funcs::Invocation::Value(<>),
 };
 
-// TODO: This doesn't support indexing at the end of a member access chain. 
-// Might just be as simple as using <SymbolOrIndex>?
 MemberAccess: ast::objects::MemberAccess = {
-    <m:MemberAccess> "." <s:Symbol> => ast::objects::MemberAccess::MemberAccesses(Box::new(m), s),
-    <s:Symbol> "." <ss:Symbol> => ast::objects::MemberAccess::MemberAccess(s, ss)
+    <p:MemberAccess> "." <c:Symbol> => ast::objects::MemberAccess::MemberAccesses(Box::new(p), c),
+    <p:Symbol> "." <c:Symbol> => ast::objects::MemberAccess::MemberAccess(p, c),
 }
 
-Index: ast::arrays::Index = {
-    <s:Symbol> "[" <e:Expr> "]" => ast::arrays::Index::Index(s, Box::new(e)),
-};
-
-// TODO: Index operations are non-terminal.
 Term: ast::terms::Term = {
-    Index => ast::terms::Term::Index(<>),
     Symbol => ast::terms::Term::Identifier(<>),
     Value => ast::terms::Term::Value(<>),
 };
@@ -145,8 +138,8 @@ Str: String = {
     r"'[^']*'" => String::from_str(&<>[1..<>.len() - 1]).unwrap(),
 };
 
-Comma<T>: Vec<T> = { // (1)
-    <mut v:(<T> ",")*> <e:T?> => match e { // (2)
+Comma<T>: Vec<T> = {
+    <mut v:(<T> ",")*> <e:T?> => match e {
         None => v,
         Some(e) => {
             v.push(e);

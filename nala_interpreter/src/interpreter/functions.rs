@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::{arrays::*, basic::*, objects::*, *};
+use super::{basic::*, variables::*};
 
 use crate::{
     ast::{funcs::*, terms::*, types::*, *},
@@ -12,13 +12,12 @@ use crate::{
 fn wrong_arg_type_for_param_error(
     arg_value: String,
     arg_type: String,
-    func_ident: String,
     param_type: String,
 ) -> NalaRuntimeError {
     NalaRuntimeError {
         message: format!(
-            "Passed value `{0}` of type `{1}` to func `{2}` where `{3}` was expected.",
-            arg_value, arg_type, func_ident, param_type
+            "Passed value `{0}` of type `{1}` to function where `{2}` was expected.",
+            arg_value, arg_type, param_type
         ),
     }
 }
@@ -102,15 +101,15 @@ fn check_param_type(param_type: &TypeVariant) -> Result<(), String> {
     Ok(())
 }
 
-pub fn evaluate_call(
-    call: &Call,
+pub fn evaluate_invocation(
+    call: &Invocation,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match call {
-        Call::Call(ident, args) => {
-            let block = scopes.get_value(ident, current_scope, context)?;
+        Invocation::Invocation(place, args) => {
+            let block = interpret_place_expr(place, scopes, current_scope, context)?;
 
             if let Value::Func(params, block) = block {
                 let func_scope = scopes.new_scope(Some(current_scope));
@@ -119,8 +118,7 @@ pub fn evaluate_call(
 
                 if params.len() != args.len() {
                     panic!(
-                        "Called function `{0}` with wrong number of arguments: Expected {1}, got {2}.",
-                        ident,
+                        "Called function with wrong number of arguments: Expected {0}, got {1}.",
                         params.len(),
                         args.len()
                     )
@@ -138,7 +136,6 @@ pub fn evaluate_call(
                         return Err(wrong_arg_type_for_param_error(
                             arg.clone().to_string(),
                             arg.get_type().to_string(),
-                            ident.to_owned(),
                             param_type.to_string(),
                         ));
                     }
@@ -154,13 +151,12 @@ pub fn evaluate_call(
                     Block::RustBlock(func) => Ok(func(param_args, context)),
                 }
             } else {
-                panic!("Cannot invoke `{0}` because it is not a function.", ident)
+                panic!("Cannot invoke a non-function.")
             }
         }
-        Call::MemberAccess(member_access) => {
-            evaluate_member_access(member_access, scopes, current_scope, context)
+        Invocation::PlaceExpression(place) => {
+            interpret_place_expr(place, scopes, current_scope, context)
         }
-        Call::Index(index) => evaluate_index(index, scopes, current_scope, context),
-        Call::Term(term) => evaluate_term(term.clone(), scopes, current_scope, context),
+        Invocation::Value(value) => Ok(value.clone()),
     }
 }

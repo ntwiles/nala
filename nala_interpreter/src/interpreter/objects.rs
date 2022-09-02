@@ -10,9 +10,10 @@ use crate::{
     scope::*,
 };
 
-use super::{arrays::evaluate_index, basic::evaluate_expr};
+use super::basic::evaluate_expr;
 
 pub fn evaluate_member_access(
+    parent_obj: Option<Arc<Mutex<HashMap<String, Value>>>>,
     member_access: &MemberAccess,
     scopes: &mut Scopes,
     current_scope: ScopeId,
@@ -20,35 +21,32 @@ pub fn evaluate_member_access(
 ) -> Result<Value, NalaRuntimeError> {
     match member_access {
         MemberAccess::MemberAccesses(parents, child) => {
-            let object = evaluate_member_access(parents, scopes, current_scope, context)?;
+            let object =
+                evaluate_member_access(parent_obj, parents, scopes, current_scope, context)?;
 
             if let Value::Object(reference) = object {
                 let object = Arc::clone(&reference);
                 let object = object.lock().unwrap();
-
                 if object.contains_key(child) {
                     Ok(object[child].clone())
                 } else {
                     Err(NalaRuntimeError {
-                        message: format!("Member `{0}` does not exist on object.", child),
+                        message: format!("Member `{0}` does not exist on object", child),
                     })
                 }
             } else {
-                Err(NalaRuntimeError {
-                    message: format!(
-                        "Cannot access member `{0}` of non-Object `{1}`.",
-                        child, object
-                    ),
-                })
+                todo!()
             }
         }
         MemberAccess::MemberAccess(parent, child) => {
-            let object = scopes.get_value(parent, current_scope, context)?;
+            let object = match parent_obj {
+                Some(parent_obj) => todo!(),
+                None => scopes.get_value(parent, current_scope, context)?,
+            };
 
             if let Value::Object(reference) = object {
                 let object = Arc::clone(&reference);
                 let object = object.lock().unwrap();
-
                 if object.contains_key(child) {
                     Ok(object[child].clone())
                 } else {
@@ -63,7 +61,6 @@ pub fn evaluate_member_access(
                 todo!()
             }
         }
-        MemberAccess::Index(index) => evaluate_index(index, scopes, current_scope, context),
     }
 }
 

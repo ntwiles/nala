@@ -84,6 +84,6 @@ impl fmt::Display for VariantDeclare {
 #[derive(Debug, Clone)]
 pub enum PlaceExpression {
     Symbol(String),
-    Index(String, Box<Expr>),
-    MemberAccess(MemberAccess),
+    Index(Box<PlaceExpression>, Box<Expr>),
+    MemberAccess(Box<MemberAccess>),
 }

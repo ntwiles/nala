@@ -1,4 +1,4 @@
-use super::{arrays::*, objects::*, terms::*, types::*, *};
+use super::{terms::*, types::*, *};
 
 #[derive(Debug, Clone)]
 pub struct Func {
@@ -14,9 +14,8 @@ pub struct Param {
 }
 
 #[derive(Debug, Clone)]
-pub enum Call {
-    Call(String, Vec<Expr>),
-    MemberAccess(MemberAccess),
-    Index(Index),
-    Term(Term),
+pub enum Invocation {
+    Invocation(PlaceExpression, Vec<Expr>),
+    PlaceExpression(PlaceExpression),
+    Value(Value),
 }

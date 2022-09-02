@@ -53,7 +53,6 @@ pub fn evaluate_term(
 ) -> Result<Value, NalaRuntimeError> {
     match term {
         Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, context)?),
-        Term::Index(index) => Ok(evaluate_index(&index, scopes, current_scope, context)?),
         Term::Value(value) => Ok(value),
     }
 }

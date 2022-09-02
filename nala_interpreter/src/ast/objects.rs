@@ -15,5 +15,4 @@ pub struct KeyValuePair {
 pub enum MemberAccess {
     MemberAccesses(Box<MemberAccess>, String),
     MemberAccess(String, String),
-    Index(Index),
 }

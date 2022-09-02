@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    ast::{arrays::*, terms::*},
+    ast::{arrays::*, terms::Value, Expr},
     errors::NalaRuntimeError,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
@@ -13,31 +13,26 @@ use crate::{
 use super::basic::*;
 
 pub fn evaluate_index(
-    index: &Index,
+    array: &Value,
+    index_expr: &Expr,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    match index {
-        Index::Index(ident, expr) => {
-            let index = evaluate_expr(expr, scopes, current_scope, context)?;
+    let index = evaluate_expr(index_expr, scopes, current_scope, context)?;
 
-            if let Value::Num(index) = index {
-                let array = scopes.get_value(ident, current_scope, context)?;
-
-                if let Value::Array(array) = array {
-                    let array = Arc::clone(&array);
-                    let array = array.lock().unwrap();
-                    Ok(array.get(index as usize).unwrap().clone())
-                } else {
-                    panic!("Cannot index into a value which is not an array.");
-                }
-            } else {
-                Err(NalaRuntimeError {
-                    message: "Cannot index using non-numeric value.".to_owned(),
-                })
-            }
+    if let Value::Num(index) = index {
+        if let Value::Array(array) = array {
+            let array = Arc::clone(&array);
+            let array = array.lock().unwrap();
+            Ok(array.get(index as usize).unwrap().clone())
+        } else {
+            panic!("Cannot index into a value which is not an array.");
         }
+    } else {
+        Err(NalaRuntimeError {
+            message: "Cannot index using non-numeric value.".to_owned(),
+        })
     }
 }
 

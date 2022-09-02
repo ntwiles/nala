@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use super::{basic::*, objects::*};
+use super::{arrays::evaluate_index, evaluate_expr, objects::*};
 
 use crate::{
     ast::{objects::*, terms::*, *},
@@ -39,29 +39,60 @@ pub fn interpret_assign(
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match variable {
-        PlaceExpression::Index(ident, index_expr) => {
-            if scopes.binding_exists(&ident, current_scope, context) {
-                let index_result = evaluate_expr(&index_expr, scopes, current_scope, context)?;
+        PlaceExpression::Index(place, index_expr) => {
+            match &**place {
+                PlaceExpression::Index(_, _) => todo!(),
+                PlaceExpression::MemberAccess(member_access) => {
+                    let array = evaluate_member_access(
+                        None,
+                        member_access,
+                        scopes,
+                        current_scope,
+                        context,
+                    )?;
 
-                if let Value::Void = value {
-                    panic!("Cannot assign a value of type Void.");
+                    let index = if let Value::Num(index) =
+                        evaluate_expr(index_expr, scopes, current_scope, context)?
+                    {
+                        index
+                    } else {
+                        todo!();
+                    };
+
+                    if let Value::Array(array) = array {
+                        let array = Arc::clone(&array);
+                        let mut array = array.lock().unwrap();
+                        array[index as usize] = value.clone();
+                    } else {
+                        panic!("Trying to index into a non-Array.")
+                    }
                 }
+                PlaceExpression::Symbol(ident) => {
+                    if scopes.binding_exists(&ident, current_scope, context) {
+                        let index_result =
+                            evaluate_expr(&index_expr, scopes, current_scope, context)?;
 
-                let index = if let Value::Num(index) = index_result {
-                    index
-                } else {
-                    panic!("Index does not resolve to a Number.");
-                };
+                        if let Value::Void = value {
+                            panic!("Cannot assign a value of type Void.");
+                        }
 
-                let array = scopes.get_value(&ident, current_scope, context)?;
+                        let index = if let Value::Num(index) = index_result {
+                            index
+                        } else {
+                            panic!("Index does not resolve to a Number.");
+                        };
 
-                if let Value::Array(array) = array {
-                    let array = Arc::clone(&array);
-                    let mut array = array.lock().unwrap();
-                    array[index as usize] = value.clone();
-                    //return scopes.mutate_value(&ident, current_scope, Value::Array(array));
-                } else {
-                    panic!("Trying to index into a non-Array.")
+                        let array = scopes.get_value(&ident, current_scope, context)?;
+
+                        if let Value::Array(array) = array {
+                            let array = Arc::clone(&array);
+                            let mut array = array.lock().unwrap();
+                            array[index as usize] = value.clone();
+                            //return scopes.mutate_value(&ident, current_scope, Value::Array(array));
+                        } else {
+                            panic!("Trying to index into a non-Array.")
+                        }
+                    }
                 }
             }
         }
@@ -71,7 +102,7 @@ pub fn interpret_assign(
                     panic!("Cannot assign a value of type Void.");
                 }
 
-                let existing = scopes.get_value(ident, current_scope, context)?;
+                let existing = scopes.get_value(&ident, current_scope, context)?;
 
                 let existing_type = existing.get_type();
                 let value_type = value.get_type();
@@ -91,16 +122,13 @@ pub fn interpret_assign(
             }
         }
         PlaceExpression::MemberAccess(member_access) => {
-            let (parent, child) = match member_access {
+            let (parent, child) = match &**member_access {
                 MemberAccess::MemberAccesses(parents, child) => (
-                    evaluate_member_access(parents, scopes, current_scope, context)?,
+                    evaluate_member_access(None, &*parents, scopes, current_scope, context)?,
                     child,
                 ),
                 MemberAccess::MemberAccess(parent, child) => {
-                    (scopes.get_value(parent, current_scope, context)?, child)
-                }
-                MemberAccess::Index(_index) => {
-                    todo!();
+                    (scopes.get_value(&parent, current_scope, context)?, child)
                 }
             };
 
@@ -115,4 +143,28 @@ pub fn interpret_assign(
     }
 
     Ok(Value::Void)
+}
+
+pub fn interpret_place_expr(
+    variable: &PlaceExpression,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    context: &mut dyn IoContext,
+) -> Result<Value, NalaRuntimeError> {
+    match variable {
+        PlaceExpression::Index(place, expr) => {
+            let array = interpret_place_expr(place, scopes, current_scope, context)?;
+            evaluate_index(&array, expr, scopes, current_scope, context)
+        }
+        PlaceExpression::Symbol(ident) => {
+            if scopes.binding_exists(&ident, current_scope, context) {
+                scopes.get_value(ident, current_scope, context)
+            } else {
+                panic!("Unknown identifier `{}`", ident);
+            }
+        }
+        PlaceExpression::MemberAccess(member_access) => {
+            evaluate_member_access(None, member_access, scopes, current_scope, context)
+        }
+    }
 }

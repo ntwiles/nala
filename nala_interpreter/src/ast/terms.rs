@@ -16,7 +16,6 @@ pub enum SymbolOrTerm {
 pub enum Term {
     Identifier(String),
     Value(Value),
-    Index(Index),
 }
 
 #[derive(Debug, Clone)]
