@@ -40,7 +40,7 @@ pub fn evaluate_member_access(
         }
         MemberAccess::MemberAccess(parent, child) => {
             let object = match parent_obj {
-                Some(parent_obj) => todo!(),
+                Some(_parent_obj) => todo!(),
                 None => scopes.get_value(parent, current_scope, context)?,
             };
 
