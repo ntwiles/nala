@@ -1,8 +1,7 @@
 
 const options = {
     method: 'GET',
-    url: 'https://reqbin.com/echo/get/json',
-    body: 'this is the body'
+    url: 'https://reqbin.com/echo/get/json'
 };
 
 const response = request(options);

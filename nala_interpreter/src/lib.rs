@@ -6,6 +6,7 @@ use std::fs;
 
 pub mod ast;
 mod builtins;
+mod comments;
 pub mod errors;
 pub mod interpreter;
 pub mod io_context;
@@ -14,22 +15,24 @@ mod lexer;
 pub mod parser;
 pub mod scope;
 
+use comments::strip_comments;
 use interpreter::*;
 use io_context::ConsoleContext;
-
 use parser::*;
 
 pub fn main(path: &str) -> () {
     let code = fs::read_to_string(path);
     let mut context = ConsoleContext {};
 
-    let parse_result = match code {
-        Ok(code) => parse_code(code),
+    let code = match code {
+        Ok(code) => strip_comments(code),
         Err(err) => {
             println!("Error loading nala file: {}", err);
             return;
         }
     };
+
+    let parse_result = parse_code(code);
 
     if parse_result.is_err() {
         let message = parse_result.unwrap_err();

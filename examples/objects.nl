@@ -7,6 +7,7 @@ func callbackB() {
     print('callbackB called!');
 }
 
+// Objects can not yet be accepted as function arguments as they cannot yet be typed.
 func writeMessage() {
     print(message.firstWord + ' ' + message.second.word + message.punctuation[0]);
     message.callback();
