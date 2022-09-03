@@ -23,8 +23,7 @@ pub fn interpret_block(
     if let Block::NalaBlock(stmts) = block {
         interpret_stmts(stmts, scopes, current_scope, context)
     } else {
-        // TODO: If we accept a Block as a param, probably all variants should
-        // be valid arguments.
+        // TODO: If we accept a Block as a param, probably all variants should be valid arguments.
         panic!("Do not pass Rust blocks to interpret_block")
     }
 }
