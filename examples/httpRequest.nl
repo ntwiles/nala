@@ -2,15 +2,21 @@ func test() {
     print('test');
 }
 
-/* block
-comment
-*/
-
-const options = {
-    method: 'GET', // this is a comment
-    url: 'https://reqbin.com/echo',
-    body: ''
+const getRequest = {
+    method: 'GET',
+    url: 'https://httpbin.org/get',
 };
 
-const result = http(options);
+const postRequest = {
+    method: 'POST',
+    url: 'https://httpbin.org/post',
+    body: 'test',
+};
+
+print('Making GET request...');
+mut result = http(getRequest);
+print(result.statusCode);
+
+print('Making POST request...');
+result = http(postRequest);
 print(result.statusCode);

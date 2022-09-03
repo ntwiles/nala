@@ -37,28 +37,26 @@ fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> V
     let url = options["url"].unwrap_string();
     let method = options["method"].unwrap_string();
 
-    let body = if let Value::String(body) = options["body"].clone() {
+    let body = if let Some(Value::String(body)) = options.get("body") {
         Some(body)
     } else {
         None
     };
 
-    let client = reqwest::blocking::Client::new();
-
-    let client = match method.as_str() {
+    let add_method = |client: reqwest::blocking::Client| match method.as_str() {
         "GET" => client.get(url),
         "POST" => client.post(url),
         "PUT" => client.put(url),
         _ => todo!(),
     };
 
-    let client = if let Some(body) = body {
-        client.body(body)
-    } else {
-        client
-    };
+    let client = add_method(reqwest::blocking::Client::new());
 
-    let response = client.send();
+    let response = if let Some(body) = body {
+        client.body(body.clone()).send()
+    } else {
+        client.send()
+    };
 
     let mut fields = HashMap::<String, Value>::new();
 
