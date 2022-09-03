@@ -33,6 +33,7 @@ cargo run path/to/script.nl
 Example scripts are provided in the `examples/` directory. 
 
 Within that directory, `sandbox.nl` will be ignored by git.
+
 ## Documentation
 
 Documentation can be found on the [Nala Wiki](https://github.com/ntwiles/nala-rust/wiki).
@@ -40,3 +41,10 @@ Documentation can be found on the [Nala Wiki](https://github.com/ntwiles/nala-ru
 ## Syntax Highlighting
 
 Syntax highlighting is available in the form of a VS Code extension [here](https://github.com/ntwiles/nala-vscode-extension).
+
+## Known Issues
+
+Comments are stripped before parsing in a preprocessing stage. This stage uses regex patterns to match both 
+single-line (`//`) and multi-line (`/* */`) comments, which are imperfect. Embedding comment sequences inside 
+strings (for example) will result in a portion of the string being stripped during preprocessing which in turn 
+will cause a parse error.
