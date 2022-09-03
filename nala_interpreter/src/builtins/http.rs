@@ -1,4 +1,7 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 use reqwest;
 
@@ -57,8 +60,30 @@ fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> V
 
     let response = client.send();
 
+    let mut fields = HashMap::<String, Value>::new();
+
     match response {
-        Ok(response) => Value::String(response.text().unwrap()),
-        Err(error) => Value::String(error.to_string()),
+        Ok(response) => {
+            fields.insert(
+                String::from("statusCode"),
+                Value::String(response.status().to_string()),
+            );
+        }
+        Err(error) => {
+            // TODO: Status is optional because the error might not have been generated from a response.
+            // Defaulting to an empty string probably isn't the best way to handle that case.
+            fields.insert(
+                String::from("statusCode"),
+                Value::String(
+                    error
+                        .status()
+                        .map(|code| code.to_string())
+                        .unwrap_or("".to_string())
+                        .to_string(),
+                ),
+            );
+        }
     }
+
+    Value::Object(Arc::new(Mutex::new(fields)))
 }

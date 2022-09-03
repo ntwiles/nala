@@ -13,16 +13,19 @@ pub fn parse_code(code: String) -> Result<Program, String> {
             ParseError::InvalidToken { location } => {
                 // NOTE: `location` is a single usize ignoring lines.
                 let snippet: String = code.chars().skip(location).collect();
-                let message = format!("Invalid token at location {}:\n\n{}", location, snippet);
-                Err(message)
+                Err(format!(
+                    "Invalid token at location {}:\n\n{}",
+                    location, snippet
+                ))
             }
-            ParseError::UnrecognizedEOF { location, expected } => {
-                let message = format!(
-                    "Unrecognized EOF at location {}. Expected one of: {:?}",
-                    location, expected
-                );
-                Err(message)
-            }
+            ParseError::UnrecognizedEOF { location, expected } => Err(format!(
+                "Unrecognized EOF at location {}. Expected one of: {:?}",
+                location, expected
+            )),
+            ParseError::UnrecognizedToken { token, expected } => Err(format!(
+                "Unrecognized token {:?}. Expected one of: {:?}",
+                token, expected
+            )),
             _ => todo!("Unprocessed ParseError: {}", error.to_string()),
         },
     }

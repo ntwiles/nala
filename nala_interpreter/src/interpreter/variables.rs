@@ -17,7 +17,9 @@ pub fn interpret_declare(
     is_mutable: bool,
 ) -> Result<Value, NalaRuntimeError> {
     if scopes.binding_exists_local(&ident, current_scope) {
-        panic!("Binding for {} already exists in local scope.", ident);
+        return Err(NalaRuntimeError {
+            message: format!("Binding for {} already exists in local scope.", ident),
+        });
     } else {
         if let Value::Void = value {
             return Err(NalaRuntimeError {

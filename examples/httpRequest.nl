@@ -2,6 +2,8 @@ func test() {
     print('test');
 }
 
+const foo = 'test'; // comment
+
 const options = {
     method: 'GET',
     url: '',
@@ -9,4 +11,4 @@ const options = {
 };
 
 const result = http(options);
-print(result);
+print(result.statusCode);
