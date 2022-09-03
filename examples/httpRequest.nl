@@ -2,11 +2,13 @@ func test() {
     print('test');
 }
 
-const foo = 'test'; // comment
+/* block
+comment
+*/
 
 const options = {
-    method: 'GET',
-    url: '',
+    method: 'GET', // this is a comment
+    url: 'https://reqbin.com/echo',
     body: ''
 };
 

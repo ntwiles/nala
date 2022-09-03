@@ -6,7 +6,6 @@ use std::fs;
 
 pub mod ast;
 mod builtins;
-mod comments;
 pub mod errors;
 pub mod interpreter;
 pub mod io_context;
@@ -15,7 +14,6 @@ mod lexer;
 pub mod parser;
 pub mod scope;
 
-use comments::strip_comments;
 use interpreter::*;
 use io_context::ConsoleContext;
 use parser::*;
@@ -25,7 +23,7 @@ pub fn main(path: &str) -> () {
     let mut context = ConsoleContext {};
 
     let code = match code {
-        Ok(code) => strip_comments(code),
+        Ok(code) => code,
         Err(err) => {
             println!("Error loading nala file: {}", err);
             return;

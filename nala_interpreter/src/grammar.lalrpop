@@ -3,6 +3,26 @@ use crate::ast;
 
 grammar;
 
+match {
+    "{", "}", "(", ")", "[", "]", ";", ":", ".", ",",
+    "const", "mut", "if", "for", "in", "wiles", "func", "break",
+    "=", "==", ">", "<", "+", "-", "*", "/",
+    "Array", "Bool", "Func", "Number", "String",
+    r"[a-zA-Z]+", r"-?[0-9]+(\.[0-9]+)?", r"'[^']*'",
+    // "+",
+    // "-",
+    // "*",
+    // "/",
+    // "(",
+    // ")",
+    // r"[0-9]+",
+
+    // Skip whitespace and comments
+    r"\s*" => { },
+    r"//[^\n\r]*[\n\r]*" => { }, // `// comment`
+    r"/\*([^\*]*\*+[^\*/])*([^\*]*\*+|[^\*])*\*/" => { }, // `/* comment */`
+}
+
 pub Program: ast::Program = {
     <Block> => ast::Program::Block(<>),
     <Stmts> => ast::Program::Stmts(<>)
