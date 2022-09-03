@@ -57,9 +57,8 @@ fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> V
 
     let response = client.send();
 
-    if let Ok(response) = response {
-        Value::String(response.text().unwrap())
-    } else {
-        Value::Void
+    match response {
+        Ok(response) => Value::String(response.text().unwrap()),
+        Err(error) => Value::String(error.to_string()),
     }
 }

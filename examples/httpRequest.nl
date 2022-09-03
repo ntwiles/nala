@@ -9,3 +9,4 @@ const options = {
 };
 
 const result = http(options);
+print(result);

@@ -32,8 +32,6 @@ pub fn main(path: &str) -> () {
         }
     };
 
-    println!("{}", code);
-
     let parse_result = parse_code(code);
 
     if parse_result.is_err() {
