@@ -2,7 +2,7 @@ use crate::ast::{terms::*, types::*};
 
 use super::errors::panic_oper_not_impl_for;
 
-pub fn evaluate_equals(left: Value, right: Value) -> Value {
+pub fn eval_equals(left: Value, right: Value) -> Value {
     if left.get_type() != right.get_type() {
         panic_oper_not_impl_for(
             "==",

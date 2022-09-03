@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use super::{arrays::evaluate_index, evaluate_expr, objects::*};
+use super::{arrays::eval_index, eval_expr, objects::*};
 
 use crate::{
     ast::{objects::*, terms::*, *},
@@ -45,16 +45,11 @@ pub fn interpret_assign(
             match &**place {
                 PlaceExpression::Index(_, _) => todo!(),
                 PlaceExpression::MemberAccess(member_access) => {
-                    let array = evaluate_member_access(
-                        None,
-                        member_access,
-                        scopes,
-                        current_scope,
-                        context,
-                    )?;
+                    let array =
+                        eval_member_access(None, member_access, scopes, current_scope, context)?;
 
                     let index = if let Value::Num(index) =
-                        evaluate_expr(index_expr, scopes, current_scope, context)?
+                        eval_expr(index_expr, scopes, current_scope, context)?
                     {
                         index
                     } else {
@@ -71,8 +66,7 @@ pub fn interpret_assign(
                 }
                 PlaceExpression::Symbol(ident) => {
                     if scopes.binding_exists(&ident, current_scope, context) {
-                        let index_result =
-                            evaluate_expr(&index_expr, scopes, current_scope, context)?;
+                        let index_result = eval_expr(&index_expr, scopes, current_scope, context)?;
 
                         if let Value::Void = value {
                             panic!("Cannot assign a value of type Void.");
@@ -126,7 +120,7 @@ pub fn interpret_assign(
         PlaceExpression::MemberAccess(member_access) => {
             let (parent, child) = match &**member_access {
                 MemberAccess::MemberAccesses(parents, child) => (
-                    evaluate_member_access(None, &*parents, scopes, current_scope, context)?,
+                    eval_member_access(None, &*parents, scopes, current_scope, context)?,
                     child,
                 ),
                 MemberAccess::MemberAccess(parent, child) => {
@@ -147,7 +141,7 @@ pub fn interpret_assign(
     Ok(Value::Void)
 }
 
-pub fn interpret_place_expr(
+pub fn eval_place_expr(
     variable: &PlaceExpression,
     scopes: &mut Scopes,
     current_scope: ScopeId,
@@ -155,8 +149,8 @@ pub fn interpret_place_expr(
 ) -> Result<Value, NalaRuntimeError> {
     match variable {
         PlaceExpression::Index(place, expr) => {
-            let array = interpret_place_expr(place, scopes, current_scope, context)?;
-            evaluate_index(&array, expr, scopes, current_scope, context)
+            let array = eval_place_expr(place, scopes, current_scope, context)?;
+            eval_index(&array, expr, scopes, current_scope, context)
         }
         PlaceExpression::Symbol(ident) => {
             if scopes.binding_exists(&ident, current_scope, context) {
@@ -168,7 +162,7 @@ pub fn interpret_place_expr(
             }
         }
         PlaceExpression::MemberAccess(member_access) => {
-            evaluate_member_access(None, member_access, scopes, current_scope, context)
+            eval_member_access(None, member_access, scopes, current_scope, context)
         }
     }
 }

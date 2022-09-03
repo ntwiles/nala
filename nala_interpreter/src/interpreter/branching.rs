@@ -15,7 +15,7 @@ pub fn interpret_if(
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    let result = evaluate_expr(&cond, scopes, current_scope, context)?;
+    let result = eval_expr(&cond, scopes, current_scope, context)?;
 
     if let Value::Bool(bool) = result {
         if bool {
@@ -37,7 +37,7 @@ pub fn interpret_for(
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    let result = evaluate_expr(expr, scopes, current_scope, context)?;
+    let result = eval_expr(expr, scopes, current_scope, context)?;
 
     let mut loop_result = Value::Void;
 
@@ -52,7 +52,7 @@ pub fn interpret_for(
             loop_result = interpret_block(&block, scopes, block_scope, context)?;
 
             if let Value::Break(expr) = loop_result {
-                return evaluate_expr(&*expr, scopes, current_scope, context);
+                return eval_expr(&*expr, scopes, current_scope, context);
             }
         }
 
@@ -73,7 +73,7 @@ pub fn interpret_wiles(
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     loop {
-        let result = evaluate_expr(expr, scopes, current_scope, context)?;
+        let result = eval_expr(expr, scopes, current_scope, context)?;
 
         let condition = if let Value::Bool(condition) = result {
             condition
@@ -85,7 +85,7 @@ pub fn interpret_wiles(
             let result = interpret_block(block, scopes, current_scope, context)?;
 
             if let Value::Break(expr) = result {
-                return evaluate_expr(&*expr, scopes, current_scope, context);
+                return eval_expr(&*expr, scopes, current_scope, context);
             }
         } else {
             break;

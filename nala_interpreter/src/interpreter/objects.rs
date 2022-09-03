@@ -10,9 +10,9 @@ use crate::{
     scope::*,
 };
 
-use super::basic::evaluate_expr;
+use super::basic::eval_expr;
 
-pub fn evaluate_member_access(
+pub fn eval_member_access(
     parent_obj: Option<Arc<Mutex<HashMap<String, Value>>>>,
     member_access: &MemberAccess,
     scopes: &mut Scopes,
@@ -21,8 +21,7 @@ pub fn evaluate_member_access(
 ) -> Result<Value, NalaRuntimeError> {
     match member_access {
         MemberAccess::MemberAccesses(parents, child) => {
-            let object =
-                evaluate_member_access(parent_obj, parents, scopes, current_scope, context)?;
+            let object = eval_member_access(parent_obj, parents, scopes, current_scope, context)?;
 
             if let Value::Object(reference) = object {
                 let object = Arc::clone(&reference);
@@ -64,19 +63,19 @@ pub fn evaluate_member_access(
     }
 }
 
-pub fn evaluate_object(
+pub fn eval_object(
     object: &Object,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let object: HashMap<String, Value> =
-        evaluate_object_entries(&object.entries, scopes, current_scope, context)?;
+        eval_object_entries(&object.entries, scopes, current_scope, context)?;
 
     Ok(Value::Object(Arc::new(Mutex::new(object))))
 }
 
-fn evaluate_object_entries(
+fn eval_object_entries(
     entries: &Vec<KeyValuePair>,
     scopes: &mut Scopes,
     current_scope: ScopeId,
@@ -84,7 +83,7 @@ fn evaluate_object_entries(
 ) -> Result<HashMap<String, Value>, NalaRuntimeError> {
     let results: Vec<Result<(String, Value), NalaRuntimeError>> = entries
         .iter()
-        .map(|kvp| evaluate_object_entry(kvp, scopes, current_scope, context))
+        .map(|kvp| eval_object_entry(kvp, scopes, current_scope, context))
         .collect();
 
     if let Some(Err(error)) = results.iter().find(|r| r.is_err()) {
@@ -101,12 +100,12 @@ fn evaluate_object_entries(
     }
 }
 
-fn evaluate_object_entry(
+fn eval_object_entry(
     entry: &KeyValuePair,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<(String, Value), NalaRuntimeError> {
-    let value = evaluate_expr(&*entry.value, scopes, current_scope, context)?;
+    let value = eval_expr(&*entry.value, scopes, current_scope, context)?;
     Ok((entry.key.clone(), value))
 }

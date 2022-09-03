@@ -7,7 +7,7 @@ pub mod lt;
 use crate::{
     ast::{math::*, terms::*},
     errors::NalaRuntimeError,
-    interpreter::evaluate_term,
+    interpreter::eval_term,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
@@ -16,7 +16,7 @@ use super::functions::*;
 
 use self::arithmatic::*;
 
-pub fn evaluate_addend(
+pub fn eval_addend(
     addend: &Addend,
     scopes: &mut Scopes,
     current_scope: ScopeId,
@@ -24,22 +24,22 @@ pub fn evaluate_addend(
 ) -> Result<Value, NalaRuntimeError> {
     match addend {
         Addend::Add(left, right) => {
-            let left = evaluate_addend(left, scopes, current_scope, context)?;
-            let right = evaluate_factor(right, scopes, current_scope, context)?;
+            let left = eval_addend(left, scopes, current_scope, context)?;
+            let right = eval_factor(right, scopes, current_scope, context)?;
 
             do_add(left, right)
         }
         Addend::Sub(left, right) => {
-            let left = evaluate_addend(left, scopes, current_scope, context)?;
-            let right = evaluate_factor(right, scopes, current_scope, context)?;
+            let left = eval_addend(left, scopes, current_scope, context)?;
+            let right = eval_factor(right, scopes, current_scope, context)?;
 
             do_subtract(left, right)
         }
-        Addend::Factor(factor) => evaluate_factor(factor, scopes, current_scope, context),
+        Addend::Factor(factor) => eval_factor(factor, scopes, current_scope, context),
     }
 }
 
-pub fn evaluate_factor(
+pub fn eval_factor(
     factor: &Factor,
     scopes: &mut Scopes,
     current_scope: ScopeId,
@@ -47,18 +47,18 @@ pub fn evaluate_factor(
 ) -> Result<Value, NalaRuntimeError> {
     match factor {
         Factor::Mult(left, right) => {
-            let left = evaluate_factor(left, scopes, current_scope, context)?;
-            let right = evaluate_term(right.clone(), scopes, current_scope, context)?;
+            let left = eval_factor(left, scopes, current_scope, context)?;
+            let right = eval_term(right.clone(), scopes, current_scope, context)?;
 
             do_multiply(left, right)
         }
         Factor::Div(left, right) => {
-            let left = evaluate_factor(left, scopes, current_scope, context)?;
-            let right = evaluate_term(right.clone(), scopes, current_scope, context)?;
+            let left = eval_factor(left, scopes, current_scope, context)?;
+            let right = eval_term(right.clone(), scopes, current_scope, context)?;
 
             do_divide(left, right)
         }
-        Factor::Invocation(call) => evaluate_invocation(call, scopes, current_scope, context),
+        Factor::Invocation(call) => eval_invocation(call, scopes, current_scope, context),
     }
 }
 
@@ -91,42 +91,42 @@ mod tests {
     #[test]
     pub fn it_evaluates_add_with_2_terms() {
         let parsed = grammar::AddendParser::new().parse("7.0 + 4.0");
-        let result = interpret!(&parsed.unwrap(), evaluate_addend).unwrap();
+        let result = interpret!(&parsed.unwrap(), eval_addend).unwrap();
         assert_eq!(Value::Num(11.0), result);
     }
 
     #[test]
     pub fn it_evaluates_add_with_3_terms() {
         let parsed = grammar::AddendParser::new().parse("3.0 + 5.0 + 4.0");
-        let result = interpret!(&parsed.unwrap(), evaluate_addend).unwrap();
+        let result = interpret!(&parsed.unwrap(), eval_addend).unwrap();
         assert_eq!(Value::Num(12.0), result);
     }
 
     #[test]
     pub fn it_evaluates_sub() {
         let parsed = grammar::AddendParser::new().parse("5 - 3").unwrap();
-        let result = interpret!(&parsed, evaluate_addend).unwrap();
+        let result = interpret!(&parsed, eval_addend).unwrap();
         assert_eq!(Value::Num(2.0), result);
     }
 
     #[test]
     pub fn it_evaluates_mult() {
         let parsed = grammar::FactorParser::new().parse("5.0 * 3.0").unwrap();
-        let result = interpret!(&parsed, evaluate_factor).unwrap();
+        let result = interpret!(&parsed, eval_factor).unwrap();
         assert_eq!(Value::Num(15.0), result);
     }
 
     #[test]
     pub fn it_evaluates_div() {
         let parsed = grammar::FactorParser::new().parse("5.0 / 2.0").unwrap();
-        let result = interpret!(&parsed, evaluate_factor).unwrap();
+        let result = interpret!(&parsed, eval_factor).unwrap();
         assert_eq!(Value::Num(2.5), result);
     }
 
     #[test]
     pub fn it_disallows_div_by_zero() {
         let parsed = grammar::FactorParser::new().parse("5.0 / 0.0").unwrap();
-        let actual = interpret!(&parsed, evaluate_factor);
+        let actual = interpret!(&parsed, eval_factor);
 
         assert!(matches!(actual, Err(_)));
 

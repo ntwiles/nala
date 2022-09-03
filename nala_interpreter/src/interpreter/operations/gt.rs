@@ -5,7 +5,7 @@ use crate::{
 
 use super::errors::*;
 
-pub fn evaluate_gt(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
+pub fn eval_gt(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
     match left {
         Value::Num(left) => match right {
             Value::Num(right) => Ok(Value::Bool(left > right)),

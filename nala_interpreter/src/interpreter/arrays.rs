@@ -12,14 +12,14 @@ use crate::{
 
 use super::basic::*;
 
-pub fn evaluate_index(
+pub fn eval_index(
     array: &Value,
     index_expr: &Expr,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    let index = evaluate_expr(index_expr, scopes, current_scope, context)?;
+    let index = eval_expr(index_expr, scopes, current_scope, context)?;
 
     if let Value::Num(index) = index {
         if let Value::Array(array) = array {
@@ -36,13 +36,13 @@ pub fn evaluate_index(
     }
 }
 
-pub fn evaluate_array(
+pub fn eval_array(
     array: &Array,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    let values = evaluate_elems(&array.elems, scopes, current_scope, context)?;
+    let values = eval_elems(&array.elems, scopes, current_scope, context)?;
 
     if let Some(first) = values.clone().first() {
         let first_type = first.get_type();

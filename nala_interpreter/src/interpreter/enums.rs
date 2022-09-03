@@ -7,16 +7,14 @@ use crate::{
 
 use super::{basic::*, operations::*};
 
-pub fn evaluate_variant(
+pub fn eval_variant(
     variant: &VariantValue,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let (enum_name, variant, data) = match variant {
-        VariantValue::Addend(addend) => {
-            return evaluate_addend(addend, scopes, current_scope, context)
-        }
+        VariantValue::Addend(addend) => return eval_addend(addend, scopes, current_scope, context),
         VariantValue::VariantValue(enum_name, variant) => (enum_name, variant, None),
         VariantValue::VariantValueWithData(enum_name, variant, data) => {
             (enum_name, variant, Some(data))
@@ -35,7 +33,7 @@ pub fn evaluate_variant(
         };
 
         let data = if let Some(data) = data {
-            let data = evaluate_expr(data, scopes, current_scope, context)?;
+            let data = eval_expr(data, scopes, current_scope, context)?;
 
             let expected_data_type = if let Some(data_type) = expected_data_type {
                 data_type

@@ -101,7 +101,7 @@ fn check_param_type(param_type: &TypeVariant) -> Result<(), String> {
     Ok(())
 }
 
-pub fn evaluate_invocation(
+pub fn eval_invocation(
     call: &Invocation,
     scopes: &mut Scopes,
     current_scope: ScopeId,
@@ -109,12 +109,12 @@ pub fn evaluate_invocation(
 ) -> Result<Value, NalaRuntimeError> {
     match call {
         Invocation::Invocation(place, args) => {
-            let block = interpret_place_expr(place, scopes, current_scope, context)?;
+            let block = eval_place_expr(place, scopes, current_scope, context)?;
 
             if let Value::Func(params, block) = block {
                 let func_scope = scopes.new_scope(Some(current_scope));
 
-                let args = evaluate_elems(&*args, scopes, func_scope, context)?;
+                let args = eval_elems(&*args, scopes, func_scope, context)?;
 
                 if params.len() != args.len() {
                     panic!(
@@ -155,7 +155,7 @@ pub fn evaluate_invocation(
             }
         }
         Invocation::PlaceExpression(place) => {
-            interpret_place_expr(place, scopes, current_scope, context)
+            eval_place_expr(place, scopes, current_scope, context)
         }
         Invocation::Value(value) => Ok(value.clone()),
     }

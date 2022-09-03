@@ -56,11 +56,11 @@ fn interpret_stmt(
 ) -> Result<Value, NalaRuntimeError> {
     match stmt {
         Stmt::Declare(ident, expr, is_mutable) => {
-            let result = evaluate_expr(expr, scopes, current_scope, context)?;
+            let result = eval_expr(expr, scopes, current_scope, context)?;
             interpret_declare(ident, &result, scopes, current_scope, is_mutable.clone())
         }
         Stmt::Assign(ident, expr) => {
-            let result = evaluate_expr(expr, scopes, current_scope, context)?;
+            let result = eval_expr(expr, scopes, current_scope, context)?;
             interpret_assign(ident, &result, scopes, current_scope, context)
         }
         Stmt::If(cond, block) => interpret_if(cond, block, scopes, current_scope, context),
@@ -69,43 +69,43 @@ fn interpret_stmt(
         }
         Stmt::Wiles(expr, block) => interpret_wiles(&expr, block, scopes, current_scope, context),
         Stmt::Func(func) => interpret_func(func, scopes, current_scope),
-        Stmt::Expr(expr) => evaluate_expr(expr, scopes, current_scope, context),
+        Stmt::Expr(expr) => eval_expr(expr, scopes, current_scope, context),
         Stmt::Break(expr) => Ok(Value::Break(Box::new(expr.clone()))),
     }
 }
 
-pub fn evaluate_expr(
+pub fn eval_expr(
     expr: &Expr,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match expr {
-        Expr::Addend(addend) => evaluate_addend(addend, scopes, current_scope, context),
+        Expr::Addend(addend) => eval_addend(addend, scopes, current_scope, context),
         Expr::Eq(left, right) => {
-            let left = evaluate_expr(left, scopes, current_scope, context)?;
-            let right = evaluate_addend(right, scopes, current_scope, context)?;
+            let left = eval_expr(left, scopes, current_scope, context)?;
+            let right = eval_addend(right, scopes, current_scope, context)?;
 
-            Ok(evaluate_equals(left, right))
+            Ok(eval_equals(left, right))
         }
         Expr::Gt(left, right) => {
-            let left = evaluate_expr(left, scopes, current_scope, context)?;
-            let right = evaluate_addend(right, scopes, current_scope, context)?;
+            let left = eval_expr(left, scopes, current_scope, context)?;
+            let right = eval_addend(right, scopes, current_scope, context)?;
 
-            evaluate_gt(left, right)
+            eval_gt(left, right)
         }
         Expr::Lt(left, right) => {
-            let left = evaluate_expr(left, scopes, current_scope, context)?;
-            let right = evaluate_addend(right, scopes, current_scope, context)?;
+            let left = eval_expr(left, scopes, current_scope, context)?;
+            let right = eval_addend(right, scopes, current_scope, context)?;
 
-            evaluate_lt(left, right)
+            eval_lt(left, right)
         }
-        Expr::Array(elems) => evaluate_array(elems, scopes, current_scope, context),
-        Expr::Object(object) => evaluate_object(object, scopes, current_scope, context),
+        Expr::Array(elems) => eval_array(elems, scopes, current_scope, context),
+        Expr::Object(object) => eval_object(object, scopes, current_scope, context),
     }
 }
 
-pub fn evaluate_elems(
+pub fn eval_elems(
     elems: &Vec<Expr>,
     scopes: &mut Scopes,
     current_scope: ScopeId,
@@ -113,7 +113,7 @@ pub fn evaluate_elems(
 ) -> Result<Vec<Value>, NalaRuntimeError> {
     let results: Vec<Result<Value, NalaRuntimeError>> = elems
         .iter()
-        .map(|e| evaluate_expr(e, scopes, current_scope, context))
+        .map(|e| eval_expr(e, scopes, current_scope, context))
         .collect();
 
     if let Some(Err(err)) = results.iter().find(|r| r.is_err()) {

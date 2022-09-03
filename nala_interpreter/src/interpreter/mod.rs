@@ -45,7 +45,7 @@ pub fn interpret_tree(
     }
 }
 
-pub fn evaluate_term(
+pub fn eval_term(
     term: Term,
     scopes: &mut Scopes,
     current_scope: ScopeId,
