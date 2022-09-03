@@ -160,7 +160,9 @@ pub fn interpret_place_expr(
             if scopes.binding_exists(&ident, current_scope, context) {
                 scopes.get_value(ident, current_scope, context)
             } else {
-                panic!("Unknown identifier `{}`", ident);
+                Err(NalaRuntimeError {
+                    message: format!("Unknown identifier `{}`", ident),
+                })
             }
         }
         PlaceExpression::MemberAccess(member_access) => {

@@ -7,20 +7,20 @@ use crate::{
     io_context::IoContext,
 };
 
-pub fn get_request_block() -> Func {
+pub fn get_http_block() -> Func {
     let params = vec![Param {
         ident: String::from("options"),
         param_type: TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Object)),
     }];
 
     Func {
-        ident: "request".to_string(),
+        ident: "http".to_string(),
         params,
-        block: Box::new(Block::RustBlock(builtin_request)),
+        block: Box::new(Block::RustBlock(builtin_http)),
     }
 }
 
-fn builtin_request(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> Value {
+fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> Value {
     let options = args.get("options").unwrap();
 
     let mutex = if let Value::Object(reference) = options {

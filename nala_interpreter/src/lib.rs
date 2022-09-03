@@ -32,6 +32,8 @@ pub fn main(path: &str) -> () {
         }
     };
 
+    println!("{}", code);
+
     let parse_result = parse_code(code);
 
     if parse_result.is_err() {
@@ -39,7 +41,7 @@ pub fn main(path: &str) -> () {
         println!(
             "{}",
             format!(
-                "Parse Error:\n  file:\n    {0} \n  message:\n    {1}",
+                "Nala Parse Error:\n  file:\n    {0} \n  message:\n    {1}",
                 path, message
             )
         );

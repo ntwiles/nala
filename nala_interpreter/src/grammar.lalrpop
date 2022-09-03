@@ -42,8 +42,6 @@ VariantDeclare: ast::VariantDeclare = {
     <s:Symbol> "(" <t:TypeVariant> ")" => ast::VariantDeclare::Data(s, t)
 };
 
-Elems = Comma<Expr>;
-
 Expr: ast::Expr = {
     <l:Expr> "==" <r:Addend> => ast::Expr::Eq(Box::new(l), r),
     <l:Expr> ">" <r:Addend> => ast::Expr::Gt(Box::new(l), r),
@@ -62,6 +60,8 @@ KeyValuePairs = Comma<KeyValuePair>;
 KeyValuePair: ast::objects::KeyValuePair = {
     <s:Symbol> ":" <e:Expr> => ast::objects::KeyValuePair{ key: s, value: Box::new(e)}
 }
+
+Elems = Comma<Expr>;
 
 Array: ast::arrays::Array = {
     "[" <Elems> "]" => ast::arrays::Array { elems: <> },
