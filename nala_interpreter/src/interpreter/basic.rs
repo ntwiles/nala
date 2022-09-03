@@ -14,21 +14,21 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-pub fn interpret_block(
+pub fn eval_block(
     block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     context: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     if let Block::NalaBlock(stmts) = block {
-        interpret_stmts(stmts, scopes, current_scope, context)
+        eval_stmts(stmts, scopes, current_scope, context)
     } else {
         // TODO: If we accept a Block as a param, probably all variants should be valid arguments.
-        panic!("Do not pass Rust blocks to interpret_block")
+        panic!("Do not pass Rust blocks to eval_block")
     }
 }
 
-pub fn interpret_stmts(
+pub fn eval_stmts(
     stmts: &Stmts,
     scopes: &mut Scopes,
     current_scope: ScopeId,
@@ -36,19 +36,19 @@ pub fn interpret_stmts(
 ) -> Result<Value, NalaRuntimeError> {
     match stmts {
         Stmts::Stmts(stmts, stmt) => {
-            let result = interpret_stmts(&*stmts, scopes, current_scope, context)?;
+            let result = eval_stmts(&*stmts, scopes, current_scope, context)?;
 
             if let Value::Void = result {
-                interpret_stmt(stmt, scopes, current_scope, context)
+                eval_stmt(stmt, scopes, current_scope, context)
             } else {
                 Ok(result)
             }
         }
-        Stmts::Stmt(stmt) => interpret_stmt(stmt, scopes, current_scope, context),
+        Stmts::Stmt(stmt) => eval_stmt(stmt, scopes, current_scope, context),
     }
 }
 
-fn interpret_stmt(
+fn eval_stmt(
     stmt: &Stmt,
     scopes: &mut Scopes,
     current_scope: ScopeId,
@@ -57,18 +57,18 @@ fn interpret_stmt(
     match stmt {
         Stmt::Declare(ident, expr, is_mutable) => {
             let result = eval_expr(expr, scopes, current_scope, context)?;
-            interpret_declare(ident, &result, scopes, current_scope, is_mutable.clone())
+            eval_declare(ident, &result, scopes, current_scope, is_mutable.clone())
         }
         Stmt::Assign(ident, expr) => {
             let result = eval_expr(expr, scopes, current_scope, context)?;
-            interpret_assign(ident, &result, scopes, current_scope, context)
+            eval_assign(ident, &result, scopes, current_scope, context)
         }
-        Stmt::If(cond, block) => interpret_if(cond, block, scopes, current_scope, context),
+        Stmt::If(cond, block) => eval_if(cond, block, scopes, current_scope, context),
         Stmt::For(ident, expr, block) => {
-            interpret_for(ident, &expr, block, scopes, current_scope, context)
+            eval_for(ident, &expr, block, scopes, current_scope, context)
         }
-        Stmt::Wiles(expr, block) => interpret_wiles(&expr, block, scopes, current_scope, context),
-        Stmt::Func(func) => interpret_func(func, scopes, current_scope),
+        Stmt::Wiles(expr, block) => eval_wiles(&expr, block, scopes, current_scope, context),
+        Stmt::Func(func) => eval_func(func, scopes, current_scope),
         Stmt::Expr(expr) => eval_expr(expr, scopes, current_scope, context),
         Stmt::Break(expr) => Ok(Value::Break(Box::new(expr.clone()))),
     }

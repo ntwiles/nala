@@ -8,7 +8,7 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-pub fn interpret_if(
+pub fn eval_if(
     cond: &Expr,
     block: &Block,
     scopes: &mut Scopes,
@@ -20,7 +20,7 @@ pub fn interpret_if(
     if let Value::Bool(bool) = result {
         if bool {
             let block_scope = scopes.new_scope(Some(current_scope));
-            interpret_block(&block, scopes, block_scope, context)
+            eval_block(&block, scopes, block_scope, context)
         } else {
             Ok(Value::Void)
         }
@@ -29,7 +29,7 @@ pub fn interpret_if(
     }
 }
 
-pub fn interpret_for(
+pub fn eval_for(
     ident: &String,
     expr: &Expr,
     block: &Block,
@@ -49,7 +49,7 @@ pub fn interpret_for(
             let block_scope = scopes.new_scope(Some(current_scope));
             scopes.add_binding(ident, block_scope, item.clone(), false);
 
-            loop_result = interpret_block(&block, scopes, block_scope, context)?;
+            loop_result = eval_block(&block, scopes, block_scope, context)?;
 
             if let Value::Break(expr) = loop_result {
                 return eval_expr(&*expr, scopes, current_scope, context);
@@ -65,7 +65,7 @@ pub fn interpret_for(
     }
 }
 
-pub fn interpret_wiles(
+pub fn eval_wiles(
     expr: &Expr,
     block: &Block,
     scopes: &mut Scopes,
@@ -82,7 +82,7 @@ pub fn interpret_wiles(
         };
 
         if condition {
-            let result = interpret_block(block, scopes, current_scope, context)?;
+            let result = eval_block(block, scopes, current_scope, context)?;
 
             if let Value::Break(expr) = result {
                 return eval_expr(&*expr, scopes, current_scope, context);

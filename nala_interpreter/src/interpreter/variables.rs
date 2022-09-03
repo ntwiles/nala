@@ -9,7 +9,7 @@ use crate::{
     scope::{ScopeId, Scopes},
 };
 
-pub fn interpret_declare(
+pub fn eval_declare(
     ident: &String,
     value: &Value,
     scopes: &mut Scopes,
@@ -33,7 +33,7 @@ pub fn interpret_declare(
     Ok(Value::Void)
 }
 
-pub fn interpret_assign(
+pub fn eval_assign(
     variable: &PlaceExpression,
     value: &Value,
     scopes: &mut Scopes,

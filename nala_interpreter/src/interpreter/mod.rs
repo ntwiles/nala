@@ -17,7 +17,7 @@ use crate::{
 use self::{functions::*, variables::*};
 use basic::*;
 
-pub fn interpret_tree(
+pub fn eval_tree(
     program: Program,
     context: &mut impl IoContext,
 ) -> Result<Value, NalaRuntimeError> {
@@ -27,21 +27,21 @@ pub fn interpret_tree(
 
     // Builtin functions.
     for func in get_builtins().iter() {
-        if let Err(e) = interpret_func(&func, &mut scopes, top_scope) {
+        if let Err(e) = eval_func(&func, &mut scopes, top_scope) {
             panic!("Error loading Nala builtins: {0}", e.message)
         }
     }
 
     // Builtin constants.
     for (ident, value) in get_constants().iter() {
-        if let Err(e) = interpret_declare(ident, &value, &mut scopes, top_scope, false) {
+        if let Err(e) = eval_declare(ident, &value, &mut scopes, top_scope, false) {
             panic!("Error loading Nala constants: {0}", e.message)
         }
     }
 
     match program {
-        Program::Block(block) => interpret_block(&block, &mut scopes, top_scope, context),
-        Program::Stmts(stmts) => interpret_stmts(&stmts, &mut scopes, top_scope, context),
+        Program::Block(block) => eval_block(&block, &mut scopes, top_scope, context),
+        Program::Stmts(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, context),
     }
 }
 

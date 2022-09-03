@@ -22,7 +22,7 @@ fn wrong_arg_type_for_param_error(
     }
 }
 
-pub fn interpret_func(
+pub fn eval_func(
     func: &Func,
     scopes: &mut Scopes,
     current_scope: ScopeId,
@@ -147,7 +147,7 @@ pub fn eval_invocation(
                 let block = *block;
 
                 match block {
-                    Block::NalaBlock(stmts) => interpret_stmts(&stmts, scopes, func_scope, context),
+                    Block::NalaBlock(stmts) => eval_stmts(&stmts, scopes, func_scope, context),
                     Block::RustBlock(func) => Ok(func(param_args, context)),
                 }
             } else {
