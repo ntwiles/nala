@@ -68,7 +68,6 @@ pub enum PrimitiveType {
     Array,
     Bool,
     Break,
-    Exception,
     Func,
     Number,
     String,
@@ -156,7 +155,6 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Array => "Array",
             PrimitiveType::Bool => "Bool",
             PrimitiveType::Break => "<Break>",
-            PrimitiveType::Exception => "<Exception>", // TODO: What is this??
             PrimitiveType::Func => "Func",
             PrimitiveType::Number => "Number",
             PrimitiveType::Object => "<Object>",
