@@ -156,7 +156,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Array => "Array",
             PrimitiveType::Bool => "Bool",
             PrimitiveType::Break => "<Break>",
-            PrimitiveType::Exception => "<Exception>",
+            PrimitiveType::Exception => "<Exception>", // TODO: What is this??
             PrimitiveType::Func => "Func",
             PrimitiveType::Number => "Number",
             PrimitiveType::Object => "<Object>",

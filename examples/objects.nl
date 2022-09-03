@@ -7,8 +7,8 @@ func callbackB() {
     print('callbackB called!');
 }
 
-// Objects can not yet be accepted as function arguments as they cannot yet be typed.
-func writeMessage() {
+// This will not be valid Nala once user-defined types are implemented.
+func writeMessage(message: Object) {
     print(message.firstWord + ' ' + message.second.word + message.punctuation[0]);
     message.callback();
 }
@@ -22,13 +22,13 @@ const message = {
     callback: callbackA
 };
 
-writeMessage();
+writeMessage(message);
 
 message.firstWord = 'this';
 message.second.word = 'too';
 message.punctuation[0] = '?';
 message.callback = callbackB;
 
-writeMessage();
+writeMessage(message);
 
 

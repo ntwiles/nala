@@ -7,7 +7,7 @@ match {
     "{", "}", "(", ")", "[", "]", ";", ":", ".", ",",
     "const", "mut", "if", "for", "in", "wiles", "func", "break",
     "=", "==", ">", "<", "+", "-", "*", "/",
-    "Array", "Bool", "Func", "Number", "String",
+    "Array", "Bool", "Func", "Number", "Object", "String",
 
     r"[a-zA-Z]+",           // symbols
     r"-?[0-9]+(\.[0-9]+)?", // number literals
@@ -106,6 +106,7 @@ PrimitiveType: ast::types::PrimitiveType = {
     "Bool" => ast::types::PrimitiveType::Bool,
     "Func" => ast::types::PrimitiveType::Func,
     "Number" => ast::types::PrimitiveType::Number,
+    "Object" => ast::types::PrimitiveType::Object,
     "String" => ast::types::PrimitiveType::String,
 }
 

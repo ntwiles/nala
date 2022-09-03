@@ -1,5 +1,4 @@
 
-
 func indexOfString(haystack: Array<String>, needle: String ) {
     mut i = 0;
 
@@ -17,4 +16,4 @@ func indexOfString(haystack: Array<String>, needle: String ) {
 const names = [ 'Jimmy', 'Kim', 'Howard', 'Lalo' ];
 const index = indexOfString(names, 'Howard');
 
-print('test');
+print(names[index]);
