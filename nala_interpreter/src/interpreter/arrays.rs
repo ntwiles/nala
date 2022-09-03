@@ -17,9 +17,9 @@ pub fn eval_index(
     index_expr: &Expr,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    let index = eval_expr(index_expr, scopes, current_scope, context)?;
+    let index = eval_expr(index_expr, scopes, current_scope, ctx)?;
 
     if let Value::Num(index) = index {
         if let Value::Array(array) = array {
@@ -40,9 +40,9 @@ pub fn eval_array(
     array: &Array,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    let values = eval_elems(&array.elems, scopes, current_scope, context)?;
+    let values = eval_elems(&array.elems, scopes, current_scope, ctx)?;
 
     if let Some(first) = values.clone().first() {
         let first_type = first.get_type();

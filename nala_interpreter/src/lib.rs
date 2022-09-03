@@ -20,7 +20,7 @@ use parser::*;
 
 pub fn main(path: &str) -> () {
     let code = fs::read_to_string(path);
-    let mut context = ConsoleContext {};
+    let mut ctx = ConsoleContext {};
 
     let code = match code {
         Ok(code) => code,
@@ -45,7 +45,7 @@ pub fn main(path: &str) -> () {
         return;
     }
 
-    match eval_tree(parse_result.unwrap(), &mut context) {
+    match eval_tree(parse_result.unwrap(), &mut ctx) {
         Ok(_) => println!("Execution completed."),
         Err(e) => println!("Nala Runtime Error: {0}", e.message),
     }

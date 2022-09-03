@@ -71,14 +71,14 @@ impl Scopes {
         self: &Self,
         ident: &str,
         current_scope: ScopeId,
-        context: &mut dyn IoContext,
+        ctx: &mut dyn IoContext,
     ) -> Option<Value> {
         let scope = self.scopes.get(current_scope.index).unwrap();
 
         match scope.get_binding(&ident) {
             Some((value, _, _)) => Some(value),
             None => match scope.parent {
-                Some(parent_scope) => self.get_maybe_value(ident, parent_scope, context),
+                Some(parent_scope) => self.get_maybe_value(ident, parent_scope, ctx),
                 None => None,
             },
         }
@@ -88,9 +88,9 @@ impl Scopes {
         self: &Self,
         ident: &str,
         starting_scope: ScopeId,
-        context: &mut dyn IoContext,
+        ctx: &mut dyn IoContext,
     ) -> Result<Value, NalaRuntimeError> {
-        match self.get_maybe_value(ident, starting_scope, context) {
+        match self.get_maybe_value(ident, starting_scope, ctx) {
             Some(value) => Ok(value),
             None => Err(not_found_in_scope_error(ident)),
         }
@@ -151,10 +151,9 @@ impl Scopes {
         self: &Self,
         ident: &str,
         current_scope: ScopeId,
-        context: &mut dyn IoContext,
+        ctx: &mut dyn IoContext,
     ) -> bool {
-        self.get_maybe_value(ident, current_scope, context)
-            .is_some()
+        self.get_maybe_value(ident, current_scope, ctx).is_some()
     }
 
     pub fn binding_exists_local(self: &Self, ident: &str, current_scope: ScopeId) -> bool {

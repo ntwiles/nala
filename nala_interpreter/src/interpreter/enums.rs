@@ -11,17 +11,17 @@ pub fn eval_variant(
     variant: &VariantValue,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let (enum_name, variant, data) = match variant {
-        VariantValue::Addend(addend) => return eval_addend(addend, scopes, current_scope, context),
+        VariantValue::Addend(addend) => return eval_addend(addend, scopes, current_scope, ctx),
         VariantValue::VariantValue(enum_name, variant) => (enum_name, variant, None),
         VariantValue::VariantValueWithData(enum_name, variant, data) => {
             (enum_name, variant, Some(data))
         }
     };
 
-    let value = scopes.get_value(enum_name, current_scope, context)?;
+    let value = scopes.get_value(enum_name, current_scope, ctx)?;
 
     if let Value::Type(TypeVariant::Enum(_enum_name, variants)) = value {
         let existing_variant = find_variant(&variants, variant)?;
@@ -33,7 +33,7 @@ pub fn eval_variant(
         };
 
         let data = if let Some(data) = data {
-            let data = eval_expr(data, scopes, current_scope, context)?;
+            let data = eval_expr(data, scopes, current_scope, ctx)?;
 
             let expected_data_type = if let Some(data_type) = expected_data_type {
                 data_type

@@ -34,19 +34,19 @@ pub fn get_readnum_block() -> Func {
     }
 }
 
-fn builtin_print(args: HashMap<String, Value>, context: &mut dyn IoContext) -> Value {
+fn builtin_print(args: HashMap<String, Value>, ctx: &mut dyn IoContext) -> Value {
     let message = args.get("message").unwrap();
-    context.print(&message.to_string());
+    ctx.print(&message.to_string());
     Value::Void
 }
 
-fn builtin_read(_args: HashMap<String, Value>, context: &mut dyn IoContext) -> Value {
-    let input = context.read();
+fn builtin_read(_args: HashMap<String, Value>, ctx: &mut dyn IoContext) -> Value {
+    let input = ctx.read();
     Value::String(input.trim().to_string())
 }
 
-fn builtin_readnum(_args: HashMap<String, Value>, context: &mut dyn IoContext) -> Value {
-    let mut input = context.read();
+fn builtin_readnum(_args: HashMap<String, Value>, ctx: &mut dyn IoContext) -> Value {
+    let mut input = ctx.read();
 
     input = input.trim().to_string();
     let result = input.parse::<f32>();

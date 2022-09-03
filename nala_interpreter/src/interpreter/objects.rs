@@ -17,11 +17,11 @@ pub fn eval_member_access(
     member_access: &MemberAccess,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match member_access {
         MemberAccess::MemberAccesses(parents, child) => {
-            let object = eval_member_access(parent_obj, parents, scopes, current_scope, context)?;
+            let object = eval_member_access(parent_obj, parents, scopes, current_scope, ctx)?;
 
             if let Value::Object(reference) = object {
                 let object = Arc::clone(&reference);
@@ -40,7 +40,7 @@ pub fn eval_member_access(
         MemberAccess::MemberAccess(parent, child) => {
             let object = match parent_obj {
                 Some(_parent_obj) => todo!(),
-                None => scopes.get_value(parent, current_scope, context)?,
+                None => scopes.get_value(parent, current_scope, ctx)?,
             };
 
             if let Value::Object(reference) = object {
@@ -67,10 +67,10 @@ pub fn eval_object(
     object: &Object,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let object: HashMap<String, Value> =
-        eval_object_entries(&object.entries, scopes, current_scope, context)?;
+        eval_object_entries(&object.entries, scopes, current_scope, ctx)?;
 
     Ok(Value::Object(Arc::new(Mutex::new(object))))
 }
@@ -79,11 +79,11 @@ fn eval_object_entries(
     entries: &Vec<KeyValuePair>,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    ctx: &mut dyn IoContext,
 ) -> Result<HashMap<String, Value>, NalaRuntimeError> {
     let results: Vec<Result<(String, Value), NalaRuntimeError>> = entries
         .iter()
-        .map(|kvp| eval_object_entry(kvp, scopes, current_scope, context))
+        .map(|kvp| eval_object_entry(kvp, scopes, current_scope, ctx))
         .collect();
 
     if let Some(Err(error)) = results.iter().find(|r| r.is_err()) {
@@ -104,8 +104,8 @@ fn eval_object_entry(
     entry: &KeyValuePair,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    ctx: &mut dyn IoContext,
 ) -> Result<(String, Value), NalaRuntimeError> {
-    let value = eval_expr(&*entry.value, scopes, current_scope, context)?;
+    let value = eval_expr(&*entry.value, scopes, current_scope, ctx)?;
     Ok((entry.key.clone(), value))
 }

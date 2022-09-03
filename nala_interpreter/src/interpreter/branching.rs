@@ -13,14 +13,14 @@ pub fn eval_if(
     block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    let result = eval_expr(&cond, scopes, current_scope, context)?;
+    let result = eval_expr(&cond, scopes, current_scope, ctx)?;
 
     if let Value::Bool(bool) = result {
         if bool {
             let block_scope = scopes.new_scope(Some(current_scope));
-            eval_block(&block, scopes, block_scope, context)
+            eval_block(&block, scopes, block_scope, ctx)
         } else {
             Ok(Value::Void)
         }
@@ -35,9 +35,9 @@ pub fn eval_for(
     block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    let result = eval_expr(expr, scopes, current_scope, context)?;
+    let result = eval_expr(expr, scopes, current_scope, ctx)?;
 
     let mut loop_result = Value::Void;
 
@@ -49,10 +49,10 @@ pub fn eval_for(
             let block_scope = scopes.new_scope(Some(current_scope));
             scopes.add_binding(ident, block_scope, item.clone(), false);
 
-            loop_result = eval_block(&block, scopes, block_scope, context)?;
+            loop_result = eval_block(&block, scopes, block_scope, ctx)?;
 
             if let Value::Break(expr) = loop_result {
-                return eval_expr(&*expr, scopes, current_scope, context);
+                return eval_expr(&*expr, scopes, current_scope, ctx);
             }
         }
 
@@ -70,10 +70,10 @@ pub fn eval_wiles(
     block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     loop {
-        let result = eval_expr(expr, scopes, current_scope, context)?;
+        let result = eval_expr(expr, scopes, current_scope, ctx)?;
 
         let condition = if let Value::Bool(condition) = result {
             condition
@@ -82,10 +82,10 @@ pub fn eval_wiles(
         };
 
         if condition {
-            let result = eval_block(block, scopes, current_scope, context)?;
+            let result = eval_block(block, scopes, current_scope, ctx)?;
 
             if let Value::Break(expr) = result {
-                return eval_expr(&*expr, scopes, current_scope, context);
+                return eval_expr(&*expr, scopes, current_scope, ctx);
             }
         } else {
             break;

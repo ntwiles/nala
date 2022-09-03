@@ -17,10 +17,7 @@ use crate::{
 use self::{functions::*, variables::*};
 use basic::*;
 
-pub fn eval_tree(
-    program: Program,
-    context: &mut impl IoContext,
-) -> Result<Value, NalaRuntimeError> {
+pub fn eval_tree(program: Program, ctx: &mut impl IoContext) -> Result<Value, NalaRuntimeError> {
     let mut scopes = Scopes::new();
 
     let top_scope = scopes.new_scope(None);
@@ -40,8 +37,8 @@ pub fn eval_tree(
     }
 
     match program {
-        Program::Block(block) => eval_block(&block, &mut scopes, top_scope, context),
-        Program::Stmts(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, context),
+        Program::Block(block) => eval_block(&block, &mut scopes, top_scope, ctx),
+        Program::Stmts(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, ctx),
     }
 }
 
@@ -49,10 +46,10 @@ pub fn eval_term(
     term: Term,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match term {
-        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, context)?),
+        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, ctx)?),
         Term::Value(value) => Ok(value),
     }
 }

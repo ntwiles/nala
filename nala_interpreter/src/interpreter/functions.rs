@@ -105,16 +105,16 @@ pub fn eval_invocation(
     call: &Invocation,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    context: &mut dyn IoContext,
+    ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match call {
         Invocation::Invocation(place, args) => {
-            let block = eval_place_expr(place, scopes, current_scope, context)?;
+            let block = eval_place_expr(place, scopes, current_scope, ctx)?;
 
             if let Value::Func(params, block) = block {
                 let func_scope = scopes.new_scope(Some(current_scope));
 
-                let args = eval_elems(&*args, scopes, func_scope, context)?;
+                let args = eval_elems(&*args, scopes, func_scope, ctx)?;
 
                 if params.len() != args.len() {
                     panic!(
@@ -147,16 +147,14 @@ pub fn eval_invocation(
                 let block = *block;
 
                 match block {
-                    Block::NalaBlock(stmts) => eval_stmts(&stmts, scopes, func_scope, context),
-                    Block::RustBlock(func) => Ok(func(param_args, context)),
+                    Block::NalaBlock(stmts) => eval_stmts(&stmts, scopes, func_scope, ctx),
+                    Block::RustBlock(func) => Ok(func(param_args, ctx)),
                 }
             } else {
                 panic!("Cannot invoke a non-function.")
             }
         }
-        Invocation::PlaceExpression(place) => {
-            eval_place_expr(place, scopes, current_scope, context)
-        }
+        Invocation::PlaceExpression(place) => eval_place_expr(place, scopes, current_scope, ctx),
         Invocation::Value(value) => Ok(value.clone()),
     }
 }
