@@ -1,4 +1,4 @@
-use super::{terms::*, types::*, *};
+use super::{terms::*, types::type_variant::TypeVariant, *};
 
 #[derive(Debug, Clone)]
 pub struct Func {

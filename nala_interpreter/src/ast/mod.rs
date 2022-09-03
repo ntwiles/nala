@@ -13,7 +13,7 @@ use self::arrays::*;
 use self::funcs::*;
 use self::math::*;
 use self::objects::*;
-use self::types::*;
+use self::types::type_variant::TypeVariant;
 
 #[derive(Debug)]
 pub enum Program {

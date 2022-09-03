@@ -3,7 +3,12 @@ use std::collections::HashMap;
 use super::{basic::*, variables::*};
 
 use crate::{
-    ast::{funcs::*, terms::*, types::*, *},
+    ast::{
+        funcs::*,
+        terms::*,
+        types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
+        *,
+    },
     errors::*,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
@@ -65,7 +70,7 @@ fn check_param_types(params: Vec<Param>) -> Result<(), String> {
 
 fn check_param_type(param_type: &TypeVariant) -> Result<(), String> {
     if let TypeVariant::Nested(outer, inner) = param_type {
-        let outer = if let Type::PrimitiveType(outer) = outer {
+        let outer = if let NalaType::PrimitiveType(outer) = outer {
             outer
         } else {
             let inners = inner

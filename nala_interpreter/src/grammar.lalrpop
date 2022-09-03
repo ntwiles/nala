@@ -1,4 +1,5 @@
 use std::str::FromStr;
+
 use crate::ast;
 
 grammar;
@@ -7,7 +8,7 @@ match {
     "{", "}", "(", ")", "[", "]", ";", ":", ".", ",",
     "const", "mut", "if", "for", "in", "wiles", "func", "break",
     "=", "==", ">", "<", "+", "-", "*", "/",
-    "Array", "Bool", "Func", "Number", "Object", "String",
+    "Array", "Bool", "Func", "Number",  "Object", "String",
 
     r"[a-zA-Z]+",           // symbols
     r"-?[0-9]+(\.[0-9]+)?", // number literals
@@ -91,23 +92,23 @@ Param: ast::funcs::Param = {
 
 TypeVariants = Comma<TypeVariant>;
 
-TypeVariant: ast::types::TypeVariant = {
-    <t:Type> "<" <tt:TypeVariants> ">" => ast::types::TypeVariant::Nested(t, tt),
-    <Type> => ast::types::TypeVariant::Type(<>),
+TypeVariant: ast::types::type_variant::TypeVariant = {
+    <t:Type> "<" <tt:TypeVariants> ">" => ast::types::type_variant::TypeVariant::Nested(t, tt),
+    <Type> => ast::types::type_variant::TypeVariant::Type(<>),
 }
 
-Type: ast::types::Type = {
-    <PrimitiveType> => ast::types::Type::PrimitiveType(<>),
-    <Symbol> => ast::types::Type::UserDefined(<>),
+Type: ast::types::nala_type::NalaType = {
+    <PrimitiveType> => ast::types::nala_type::NalaType::PrimitiveType(<>),
+    <Symbol> => ast::types::nala_type::NalaType::UserDefined(<>),
 }
 
-PrimitiveType: ast::types::PrimitiveType = {
-    "Array" => ast::types::PrimitiveType::Array,
-    "Bool" => ast::types::PrimitiveType::Bool,
-    "Func" => ast::types::PrimitiveType::Func,
-    "Number" => ast::types::PrimitiveType::Number,
-    "Object" => ast::types::PrimitiveType::Object,
-    "String" => ast::types::PrimitiveType::String,
+PrimitiveType: ast::types::primitive_type::PrimitiveType = {
+    "Array" => ast::types::primitive_type::PrimitiveType::Array,
+    "Bool" => ast::types::primitive_type::PrimitiveType::Bool,
+    "Func" => ast::types::primitive_type::PrimitiveType::Func,
+    "Number" => ast::types::primitive_type::PrimitiveType::Number,
+    "Object" => ast::types::primitive_type::PrimitiveType::Object,
+    "String" => ast::types::primitive_type::PrimitiveType::String,
 }
 
 pub Addend: ast::math::Addend = {

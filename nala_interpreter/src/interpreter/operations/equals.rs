@@ -1,4 +1,7 @@
-use crate::ast::{terms::*, types::*};
+use crate::ast::{
+    terms::*,
+    types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
+};
 
 use super::errors::panic_oper_not_impl_for;
 
@@ -6,7 +9,7 @@ pub fn eval_equals(left: Value, right: Value) -> Value {
     if left.get_type() != right.get_type() {
         panic_oper_not_impl_for(
             "==",
-            &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
+            &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
             &right.get_type(),
         )
     }
@@ -43,7 +46,7 @@ fn variant_equals(
     } else {
         panic_oper_not_impl_for(
             "==",
-            &TypeVariant::Type(Type::UserDefined(left_enum)),
+            &TypeVariant::Type(NalaType::UserDefined(left_enum)),
             &right.get_type(),
         )
     }

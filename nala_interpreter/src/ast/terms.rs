@@ -4,7 +4,10 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use super::*;
+use super::{
+    types::{nala_type::NalaType, primitive_type::PrimitiveType},
+    *,
+};
 
 #[derive(Debug, Clone)]
 pub enum SymbolOrTerm {
@@ -102,27 +105,30 @@ impl Value {
                     todo!("Handle the case where trying to get the type of an empty array.")
                 };
 
-                TypeVariant::Nested(Type::PrimitiveType(PrimitiveType::Array), vec![elem_type])
+                TypeVariant::Nested(
+                    NalaType::PrimitiveType(PrimitiveType::Array),
+                    vec![elem_type],
+                )
             }
-            Value::Bool(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Bool)),
-            Value::Break(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Break)),
+            Value::Bool(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
+            Value::Break(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Break)),
             Value::Func(params, _) => {
                 if params.len() > 0 {
                     let param_types: Vec<TypeVariant> =
                         params.iter().map(|p| p.clone().param_type).collect();
-                    TypeVariant::Nested(Type::PrimitiveType(PrimitiveType::Func), param_types)
+                    TypeVariant::Nested(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
                 } else {
-                    TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Func))
+                    TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Func))
                 }
             }
             Value::Type(_) => todo!("What is this?"),
-            Value::Num(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
-            Value::Object(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Object)),
-            Value::String(_) => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::String)),
+            Value::Num(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
+            Value::Object(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Object)),
+            Value::String(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
             Value::Variant(enum_name, _, _) => {
-                TypeVariant::Type(Type::UserDefined(enum_name.to_owned()))
+                TypeVariant::Type(NalaType::UserDefined(enum_name.to_owned()))
             }
-            Value::Void => TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Void)),
+            Value::Void => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void)),
         }
     }
 }

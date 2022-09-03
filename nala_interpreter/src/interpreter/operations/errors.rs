@@ -1,4 +1,4 @@
-use crate::ast::types::*;
+use crate::ast::types::type_variant::TypeVariant;
 
 pub fn panic_oper_not_impl(oper: &str, the_type: &TypeVariant) -> ! {
     panic!(

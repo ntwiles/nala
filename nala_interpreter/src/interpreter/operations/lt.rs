@@ -1,5 +1,8 @@
 use crate::{
-    ast::{terms::*, types::*},
+    ast::{
+        terms::*,
+        types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
+    },
     errors::*,
     interpreter::operations::errors::*,
 };
@@ -18,7 +21,7 @@ fn num_lt(left: f32, right: Value) -> Value {
         Value::Num(right) => Value::Bool(left < right),
         right => panic_oper_not_impl_for(
             "<",
-            &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
+            &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
             &right.get_type(),
         ),
     }
@@ -29,7 +32,7 @@ fn string_lt(left: String, right: Value) -> Value {
         Value::String(right) => Value::Bool(left < right),
         right => panic_oper_not_impl_for(
             "<",
-            &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::String)),
+            &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
             &right.get_type(),
         ),
     }
@@ -40,7 +43,7 @@ fn bool_lt(left: bool, right: Value) -> Value {
         Value::Bool(right) => Value::Bool(left < right),
         right => panic_oper_not_impl_for(
             "<",
-            &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Bool)),
+            &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
             &right.get_type(),
         ),
     }

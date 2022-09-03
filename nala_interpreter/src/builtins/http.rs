@@ -6,14 +6,19 @@ use std::{
 use reqwest;
 
 use crate::{
-    ast::{funcs::*, terms::*, types::*, *},
+    ast::{
+        funcs::*,
+        terms::*,
+        types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
+        *,
+    },
     io_context::IoContext,
 };
 
 pub fn get_http_block() -> Func {
     let params = vec![Param {
         ident: String::from("options"),
-        param_type: TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Object)),
+        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Object)),
     }];
 
     Func {

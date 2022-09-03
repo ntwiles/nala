@@ -1,5 +1,8 @@
 use crate::{
-    ast::{terms::*, types::*},
+    ast::{
+        terms::*,
+        types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
+    },
     errors::*,
 };
 
@@ -11,7 +14,7 @@ pub fn eval_gt(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
             Value::Num(right) => Ok(Value::Bool(left > right)),
             right => panic_oper_not_impl_for(
                 ">",
-                &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
+                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
                 &right.get_type(),
             ),
         },
@@ -19,7 +22,7 @@ pub fn eval_gt(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
             Value::String(right) => Ok(Value::Bool(left > right)),
             right => panic_oper_not_impl_for(
                 ">",
-                &TypeVariant::Type(Type::PrimitiveType(PrimitiveType::String)),
+                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
                 &right.get_type(),
             ),
         },

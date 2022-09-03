@@ -1,14 +1,19 @@
 use std::collections::HashMap;
 
 use crate::{
-    ast::{funcs::*, terms::*, types::*, *},
+    ast::{
+        funcs::*,
+        terms::*,
+        types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
+        *,
+    },
     io_context::IoContext,
 };
 
 pub fn get_floor_block() -> Func {
     let num_param = Param {
         ident: String::from("num"),
-        param_type: TypeVariant::Type(Type::PrimitiveType(PrimitiveType::Number)),
+        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
     };
 
     Func {
