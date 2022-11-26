@@ -15,7 +15,7 @@ pub enum PrimitiveType {
 
 impl PrimitiveType {
     pub fn is_assignable_to(&self, param: &PrimitiveType) -> bool {
-        // TODO: Not a good way to compare types.
+        // TODO: Is this a good way to compare types?
         self.to_string() == param.to_string()
     }
 }
