@@ -94,19 +94,19 @@ Param: ast::funcs::Param = {
 StructFields = Comma<StructField>;
 
 StructField: ast::types::StructField = {
-    <s:Symbol> ":" <t:Type> => ast::types::StructField { ident: s, field_type: ast::types::type_variant::TypeVariant::Type(t) },
+    <s:Symbol> ":" <t:Type> => ast::types::StructField { ident: s, field_type: ast::types::type_literal_variant::TypeLiteralVariant::Type(t) },
 }
 
 TypeVariants = Comma<TypeVariant>;
 
-TypeVariant: ast::types::type_variant::TypeVariant = {
-    <t:Type> "<" <tt:TypeVariants> ">" => ast::types::type_variant::TypeVariant::Nested(t, tt),
-    <Type> => ast::types::type_variant::TypeVariant::Type(<>),
+TypeVariant: ast::types::type_literal_variant::TypeLiteralVariant = {
+    <t:Type> "<" <tt:TypeVariants> ">" => ast::types::type_literal_variant::TypeLiteralVariant::Nested(t, tt),
+    <Type> => ast::types::type_literal_variant::TypeLiteralVariant::Type(<>),
 }
 
-Type: ast::types::nala_type::NalaType = {
-    <PrimitiveType> => ast::types::nala_type::NalaType::PrimitiveType(<>),
-    <Symbol> => ast::types::nala_type::NalaType::UserDefined(<>),
+Type: ast::types::type_literal::TypeLiteral = {
+    <PrimitiveType> => ast::types::type_literal::TypeLiteral::PrimitiveType(<>),
+    <Symbol> => ast::types::type_literal::TypeLiteral::UserDefined(<>),
 }
 
 PrimitiveType: ast::types::primitive_type::PrimitiveType = {

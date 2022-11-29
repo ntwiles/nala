@@ -1,11 +1,11 @@
-pub mod nala_type;
-pub mod primitive_type;
-pub mod type_variant;
+use self::type_literal_variant::TypeLiteralVariant;
 
-use super::types::type_variant::TypeVariant;
+pub mod primitive_type;
+pub mod type_literal;
+pub mod type_literal_variant;
 
 #[derive(Debug, Clone)]
 pub struct StructField {
     pub ident: String,
-    pub field_type: TypeVariant
+    pub field_type: TypeLiteralVariant,
 }

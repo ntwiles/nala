@@ -7,17 +7,20 @@ use crate::{
     ast::{
         funcs::*,
         terms::*,
-        types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
+        types::{
+            primitive_type::PrimitiveType, type_literal::TypeLiteral,
+            type_literal_variant::TypeLiteralVariant,
+        },
         *,
     },
     io_context::IoContext,
 };
 
 pub fn get_len_block() -> Func {
-    let inner_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number));
+    let inner_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
 
-    let outer_type = TypeVariant::Nested(
-        NalaType::PrimitiveType(PrimitiveType::Array),
+    let outer_type = TypeLiteralVariant::Nested(
+        TypeLiteral::PrimitiveType(PrimitiveType::Array),
         vec![inner_type],
     );
 
@@ -36,9 +39,9 @@ pub fn get_len_block() -> Func {
 pub fn get_slice_block() -> Func {
     let array_param = Param {
         ident: String::from("array"),
-        param_type: TypeVariant::Nested(
-            NalaType::PrimitiveType(PrimitiveType::Array),
-            vec![TypeVariant::Type(NalaType::PrimitiveType(
+        param_type: TypeLiteralVariant::Nested(
+            TypeLiteral::PrimitiveType(PrimitiveType::Array),
+            vec![TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(
                 PrimitiveType::Number,
             ))],
         ),
@@ -46,12 +49,12 @@ pub fn get_slice_block() -> Func {
 
     let start_param = Param {
         ident: String::from("start"),
-        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
+        param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number)),
     };
 
     let end_param = Param {
         ident: String::from("end"),
-        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
+        param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number)),
     };
 
     Func {

@@ -1,15 +1,23 @@
 use std::fmt;
 
-use super::{primitive_type::PrimitiveType, StructField};
+use crate::ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral, StructField};
+
+pub mod type_variant;
 
 #[derive(Debug, Clone)]
 pub enum NalaType {
     PrimitiveType(PrimitiveType),
     Struct(Vec<StructField>),
-    UserDefined(String), // TODO: "UserDefined" is too general, this should be used for enums.
 }
 
 impl NalaType {
+    pub fn from_literal(literal: TypeLiteral) -> Self {
+        match literal {
+            TypeLiteral::PrimitiveType(t) => NalaType::PrimitiveType(t),
+            TypeLiteral::UserDefined(_) => todo!(),
+        }
+    }
+
     pub fn is_assignable_to(&self, other: &Self) -> bool {
         match self {
             NalaType::PrimitiveType(sp) => {
@@ -19,12 +27,9 @@ impl NalaType {
                     false
                 }
             }
-            NalaType::Struct(_) => {
-                todo!()
-            }
-            NalaType::UserDefined(st) => {
-                if let NalaType::UserDefined(ot) = other {
-                    st == ot
+            NalaType::Struct(fields) => {
+                if let NalaType::Struct(ot) = other {
+                    todo!()
                 } else {
                     false
                 }
@@ -37,8 +42,7 @@ impl fmt::Display for NalaType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             NalaType::PrimitiveType(primitive) => write!(f, "{}", primitive),
-            NalaType::Struct(_) => todo!(),
-            NalaType::UserDefined(the_type) => write!(f, "{}", the_type),
+            NalaType::Struct(the_type) => todo!(),
         }
     }
 }
@@ -53,14 +57,7 @@ impl PartialEq for NalaType {
                     false
                 }
             }
-            NalaType::Struct(_) => todo!(),
-            NalaType::UserDefined(sp) => {
-                if let NalaType::UserDefined(op) = other {
-                    sp == op
-                } else {
-                    false
-                }
-            }
+            NalaType::Struct(sp) => todo!(),
         }
     }
 }

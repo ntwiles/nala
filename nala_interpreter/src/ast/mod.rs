@@ -13,8 +13,8 @@ use self::arrays::*;
 use self::funcs::*;
 use self::math::*;
 use self::objects::*;
+use self::types::type_literal_variant::TypeLiteralVariant;
 use self::types::StructField;
-use self::types::type_variant::TypeVariant;
 
 #[derive(Debug)]
 pub enum Program {
@@ -71,7 +71,7 @@ pub enum Expr {
 #[derive(Debug, Clone)]
 pub enum VariantDeclare {
     Empty(String),
-    Data(String, TypeVariant),
+    Data(String, TypeLiteralVariant),
 }
 
 impl fmt::Display for VariantDeclare {

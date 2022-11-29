@@ -1,9 +1,7 @@
 use crate::{
-    ast::{
-        terms::*,
-        types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
-    },
+    ast::{terms::*, types::primitive_type::PrimitiveType},
     errors::*,
+    types::{type_variant::TypeVariant, NalaType},
 };
 
 use super::errors::*;

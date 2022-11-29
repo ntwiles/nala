@@ -1,4 +1,4 @@
-use super::{terms::*, types::type_variant::TypeVariant, *};
+use super::{terms::*, types::type_literal_variant::TypeLiteralVariant, *};
 
 #[derive(Debug, Clone)]
 pub struct Func {
@@ -10,7 +10,7 @@ pub struct Func {
 #[derive(Debug, Clone)]
 pub struct Param {
     pub ident: String,
-    pub param_type: TypeVariant,
+    pub param_type: TypeLiteralVariant,
 }
 
 #[derive(Debug, Clone)]

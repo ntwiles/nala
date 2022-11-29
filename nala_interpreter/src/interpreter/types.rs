@@ -1,7 +1,6 @@
 use crate::{
     ast::{terms::Value, types::StructField},
     errors::NalaRuntimeError,
-    io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
 

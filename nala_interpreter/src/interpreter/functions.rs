@@ -6,12 +6,16 @@ use crate::{
     ast::{
         funcs::*,
         terms::*,
-        types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
+        types::{
+            primitive_type::PrimitiveType, type_literal::TypeLiteral,
+            type_literal_variant::TypeLiteralVariant,
+        },
         *,
     },
     errors::*,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
+    types::type_variant::TypeVariant,
 };
 
 fn wrong_arg_type_for_param_error(
@@ -68,9 +72,9 @@ fn check_param_types(params: Vec<Param>) -> Result<(), String> {
     }
 }
 
-fn check_param_type(param_type: &TypeVariant) -> Result<(), String> {
-    if let TypeVariant::Nested(outer, inner) = param_type {
-        let outer = if let NalaType::PrimitiveType(outer) = outer {
+fn check_param_type(param_type: &TypeLiteralVariant) -> Result<(), String> {
+    if let TypeLiteralVariant::Nested(outer, inner) = param_type {
+        let outer = if let TypeLiteral::PrimitiveType(outer) = outer {
             outer
         } else {
             let inners = inner
@@ -135,7 +139,7 @@ pub fn eval_invocation(
                     let arg = args.get(i).unwrap();
 
                     let arg_type = arg.get_type();
-                    let param_type = param.param_type.clone();
+                    let param_type = TypeVariant::from_literal(param.param_type.clone());
 
                     if !arg_type.is_assignable_to(&param_type) {
                         return Err(wrong_arg_type_for_param_error(

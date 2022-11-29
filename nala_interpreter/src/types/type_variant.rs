@@ -1,6 +1,8 @@
 use std::fmt;
 
-use super::nala_type::NalaType;
+use crate::ast::types::type_literal_variant::TypeLiteralVariant;
+
+use super::NalaType;
 
 #[derive(Debug, Clone)]
 pub enum TypeVariant {
@@ -9,6 +11,18 @@ pub enum TypeVariant {
 }
 
 impl TypeVariant {
+    pub fn from_literal(literal: TypeLiteralVariant) -> Self {
+        match literal {
+            TypeLiteralVariant::Nested(p, c) => TypeVariant::Nested(
+                NalaType::from_literal(p),
+                c.into_iter()
+                    .map(|l| TypeVariant::from_literal(l))
+                    .collect(),
+            ),
+            TypeLiteralVariant::Type(t) => TypeVariant::Type(NalaType::from_literal(t)),
+        }
+    }
+
     pub fn is_assignable_to(&self, other: &Self) -> bool {
         match self {
             TypeVariant::Nested(sv, svv) => {

@@ -4,7 +4,10 @@ use crate::{
     ast::{
         funcs::*,
         terms::*,
-        types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
+        types::{
+            primitive_type::PrimitiveType, type_literal::TypeLiteral,
+            type_literal_variant::TypeLiteralVariant,
+        },
         *,
     },
     io_context::IoContext,
@@ -13,7 +16,7 @@ use crate::{
 pub fn get_print_block() -> Func {
     let message_param = Param {
         ident: String::from("message"),
-        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
+        param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String)),
     };
 
     Func {

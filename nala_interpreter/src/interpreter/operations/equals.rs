@@ -1,6 +1,6 @@
-use crate::ast::{
-    terms::*,
-    types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
+use crate::{
+    ast::{terms::*, types::primitive_type::PrimitiveType},
+    types::{type_variant::TypeVariant, NalaType},
 };
 
 use super::errors::panic_oper_not_impl_for;
@@ -44,10 +44,11 @@ fn variant_equals(
             Value::Bool(enums_match && variants_match)
         }
     } else {
-        panic_oper_not_impl_for(
-            "==",
-            &TypeVariant::Type(NalaType::UserDefined(left_enum)),
-            &right.get_type(),
-        )
+        todo!()
+        // panic_oper_not_impl_for(
+        //     "==",
+        //     &TypeVariant::Type(NalaType::UserDefined(left_enum)),
+        //     &right.get_type(),
+        // )
     }
 }

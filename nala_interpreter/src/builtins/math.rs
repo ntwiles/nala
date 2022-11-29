@@ -4,7 +4,10 @@ use crate::{
     ast::{
         funcs::*,
         terms::*,
-        types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
+        types::{
+            primitive_type::PrimitiveType, type_literal::TypeLiteral,
+            type_literal_variant::TypeLiteralVariant,
+        },
         *,
     },
     io_context::IoContext,
@@ -13,7 +16,7 @@ use crate::{
 pub fn get_floor_block() -> Func {
     let num_param = Param {
         ident: String::from("num"),
-        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
+        param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number)),
     };
 
     Func {

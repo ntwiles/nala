@@ -13,6 +13,7 @@ pub mod io_context;
 mod lexer;
 pub mod parser;
 pub mod scope;
+pub mod types;
 
 use interpreter::*;
 use io_context::ConsoleContext;

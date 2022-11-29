@@ -1,10 +1,8 @@
 use crate::{
-    ast::{
-        terms::*,
-        types::{nala_type::NalaType, primitive_type::PrimitiveType, type_variant::TypeVariant},
-    },
+    ast::{terms::*, types::primitive_type::PrimitiveType},
     errors::*,
     interpreter::operations::errors::*,
+    types::{type_variant::TypeVariant, NalaType},
 };
 
 pub fn eval_lt(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
