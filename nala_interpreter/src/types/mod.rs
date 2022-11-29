@@ -57,9 +57,18 @@ impl fmt::Display for NalaType {
         match self {
             NalaType::PrimitiveType(primitive) => write!(f, "{}", primitive),
             NalaType::Struct(fields) => {
-                for field in fields.iter() {
-                    write!(f, "{:?}", field.ident).unwrap();
-                }
+                write!(f, "{{ ")?;
+
+                write!(
+                    f,
+                    "{}",
+                    fields
+                        .iter()
+                        .map(|field| format!("{}: {}", field.ident, field.field_type.to_string()))
+                        .fold(String::new(), |a, b| a + &b + ", ")
+                )?;
+
+                write!(f, "}}")?;
 
                 Ok(())
             }

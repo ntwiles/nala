@@ -17,7 +17,7 @@ func callbackB() {
 // This will not be valid Nala once user-defined types are implemented.
 func writeMessage(message: Message) {
     print(message.firstWord + ' ' + message.second.word + message.punctuation[0]);
-    message.callback();
+    message.callback(); // TODO: Nothing prevents us from invoking this yet even though callback() isn't in type Message
 }
 
 const message = {
