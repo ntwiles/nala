@@ -9,3 +9,12 @@ pub struct StructLiteralField {
     pub ident: String,
     pub field_type: TypeLiteralVariant,
 }
+
+impl StructLiteralField {
+    pub fn new(ident: &str, field_type: TypeLiteralVariant) -> Self {
+        Self {
+            ident: ident.to_owned(),
+            field_type,
+        }
+    }
+}

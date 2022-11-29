@@ -11,7 +11,7 @@ use crate::{
         terms::*,
         types::{
             primitive_type::PrimitiveType, type_literal::TypeLiteral,
-            type_literal_variant::TypeLiteralVariant,
+            type_literal_variant::TypeLiteralVariant, StructLiteralField,
         },
         *,
     },
@@ -19,9 +19,20 @@ use crate::{
 };
 
 pub fn get_http_block() -> Func {
+    let options_fields = vec![
+        StructLiteralField::new(
+            "method",
+            TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String)),
+        ),
+        StructLiteralField::new(
+            "url",
+            TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String)),
+        ),
+    ];
+
     let params = vec![Param {
         ident: String::from("options"),
-        param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Object)),
+        param_type: TypeLiteralVariant::Type(TypeLiteral::Struct(options_fields)),
     }];
 
     Func {
