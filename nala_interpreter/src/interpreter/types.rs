@@ -9,5 +9,7 @@ pub fn eval_struct(
     current_scope: ScopeId,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    Ok(Value::Void)
+
+        scopes.add_type_binding(&ident, current_scope, "foo").map(|_| Value::Void)
+    
 }
