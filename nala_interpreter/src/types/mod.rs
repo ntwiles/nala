@@ -43,7 +43,11 @@ impl NalaType {
             }
             NalaType::Struct(fields) => {
                 if let NalaType::Struct(ot) = other {
-                    fields.clone().sort() == ot.clone().sort() // TODO: Can this be done without cloning?
+                    // TODO: Can this be done without cloning?
+                    fields.clone().sort();
+                    ot.clone().sort();
+
+                    fields == ot
                 } else {
                     false
                 }

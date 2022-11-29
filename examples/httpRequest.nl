@@ -9,6 +9,7 @@ print('Making GET request...');
 mut result = http({
     method: 'GET',
     url: 'https://httpbin.org/get',
+    body: '',
 });
 
 print(result.statusCode);

@@ -28,6 +28,10 @@ pub fn get_http_block() -> Func {
             "url",
             TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String)),
         ),
+        StructLiteralField::new(
+            "body",
+            TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String)),
+        ),
     ];
 
     let params = vec![Param {

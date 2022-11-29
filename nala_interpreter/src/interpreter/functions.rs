@@ -143,6 +143,7 @@ pub fn eval_invocation(
                     let arg = args.get(i).unwrap();
 
                     let arg_type = arg.get_type(scopes, current_scope);
+
                     let param_type =
                         TypeVariant::from_literal(param.param_type.clone(), scopes, current_scope);
 
