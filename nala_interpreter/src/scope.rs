@@ -1,12 +1,16 @@
 use std::{collections::HashMap, hash::Hash};
 
-use crate::{ast::terms::*, errors::*, io_context::IoContext};
+use crate::{
+    ast::{terms::*, types::StructField},
+    errors::*,
+    io_context::IoContext,
+};
 
 #[derive(Debug)]
 pub struct Scope {
     parent: Option<ScopeId>,
     bindings: HashMap<String, (Value, String, bool)>,
-    type_bindings: HashMap<String, String>,
+    type_bindings: HashMap<String, Vec<StructField>>,
 }
 
 impl Scope {
@@ -18,9 +22,8 @@ impl Scope {
         }
     }
 
-    pub fn add_type_binding(self: &mut Self, ident: &str, value: &str) {
-        self.type_bindings
-            .insert(ident.to_owned(), value.to_owned());
+    pub fn add_struct_binding(self: &mut Self, ident: &str, fields: Vec<StructField>) {
+        self.type_bindings.insert(ident.to_owned(), fields);
     }
 
     pub fn add_binding(self: &mut Self, ident: &str, value: Value, is_mutable: bool) {
@@ -40,9 +43,9 @@ impl Scope {
         }
     }
 
-    pub fn get_type_binding(self: &Self, ident: &str) -> Option<String> {
+    pub fn get_struct_binding(self: &Self, ident: &str) -> Option<&Vec<StructField>> {
         if let Some(binding) = self.type_bindings.get(ident) {
-            Some(binding.clone())
+            Some(binding)
         } else {
             None
         }
@@ -163,26 +166,29 @@ impl Scopes {
         scope.add_binding(ident, value, is_mutable);
     }
 
-    pub fn add_type_binding(
+    pub fn add_struct_binding(
         self: &mut Self,
         ident: &str,
         current_scope: ScopeId,
-        value: &str,
+        fields: Vec<StructField>,
     ) -> Result<(), NalaRuntimeError> {
         if self
             .scopes
             .get(current_scope.index)
             .unwrap()
-            .get_type_binding(&ident)
+            .get_struct_binding(&ident)
             .is_some()
         {
             Err(NalaRuntimeError {
-                message: format!("Binding for {} already exists in local scope.", ident),
+                message: format!(
+                    "Binding for struct {} already exists in local scope.",
+                    ident
+                ),
             })
         } else {
             let scope = self.scopes.get_mut(current_scope.index).unwrap();
 
-            scope.add_type_binding(ident, value);
+            scope.add_struct_binding(ident, fields);
 
             Ok(())
         }

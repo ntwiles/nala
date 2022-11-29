@@ -15,7 +15,7 @@ func callbackB() {
 }
 
 // This will not be valid Nala once user-defined types are implemented.
-func writeMessage(message: Object) {
+func writeMessage(message: Message) {
     print(message.firstWord + ' ' + message.second.word + message.punctuation[0]);
     message.callback();
 }

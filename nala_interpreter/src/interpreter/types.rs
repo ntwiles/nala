@@ -1,15 +1,17 @@
-use crate::{scope::{Scopes, ScopeId}, io_context::IoContext, errors::NalaRuntimeError, ast::{terms::Value, types::StructField}};
-
-
+use crate::{
+    ast::{terms::Value, types::StructField},
+    errors::NalaRuntimeError,
+    io_context::IoContext,
+    scope::{ScopeId, Scopes},
+};
 
 pub fn eval_struct(
     ident: &str,
-    fields: &Vec<StructField>,
+    fields: Vec<StructField>,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-
-        scopes.add_type_binding(&ident, current_scope, "foo").map(|_| Value::Void)
-    
+    scopes
+        .add_struct_binding(&ident, current_scope, fields)
+        .map(|_| Value::Void)
 }

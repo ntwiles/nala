@@ -1,11 +1,12 @@
 use std::fmt;
 
-use super::primitive_type::PrimitiveType;
+use super::{primitive_type::PrimitiveType, StructField};
 
 #[derive(Debug, Clone)]
 pub enum NalaType {
     PrimitiveType(PrimitiveType),
-    UserDefined(String),
+    Struct(Vec<StructField>),
+    UserDefined(String), // TODO: "UserDefined" is too general, this should be used for enums.
 }
 
 impl NalaType {
@@ -17,6 +18,9 @@ impl NalaType {
                 } else {
                     false
                 }
+            }
+            NalaType::Struct(_) => {
+                todo!()
             }
             NalaType::UserDefined(st) => {
                 if let NalaType::UserDefined(ot) = other {
@@ -33,6 +37,7 @@ impl fmt::Display for NalaType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             NalaType::PrimitiveType(primitive) => write!(f, "{}", primitive),
+            NalaType::Struct(_) => todo!(),
             NalaType::UserDefined(the_type) => write!(f, "{}", the_type),
         }
     }
@@ -48,6 +53,7 @@ impl PartialEq for NalaType {
                     false
                 }
             }
+            NalaType::Struct(_) => todo!(),
             NalaType::UserDefined(sp) => {
                 if let NalaType::UserDefined(op) = other {
                     sp == op
