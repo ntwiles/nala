@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{ast::terms::*, errors::*, io_context::IoContext, types::struct_field::StructField};
+use crate::{ast::terms::*, errors::*, types::struct_field::StructField};
 
 #[derive(Debug)]
 pub struct Scope {
@@ -84,18 +84,13 @@ impl Scopes {
         ScopeId { index: next_index }
     }
 
-    fn get_maybe_value(
-        self: &Self,
-        ident: &str,
-        current_scope: ScopeId,
-        ctx: &mut dyn IoContext,
-    ) -> Option<Value> {
+    fn get_maybe_value(self: &Self, ident: &str, current_scope: ScopeId) -> Option<Value> {
         let scope = self.scopes.get(current_scope.index).unwrap();
 
         match scope.get_binding(&ident) {
             Some((value, _, _)) => Some(value),
             None => match scope.parent {
-                Some(parent_scope) => self.get_maybe_value(ident, parent_scope, ctx),
+                Some(parent_scope) => self.get_maybe_value(ident, parent_scope),
                 None => None,
             },
         }
@@ -121,9 +116,8 @@ impl Scopes {
         self: &Self,
         ident: &str,
         starting_scope: ScopeId,
-        ctx: &mut dyn IoContext,
     ) -> Result<Value, NalaRuntimeError> {
-        match self.get_maybe_value(ident, starting_scope, ctx) {
+        match self.get_maybe_value(ident, starting_scope) {
             Some(value) => Ok(value),
             None => Err(not_found_in_scope_error(ident)),
         }
@@ -221,13 +215,8 @@ impl Scopes {
         }
     }
 
-    pub fn binding_exists(
-        self: &Self,
-        ident: &str,
-        current_scope: ScopeId,
-        ctx: &mut dyn IoContext,
-    ) -> bool {
-        self.get_maybe_value(ident, current_scope, ctx).is_some()
+    pub fn binding_exists(self: &Self, ident: &str, current_scope: ScopeId) -> bool {
+        self.get_maybe_value(ident, current_scope).is_some()
     }
 
     // TODO: Get rid of this and just have `add_binding` return a Result.

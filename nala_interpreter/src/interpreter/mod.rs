@@ -47,10 +47,9 @@ pub fn eval_term(
     term: Term,
     scopes: &mut Scopes,
     current_scope: ScopeId,
-    ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match term {
-        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, ctx)?),
+        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope)?),
         Term::Value(value) => Ok(value),
     }
 }

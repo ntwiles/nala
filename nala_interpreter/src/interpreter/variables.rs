@@ -67,7 +67,7 @@ pub fn eval_assign(
                     }
                 }
                 PlaceExpression::Symbol(ident) => {
-                    if scopes.binding_exists(&ident, current_scope, ctx) {
+                    if scopes.binding_exists(&ident, current_scope) {
                         let index_result = eval_expr(&index_expr, scopes, current_scope, ctx)?;
 
                         if let Value::Void = value {
@@ -80,7 +80,7 @@ pub fn eval_assign(
                             panic!("Index does not resolve to a Number.");
                         };
 
-                        let array = scopes.get_value(&ident, current_scope, ctx)?;
+                        let array = scopes.get_value(&ident, current_scope)?;
 
                         if let Value::Array(array) = array {
                             let array = Arc::clone(&array);
@@ -95,12 +95,12 @@ pub fn eval_assign(
             }
         }
         PlaceExpression::Symbol(ident) => {
-            if scopes.binding_exists(&ident, current_scope, ctx) {
+            if scopes.binding_exists(&ident, current_scope) {
                 if let Value::Void = value {
                     panic!("Cannot assign a value of type Void.");
                 }
 
-                let existing = scopes.get_value(&ident, current_scope, ctx)?;
+                let existing = scopes.get_value(&ident, current_scope)?;
 
                 let existing_type = existing.get_type(scopes, current_scope);
                 let value_type = value.get_type(scopes, current_scope);
@@ -127,7 +127,7 @@ pub fn eval_assign(
                     child,
                 ),
                 MemberAccess::MemberAccess(parent, child) => {
-                    (scopes.get_value(&parent, current_scope, ctx)?, child)
+                    (scopes.get_value(&parent, current_scope)?, child)
                 }
             };
 
@@ -156,8 +156,8 @@ pub fn eval_place_expr(
             eval_index(&array, expr, scopes, current_scope, ctx)
         }
         PlaceExpression::Symbol(ident) => {
-            if scopes.binding_exists(&ident, current_scope, ctx) {
-                scopes.get_value(ident, current_scope, ctx)
+            if scopes.binding_exists(&ident, current_scope) {
+                scopes.get_value(ident, current_scope)
             } else {
                 Err(NalaRuntimeError {
                     message: format!("Unknown identifier `{}`", ident),
