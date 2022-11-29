@@ -7,7 +7,7 @@ use std::{
 use crate::{
     io_context::IoContext,
     scope::{ScopeId, Scopes},
-    types::{type_variant::TypeVariant, NalaType},
+    types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
 };
 
 use super::{
@@ -134,9 +134,22 @@ impl Value {
             }
             Value::Type(_) => todo!("What is this?"),
             Value::Num(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
-            Value::Object(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Object)),
+            Value::Object(fields) => {
+                let fields = fields
+                    .lock()
+                    .unwrap()
+                    .clone()
+                    .into_iter()
+                    .map(|(ident, v)| StructField {
+                        ident,
+                        field_type: v.get_type(scopes, current_scope),
+                    })
+                    .collect();
+
+                TypeVariant::Type(NalaType::Struct(fields))
+            }
             Value::String(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
-            Value::Variant(enum_name, _, _) => todo!(),
+            Value::Variant(_, _, _) => todo!(),
             Value::Void => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void)),
         }
     }

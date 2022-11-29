@@ -1,10 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{
-    ast::{terms::*, types::StructField},
-    errors::*,
-    io_context::IoContext,
-};
+use crate::{ast::terms::*, errors::*, io_context::IoContext, types::struct_field::StructField};
 
 #[derive(Debug)]
 pub struct Scope {

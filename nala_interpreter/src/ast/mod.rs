@@ -14,7 +14,7 @@ use self::funcs::*;
 use self::math::*;
 use self::objects::*;
 use self::types::type_literal_variant::TypeLiteralVariant;
-use self::types::StructField;
+use self::types::StructLiteralField;
 
 #[derive(Debug)]
 pub enum Program {
@@ -47,7 +47,7 @@ pub enum Stmt {
     Func(Func),
     If(Expr, Box<Block>),
     Wiles(Expr, Box<Block>),
-    Struct(String, Vec<StructField>),
+    Struct(String, Vec<StructLiteralField>),
 }
 
 // TODO: Implement this as a Vec<Stmt> instead of a linked list.

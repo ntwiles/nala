@@ -1,11 +1,13 @@
 use std::fmt;
 
 use crate::{
-    ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral, StructField},
-    io_context::IoContext,
+    ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
     scope::{ScopeId, Scopes},
 };
 
+use self::struct_field::StructField;
+
+pub mod struct_field;
 pub mod type_variant;
 
 #[derive(Debug, Clone)]
@@ -35,7 +37,7 @@ impl NalaType {
             }
             NalaType::Struct(fields) => {
                 if let NalaType::Struct(ot) = other {
-                    todo!()
+                    fields == ot
                 } else {
                     false
                 }
@@ -48,7 +50,7 @@ impl fmt::Display for NalaType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             NalaType::PrimitiveType(primitive) => write!(f, "{}", primitive),
-            NalaType::Struct(the_type) => todo!(),
+            NalaType::Struct(fields) => write!(f, "{:?}", fields), // TODO: This is not human readable.
         }
     }
 }

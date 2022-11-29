@@ -5,7 +5,7 @@ pub mod type_literal;
 pub mod type_literal_variant;
 
 #[derive(Debug, Clone)]
-pub struct StructField {
+pub struct StructLiteralField {
     pub ident: String,
     pub field_type: TypeLiteralVariant,
 }

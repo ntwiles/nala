@@ -1,5 +1,5 @@
 struct Message {
-    firstWord: string,
+    firstWord: String,
     // second: {
     //     word: string,
     // },
@@ -16,25 +16,26 @@ func callbackB() {
 
 // This will not be valid Nala once user-defined types are implemented.
 func writeMessage(message: Message) {
-    print(message.firstWord + ' ' + message.second.word + message.punctuation[0]);
-    message.callback();
+    print(message.firstWord);
+    // print(message.firstWord + ' ' + message.second.word + message.punctuation[0]);
+    // message.callback();
 }
 
 const message = {
     firstWord: 'hello',
-    second: {
-        word: 'world'
-    },
-    punctuation: ['!'],
-    callback: callbackA
+    // second: {
+    //     word: 'world'
+    // },
+    // punctuation: ['!'],
+    // callback: callbackA
 };
 
 writeMessage(message);
 
 message.firstWord = 'this';
-message.second.word = 'too';
-message.punctuation[0] = '?';
-message.callback = callbackB;
+// message.second.word = 'too';
+// message.punctuation[0] = '?';
+// message.callback = callbackB;
 
 writeMessage(message);
 
