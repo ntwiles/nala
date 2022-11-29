@@ -50,8 +50,12 @@ pub fn eval_func(
 
         let result = check_param_types(params.clone());
 
+        let func = Value::Func(params, *block);
+
+        let type_name = func.get_type(scopes, current_scope).to_string();
+
         if result.is_ok() {
-            scopes.add_binding(&ident, current_scope, Value::Func(params, *block), false);
+            scopes.add_binding(&ident, current_scope, func, type_name, false);
         } else {
             return Err(NalaRuntimeError {
                 message: result.unwrap_err(),
@@ -138,18 +142,21 @@ pub fn eval_invocation(
                 for (i, param) in params.iter().enumerate() {
                     let arg = args.get(i).unwrap();
 
-                    let arg_type = arg.get_type();
-                    let param_type = TypeVariant::from_literal(param.param_type.clone());
+                    let arg_type = arg.get_type(scopes, current_scope);
+                    let param_type =
+                        TypeVariant::from_literal(param.param_type.clone(), scopes, current_scope);
 
                     if !arg_type.is_assignable_to(&param_type) {
                         return Err(wrong_arg_type_for_param_error(
                             arg.clone().to_string(),
-                            arg.get_type().to_string(),
+                            arg.get_type(scopes, current_scope).to_string(),
                             param_type.to_string(),
                         ));
                     }
 
-                    scopes.add_binding(&param.ident, func_scope, arg.clone(), false);
+                    let type_name = arg.get_type(scopes, current_scope).to_string();
+
+                    scopes.add_binding(&param.ident, func_scope, arg.clone(), type_name, false);
                     param_args.entry(param.ident.clone()).or_insert(arg.clone());
                 }
 

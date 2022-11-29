@@ -1,6 +1,10 @@
 use std::fmt;
 
-use crate::ast::types::type_literal_variant::TypeLiteralVariant;
+use crate::{
+    ast::types::type_literal_variant::TypeLiteralVariant,
+    io_context::IoContext,
+    scope::{ScopeId, Scopes},
+};
 
 use super::NalaType;
 
@@ -11,15 +15,21 @@ pub enum TypeVariant {
 }
 
 impl TypeVariant {
-    pub fn from_literal(literal: TypeLiteralVariant) -> Self {
+    pub fn from_literal(
+        literal: TypeLiteralVariant,
+        scopes: &mut Scopes,
+        current_scope: ScopeId,
+    ) -> Self {
         match literal {
             TypeLiteralVariant::Nested(p, c) => TypeVariant::Nested(
-                NalaType::from_literal(p),
+                NalaType::from_literal(p, scopes, current_scope),
                 c.into_iter()
-                    .map(|l| TypeVariant::from_literal(l))
+                    .map(|l| TypeVariant::from_literal(l, scopes, current_scope))
                     .collect(),
             ),
-            TypeLiteralVariant::Type(t) => TypeVariant::Type(NalaType::from_literal(t)),
+            TypeLiteralVariant::Type(t) => {
+                TypeVariant::Type(NalaType::from_literal(t, scopes, current_scope))
+            }
         }
     }
 

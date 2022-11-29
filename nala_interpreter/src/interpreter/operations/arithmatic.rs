@@ -1,7 +1,17 @@
-use crate::{ast::terms::Value, errors::NalaRuntimeError};
+use crate::{
+    ast::terms::Value,
+    errors::NalaRuntimeError,
+    io_context::IoContext,
+    scope::{ScopeId, Scopes},
+};
 
-pub fn do_add(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
-    if left.get_type() != right.get_type() {
+pub fn do_add(
+    left: Value,
+    right: Value,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+) -> Result<Value, NalaRuntimeError> {
+    if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
         return Err(NalaRuntimeError {
             message: "Cannot add between values of two different types.".to_string(),
         });
@@ -26,8 +36,13 @@ pub fn do_add(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
     }
 }
 
-pub fn do_subtract(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
-    if left.get_type() != right.get_type() {
+pub fn do_subtract(
+    left: Value,
+    right: Value,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+) -> Result<Value, NalaRuntimeError> {
+    if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
         return Err(NalaRuntimeError {
             message: "Cannot subtract between values of two different types.".to_string(),
         });
@@ -44,8 +59,13 @@ pub fn do_subtract(left: Value, right: Value) -> Result<Value, NalaRuntimeError>
     }
 }
 
-pub fn do_multiply(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
-    if left.get_type() != right.get_type() {
+pub fn do_multiply(
+    left: Value,
+    right: Value,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+) -> Result<Value, NalaRuntimeError> {
+    if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
         return Err(NalaRuntimeError {
             message: "Cannot multiply between values of two different types.".to_string(),
         });
@@ -62,8 +82,13 @@ pub fn do_multiply(left: Value, right: Value) -> Result<Value, NalaRuntimeError>
     }
 }
 
-pub fn do_divide(left: Value, right: Value) -> Result<Value, NalaRuntimeError> {
-    if left.get_type() != right.get_type() {
+pub fn do_divide(
+    left: Value,
+    right: Value,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+) -> Result<Value, NalaRuntimeError> {
+    if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
         return Err(NalaRuntimeError {
             message: "Cannot divide between values of two different types.".to_string(),
         });

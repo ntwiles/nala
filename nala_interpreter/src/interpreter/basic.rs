@@ -86,19 +86,19 @@ pub fn eval_expr(
             let left = eval_expr(left, scopes, current_scope, ctx)?;
             let right = eval_addend(right, scopes, current_scope, ctx)?;
 
-            Ok(eval_equals(left, right))
+            Ok(eval_equals(left, right, scopes, current_scope))
         }
         Expr::Gt(left, right) => {
             let left = eval_expr(left, scopes, current_scope, ctx)?;
             let right = eval_addend(right, scopes, current_scope, ctx)?;
 
-            eval_gt(left, right)
+            eval_gt(left, right, scopes, current_scope)
         }
         Expr::Lt(left, right) => {
             let left = eval_expr(left, scopes, current_scope, ctx)?;
             let right = eval_addend(right, scopes, current_scope, ctx)?;
 
-            eval_lt(left, right)
+            eval_lt(left, right, scopes, current_scope)
         }
         Expr::Array(elems) => eval_array(elems, scopes, current_scope, ctx),
         Expr::Object(object) => eval_object(object, scopes, current_scope, ctx),

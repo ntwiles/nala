@@ -45,13 +45,13 @@ pub fn eval_array(
     let values = eval_elems(&array.elems, scopes, current_scope, ctx)?;
 
     if let Some(first) = values.clone().first() {
-        let first_type = first.get_type();
+        let first_type = first.get_type(scopes, current_scope);
 
         for value in values.clone() {
-            if value.get_type() != first_type {
+            if value.get_type(scopes, current_scope) != first_type {
                 let message = format!("Arrays can contain elements of only a single type. Found elements of types `{0}` and `{1}`.",
                 first_type,
-                value.get_type());
+                value.get_type(scopes, current_scope));
 
                 return Err(NalaRuntimeError { message });
             }

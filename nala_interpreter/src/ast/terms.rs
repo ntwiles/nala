@@ -4,7 +4,11 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::types::{type_variant::TypeVariant, NalaType};
+use crate::{
+    io_context::IoContext,
+    scope::{ScopeId, Scopes},
+    types::{type_variant::TypeVariant, NalaType},
+};
 
 use super::{
     types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
@@ -96,13 +100,13 @@ impl fmt::Display for Value {
 }
 
 impl Value {
-    pub fn get_type(&self) -> TypeVariant {
+    pub fn get_type(&self, scopes: &mut Scopes, current_scope: ScopeId) -> TypeVariant {
         match self {
             Value::Array(items) => {
                 let items = Arc::clone(items);
                 let items = items.lock().unwrap();
                 let elem_type = if items.len() > 0 {
-                    items.first().unwrap().get_type()
+                    items.first().unwrap().get_type(scopes, current_scope)
                 } else {
                     todo!("Handle the case where trying to get the type of an empty array.")
                 };
@@ -115,14 +119,18 @@ impl Value {
             Value::Bool(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
             Value::Break(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Break)),
             Value::Func(params, _) => {
-                // if params.len() > 0 {
-                //     let param_types: Vec<TypeLiteralVariant> =
-                //         params.iter().map(|p| p.clone().param_type).collect();
-                //     TypeVariant::Nested(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
-                // } else {
-                //     TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Func))
-                // }
-                todo!()
+                if params.len() > 0 {
+                    let param_types = params
+                        .into_iter()
+                        .map(|p| {
+                            TypeVariant::from_literal(p.clone().param_type, scopes, current_scope)
+                        }) // TODO: Why do we need this clone?
+                        .collect();
+
+                    TypeVariant::Nested(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
+                } else {
+                    TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Func))
+                }
             }
             Value::Type(_) => todo!("What is this?"),
             Value::Num(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),

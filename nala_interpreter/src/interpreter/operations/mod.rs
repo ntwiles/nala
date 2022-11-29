@@ -27,13 +27,13 @@ pub fn eval_addend(
             let left = eval_addend(left, scopes, current_scope, ctx)?;
             let right = eval_factor(right, scopes, current_scope, ctx)?;
 
-            do_add(left, right)
+            do_add(left, right, scopes, current_scope)
         }
         Addend::Sub(left, right) => {
             let left = eval_addend(left, scopes, current_scope, ctx)?;
             let right = eval_factor(right, scopes, current_scope, ctx)?;
 
-            do_subtract(left, right)
+            do_subtract(left, right, scopes, current_scope)
         }
         Addend::Factor(factor) => eval_factor(factor, scopes, current_scope, ctx),
     }
@@ -50,13 +50,13 @@ pub fn eval_factor(
             let left = eval_factor(left, scopes, current_scope, ctx)?;
             let right = eval_term(right.clone(), scopes, current_scope, ctx)?;
 
-            do_multiply(left, right)
+            do_multiply(left, right, scopes, current_scope)
         }
         Factor::Div(left, right) => {
             let left = eval_factor(left, scopes, current_scope, ctx)?;
             let right = eval_term(right.clone(), scopes, current_scope, ctx)?;
 
-            do_divide(left, right)
+            do_divide(left, right, scopes, current_scope)
         }
         Factor::Invocation(call) => eval_invocation(call, scopes, current_scope, ctx),
     }

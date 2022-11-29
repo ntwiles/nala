@@ -1,6 +1,10 @@
 use std::fmt;
 
-use crate::ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral, StructField};
+use crate::{
+    ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral, StructField},
+    io_context::IoContext,
+    scope::{ScopeId, Scopes},
+};
 
 pub mod type_variant;
 
@@ -11,10 +15,12 @@ pub enum NalaType {
 }
 
 impl NalaType {
-    pub fn from_literal(literal: TypeLiteral) -> Self {
+    pub fn from_literal(literal: TypeLiteral, scopes: &mut Scopes, current_scope: ScopeId) -> Self {
         match literal {
             TypeLiteral::PrimitiveType(t) => NalaType::PrimitiveType(t),
-            TypeLiteral::UserDefined(_) => todo!(),
+            TypeLiteral::UserDefined(ident) => {
+                NalaType::Struct(scopes.get_struct(&ident, current_scope).unwrap())
+            }
         }
     }
 

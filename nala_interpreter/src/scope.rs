@@ -1,4 +1,4 @@
-use std::{collections::HashMap, hash::Hash};
+use std::collections::HashMap;
 
 use crate::{
     ast::{terms::*, types::StructField},
@@ -9,7 +9,7 @@ use crate::{
 #[derive(Debug)]
 pub struct Scope {
     parent: Option<ScopeId>,
-    bindings: HashMap<String, (Value, String, bool)>,
+    bindings: HashMap<String, (Value, String, bool)>, // TODO: This middle field is just the type name in String form, get rid of this.
     type_bindings: HashMap<String, Vec<StructField>>,
 }
 
@@ -26,13 +26,15 @@ impl Scope {
         self.type_bindings.insert(ident.to_owned(), fields);
     }
 
-    pub fn add_binding(self: &mut Self, ident: &str, value: Value, is_mutable: bool) {
-        let type_name = value.get_type().to_string();
-
-        self.bindings.insert(
-            ident.to_owned(),
-            (value, String::from(type_name), is_mutable),
-        );
+    pub fn add_binding(
+        self: &mut Self,
+        ident: &str,
+        value: Value,
+        type_name: String,
+        is_mutable: bool,
+    ) {
+        self.bindings
+            .insert(ident.to_owned(), (value, type_name, is_mutable));
     }
 
     pub fn get_binding(self: &Self, ident: &str) -> Option<(Value, String, bool)> {
@@ -103,6 +105,22 @@ impl Scopes {
         }
     }
 
+    fn get_maybe_struct(
+        self: &Self,
+        ident: &str,
+        current_scope: ScopeId,
+    ) -> Option<&Vec<StructField>> {
+        let scope = self.scopes.get(current_scope.index).unwrap();
+
+        match scope.get_struct_binding(&ident) {
+            Some(fields) => Some(fields),
+            None => match scope.parent {
+                Some(parent_scope) => self.get_maybe_struct(ident, parent_scope),
+                None => None,
+            },
+        }
+    }
+
     pub fn get_value(
         self: &Self,
         ident: &str,
@@ -111,6 +129,17 @@ impl Scopes {
     ) -> Result<Value, NalaRuntimeError> {
         match self.get_maybe_value(ident, starting_scope, ctx) {
             Some(value) => Ok(value),
+            None => Err(not_found_in_scope_error(ident)),
+        }
+    }
+
+    pub fn get_struct(
+        self: &Self,
+        ident: &str,
+        starting_scope: ScopeId,
+    ) -> Result<Vec<StructField>, NalaRuntimeError> {
+        match self.get_maybe_struct(ident, starting_scope) {
+            Some(value) => Ok(value.clone()),
             None => Err(not_found_in_scope_error(ident)),
         }
     }
@@ -137,6 +166,7 @@ impl Scopes {
         self: &mut Self,
         ident: &str,
         current_scope: ScopeId,
+        type_name: String,
         new_value: Value,
     ) -> Result<Value, NalaRuntimeError> {
         let scope = self.find_scope_with_binding(ident, current_scope);
@@ -144,7 +174,7 @@ impl Scopes {
         if let Some(scope) = scope {
             let (_, _, is_mutable) = scope.get_binding(ident).unwrap();
             if is_mutable {
-                scope.add_binding(ident, new_value, true)
+                scope.add_binding(ident, new_value, type_name, true)
             } else {
                 return Err(assign_immutable_binding_error(ident));
             }
@@ -160,10 +190,11 @@ impl Scopes {
         ident: &str,
         current_scope: ScopeId,
         value: Value,
+        type_name: String,
         is_mutable: bool,
     ) {
         let scope = self.scopes.get_mut(current_scope.index).unwrap();
-        scope.add_binding(ident, value, is_mutable);
+        scope.add_binding(ident, value, type_name, is_mutable);
     }
 
     pub fn add_struct_binding(
