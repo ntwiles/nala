@@ -6,7 +6,7 @@ grammar;
 
 match {
     "{", "}", "(", ")", "[", "]", ";", ":", ".", ",",
-    "const", "mut", "if", "for", "in", "wiles", "func", "break",
+    "const", "mut", "if", "for", "in", "wiles", "func", "break", "struct",
     "=", "==", ">", "<", "+", "-", "*", "/",
     "Array", "Bool", "Func", "Number",  "Object", "String",
 
@@ -42,6 +42,7 @@ Stmt: ast::Stmt = {
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
     "func" <s:Symbol> "(" <p:Params> ")" <b:Block> => ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, block: Box::new(b)}),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
+    "struct" <s:Symbol> "{" <ff:StructFields> "}" => ast::Stmt::Struct(s, ff),
     <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <e:Expr> ";" => ast::Stmt::Expr(e),
 };
@@ -88,6 +89,12 @@ Params = Comma<Param>;
 
 Param: ast::funcs::Param = {
     <s:Symbol> ":" <t:TypeVariant> => ast::funcs::Param { ident: s, param_type: t }
+}
+
+StructFields = Comma<StructField>;
+
+StructField: ast::types::StructField = {
+    <s:Symbol> ":" <t:Type> => ast::types::StructField { ident: s, field_type: ast::types::type_variant::TypeVariant::Type(t) },
 }
 
 TypeVariants = Comma<TypeVariant>;

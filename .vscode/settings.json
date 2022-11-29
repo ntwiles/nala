@@ -1,4 +1,12 @@
 {
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "rust-lang.rust"
+  "editor.defaultFormatter": "rust-lang.rust",
+  "editor.semanticTokenColorCustomizations": {
+      "enabled": true,
+      "rules": {
+          "*.mutable": {
+              "underline": false,
+          }
+      }
+  }
 }

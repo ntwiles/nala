@@ -4,6 +4,7 @@ mod branching;
 mod functions;
 mod objects;
 mod operations;
+mod types;
 mod variables;
 
 use crate::{

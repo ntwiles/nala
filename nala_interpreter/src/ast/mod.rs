@@ -13,6 +13,7 @@ use self::arrays::*;
 use self::funcs::*;
 use self::math::*;
 use self::objects::*;
+use self::types::StructField;
 use self::types::type_variant::TypeVariant;
 
 #[derive(Debug)]
@@ -46,6 +47,7 @@ pub enum Stmt {
     Func(Func),
     If(Expr, Box<Block>),
     Wiles(Expr, Box<Block>),
+    Struct(String, Vec<StructField>),
 }
 
 // TODO: Implement this as a Vec<Stmt> instead of a linked list.

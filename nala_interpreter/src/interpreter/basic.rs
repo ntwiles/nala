@@ -4,7 +4,7 @@ use super::{
     functions::*,
     objects::*,
     operations::{equals::*, gt::*, lt::*, *},
-    variables::*,
+    variables::*, types::eval_struct,
 };
 
 use crate::{
@@ -69,6 +69,7 @@ fn eval_stmt(
         Stmt::Func(func) => eval_func(func, scopes, current_scope),
         Stmt::Expr(expr) => eval_expr(expr, scopes, current_scope, ctx),
         Stmt::Break(expr) => Ok(Value::Break(Box::new(expr.clone()))),
+        Stmt::Struct(ident, fields) => eval_struct(ident, fields, scopes, current_scope, ctx),
     }
 }
 

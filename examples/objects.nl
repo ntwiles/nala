@@ -1,3 +1,10 @@
+struct Message {
+    firstWord: string,
+    // second: {
+    //     word: string,
+    // },
+    // punctuation: Array<string>
+}
 
 func callbackA() {
     print('callbackA called!');
