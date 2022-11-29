@@ -1,6 +1,6 @@
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Eq, Debug, Clone)]
 pub enum PrimitiveType {
     Array,
     Bool,

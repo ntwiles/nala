@@ -10,7 +10,7 @@ use self::struct_field::StructField;
 pub mod struct_field;
 pub mod type_variant;
 
-#[derive(Debug, Clone)]
+#[derive(Eq, Debug, Clone)]
 pub enum NalaType {
     PrimitiveType(PrimitiveType),
     Struct(Vec<StructField>),
@@ -23,6 +23,12 @@ impl NalaType {
             TypeLiteral::UserDefined(ident) => {
                 NalaType::Struct(scopes.get_struct(&ident, current_scope).unwrap())
             }
+            TypeLiteral::Struct(fields) => NalaType::Struct(
+                fields
+                    .into_iter()
+                    .map(|f| StructField::from_literal(f, scopes, current_scope))
+                    .collect(),
+            ),
         }
     }
 
@@ -37,7 +43,7 @@ impl NalaType {
             }
             NalaType::Struct(fields) => {
                 if let NalaType::Struct(ot) = other {
-                    fields == ot
+                    fields.clone().sort() == ot.clone().sort() // TODO: Can this be done without cloning?
                 } else {
                     false
                 }
@@ -50,7 +56,13 @@ impl fmt::Display for NalaType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             NalaType::PrimitiveType(primitive) => write!(f, "{}", primitive),
-            NalaType::Struct(fields) => write!(f, "{:?}", fields), // TODO: This is not human readable.
+            NalaType::Struct(fields) => {
+                for field in fields.iter() {
+                    write!(f, "{:?}", field.ident).unwrap();
+                }
+
+                Ok(())
+            }
         }
     }
 }
@@ -65,7 +77,13 @@ impl PartialEq for NalaType {
                     false
                 }
             }
-            NalaType::Struct(_) => todo!(),
+            NalaType::Struct(fields) => {
+                if let NalaType::Struct(of) = other {
+                    fields.clone().sort() == of.clone().sort() // TODO: Can this be done without cloning?
+                } else {
+                    false
+                }
+            }
         }
     }
 }

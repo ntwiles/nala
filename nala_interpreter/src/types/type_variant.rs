@@ -7,7 +7,7 @@ use crate::{
 
 use super::NalaType;
 
-#[derive(Debug, Clone)]
+#[derive(Eq, Debug, Clone)]
 pub enum TypeVariant {
     Nested(NalaType, Vec<TypeVariant>),
     Type(NalaType),

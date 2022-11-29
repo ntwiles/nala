@@ -94,7 +94,7 @@ Param: ast::funcs::Param = {
 StructFields = Comma<StructField>;
 
 StructField: ast::types::StructLiteralField = {
-    <s:Symbol> ":" <t:Type> => ast::types::StructLiteralField { ident: s, field_type: ast::types::type_literal_variant::TypeLiteralVariant::Type(t) },
+    <s:Symbol> ":" <t:TypeVariant> => ast::types::StructLiteralField { ident: s, field_type: t },
 }
 
 TypeVariants = Comma<TypeVariant>;
@@ -105,6 +105,7 @@ TypeVariant: ast::types::type_literal_variant::TypeLiteralVariant = {
 }
 
 Type: ast::types::type_literal::TypeLiteral = {
+    "{" <ff:StructFields> "}" => ast::types::type_literal::TypeLiteral::Struct(ff),
     <PrimitiveType> => ast::types::type_literal::TypeLiteral::PrimitiveType(<>),
     <Symbol> => ast::types::type_literal::TypeLiteral::UserDefined(<>),
 }
