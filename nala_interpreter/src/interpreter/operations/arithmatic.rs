@@ -1,7 +1,6 @@
 use crate::{
     ast::terms::Value,
     errors::NalaRuntimeError,
-    io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
 

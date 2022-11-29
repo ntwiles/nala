@@ -65,7 +65,7 @@ impl PartialEq for NalaType {
                     false
                 }
             }
-            NalaType::Struct(sp) => todo!(),
+            NalaType::Struct(_) => todo!(),
         }
     }
 }

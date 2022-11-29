@@ -5,15 +5,11 @@ use std::{
 };
 
 use crate::{
-    io_context::IoContext,
     scope::{ScopeId, Scopes},
     types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
 };
 
-use super::{
-    types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
-    *,
-};
+use super::{types::primitive_type::PrimitiveType, *};
 
 #[derive(Debug, Clone)]
 pub enum SymbolOrTerm {

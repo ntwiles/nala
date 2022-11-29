@@ -2,7 +2,6 @@ use std::fmt;
 
 use crate::{
     ast::types::type_literal_variant::TypeLiteralVariant,
-    io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
 
