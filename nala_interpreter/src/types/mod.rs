@@ -44,8 +44,11 @@ impl NalaType {
             NalaType::Struct(fields) => {
                 if let NalaType::Struct(ot) = other {
                     // TODO: Can this be done without cloning?
-                    fields.clone().sort();
-                    ot.clone().sort();
+                    let mut fields = fields.clone();
+                    let mut ot = ot.clone();
+
+                    fields.sort();
+                    ot.sort();
 
                     fields == ot
                 } else {
@@ -92,7 +95,14 @@ impl PartialEq for NalaType {
             }
             NalaType::Struct(fields) => {
                 if let NalaType::Struct(of) = other {
-                    fields.clone().sort() == of.clone().sort() // TODO: Can this be done without cloning?
+                    // TODO: Can this be done without cloning?
+                    let mut fields = fields.clone();
+                    let mut of = of.clone();
+
+                    fields.sort();
+                    of.sort();
+
+                    fields == of
                 } else {
                     false
                 }

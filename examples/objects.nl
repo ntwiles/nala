@@ -26,7 +26,7 @@ const message = {
         word: 'world'
     },
     punctuation: ['!'],
-    callback: callbackA
+    callback: callbackA // TODO: This causes an error when passing `message` as an arg, even though it shouldn't.
 };
 
 writeMessage(message);
