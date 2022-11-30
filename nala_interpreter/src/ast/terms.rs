@@ -66,15 +66,16 @@ impl fmt::Display for Value {
             }
             Value::Bool(b) => write!(f, "{}", b),
             Value::Break(_) => write!(f, "<Break>"),
-            Value::Func(params, _return_type, _block) => {
-                let params = params
+            Value::Func(params, return_type, _block) => {
+                let mut params: Vec<String> = params
                     .to_vec()
                     .iter()
                     .map(|p| p.param_type.to_string())
-                    .collect::<Vec<String>>()
-                    .join(",");
+                    .collect();
 
-                write!(f, "Func<{}>", params)
+                params.push(return_type.to_string());
+
+                write!(f, "Func<{}>", params.join(", "))
             }
             Value::Num(n) => write!(f, "{}", n),
             // TODO: Do we really want to just print <Object> here?

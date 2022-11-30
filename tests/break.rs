@@ -7,19 +7,23 @@ fn it_runs_break_for() {
 
     let nala = r#"
         func findNeedle(haystack: Array<String>): Number {
+            mut i = 0;
+
             for word in haystack {
                 if (word == 'needle') {
-                    break(word);
+                    break(i);
                 }
+
+                i = i + 1;
             }
         
-            '';
+            -1;
         }
         
         const haystack = ['needle', 'foo', 'needle', 'bar'];
-        const found = findNeedle(haystack);
+        const index = findNeedle(haystack);
         
-        print(found);
+        print(haystack[index]);
     "#;
 
     assert!(parse_and_interpret(nala, &mut test_context).is_ok());
