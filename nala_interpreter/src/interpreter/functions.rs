@@ -52,8 +52,6 @@ pub fn eval_func(
 
         let func = Value::Func(params, *block);
 
-        let type_name = func.get_type(scopes, current_scope).to_string();
-
         if result.is_ok() {
             scopes.add_binding(&ident, current_scope, func, false);
         } else {
@@ -154,8 +152,6 @@ pub fn eval_invocation(
                             param_type.to_string(),
                         ));
                     }
-
-                    let type_name = arg.get_type(scopes, current_scope).to_string();
 
                     scopes.add_binding(&param.ident, func_scope, arg.clone(), false);
                     param_args.entry(param.ident.clone()).or_insert(arg.clone());
