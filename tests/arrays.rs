@@ -58,23 +58,23 @@ fn it_runs_array_index() {
 //     assert_eq!(test_context.get_output(), vec!["5"]);
 // }
 
-#[test]
-fn it_runs_array_slice() {
-    let mut test_context = TestContext::new();
+// #[test]
+// fn it_runs_array_slice() {
+//     let mut test_context = TestContext::new();
 
-    let nala = r#"
-        const array = [ 'what', 'will', 'this', 'thing', 'print'];
+//     let nala = r#"
+//         const array = [ 'what', 'will', 'this', 'thing', 'print'];
 
-        const left = slice(array, 0, 3);
-        const right = slice(array, 3, len(array));
+//         const left = slice(array, 0, 3);
+//         const right = slice(array, 3, len(array));
 
-        print(left[2]);
-        print(right[0]);
-    "#;
+//         print(left[2]);
+//         print(right[0]);
+//     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["this", "thing"]);
-}
+//     assert!(parse_and_interpret(nala, &mut test_context).is_ok());
+//     assert_eq!(test_context.get_output(), vec!["this", "thing"]);
+// }
 
 #[test]
 fn it_allows_assign_to_index_place_expression() {
