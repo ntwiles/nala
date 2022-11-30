@@ -3,6 +3,7 @@ use std::fmt;
 use crate::{
     ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
     scope::{ScopeId, Scopes},
+    utils::intersection,
 };
 
 use self::struct_field::StructField;
@@ -33,6 +34,11 @@ impl NalaType {
     }
 
     pub fn is_assignable_to(&self, other: &Self) -> bool {
+        // println!(
+        //     "Checking assignable: {}, {}",
+        //     self.to_string(),
+        //     other.to_string()
+        // );
         match self {
             NalaType::PrimitiveType(sp) => {
                 if let NalaType::PrimitiveType(op) = other {
@@ -43,14 +49,7 @@ impl NalaType {
             }
             NalaType::Struct(fields) => {
                 if let NalaType::Struct(ot) = other {
-                    // TODO: Can this be done without cloning?
-                    let mut fields = fields.clone();
-                    let mut ot = ot.clone();
-
-                    fields.sort();
-                    ot.sort();
-
-                    fields == ot
+                    intersection(fields, ot).len() == ot.len()
                 } else {
                     false
                 }
