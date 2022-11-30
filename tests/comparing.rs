@@ -8,12 +8,12 @@ fn it_runs_bool_expression() {
     let nala = r#"
         const foo = 'hello';
         const bar = 'hello';
-        print(foo == bar);
-        print(1 == 7);
+        if (foo == bar) { print('good'); }
+        if (1 == 7) { print('bad'); }
     "#;
 
     assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["true", "false"]);
+    assert_eq!(test_context.get_output(), vec!["good"]);
 }
 
 #[test]
@@ -22,9 +22,10 @@ fn it_runs_equals_for_bools() {
 
     let nala = r#"
         const result = true == false;
-        print(result);
+        if (result) { print('bad'); }
+        if (result == false) { print('good'); }
     "#;
 
     assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["false"]);
+    assert_eq!(test_context.get_output(), vec!["good"]);
 }
