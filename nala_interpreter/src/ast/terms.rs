@@ -90,7 +90,7 @@ impl fmt::Display for Value {
 
                 write!(f, "{0}::{1}{2}", e, v, d)
             }
-            Value::Void => write!(f, "<Void>"),
+            Value::Void => write!(f, "Void"),
         }
     }
 }

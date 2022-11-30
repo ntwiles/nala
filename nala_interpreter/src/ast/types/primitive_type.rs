@@ -31,7 +31,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Object => "<Object>",
             PrimitiveType::String => "String",
             PrimitiveType::Symbol => "<Symbol>",
-            PrimitiveType::Void => "<Void>",
+            PrimitiveType::Void => "Void",
         };
 
         write!(f, "{}", type_name)
