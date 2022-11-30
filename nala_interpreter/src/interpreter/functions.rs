@@ -143,21 +143,26 @@ pub fn eval_invocation(
                     let param_type =
                         TypeVariant::from_literal(param.param_type.clone(), scopes, current_scope);
 
-                    if !arg_type.is_assignable_to(&param_type) {
-                        return Err(wrong_arg_type_for_param_error(
-                            arg.clone().to_string(),
-                            arg.get_type(scopes, current_scope).to_string(),
-                            param_type.to_string(),
-                        ));
+                    /*
+                     * TODO: We're temporarily only doing type checking on NalaBlocks, so that builtins
+                     * like `print()` can be called with args of any type. We should move away from this
+                     * in favor of generics.
+                     */
+                    if let Block::NalaBlock(_) = *block {
+                        if !arg_type.is_assignable_to(&param_type) {
+                            return Err(wrong_arg_type_for_param_error(
+                                arg.clone().to_string(),
+                                arg.get_type(scopes, current_scope).to_string(),
+                                param_type.to_string(),
+                            ));
+                        }
                     }
 
                     scopes.add_binding(&param.ident, func_scope, arg.clone(), false);
                     param_args.entry(param.ident.clone()).or_insert(arg.clone());
                 }
 
-                let block = *block;
-
-                match block {
+                match *block {
                     Block::NalaBlock(stmts) => eval_stmts(&stmts, scopes, func_scope, ctx),
                     Block::RustBlock(func) => Ok(func(param_args, ctx)),
                 }

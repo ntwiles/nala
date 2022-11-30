@@ -75,7 +75,7 @@ fn it_errors_when_assigning_type_void() {
     let expected_message = rgx!("Cannot declare a variable with a value of type Void.");
 
     let nala = r#"
-        func returnVoid() {
+        func returnVoid(): Void {
             const void = 'void';
         }
         

@@ -30,11 +30,16 @@ pub fn eval_member_access(
                     Ok(object[child].clone())
                 } else {
                     Err(NalaRuntimeError {
-                        message: format!("Member `{0}` does not exist on object", child),
+                        message: format!("Member `{0}` does not exist on object.", child),
                     })
                 }
             } else {
-                todo!()
+                Err(NalaRuntimeError {
+                    message: format!(
+                        "Cannot access member `{0}` of non-Object `{1}`.",
+                        child, object
+                    ),
+                })
             }
         }
         MemberAccess::MemberAccess(parent, child) => {
