@@ -5,7 +5,7 @@ use crate::{ast::terms::*, errors::*, types::struct_field::StructField};
 #[derive(Debug)]
 pub struct Scope {
     parent: Option<ScopeId>,
-    bindings: HashMap<String, (Value, String, bool)>, // TODO: This middle field is just the type name in String form, get rid of this.
+    bindings: HashMap<String, (Value, bool)>,
     type_bindings: HashMap<String, Vec<StructField>>,
 }
 
@@ -22,18 +22,11 @@ impl Scope {
         self.type_bindings.insert(ident.to_owned(), fields);
     }
 
-    pub fn add_binding(
-        self: &mut Self,
-        ident: &str,
-        value: Value,
-        type_name: String,
-        is_mutable: bool,
-    ) {
-        self.bindings
-            .insert(ident.to_owned(), (value, type_name, is_mutable));
+    pub fn add_binding(self: &mut Self, ident: &str, value: Value, is_mutable: bool) {
+        self.bindings.insert(ident.to_owned(), (value, is_mutable));
     }
 
-    pub fn get_binding(self: &Self, ident: &str) -> Option<(Value, String, bool)> {
+    pub fn get_binding(self: &Self, ident: &str) -> Option<(Value, bool)> {
         if let Some(binding) = self.bindings.get(ident) {
             Some(binding.clone())
         } else {
@@ -88,7 +81,7 @@ impl Scopes {
         let scope = self.scopes.get(current_scope.index).unwrap();
 
         match scope.get_binding(&ident) {
-            Some((value, _, _)) => Some(value),
+            Some((value, _)) => Some(value),
             None => match scope.parent {
                 Some(parent_scope) => self.get_maybe_value(ident, parent_scope),
                 None => None,
@@ -156,15 +149,14 @@ impl Scopes {
         self: &mut Self,
         ident: &str,
         current_scope: ScopeId,
-        type_name: String,
         new_value: Value,
     ) -> Result<Value, NalaRuntimeError> {
         let scope = self.find_scope_with_binding(ident, current_scope);
 
         if let Some(scope) = scope {
-            let (_, _, is_mutable) = scope.get_binding(ident).unwrap();
+            let (_, is_mutable) = scope.get_binding(ident).unwrap();
             if is_mutable {
-                scope.add_binding(ident, new_value, type_name, true)
+                scope.add_binding(ident, new_value, true)
             } else {
                 return Err(assign_immutable_binding_error(ident));
             }
@@ -180,11 +172,10 @@ impl Scopes {
         ident: &str,
         current_scope: ScopeId,
         value: Value,
-        type_name: String,
         is_mutable: bool,
     ) {
         let scope = self.scopes.get_mut(current_scope.index).unwrap();
-        scope.add_binding(ident, value, type_name, is_mutable);
+        scope.add_binding(ident, value, is_mutable);
     }
 
     pub fn add_struct_binding(

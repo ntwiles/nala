@@ -27,9 +27,7 @@ pub fn eval_declare(
             });
         }
 
-        let type_name = value.get_type(scopes, current_scope).to_string();
-
-        scopes.add_binding(&ident, current_scope, value.clone(), type_name, is_mutable);
+        scopes.add_binding(&ident, current_scope, value.clone(), is_mutable);
     }
 
     Ok(Value::Void)
@@ -106,8 +104,7 @@ pub fn eval_assign(
                 let value_type = value.get_type(scopes, current_scope);
 
                 if existing_type == value_type {
-                    let type_name = value.get_type(scopes, current_scope).to_string();
-                    return scopes.mutate_value(&ident, current_scope, type_name, value.clone());
+                    return scopes.mutate_value(&ident, current_scope, value.clone());
                 } else {
                     return Err(NalaRuntimeError {
                         message: format!(
