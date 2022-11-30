@@ -27,7 +27,7 @@ pub enum Term {
 pub enum Value {
     Array(Arc<Mutex<Vec<Value>>>),
     Bool(bool),
-    Func(Vec<Param>, Box<Block>),
+    Func(Vec<Param>, TypeLiteralVariant, Box<Block>),
     Variant(String, String, Option<Box<Value>>),
     Num(f32),
     Object(Arc<Mutex<HashMap<String, Value>>>),
@@ -66,7 +66,7 @@ impl fmt::Display for Value {
             }
             Value::Bool(b) => write!(f, "{}", b),
             Value::Break(_) => write!(f, "<Break>"),
-            Value::Func(params, _) => {
+            Value::Func(params, _return_type, _block) => {
                 let params = params
                     .to_vec()
                     .iter()
@@ -114,19 +114,19 @@ impl Value {
             }
             Value::Bool(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
             Value::Break(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Break)),
-            Value::Func(params, _) => {
-                if params.len() > 0 {
-                    let param_types = params
-                        .into_iter()
-                        .map(|p| {
-                            TypeVariant::from_literal(p.clone().param_type, scopes, current_scope)
-                        }) // TODO: Why do we need this clone?
-                        .collect();
+            Value::Func(params, return_type, _block) => {
+                let mut param_types: Vec<TypeVariant> = params
+                    .into_iter()
+                    .map(|p| TypeVariant::from_literal(p.clone().param_type, scopes, current_scope)) // TODO: Why do we need this clone?
+                    .collect();
 
-                    TypeVariant::Nested(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
-                } else {
-                    TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Func))
-                }
+                param_types.push(TypeVariant::from_literal(
+                    return_type.clone(),
+                    scopes,
+                    current_scope,
+                ));
+
+                TypeVariant::Nested(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
             }
             Value::Type(_) => todo!("What is this?"),
             Value::Num(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),

@@ -47,7 +47,9 @@ pub fn eval_func(
     } else {
         let result = check_param_types(&params);
 
-        let func = Value::Func(params.clone(), block.clone());
+        let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Void));
+
+        let func = Value::Func(params.clone(), return_type, block.clone());
 
         if result.is_ok() {
             scopes.add_binding(&ident, current_scope, func, false);
@@ -119,7 +121,7 @@ pub fn eval_invocation(
         Invocation::Invocation(place, args) => {
             let block = eval_place_expr(place, scopes, current_scope, ctx)?;
 
-            if let Value::Func(params, block) = block {
+            if let Value::Func(params, _return_type, block) = block {
                 let func_scope = scopes.new_scope(Some(current_scope));
 
                 let args = eval_elems(&*args, scopes, func_scope, ctx)?;
