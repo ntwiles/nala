@@ -45,12 +45,9 @@ pub fn eval_func(
     if scopes.binding_exists_local(&ident, current_scope) {
         panic!("Binding for {} already exists in local scope.", ident);
     } else {
-        let block = Box::new(block.clone());
-        let params = params.clone();
+        let result = check_param_types(&params);
 
-        let result = check_param_types(params.clone());
-
-        let func = Value::Func(params, *block);
+        let func = Value::Func(params.clone(), block.clone());
 
         if result.is_ok() {
             scopes.add_binding(&ident, current_scope, func, false);
@@ -64,7 +61,7 @@ pub fn eval_func(
     Ok(Value::Void)
 }
 
-fn check_param_types(params: Vec<Param>) -> Result<(), String> {
+fn check_param_types(params: &Vec<Param>) -> Result<(), String> {
     let mut results = params.iter().map(|p| check_param_type(&p.param_type));
 
     if let Some(Err(err)) = results.find(|r| r.is_err()) {
