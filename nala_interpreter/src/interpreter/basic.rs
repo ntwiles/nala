@@ -69,7 +69,7 @@ fn eval_stmt(
         Stmt::Wiles(expr, block) => eval_wiles(&expr, block, scopes, current_scope, ctx),
         Stmt::Func(func) => eval_func(func, scopes, current_scope),
         Stmt::Expr(expr) => eval_expr(expr, scopes, current_scope, ctx),
-        Stmt::Break(expr) => Ok(Value::Break(Box::new(expr.clone()))),
+        Stmt::Break(expr) => eval_break(expr, scopes, current_scope, ctx),
         Stmt::Struct(ident, fields) => eval_struct(ident, fields.clone(), scopes, current_scope),
     }
 }

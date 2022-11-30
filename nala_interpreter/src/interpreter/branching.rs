@@ -52,8 +52,8 @@ pub fn eval_for(
 
             loop_result = eval_block(&block, scopes, block_scope, ctx)?;
 
-            if let Value::Break(expr) = loop_result {
-                return eval_expr(&*expr, scopes, current_scope, ctx);
+            if let Value::Break(value) = loop_result {
+                return Ok(*value);
             }
         }
 
@@ -85,8 +85,8 @@ pub fn eval_wiles(
         if condition {
             let result = eval_block(block, scopes, current_scope, ctx)?;
 
-            if let Value::Break(expr) = result {
-                return eval_expr(&*expr, scopes, current_scope, ctx);
+            if let Value::Break(value) = result {
+                return Ok(*value);
             }
         } else {
             break;
@@ -94,4 +94,14 @@ pub fn eval_wiles(
     }
 
     Ok(Value::Void)
+}
+
+pub fn eval_break(
+    expr: &Expr,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    ctx: &mut dyn IoContext,
+) -> Result<Value, NalaRuntimeError> {
+    let val = eval_expr(expr, scopes, current_scope, ctx)?;
+    Ok(Value::Break(Box::new(val)))
 }

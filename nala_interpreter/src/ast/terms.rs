@@ -34,7 +34,7 @@ pub enum Value {
     String(String),
     Type(TypeLiteralVariant),
 
-    Break(Box<Expr>),
+    Break(Box<Value>),
     Void,
 }
 
