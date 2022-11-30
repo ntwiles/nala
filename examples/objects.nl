@@ -6,16 +6,16 @@ struct Message {
     punctuation: Array<String>,
 }
 
-func callbackA() {
+func callbackA(): Void {
     print('callbackA called!');
 }
 
-func callbackB() {
+func callbackB(): Void {
     print('callbackB called!');
 }
 
 // This will not be valid Nala once user-defined types are implemented.
-func writeMessage(message: Message) {
+func writeMessage(message: Message): Void {
     print(message.firstWord + ' ' + message.second.word + message.punctuation[0]);
     message.callback(); // TODO: Nothing prevents us from invoking this yet even though callback() isn't in type Message
 }

@@ -39,9 +39,13 @@ pub fn get_http_block() -> Func {
         param_type: TypeLiteralVariant::Type(TypeLiteral::Struct(options_fields)),
     }];
 
+    // TODO: Don't type this Object, type the fields.
+    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Object));
+
     Func {
         ident: "http".to_string(),
         params,
+        return_type,
         block: Box::new(Block::RustBlock(builtin_http)),
     }
 }

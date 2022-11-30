@@ -4,6 +4,7 @@ use super::{terms::*, types::type_literal_variant::TypeLiteralVariant, *};
 pub struct Func {
     pub ident: String,
     pub params: Vec<Param>,
+    pub return_type: TypeLiteralVariant,
     pub block: Box<Block>,
 }
 

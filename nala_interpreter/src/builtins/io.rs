@@ -19,25 +19,34 @@ pub fn get_print_block() -> Func {
         param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String)),
     };
 
+    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Void));
+
     Func {
         ident: "print".to_string(),
         params: vec![message_param],
+        return_type,
         block: Box::new(Block::RustBlock(builtin_print)),
     }
 }
 
 pub fn get_read_block() -> Func {
+    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String));
+
     Func {
         ident: "read".to_string(),
         params: vec![],
+        return_type,
         block: Box::new(Block::RustBlock(builtin_read)),
     }
 }
 
 pub fn get_readnum_block() -> Func {
+    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
+
     Func {
         ident: "readnum".to_string(),
         params: vec![],
+        return_type,
         block: Box::new(Block::RustBlock(builtin_readnum)),
     }
 }

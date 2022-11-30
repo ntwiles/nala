@@ -1,5 +1,5 @@
 
-func indexOfString(haystack: Array<String>, needle: String ) {
+func indexOfString(haystack: Array<String>, needle: String ): Number {
     mut i = 0;
 
     for item in haystack {

@@ -40,7 +40,7 @@ Stmt: ast::Stmt = {
     "if" "(" <e:Expr> ")" <b:Block> => ast::Stmt::If(e, Box::new(b)),
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
-    "func" <s:Symbol> "(" <p:Params> ")" <b:Block> => ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, block: Box::new(b)}),
+    "func" <s:Symbol> "(" <p:Params> ")" ":" <r:TypeVariant> <b:Block> => ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, return_type: r, block: Box::new(b)}),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
     "struct" <s:Symbol> "{" <ff:StructFields> "}" => ast::Stmt::Struct(s, ff),
     <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),

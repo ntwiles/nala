@@ -40,6 +40,7 @@ pub fn eval_func(
         ident,
         block,
         params,
+        return_type,
     } = func;
 
     if scopes.binding_exists_local(&ident, current_scope) {
@@ -47,9 +48,7 @@ pub fn eval_func(
     } else {
         let result = check_param_types(&params);
 
-        let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Void));
-
-        let func = Value::Func(params.clone(), return_type, block.clone());
+        let func = Value::Func(params.clone(), return_type.clone(), block.clone());
 
         if result.is_ok() {
             scopes.add_binding(&ident, current_scope, func, false);

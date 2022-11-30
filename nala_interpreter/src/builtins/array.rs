@@ -29,9 +29,12 @@ pub fn get_len_block() -> Func {
         param_type: outer_type,
     }];
 
+    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
+
     Func {
         ident: "len".to_string(),
         params,
+        return_type,
         block: Box::new(Block::RustBlock(builtin_len)),
     }
 }
@@ -57,9 +60,18 @@ pub fn get_slice_block() -> Func {
         param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number)),
     };
 
+    let inner_return_type =
+        TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
+
+    let return_type = TypeLiteralVariant::Nested(
+        TypeLiteral::PrimitiveType(PrimitiveType::Array),
+        vec![inner_return_type],
+    );
+
     Func {
         ident: "slice".to_string(),
         params: vec![array_param, start_param, end_param],
+        return_type,
         block: Box::new(Block::RustBlock(builtin_slice)),
     }
 }

@@ -19,9 +19,12 @@ pub fn get_floor_block() -> Func {
         param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number)),
     };
 
+    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
+
     Func {
         ident: "floor".to_string(),
         params: vec![num_param],
+        return_type,
         block: Box::new(Block::RustBlock(builtin_floor)),
     }
 }
