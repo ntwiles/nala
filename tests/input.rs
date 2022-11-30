@@ -19,26 +19,26 @@ fn it_runs_input_basic() {
     assert_eq!(test_context.get_output(), output);
 }
 
-// #[test]
-// fn it_runs_input_numbers() {
-//     let input = vec!["31"];
-//     let output = vec![
-//         "Please enter your age:",
-//         "Next year your age will be:",
-//         "32",
-//     ];
+#[test]
+fn it_runs_input_numbers() {
+    let input = vec!["31"];
+    let output = vec![
+        "Please enter your age:",
+        "Next year your age will be:",
+        "32",
+    ];
 
-//     let mut test_context = TestContext::new();
-//     test_context.mock_inputs(input);
+    let mut test_context = TestContext::new();
+    test_context.mock_inputs(input);
 
-//     let nala = r#"
-//         print('Please enter your age:');
-//         const input = readnum();
-//         const result = input + 1;
-//         print('Next year your age will be:');
-//         print(result);
-//     "#;
+    let nala = r#"
+        print('Please enter your age:');
+        const input = readnum();
+        const result = input + 1;
+        print('Next year your age will be:');
+        print(result);
+    "#;
 
-//     assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-//     assert_eq!(test_context.get_output(), output);
-// }
+    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
+    assert_eq!(test_context.get_output(), output);
+}
