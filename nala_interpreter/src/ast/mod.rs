@@ -1,4 +1,5 @@
 pub mod arrays;
+pub mod branching;
 pub mod funcs;
 pub mod math;
 pub mod objects;
@@ -10,6 +11,7 @@ use std::fmt;
 use crate::builtins::BuiltinFunc;
 
 use self::arrays::*;
+use self::branching::IfElseChain;
 use self::funcs::*;
 use self::math::*;
 use self::objects::*;
@@ -45,7 +47,7 @@ pub enum Stmt {
     Expr(Expr),
     For(String, Expr, Box<Block>),
     Func(Func),
-    If(Expr, Box<Block>),
+    IfElseChain(Box<IfElseChain>),
     Wiles(Expr, Box<Block>),
     Struct(String, Vec<StructLiteralField>),
 }

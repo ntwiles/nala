@@ -64,7 +64,7 @@ fn eval_stmt(
             let result = eval_expr(expr, scopes, current_scope, ctx)?;
             eval_assign(ident, &result, scopes, current_scope, ctx)
         }
-        Stmt::If(cond, block) => eval_if(cond, block, scopes, current_scope, ctx),
+        Stmt::IfElseChain(chain) => eval_if_else_chain(chain, scopes, current_scope, ctx),
         Stmt::For(ident, expr, block) => eval_for(ident, &expr, block, scopes, current_scope, ctx),
         Stmt::Wiles(expr, block) => eval_wiles(&expr, block, scopes, current_scope, ctx),
         Stmt::Func(func) => eval_func(func, scopes, current_scope),

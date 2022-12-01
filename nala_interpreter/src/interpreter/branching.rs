@@ -2,30 +2,57 @@ use super::basic::*;
 use std::sync::Arc;
 
 use crate::{
-    ast::{terms::*, *},
+    ast::{
+        branching::{ElseIf, IfElseChain},
+        terms::*,
+        *,
+    },
     errors::NalaRuntimeError,
     io_context::IoContext,
     scope::{ScopeId, Scopes},
 };
 
-pub fn eval_if(
-    cond: &Expr,
-    block: &Block,
+pub fn eval_if_else_chain(
+    chain: &IfElseChain,
     scopes: &mut Scopes,
     current_scope: ScopeId,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    let result = eval_expr(&cond, scopes, current_scope, ctx)?;
+    let IfElseChain {
+        cond,
+        block,
+        else_ifs,
+    } = chain;
 
-    if let Value::Bool(bool) = result {
-        if bool {
-            let block_scope = scopes.new_scope(Some(current_scope));
-            eval_block(&block, scopes, block_scope, ctx)
-        } else {
-            Ok(Value::Void)
-        }
+    if eval_cond(cond, scopes, current_scope, ctx)? {
+        let block_scope = scopes.new_scope(Some(current_scope));
+        eval_block(&block, scopes, block_scope, ctx)
     } else {
-        panic!("Cannot use non-boolean expressions inside 'if' conditions.")
+        for else_if in else_ifs.iter() {
+            let ElseIf { cond, block } = else_if;
+
+            if eval_cond(cond, scopes, current_scope, ctx)? {
+                let block_scope = scopes.new_scope(Some(current_scope));
+                return eval_block(&block, scopes, block_scope, ctx);
+            }
+        }
+
+        Ok(Value::Void)
+    }
+}
+
+fn eval_cond(
+    cond: &Expr,
+    scopes: &mut Scopes,
+    current_scope: ScopeId,
+    ctx: &mut dyn IoContext,
+) -> Result<bool, NalaRuntimeError> {
+    if let Value::Bool(cond) = eval_expr(cond, scopes, current_scope, ctx)? {
+        Ok(cond)
+    } else {
+        Err(NalaRuntimeError {
+            message: "Cannot use non-boolean expressions inside 'if' conditions.".to_owned(),
+        })
     }
 }
 
