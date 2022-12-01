@@ -6,7 +6,7 @@ grammar;
 
 match {
     "{", "}", "(", ")", "[", "]", ";", ":", ".", ",",
-    "const", "mut", "if", "elif", "for", "in", "wiles", "func", "break", "struct",
+    "const", "mut", "if", "elif", "else", "for", "in", "wiles", "func", "break", "struct",
     "=", "==", ">", "<", "+", "-", "*", "/",
     "Array", "Bool", "Func", "Number",  "Object", "String", "Void",
 
@@ -40,7 +40,8 @@ Stmt: ast::Stmt = {
     <c:IfElseChain> => ast::Stmt::IfElseChain(Box::new(c)),
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
-    "func" <s:Symbol> "(" <p:Params> ")" ":" <r:TypeVariant> <b:Block> => ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, return_type: r, block: Box::new(b)}),
+    "func" <s:Symbol> "(" <p:Params> ")" ":" <r:TypeVariant> <b:Block> => 
+        ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, return_type: r, block: Box::new(b)}),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
     "struct" <s:Symbol> "{" <ff:StructFields> "}" => ast::Stmt::Struct(s, ff),
     <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
@@ -48,11 +49,16 @@ Stmt: ast::Stmt = {
 };
 
 IfElseChain: ast::branching::IfElseChain = { 
-    "if" "(" <c:Expr> ")" <b:Block> <ei:ElseIf*> => ast::branching::IfElseChain { cond: c, block: Box::new(b), else_ifs: ei },
+    "if" "(" <c:Expr> ")" <b:Block> <ei:ElseIf*> <e:Else?> => 
+        ast::branching::IfElseChain { cond: c, block: Box::new(b), else_ifs: ei, else_block: e },
 };
 
 ElseIf: ast::branching::ElseIf = {
-    "elif" "(" <e:Expr> ")" <b:Block> => ast::branching::ElseIf{ cond: e, block: Box::new(b)}
+    "elif" "(" <e:Expr> ")" <b:Block> => ast::branching::ElseIf{ cond: e, block: Box::new(b) }
+};
+
+Else: ast::branching::Else = {
+    "else" <Block> => ast::branching::Else{ block: Box::new(<>) }
 };
 
 PlaceExpression: ast::PlaceExpression = {

@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use crate::{
     ast::{
-        branching::{ElseIf, IfElseChain},
+        branching::{Else, ElseIf, IfElseChain},
         terms::*,
         *,
     },
@@ -22,23 +22,30 @@ pub fn eval_if_else_chain(
         cond,
         block,
         else_ifs,
+        else_block,
     } = chain;
 
     if eval_cond(cond, scopes, current_scope, ctx)? {
         let block_scope = scopes.new_scope(Some(current_scope));
-        eval_block(&block, scopes, block_scope, ctx)
-    } else {
-        for else_if in else_ifs.iter() {
-            let ElseIf { cond, block } = else_if;
-
-            if eval_cond(cond, scopes, current_scope, ctx)? {
-                let block_scope = scopes.new_scope(Some(current_scope));
-                return eval_block(&block, scopes, block_scope, ctx);
-            }
-        }
-
-        Ok(Value::Void)
+        return eval_block(&block, scopes, block_scope, ctx);
     }
+
+    for else_if in else_ifs.iter() {
+        let ElseIf { cond, block } = else_if;
+
+        if eval_cond(cond, scopes, current_scope, ctx)? {
+            let block_scope = scopes.new_scope(Some(current_scope));
+            return eval_block(&block, scopes, block_scope, ctx);
+        }
+    }
+
+    if let Some(else_block) = else_block {
+        let Else { block } = else_block;
+        let block_scope = scopes.new_scope(Some(current_scope));
+        return eval_block(&block, scopes, block_scope, ctx);
+    }
+
+    Ok(Value::Void)
 }
 
 fn eval_cond(
