@@ -1,4 +1,5 @@
 
+// TODO: We can set the return type to String here and no error will occur.
 func indexOfString(haystack: Array<String>, needle: String ): Number {
     mut i = 0;
 
