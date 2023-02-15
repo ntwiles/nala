@@ -3,7 +3,7 @@
 
 // #[test]
 // fn it_runs_enum_basic() {
-//     let mut test_context = TestContext::new();
+//     let mut ctx = TestContext::new();
 
 //     let nala = r#"
 //         enum FooKind {
@@ -15,13 +15,13 @@
 //         print(kind);
 //     "#;
 
-//     assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-//     assert_eq!(test_context.get_output(), vec!["FooKind::Bar"]);
+//     assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+//     assert_eq!(ctx.get_output(), vec!["FooKind::Bar"]);
 // }
 
 // #[test]
 // fn it_runs_enum_compare() {
-//     let mut test_context = TestContext::new();
+//     let mut ctx = TestContext::new();
 
 //     let nala = r#"
 //         enum FooKind {
@@ -40,13 +40,13 @@
 //         }
 //     "#;
 
-//     assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-//     assert_eq!(test_context.get_output(), vec!["should print"]);
+//     assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+//     assert_eq!(ctx.get_output(), vec!["should print"]);
 // }
 
 // #[test]
 // fn it_runs_enum_declare() {
-//     let mut test_context = TestContext::new();
+//     let mut ctx = TestContext::new();
 
 //     let nala = r#"
 //         enum FooKind {
@@ -57,6 +57,6 @@
 //         print('success');
 //     "#;
 
-//     assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-//     assert_eq!(test_context.get_output(), vec!["success"]);
+//     assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+//     assert_eq!(ctx.get_output(), vec!["success"]);
 // }
