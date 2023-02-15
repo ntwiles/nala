@@ -3,7 +3,7 @@ use test_util::parse_and_interpret;
 
 #[test]
 fn it_runs_bool_expression() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         const foo = 'hello';
@@ -11,13 +11,13 @@ fn it_runs_bool_expression() {
         print(foo == bar);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["true"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["true"]);
 }
 
 #[test]
 fn it_runs_equals_for_bools() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         const result = true == false;
@@ -25,6 +25,6 @@ fn it_runs_equals_for_bools() {
 
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["false"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["false"]);
 }

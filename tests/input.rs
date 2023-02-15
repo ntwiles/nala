@@ -6,8 +6,8 @@ fn it_runs_input_basic() {
     let input = vec!["Nathan"];
     let output = vec!["Please enter your name:", "Hello, Nathan"];
 
-    let mut test_context = TestContext::new();
-    test_context.mock_inputs(input);
+    let mut ctx = TestContext::new();
+    ctx.mock_inputs(input);
 
     let nala = r#"
         print('Please enter your name:');
@@ -15,8 +15,8 @@ fn it_runs_input_basic() {
         print('Hello, ' + input);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), output);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), output);
 }
 
 #[test]
@@ -28,8 +28,8 @@ fn it_runs_input_numbers() {
         "32",
     ];
 
-    let mut test_context = TestContext::new();
-    test_context.mock_inputs(input);
+    let mut ctx = TestContext::new();
+    ctx.mock_inputs(input);
 
     let nala = r#"
         print('Please enter your age:');
@@ -39,6 +39,6 @@ fn it_runs_input_numbers() {
         print(result);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), output);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), output);
 }

@@ -3,13 +3,13 @@ use test_util::parse_and_interpret;
 
 #[test]
 fn it_runs_num_floor() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         const ratio = 6.7;
         print(floor(ratio));
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["6"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["6"]);
 }

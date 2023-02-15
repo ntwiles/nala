@@ -4,7 +4,7 @@ use test_util::{assert_regex_match, parse_and_interpret, rgx};
 
 #[test]
 fn it_runs_func_args() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         func add(a: Number, b: Number): Number {
@@ -16,13 +16,13 @@ fn it_runs_func_args() {
         if (sum == 12) { print('works'); }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["works"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["works"]);
 }
 
 #[test]
 fn it_runs_func_basic() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         func printMessage(): Void {
@@ -32,13 +32,13 @@ fn it_runs_func_basic() {
         printMessage();
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["Functions work!"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["Functions work!"]);
 }
 
 #[test]
 fn it_runs_func_expressions() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         func foo(): String {
@@ -52,13 +52,13 @@ fn it_runs_func_expressions() {
         print(foo() + bar());
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["foobar"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["foobar"]);
 }
 
 #[test]
 fn it_runs_func_first_class() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         func foo(message: String): Void {
@@ -69,13 +69,13 @@ fn it_runs_func_first_class() {
         bar('This should print.');
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["This should print."]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["This should print."]);
 }
 
 #[test]
 fn it_runs_func_return() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         func getMessage(): String {
@@ -85,8 +85,8 @@ fn it_runs_func_return() {
         print(getMessage());
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["Function returns work!"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["Function returns work!"]);
 }
 
 #[test]
@@ -110,7 +110,7 @@ fn it_errors_when_passing_primitive_when_nested_is_expected() {
 
 #[test]
 fn it_prints_function_type_correctly() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         func addFoo(input: String): String {
@@ -120,6 +120,6 @@ fn it_prints_function_type_correctly() {
         print(addFoo);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["Func<String, String>"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["Func<String, String>"]);
 }

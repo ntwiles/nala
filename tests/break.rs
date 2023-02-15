@@ -3,7 +3,7 @@ use test_util::parse_and_interpret;
 
 #[test]
 fn it_runs_break_for() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         func findNeedle(haystack: Array<String>): Number {
@@ -26,13 +26,13 @@ fn it_runs_break_for() {
         print(haystack[index]);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["needle"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["needle"]);
 }
 
 #[test]
 fn it_runs_break_wiles() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         wiles(true) {
@@ -41,6 +41,6 @@ fn it_runs_break_wiles() {
         }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["foo"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["foo"]);
 }

@@ -3,7 +3,7 @@ use test_util::parse_and_interpret;
 
 #[test]
 fn it_runs_bool() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         if (true) {
@@ -15,13 +15,13 @@ fn it_runs_bool() {
         }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["should print"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["should print"]);
 }
 
 #[test]
 fn it_runs_single_elif() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         if (false) {
@@ -31,13 +31,13 @@ fn it_runs_single_elif() {
         }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["should print"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["should print"]);
 }
 
 #[test]
 fn it_runs_multiple_elif() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         if (false) {
@@ -49,13 +49,13 @@ fn it_runs_multiple_elif() {
         }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["should print"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["should print"]);
 }
 
 #[test]
 fn it_runs_if_else() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         if (false) {
@@ -65,13 +65,13 @@ fn it_runs_if_else() {
         }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["should print"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["should print"]);
 }
 
 #[test]
 fn it_runs_if_elif_else() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         if (false) {
@@ -83,6 +83,6 @@ fn it_runs_if_elif_else() {
         }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["should print"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["should print"]);
 }

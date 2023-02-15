@@ -3,7 +3,7 @@ use test_util::parse_and_interpret;
 
 #[test]
 fn it_runs_wiles_basic() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         mut i = 0;
@@ -15,13 +15,13 @@ fn it_runs_wiles_basic() {
         }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["h", "e", "l", "l"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["h", "e", "l", "l"]);
 }
 
 #[test]
 fn it_runs_array_for() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         const secret = 52;
@@ -34,13 +34,13 @@ fn it_runs_array_for() {
         }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["foo", "bar", "baz", "qux"]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["foo", "bar", "baz", "qux"]);
 }
 
 #[test]
 fn it_runs_array_empty() {
-    let mut test_context = TestContext::new();
+    let mut ctx = TestContext::new();
 
     let nala = r#"
         const empty = [];
@@ -52,6 +52,6 @@ fn it_runs_array_empty() {
         print('This should print.');
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
-    assert_eq!(test_context.get_output(), vec!["This should print."]);
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["This should print."]);
 }
