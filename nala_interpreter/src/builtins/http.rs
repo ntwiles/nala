@@ -93,6 +93,11 @@ fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> V
                 String::from("statusCode"),
                 Value::String(response.status().to_string()),
             );
+
+            fields.insert(
+                String::from("body"),
+                Value::String(response.text().unwrap()),
+            );
         }
         Err(error) => {
             // TODO: Status is optional because the error might not have been generated from a response.
