@@ -1,4 +1,5 @@
 ![Last Commit](https://img.shields.io/github/last-commit/ntwiles/nala)
+![File Count](https://img.shields.io/github/directory-file-count/ntwiles/nala)
 
 Nala is an interpreted, expression-oriented programming language with terse syntax designed for quick use in prototyping console applications and in manipulating data.
 
