@@ -13,3 +13,5 @@ path = "src/lib.rs"
 lalrpop-util = "0.19.6"
 regex = "1.5.4"
 reqwest = { version = "0.11.11", features = ["blocking", "json"] }
+serde = { version = "1.0.152", features = ["derive"] }
+serde_json = "1.0.93"

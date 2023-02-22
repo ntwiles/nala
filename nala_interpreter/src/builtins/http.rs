@@ -4,6 +4,8 @@ use std::{
 };
 
 use reqwest;
+use serde::Deserialize;
+use serde_json;
 
 use crate::{
     ast::{
@@ -94,9 +96,10 @@ fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> V
                 Value::String(response.status().to_string()),
             );
 
+            let value = response.json::<serde_json::Value>().unwrap();
             fields.insert(
                 String::from("body"),
-                Value::String(response.text().unwrap()),
+                build_value(String::from("body"), value),
             );
         }
         Err(error) => {
@@ -114,6 +117,26 @@ fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> V
             );
         }
     }
+
+    Value::Object(Arc::new(Mutex::new(fields)))
+}
+
+fn build_value(key: String, value: serde_json::Value) -> Value {
+    match value {
+        serde_json::Value::Array(_) => todo!(),
+        serde_json::Value::Null => Value::String(String::from("null")), // TODO: This is a placeholder until options are implemented.
+        serde_json::Value::Bool(value) => Value::Bool(value),
+        serde_json::Value::Number(_) => todo!(),
+        serde_json::Value::String(value) => Value::String(value),
+        serde_json::Value::Object(fields) => build_object(fields),
+    }
+}
+
+fn build_object(fields: serde_json::Map<String, serde_json::Value>) -> Value {
+    let fields = fields
+        .into_iter()
+        .map(|(key, value)| (key.clone(), build_value(key, value)))
+        .collect::<HashMap<String, Value>>();
 
     Value::Object(Arc::new(Mutex::new(fields)))
 }

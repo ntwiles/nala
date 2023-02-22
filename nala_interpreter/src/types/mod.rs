@@ -49,7 +49,13 @@ impl NalaType {
             }
             NalaType::Struct(fields) => {
                 if let NalaType::Struct(ot) = other {
-                    intersection(fields, ot).len() == ot.len()
+                    for ot in ot.iter() {
+                        if let Some(found) = fields.iter().find(|f| *f == ot) {
+                            return found.field_type.is_assignable_to(&ot.field_type);
+                        }
+                    }
+
+                    true
                 } else {
                     false
                 }

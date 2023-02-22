@@ -4,14 +4,19 @@
  * There's no way of setting headers yet, for example.
  */
 
+
+// TODO: Make this a builtin type.
 struct Result {
     statusCode: String,
-    body: String,
+    body: {
+        origin: String,
+    },
 }
 
 func printResult(result: Result): Void {
-    print(result.statusCode);
-    print(result.body);
+    print('Status Code: ' + result.statusCode);
+    print('Response Origin: ' + result.body.origin);
+    print('');
 }
 
 print('Making GET request...');
@@ -28,7 +33,6 @@ print('Making POST request...');
 const resultB = http({
     method: 'POST',
     url: 'https://httpbin.org/post',
-    body: 'test',
 });
 
 printResult(resultB);

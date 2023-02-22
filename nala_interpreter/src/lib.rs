@@ -1,6 +1,8 @@
 extern crate lalrpop_util;
 extern crate regex;
 extern crate reqwest;
+extern crate serde;
+extern crate serde_json;
 
 use std::fs;
 
