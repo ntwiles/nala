@@ -7,6 +7,7 @@ use crate::{
 
 use super::NalaType;
 
+// TODO: Rename Nested to Composite
 #[derive(Eq, Debug, Clone)]
 pub enum TypeVariant {
     Nested(NalaType, Vec<TypeVariant>),
