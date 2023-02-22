@@ -105,6 +105,7 @@ fn it_errors_when_indexing_array_with_string() {
     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
 
+// TODO: Uncomment when we have a way to check for type errors in builtins.
 // #[test]
 // fn it_errors_when_passing_number_arg_to_len() {
 //     let expected_message =
