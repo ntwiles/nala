@@ -5,17 +5,34 @@
  */
 
 
-// TODO: Make this a builtin type.
-struct Result {
+// TODO: Make a builtin type for http call results.
+struct GetResult {
     statusCode: String,
     body: {
         origin: String,
     },
 }
 
-func printResult(result: Result): Void {
+struct PostResult {
+    statusCode: String,
+    body: {
+        origin: String,
+        data: {
+            hello: String,
+        },
+    },
+}
+
+func printGetResult(result: GetResult): Void {
     print('Status Code: ' + result.statusCode);
     print('Response Origin: ' + result.body.origin);
+    print('');
+}
+
+func printPostResult(result: PostResult): Void {
+    print('Status Code: ' + result.statusCode);
+    print('Response Origin: ' + result.body.origin);
+    print('Response Data: ' + result.body.data);
     print('');
 }
 
@@ -26,13 +43,14 @@ const resultA = http({
     url: 'https://httpbin.org/get',
 });
 
-printResult(resultA);
+printGetResult(resultA);
 
 print('Making POST request...');
 
 const resultB = http({
     method: 'POST',
     url: 'https://httpbin.org/post',
+    body: 'test' // TODO: Right now this will get stripped for some reason if it's an object instead of a string.
 });
 
-printResult(resultB);
+printPostResult(resultB);
