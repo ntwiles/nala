@@ -4,7 +4,6 @@ use std::{
 };
 
 use reqwest;
-use serde::Deserialize;
 use serde_json;
 
 use crate::{
@@ -97,10 +96,7 @@ fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> V
             );
 
             let value = response.json::<serde_json::Value>().unwrap();
-            fields.insert(
-                String::from("body"),
-                build_value(String::from("body"), value),
-            );
+            fields.insert(String::from("body"), build_value(value));
         }
         Err(error) => {
             // TODO: Status is optional because the error might not have been generated from a response.
@@ -121,7 +117,7 @@ fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> V
     Value::Object(Arc::new(Mutex::new(fields)))
 }
 
-fn build_value(key: String, value: serde_json::Value) -> Value {
+fn build_value(value: serde_json::Value) -> Value {
     match value {
         serde_json::Value::Array(_) => todo!(),
         serde_json::Value::Null => Value::String(String::from("null")), // TODO: This is a placeholder until options are implemented.
@@ -135,7 +131,7 @@ fn build_value(key: String, value: serde_json::Value) -> Value {
 fn build_object(fields: serde_json::Map<String, serde_json::Value>) -> Value {
     let fields = fields
         .into_iter()
-        .map(|(key, value)| (key.clone(), build_value(key, value)))
+        .map(|(key, value)| (key, build_value(value)))
         .collect::<HashMap<String, Value>>();
 
     Value::Object(Arc::new(Mutex::new(fields)))

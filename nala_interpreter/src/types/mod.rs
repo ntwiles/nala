@@ -3,7 +3,6 @@ use std::fmt;
 use crate::{
     ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
     scope::{ScopeId, Scopes},
-    utils::intersection,
 };
 
 use self::struct_field::StructField;
