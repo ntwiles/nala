@@ -10,7 +10,7 @@ match {
     "=", "==", ">", "<", "+", "-", "*", "/",
     "Array", "Bool", "Func", "Number",  "Object", "String", "Void",
 
-    r"[a-zA-Z]+",           // symbols
+    r"[a-zA-Z_\-]+",           // symbols
     r"-?[0-9]+(\.[0-9]+)?", // number literals
     r"'[^']*'",             // string literals
 
@@ -168,7 +168,7 @@ Value: ast::terms::Value = {
 }
 
 Symbol: String = {
-    r"[a-zA-Z]+" => String::from_str(<>).unwrap()
+    r"[a-zA-Z_\-]+" => String::from_str(<>).unwrap()
 };
 
 Num: f32 = {
