@@ -201,7 +201,5 @@ fn not_found_in_scope_error(ident: &str) -> RuntimeError {
 }
 
 fn assign_immutable_binding_error(ident: &str) -> RuntimeError {
-    RuntimeError {
-        message: format!("Cannot re-assign to immutable binding `{}`.", ident),
-    }
+    RuntimeError::new(&format!("Cannot re-assign to immutable binding `{ident}`."))
 }

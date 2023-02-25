@@ -59,9 +59,9 @@ fn eval_cond(
     if let Value::Bool(cond) = eval_expr(cond, scopes, current_scope, enclosing_scope, ctx)? {
         Ok(cond)
     } else {
-        Err(RuntimeError {
-            message: "Cannot use non-boolean expressions inside 'if' conditions.".to_owned(),
-        })
+        Err(RuntimeError::new(
+            "Cannot use non-boolean expressions inside 'if' conditions.",
+        ))
     }
 }
 

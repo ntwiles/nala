@@ -31,9 +31,7 @@ pub fn eval_index(
             panic!("Cannot index into a value which is not an array.");
         }
     } else {
-        Err(RuntimeError {
-            message: "Cannot index using non-numeric value.".to_owned(),
-        })
+        Err(RuntimeError::new("Cannot index using non-numeric value."))
     }
 }
 
@@ -51,11 +49,11 @@ pub fn eval_array(
 
         for value in values.clone() {
             if value.get_type(scopes, current_scope) != first_type {
-                let message = format!("Arrays can contain elements of only a single type. Found elements of types `{0}` and `{1}`.",
-                first_type,
-                value.get_type(scopes, current_scope));
+                let second_type = value.get_type(scopes, current_scope);
 
-                return Err(RuntimeError { message });
+                return Err(RuntimeError::new(
+                    &format!("Arrays can contain elements of only a single type. Found elements of types `{first_type}` and `{second_type}`.",
+                )));
             }
         }
     };

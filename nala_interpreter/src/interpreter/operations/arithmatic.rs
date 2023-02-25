@@ -7,9 +7,9 @@ pub fn do_add(
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
     if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
-        return Err(RuntimeError {
-            message: "Cannot add between values of two different types.".to_string(),
-        });
+        return Err(RuntimeError::new(
+            "Cannot add between values of two different types.",
+        ));
     }
 
     match left {

@@ -29,17 +29,14 @@ pub fn eval_member_access(
                 if object.contains_key(child) {
                     Ok(object[child].clone())
                 } else {
-                    Err(RuntimeError {
-                        message: format!("Member `{0}` does not exist on object.", child),
-                    })
+                    Err(RuntimeError::new(&format!(
+                        "Member `{child}` does not exist on object."
+                    )))
                 }
             } else {
-                Err(RuntimeError {
-                    message: format!(
-                        "Cannot access member `{0}` of non-Object `{1}`.",
-                        child, object
-                    ),
-                })
+                Err(RuntimeError::new(&format!(
+                    "Cannot access member `{child}` of non-Object `{object}`."
+                )))
             }
         }
         MemberAccess::MemberAccess(parent, child) => {
@@ -54,12 +51,9 @@ pub fn eval_member_access(
                 if object.contains_key(child) {
                     Ok(object[child].clone())
                 } else {
-                    Err(RuntimeError {
-                        message: format!(
-                            "Member `{0}` does not exist on object `{1}`",
-                            child, parent
-                        ),
-                    })
+                    Err(RuntimeError::new(&format!(
+                        "Member `{child}` does not exist on object `{parent}`"
+                    )))
                 }
             } else {
                 todo!()

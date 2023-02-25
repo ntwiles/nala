@@ -17,9 +17,9 @@ pub fn eval_declare(
     is_mutable: bool,
 ) -> Result<Value, RuntimeError> {
     if let Value::Void = value {
-        return Err(RuntimeError {
-            message: "Cannot declare a variable with a value of type Void.".to_string(),
-        });
+        return Err(RuntimeError::new(
+            "Cannot declare a variable with a value of type Void.",
+        ));
     }
 
     scopes.add_binding(&ident, current_scope, value.clone(), is_mutable)
@@ -87,6 +87,7 @@ pub fn eval_assign(
             }
         }
         PlaceExpression::Symbol(ident) => {
+            // TODO: Do we need to call binding_exists? Can we just call get_value?
             if scopes.binding_exists(&ident, current_scope, enclosing_scope) {
                 if let Value::Void = value {
                     panic!("Cannot assign a value of type Void.");
@@ -100,12 +101,9 @@ pub fn eval_assign(
                 if existing_type == value_type {
                     return scopes.mutate_value(&ident, current_scope, value.clone());
                 } else {
-                    return Err(RuntimeError {
-                        message: format!(
-                            "Cannot assign a value of type {0} where {1} is expected.",
-                            value_type, existing_type
-                        ),
-                    });
+                    return Err(RuntimeError::new(&format!(
+                        "Cannot assign a value of type {value_type} where {existing_type} is expected.",
+                    )));
                 }
             } else {
                 panic!("Unknown identifier `{}`", ident);

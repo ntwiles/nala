@@ -38,22 +38,17 @@ pub fn eval_variant(
             let expected_data_type = if let Some(data_type) = expected_data_type {
                 data_type
             } else {
-                return Err(RuntimeError {
-                    message: format!(
-                        "Passed data type {0} when none was expected!",
-                        data.get_type()
-                    ),
-                });
+                return Err(RuntimeError::new(&format!(
+                    "Passed data type {0} when none was expected.",
+                    data.get_type()
+                )));
             };
 
             if !(data.get_type().is_assignable_to(&expected_data_type)) {
-                return Err(RuntimeError {
-                    message: format!(
-                        "Created variant with wrong data type! Expected `{0}` but got `{1}`",
-                        expected_data_type,
-                        data.get_type()
-                    ),
-                });
+                return Err(RuntimeError::new(format!(
+                    "Created variant with wrong data type. Expected `{expected_data_type}` but got `{0}`",
+                    data.get_type()
+                )));
             }
 
             Some(Box::new(data))
