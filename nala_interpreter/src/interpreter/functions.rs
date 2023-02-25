@@ -43,31 +43,25 @@ pub fn eval_func(
         return_type,
     } = func;
 
-    if scopes.binding_exists_local(&ident, current_scope) {
-        panic!("Binding for {} already exists in local scope.", ident);
+    let result = check_param_types(&params);
+
+    if result.is_ok() {
+        scopes.add_binding(
+            &ident,
+            current_scope,
+            Value::Func(StoredFunc {
+                params: params.clone(), // TODO: Do we need this clone? Do we need to be borrowing in the params?
+                return_type: return_type.clone(),
+                block: block.clone(),
+                closure_scope: current_scope,
+            }),
+            false,
+        )
     } else {
-        let result = check_param_types(&params);
-
-        if result.is_ok() {
-            scopes.add_binding(
-                &ident,
-                current_scope,
-                Value::Func(StoredFunc {
-                    params: params.clone(), // TODO: Do we need this clone? Do we need to be borrowing in the params?
-                    return_type: return_type.clone(),
-                    block: block.clone(),
-                    closure_scope: current_scope,
-                }),
-                false,
-            );
-        } else {
-            return Err(NalaRuntimeError {
-                message: result.unwrap_err(),
-            });
-        }
+        Err(NalaRuntimeError {
+            message: result.unwrap_err(),
+        })
     }
-
-    Ok(Value::Void)
 }
 
 fn check_param_types(params: &Vec<Param>) -> Result<(), String> {

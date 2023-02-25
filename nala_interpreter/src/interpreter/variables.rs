@@ -16,19 +16,13 @@ pub fn eval_declare(
     current_scope: ScopeId,
     is_mutable: bool,
 ) -> Result<Value, NalaRuntimeError> {
-    if scopes.binding_exists_local(&ident, current_scope) {
+    if let Value::Void = value {
         return Err(NalaRuntimeError {
-            message: format!("Binding for {} already exists in local scope.", ident),
+            message: "Cannot declare a variable with a value of type Void.".to_string(),
         });
-    } else {
-        if let Value::Void = value {
-            return Err(NalaRuntimeError {
-                message: "Cannot declare a variable with a value of type Void.".to_string(),
-            });
-        }
-
-        scopes.add_binding(&ident, current_scope, value.clone(), is_mutable);
     }
+
+    scopes.add_binding(&ident, current_scope, value.clone(), is_mutable);
 
     Ok(Value::Void)
 }

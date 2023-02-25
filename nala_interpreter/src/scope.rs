@@ -186,9 +186,17 @@ impl Scopes {
         current_scope: ScopeId,
         value: Value,
         is_mutable: bool,
-    ) {
-        let scope = self.scopes.get_mut(current_scope.index).unwrap();
-        scope.add_binding(ident, value, is_mutable);
+    ) -> Result<Value, NalaRuntimeError> {
+        if self.binding_exists_local(ident, current_scope) {
+            Err(NalaRuntimeError::new(format!(
+                "Binding for {} already exists in local scope.",
+                ident
+            )))
+        } else {
+            let scope = self.scopes.get_mut(current_scope.index).unwrap();
+            scope.add_binding(ident, value, is_mutable);
+            Ok(Value::Void)
+        }
     }
 
     pub fn add_struct_binding(
@@ -196,26 +204,16 @@ impl Scopes {
         ident: &str,
         current_scope: ScopeId,
         fields: Vec<StructField>,
-    ) -> Result<(), NalaRuntimeError> {
-        if self
-            .scopes
-            .get(current_scope.index)
-            .unwrap()
-            .get_struct_binding(&ident)
-            .is_some()
-        {
-            Err(NalaRuntimeError {
-                message: format!(
-                    "Binding for struct {} already exists in local scope.",
-                    ident
-                ),
-            })
+    ) -> Result<Value, NalaRuntimeError> {
+        if self.struct_binding_exists_local(ident, current_scope) {
+            Err(NalaRuntimeError::new(format!(
+                "Binding for struct {} already exists in local scope.",
+                ident
+            )))
         } else {
             let scope = self.scopes.get_mut(current_scope.index).unwrap();
-
             scope.add_struct_binding(ident, fields);
-
-            Ok(())
+            Ok(Value::Void)
         }
     }
 
@@ -241,8 +239,15 @@ impl Scopes {
             || self.get_maybe_value(ident, current_scope).is_some()
     }
 
-    // TODO: Get rid of this and just have `add_binding` return a Result.
-    pub fn binding_exists_local(self: &Self, ident: &str, current_scope: ScopeId) -> bool {
+    fn struct_binding_exists_local(self: &Self, ident: &str, current_scope: ScopeId) -> bool {
+        self.scopes
+            .get(current_scope.index)
+            .unwrap()
+            .get_struct_binding(&ident)
+            .is_some()
+    }
+
+    fn binding_exists_local(self: &Self, ident: &str, current_scope: ScopeId) -> bool {
         self.scopes
             .get(current_scope.index)
             .unwrap()
