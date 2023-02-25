@@ -4,53 +4,48 @@
  * There's no way of setting headers yet, for example.
  */
 
+struct HouseHead {
+    firstName: String,
+    lastName: String,
+} 
 
-// TODO: Make a builtin type for http call results.
-struct GetResult {
+struct HouseInfo {
+    name: String,
+    mascot: String,
+    heads: Array<HouseHead>,
+    houseGhost: String,
+    founder: String,
+}
+
+struct Result {
     statusCode: String,
-    body: {
-        origin: String,
-    },
+    body: Array<HouseInfo>,
 }
 
-struct PostResult {
-    statusCode: String,
-    body: {
-        origin: String,
-        data: {
-            hello: String,
-        },
-    },
-}
+func printHouseInfo(house: HouseInfo): Void {
+    print('House: ' + house.name);
+    print('Founder: ' + house.founder);
 
-func printGetResult(result: GetResult): Void {
-    print('Status Code: ' + result.statusCode);
-    print('Response Origin: ' + result.body.origin);
-    print('');
-}
+    print('Heads:');
+    
+    for head in house.heads {
+        print(' - ' + head.firstName + ' ' + head.lastName);
+    }
 
-func printPostResult(result: PostResult): Void {
-    print('Status Code: ' + result.statusCode);
-    print('Response Origin: ' + result.body.origin);
-    print('Response Data: ' + result.body.data);
     print('');
 }
 
 print('Making GET request...');
 
-const resultA = http({
+const result = http({
     method: 'GET',
-    url: 'https://httpbin.org/get',
+    url: 'https://wizard-world-api.herokuapp.com/Houses',
 });
 
-printGetResult(resultA);
 
-print('Making POST request...');
+print('Result Status: ' + result.statusCode);
+print('');
 
-const resultB = http({
-    method: 'POST',
-    url: 'https://httpbin.org/post',
-    body: 'test' // TODO: Right now this will get stripped for some reason if it's an object instead of a string.
-});
-
-printPostResult(resultB);
+for house in result.body {
+    printHouseInfo(house);
+}
