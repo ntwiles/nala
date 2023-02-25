@@ -7,10 +7,9 @@ use crate::{
 
 use super::NalaType;
 
-// TODO: Rename Nested to Composite
 #[derive(Eq, Debug, Clone)]
 pub enum TypeVariant {
-    Nested(NalaType, Vec<TypeVariant>),
+    Composite(NalaType, Vec<TypeVariant>),
     Type(NalaType),
 }
 
@@ -21,7 +20,7 @@ impl TypeVariant {
         current_scope: ScopeId,
     ) -> Self {
         match literal {
-            TypeLiteralVariant::Nested(p, c) => TypeVariant::Nested(
+            TypeLiteralVariant::Nested(p, c) => TypeVariant::Composite(
                 NalaType::from_literal(p, scopes, current_scope),
                 c.into_iter()
                     .map(|l| TypeVariant::from_literal(l, scopes, current_scope))
@@ -35,8 +34,8 @@ impl TypeVariant {
 
     pub fn is_assignable_to(&self, other: &Self) -> bool {
         match self {
-            TypeVariant::Nested(sv, svv) => {
-                if let TypeVariant::Nested(ov, ovv) = other {
+            TypeVariant::Composite(sv, svv) => {
+                if let TypeVariant::Composite(ov, ovv) = other {
                     if !sv.is_assignable_to(ov) {
                         return false;
                     }
@@ -64,7 +63,7 @@ impl TypeVariant {
 impl fmt::Display for TypeVariant {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            TypeVariant::Nested(v, vv) => {
+            TypeVariant::Composite(v, vv) => {
                 let children = vv
                     .iter()
                     .map(|vv| vv.to_string())
@@ -80,8 +79,8 @@ impl fmt::Display for TypeVariant {
 impl PartialEq for TypeVariant {
     fn eq(&self, other: &Self) -> bool {
         match self {
-            TypeVariant::Nested(mv, mg) => {
-                if let TypeVariant::Nested(ov, og) = other {
+            TypeVariant::Composite(mv, mg) => {
+                if let TypeVariant::Composite(ov, og) = other {
                     mv == ov && mg == og
                 } else {
                     false
