@@ -6,7 +6,7 @@ pub mod lt;
 
 use crate::{
     ast::{math::*, terms::*},
-    errors::NalaRuntimeError,
+    errors::RuntimeError,
     interpreter::eval_term,
     io_context::IoContext,
     scopes::Scopes,
@@ -22,7 +22,7 @@ pub fn eval_addend(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     match addend {
         Addend::Add(left, right) => {
             let left = eval_addend(left, scopes, current_scope, enclosing_scope, ctx)?;
@@ -46,7 +46,7 @@ pub fn eval_factor(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     match factor {
         Factor::Mult(left, right) => {
             let left = eval_factor(left, scopes, current_scope, enclosing_scope, ctx)?;

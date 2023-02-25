@@ -7,7 +7,7 @@ use crate::{
         terms::*,
         *,
     },
-    errors::NalaRuntimeError,
+    errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
 };
@@ -18,7 +18,7 @@ pub fn eval_if_else_chain(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     let IfElseChain {
         cond,
         block,
@@ -55,11 +55,11 @@ fn eval_cond(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<bool, NalaRuntimeError> {
+) -> Result<bool, RuntimeError> {
     if let Value::Bool(cond) = eval_expr(cond, scopes, current_scope, enclosing_scope, ctx)? {
         Ok(cond)
     } else {
-        Err(NalaRuntimeError {
+        Err(RuntimeError {
             message: "Cannot use non-boolean expressions inside 'if' conditions.".to_owned(),
         })
     }
@@ -73,7 +73,7 @@ pub fn eval_for(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
 
     let mut loop_result = Value::Void;
@@ -110,7 +110,7 @@ pub fn eval_wiles(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     loop {
         let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
 
@@ -140,7 +140,7 @@ pub fn eval_break(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     let val = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
     Ok(Value::Break(Box::new(val)))
 }

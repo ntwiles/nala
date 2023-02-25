@@ -11,7 +11,7 @@ pub fn eval_lt(
     right: Value,
     scopes: &mut Scopes,
     current_scope: usize,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     match left {
         Value::Num(left) => Ok(num_lt(left, right, scopes, current_scope)),
         Value::String(left) => Ok(string_lt(left, right, scopes, current_scope)),

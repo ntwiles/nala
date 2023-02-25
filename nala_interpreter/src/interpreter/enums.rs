@@ -1,6 +1,6 @@
 use crate::{
     ast::{terms::*, types::*, *},
-    errors::NalaRuntimeError,
+    errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
 };
@@ -12,7 +12,7 @@ pub fn eval_variant(
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     let (enum_name, variant, data) = match variant {
         VariantValue::Addend(addend) => return eval_addend(addend, scopes, current_scope, ctx),
         VariantValue::VariantValue(enum_name, variant) => (enum_name, variant, None),
@@ -38,7 +38,7 @@ pub fn eval_variant(
             let expected_data_type = if let Some(data_type) = expected_data_type {
                 data_type
             } else {
-                return Err(NalaRuntimeError {
+                return Err(RuntimeError {
                     message: format!(
                         "Passed data type {0} when none was expected!",
                         data.get_type()
@@ -47,7 +47,7 @@ pub fn eval_variant(
             };
 
             if !(data.get_type().is_assignable_to(&expected_data_type)) {
-                return Err(NalaRuntimeError {
+                return Err(RuntimeError {
                     message: format!(
                         "Created variant with wrong data type! Expected `{0}` but got `{1}`",
                         expected_data_type,
@@ -81,7 +81,7 @@ fn compare_variant(variant: &VariantDeclare, name: &String) -> bool {
 fn find_variant(
     variants: &Vec<VariantDeclare>,
     needle: &String,
-) -> Result<VariantDeclare, NalaRuntimeError> {
+) -> Result<VariantDeclare, RuntimeError> {
     let result = variants.iter().find(|v| compare_variant(v, needle));
     match result {
         Some(variant) => Ok(variant.clone()),

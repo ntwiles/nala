@@ -1,10 +1,10 @@
 #[derive(Clone, Debug)]
-pub struct NalaRuntimeError {
+pub struct RuntimeError {
     pub message: String,
 }
 
-impl NalaRuntimeError {
-    pub fn new(message: String) -> NalaRuntimeError {
-        NalaRuntimeError { message }
+impl RuntimeError {
+    pub fn new(message: String) -> RuntimeError {
+        RuntimeError { message }
     }
 }

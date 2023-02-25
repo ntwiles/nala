@@ -10,7 +10,7 @@ mod variables;
 use crate::{
     ast::{terms::*, *},
     builtins::*,
-    errors::NalaRuntimeError,
+    errors::RuntimeError,
     io_context::IoContext,
     scopes::*,
 };
@@ -18,7 +18,7 @@ use crate::{
 use self::{functions::*, variables::*};
 use basic::*;
 
-pub fn eval_tree(program: Program, ctx: &mut impl IoContext) -> Result<Value, NalaRuntimeError> {
+pub fn eval_tree(program: Program, ctx: &mut impl IoContext) -> Result<Value, RuntimeError> {
     let mut scopes = Scopes::new();
 
     let top_scope = scopes.new_scope(None);
@@ -47,7 +47,7 @@ pub fn eval_term(
     term: Term,
     scopes: &mut Scopes,
     current_scope: usize,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     match term {
         Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, None)?),
         Term::Value(value) => Ok(value),

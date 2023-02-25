@@ -54,7 +54,7 @@ impl Scopes {
         ident: &str,
         starting_scope: usize,
         enclosing_scope: Option<usize>,
-    ) -> Result<Value, NalaRuntimeError> {
+    ) -> Result<Value, RuntimeError> {
         if let Some(enclosing_scope) = enclosing_scope {
             match self.get_maybe_value(ident, enclosing_scope) {
                 Some(value) => return Ok(value),
@@ -75,7 +75,7 @@ impl Scopes {
         self: &Self,
         ident: &str,
         starting_scope: usize,
-    ) -> Result<Vec<StructField>, NalaRuntimeError> {
+    ) -> Result<Vec<StructField>, RuntimeError> {
         match self.get_maybe_struct(ident, starting_scope) {
             Some(value) => Ok(value.clone()),
             None => Err(not_found_in_scope_error(ident)),
@@ -105,7 +105,7 @@ impl Scopes {
         ident: &str,
         current_scope: usize,
         new_value: Value,
-    ) -> Result<Value, NalaRuntimeError> {
+    ) -> Result<Value, RuntimeError> {
         let scope = self.find_scope_with_binding(ident, current_scope);
 
         if let Some(scope) = scope {
@@ -128,9 +128,9 @@ impl Scopes {
         current_scope: usize,
         value: Value,
         is_mutable: bool,
-    ) -> Result<Value, NalaRuntimeError> {
+    ) -> Result<Value, RuntimeError> {
         if self.binding_exists_local(ident, current_scope) {
-            Err(NalaRuntimeError::new(format!(
+            Err(RuntimeError::new(format!(
                 "Binding for {} already exists in local scope.",
                 ident
             )))
@@ -146,9 +146,9 @@ impl Scopes {
         ident: &str,
         current_scope: usize,
         fields: Vec<StructField>,
-    ) -> Result<Value, NalaRuntimeError> {
+    ) -> Result<Value, RuntimeError> {
         if self.struct_binding_exists_local(ident, current_scope) {
-            Err(NalaRuntimeError::new(format!(
+            Err(RuntimeError::new(format!(
                 "Binding for struct {} already exists in local scope.",
                 ident
             )))
@@ -194,15 +194,15 @@ impl Scopes {
     }
 }
 
-fn not_found_in_scope_error(ident: &str) -> NalaRuntimeError {
-    NalaRuntimeError::new(format!(
+fn not_found_in_scope_error(ident: &str) -> RuntimeError {
+    RuntimeError::new(format!(
         "Identifier '{}' was not found in this scope.",
         ident
     ))
 }
 
-fn assign_immutable_binding_error(ident: &str) -> NalaRuntimeError {
-    NalaRuntimeError {
+fn assign_immutable_binding_error(ident: &str) -> RuntimeError {
+    RuntimeError {
         message: format!("Cannot re-assign to immutable binding `{}`.", ident),
     }
 }

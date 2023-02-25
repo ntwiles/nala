@@ -4,7 +4,7 @@ use super::{arrays::eval_index, eval_expr, objects::*};
 
 use crate::{
     ast::{objects::*, terms::*, *},
-    errors::NalaRuntimeError,
+    errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
 };
@@ -15,9 +15,9 @@ pub fn eval_declare(
     scopes: &mut Scopes,
     current_scope: usize,
     is_mutable: bool,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     if let Value::Void = value {
-        return Err(NalaRuntimeError {
+        return Err(RuntimeError {
             message: "Cannot declare a variable with a value of type Void.".to_string(),
         });
     }
@@ -32,7 +32,7 @@ pub fn eval_assign(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     match variable {
         PlaceExpression::Index(place, index_expr) => {
             match &**place {
@@ -100,7 +100,7 @@ pub fn eval_assign(
                 if existing_type == value_type {
                     return scopes.mutate_value(&ident, current_scope, value.clone());
                 } else {
-                    return Err(NalaRuntimeError {
+                    return Err(RuntimeError {
                         message: format!(
                             "Cannot assign a value of type {0} where {1} is expected.",
                             value_type, existing_type
@@ -142,7 +142,7 @@ pub fn eval_place_expr(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     match variable {
         PlaceExpression::Index(place, expr) => {
             let array = eval_place_expr(place, scopes, current_scope, enclosing_scope, ctx)?;

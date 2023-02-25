@@ -5,7 +5,7 @@ use std::{
 
 use crate::{
     ast::{objects::*, terms::Value},
-    errors::NalaRuntimeError,
+    errors::RuntimeError,
     io_context::IoContext,
     scopes::*,
 };
@@ -18,7 +18,7 @@ pub fn eval_member_access(
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     match member_access {
         MemberAccess::MemberAccesses(parents, child) => {
             let object = eval_member_access(parent_obj, parents, scopes, current_scope, ctx)?;
@@ -29,12 +29,12 @@ pub fn eval_member_access(
                 if object.contains_key(child) {
                     Ok(object[child].clone())
                 } else {
-                    Err(NalaRuntimeError {
+                    Err(RuntimeError {
                         message: format!("Member `{0}` does not exist on object.", child),
                     })
                 }
             } else {
-                Err(NalaRuntimeError {
+                Err(RuntimeError {
                     message: format!(
                         "Cannot access member `{0}` of non-Object `{1}`.",
                         child, object
@@ -54,7 +54,7 @@ pub fn eval_member_access(
                 if object.contains_key(child) {
                     Ok(object[child].clone())
                 } else {
-                    Err(NalaRuntimeError {
+                    Err(RuntimeError {
                         message: format!(
                             "Member `{0}` does not exist on object `{1}`",
                             child, parent
@@ -74,7 +74,7 @@ pub fn eval_object(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     let object: HashMap<String, Value> =
         eval_object_entries(&object.entries, scopes, current_scope, enclosing_scope, ctx)?;
 
@@ -87,8 +87,8 @@ fn eval_object_entries(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<HashMap<String, Value>, NalaRuntimeError> {
-    let results: Vec<Result<(String, Value), NalaRuntimeError>> = entries
+) -> Result<HashMap<String, Value>, RuntimeError> {
+    let results: Vec<Result<(String, Value), RuntimeError>> = entries
         .iter()
         .map(|kvp| eval_object_entry(kvp, scopes, current_scope, enclosing_scope, ctx))
         .collect();
@@ -113,7 +113,7 @@ fn eval_object_entry(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<(String, Value), NalaRuntimeError> {
+) -> Result<(String, Value), RuntimeError> {
     let value = eval_expr(&*entry.value, scopes, current_scope, enclosing_scope, ctx)?;
     Ok((entry.key.clone(), value))
 }

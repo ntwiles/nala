@@ -10,7 +10,7 @@ use super::{
 
 use crate::{
     ast::{terms::*, *},
-    errors::NalaRuntimeError,
+    errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
 };
@@ -20,7 +20,7 @@ pub fn eval_block(
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     if let Block::NalaBlock(stmts) = block {
         eval_stmts(stmts, scopes, current_scope, None, ctx)
     } else {
@@ -35,7 +35,7 @@ pub fn eval_stmts(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     match stmts {
         Stmts::Stmts(stmts, stmt) => {
             let result = eval_stmts(&*stmts, scopes, current_scope, enclosing_scope, ctx)?;
@@ -56,7 +56,7 @@ fn eval_stmt(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     match stmt {
         Stmt::Declare(ident, expr, is_mutable) => {
             let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
@@ -94,7 +94,7 @@ pub fn eval_expr(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     match expr {
         Expr::Addend(addend) => eval_addend(addend, scopes, current_scope, enclosing_scope, ctx),
         Expr::Eq(left, right) => {
@@ -126,8 +126,8 @@ pub fn eval_elems(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Vec<Value>, NalaRuntimeError> {
-    let results: Vec<Result<Value, NalaRuntimeError>> = elems
+) -> Result<Vec<Value>, RuntimeError> {
+    let results: Vec<Result<Value, RuntimeError>> = elems
         .iter()
         .map(|e| eval_expr(e, scopes, current_scope, enclosing_scope, ctx))
         .collect();

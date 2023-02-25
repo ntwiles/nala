@@ -5,7 +5,7 @@ use std::{
 
 use crate::{
     ast::{arrays::*, terms::Value, Expr},
-    errors::NalaRuntimeError,
+    errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
 };
@@ -19,7 +19,7 @@ pub fn eval_index(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     let index = eval_expr(index_expr, scopes, current_scope, enclosing_scope, ctx)?;
 
     if let Value::Num(index) = index {
@@ -31,7 +31,7 @@ pub fn eval_index(
             panic!("Cannot index into a value which is not an array.");
         }
     } else {
-        Err(NalaRuntimeError {
+        Err(RuntimeError {
             message: "Cannot index using non-numeric value.".to_owned(),
         })
     }
@@ -43,7 +43,7 @@ pub fn eval_array(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     let values = eval_elems(&array.elems, scopes, current_scope, enclosing_scope, ctx)?;
 
     if let Some(first) = values.clone().first() {
@@ -55,7 +55,7 @@ pub fn eval_array(
                 first_type,
                 value.get_type(scopes, current_scope));
 
-                return Err(NalaRuntimeError { message });
+                return Err(RuntimeError { message });
             }
         }
     };

@@ -12,7 +12,7 @@ pub fn eval_gt(
     right: Value,
     scopes: &mut Scopes,
     current_scope: usize,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     match left {
         Value::Num(left) => match right {
             Value::Num(right) => Ok(Value::Bool(left > right)),

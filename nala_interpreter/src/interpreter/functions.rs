@@ -18,24 +18,11 @@ use crate::{
     types::type_variant::TypeVariant,
 };
 
-fn wrong_arg_type_for_param_error(
-    arg_value: String,
-    arg_type: String,
-    param_type: String,
-) -> NalaRuntimeError {
-    NalaRuntimeError {
-        message: format!(
-            "Passed value `{0}` of type `{1}` to function where `{2}` was expected.",
-            arg_value, arg_type, param_type
-        ),
-    }
-}
-
 pub fn eval_func(
     func: &Func,
     scopes: &mut Scopes,
     current_scope: usize,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     let Func {
         ident,
         block,
@@ -43,28 +30,22 @@ pub fn eval_func(
         return_type,
     } = func;
 
-    let result = check_param_types(&params);
+    check_param_types(&params)?;
 
-    if result.is_ok() {
-        scopes.add_binding(
-            &ident,
-            current_scope,
-            Value::Func(StoredFunc {
-                params: params.clone(), // TODO: Do we need this clone? Do we need to be borrowing in the params?
-                return_type: return_type.clone(),
-                block: block.clone(),
-                closure_scope: current_scope,
-            }),
-            false,
-        )
-    } else {
-        Err(NalaRuntimeError {
-            message: result.unwrap_err(),
-        })
-    }
+    scopes.add_binding(
+        &ident,
+        current_scope,
+        Value::Func(StoredFunc {
+            params: params.clone(), // TODO: Do we need this clone? Do we need to be borrowing in the params?
+            return_type: return_type.clone(),
+            block: block.clone(),
+            closure_scope: current_scope,
+        }),
+        false,
+    )
 }
 
-fn check_param_types(params: &Vec<Param>) -> Result<(), String> {
+fn check_param_types(params: &Vec<Param>) -> Result<(), RuntimeError> {
     let mut results = params.iter().map(|p| check_param_type(&p.param_type));
 
     if let Some(Err(err)) = results.find(|r| r.is_err()) {
@@ -74,38 +55,18 @@ fn check_param_types(params: &Vec<Param>) -> Result<(), String> {
     }
 }
 
-fn check_param_type(param_type: &TypeLiteralVariant) -> Result<(), String> {
+fn check_param_type(param_type: &TypeLiteralVariant) -> Result<(), RuntimeError> {
     if let TypeLiteralVariant::Nested(outer, inner) = param_type {
         let outer = if let TypeLiteral::PrimitiveType(outer) = outer {
             outer
         } else {
-            let inners = inner
-                .iter()
-                .map(|i| i.to_string())
-                .collect::<Vec<String>>()
-                .join(", ");
-
-            return Err(format!(
-                "Type `{0}` does not support nesting. Type `{0}<{1}>` is invalid.",
-                outer, inners
-            ));
+            return Err(nesting_not_supported_error(outer.to_string(), inner));
         };
 
         return match outer {
             PrimitiveType::Array => Ok(()),
             PrimitiveType::Func => Ok(()),
-            _ => {
-                let inners = inner
-                    .iter()
-                    .map(|i| i.to_string())
-                    .collect::<Vec<String>>()
-                    .join(", ");
-
-                Err(format!(
-                    "Type `{0}` does not support nesting. Type `{0}<{1}>` is invalid.",
-                    outer, inners
-                ))
-            }
+            _ => Err(nesting_not_supported_error(outer.to_string(), inner)),
         };
     }
 
@@ -118,7 +79,7 @@ pub fn eval_invocation(
     current_scope: usize,
     enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
-) -> Result<Value, NalaRuntimeError> {
+) -> Result<Value, RuntimeError> {
     match call {
         Invocation::Invocation(place, args) => {
             let block = eval_place_expr(place, scopes, current_scope, enclosing_scope, ctx)?;
@@ -185,4 +146,26 @@ pub fn eval_invocation(
         }
         Invocation::Value(value) => Ok(value.clone()),
     }
+}
+
+fn nesting_not_supported_error(outer: String, inner: &Vec<TypeLiteralVariant>) -> RuntimeError {
+    let inner = inner
+        .iter()
+        .map(|i| i.to_string())
+        .collect::<Vec<String>>()
+        .join(", ");
+
+    RuntimeError::new(format!(
+        "Type `{outer}` does not support nesting. Type `{outer}<{inner}>` is invalid."
+    ))
+}
+
+fn wrong_arg_type_for_param_error(
+    arg_value: String,
+    arg_type: String,
+    param_type: String,
+) -> RuntimeError {
+    RuntimeError::new(format!(
+        "Passed value `{arg_value}` of type `{arg_type}` to function where `{param_type}` was expected.")
+    )
 }
