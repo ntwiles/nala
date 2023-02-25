@@ -166,7 +166,7 @@ pub fn eval_invocation(
                         }
                     }
 
-                    scopes.add_binding(&param.ident, call_scope, arg.clone(), false);
+                    scopes.add_binding(&param.ident, call_scope, arg.clone(), false)?;
                     param_args.entry(param.ident.clone()).or_insert(arg.clone());
                 }
 

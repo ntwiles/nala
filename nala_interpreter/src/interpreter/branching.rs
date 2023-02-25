@@ -85,7 +85,7 @@ pub fn eval_for(
         for (_, item) in array.iter().enumerate() {
             let block_scope = scopes.new_scope(Some(current_scope));
 
-            scopes.add_binding(ident, block_scope, item.clone(), false);
+            scopes.add_binding(ident, block_scope, item.clone(), false)?;
 
             loop_result = eval_block(&block, scopes, block_scope, ctx)?;
 

@@ -22,9 +22,7 @@ pub fn eval_declare(
         });
     }
 
-    scopes.add_binding(&ident, current_scope, value.clone(), is_mutable);
-
-    Ok(Value::Void)
+    scopes.add_binding(&ident, current_scope, value.clone(), is_mutable)
 }
 
 pub fn eval_assign(
