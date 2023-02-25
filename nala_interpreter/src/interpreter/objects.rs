@@ -7,7 +7,7 @@ use crate::{
     ast::{objects::*, terms::Value},
     errors::NalaRuntimeError,
     io_context::IoContext,
-    scope::*,
+    scopes::*,
 };
 
 use super::basic::eval_expr;

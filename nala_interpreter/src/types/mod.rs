@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::{
     ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
-    scope::Scopes,
+    scopes::Scopes,
 };
 
 use self::struct_field::StructField;

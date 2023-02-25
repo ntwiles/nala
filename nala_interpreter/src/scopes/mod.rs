@@ -1,59 +1,8 @@
-use std::collections::HashMap;
+mod scope;
 
 use crate::{ast::terms::*, errors::*, types::struct_field::StructField};
 
-#[derive(Debug)]
-pub struct Scope {
-    parent: Option<usize>,
-    bindings: HashMap<String, (Value, bool)>,
-    type_bindings: HashMap<String, Vec<StructField>>,
-}
-
-impl Scope {
-    pub fn new(parent: Option<usize>) -> Scope {
-        Scope {
-            parent,
-            bindings: HashMap::new(),
-            type_bindings: HashMap::new(),
-        }
-    }
-
-    pub fn add_struct_binding(self: &mut Self, ident: &str, fields: Vec<StructField>) {
-        self.type_bindings.insert(ident.to_owned(), fields);
-    }
-
-    pub fn add_binding(self: &mut Self, ident: &str, value: Value, is_mutable: bool) {
-        self.bindings.insert(ident.to_owned(), (value, is_mutable));
-    }
-
-    pub fn get_binding(self: &Self, ident: &str) -> Option<(Value, bool)> {
-        if let Some(binding) = self.bindings.get(ident) {
-            Some(binding.clone())
-        } else {
-            None
-        }
-    }
-
-    pub fn get_struct_binding(self: &Self, ident: &str) -> Option<&Vec<StructField>> {
-        if let Some(binding) = self.type_bindings.get(ident) {
-            Some(binding)
-        } else {
-            None
-        }
-    }
-}
-
-fn not_found_in_scope_error(ident: &str) -> NalaRuntimeError {
-    NalaRuntimeError {
-        message: format!("Identifier '{}' was not found in this scope.", ident),
-    }
-}
-
-fn assign_immutable_binding_error(ident: &str) -> NalaRuntimeError {
-    NalaRuntimeError {
-        message: format!("Cannot re-assign to immutable binding `{}`.", ident),
-    }
-}
+use self::scope::Scope;
 
 // TODO: Pull this out to its own file.
 #[derive(Debug)]
@@ -243,5 +192,18 @@ impl Scopes {
             .unwrap()
             .get_binding(&ident)
             .is_some()
+    }
+}
+
+fn not_found_in_scope_error(ident: &str) -> NalaRuntimeError {
+    NalaRuntimeError::new(format!(
+        "Identifier '{}' was not found in this scope.",
+        ident
+    ))
+}
+
+fn assign_immutable_binding_error(ident: &str) -> NalaRuntimeError {
+    NalaRuntimeError {
+        message: format!("Cannot re-assign to immutable binding `{}`.", ident),
     }
 }

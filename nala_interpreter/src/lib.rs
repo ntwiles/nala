@@ -14,7 +14,7 @@ pub mod io_context;
 #[allow(dead_code)]
 mod lexer;
 pub mod parser;
-pub mod scope;
+pub mod scopes;
 pub mod types;
 pub mod utils;
 

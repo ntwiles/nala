@@ -2,7 +2,7 @@ use crate::{
     ast::{terms::*, types::*, *},
     errors::NalaRuntimeError,
     io_context::IoContext,
-    scope::Scopes,
+    scopes::Scopes,
 };
 
 use super::{basic::*, operations::*};

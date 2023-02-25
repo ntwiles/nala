@@ -2,7 +2,7 @@ use crate::{
     ast::{terms::*, types::primitive_type::PrimitiveType},
     errors::*,
     interpreter::operations::errors::*,
-    scope::Scopes,
+    scopes::Scopes,
     types::{type_variant::TypeVariant, NalaType},
 };
 

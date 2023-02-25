@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{ast::types::type_literal_variant::TypeLiteralVariant, scope::Scopes};
+use crate::{ast::types::type_literal_variant::TypeLiteralVariant, scopes::Scopes};
 
 use super::NalaType;
 

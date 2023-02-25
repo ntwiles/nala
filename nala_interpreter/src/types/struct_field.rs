@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-use crate::{ast::types::StructLiteralField, scope::Scopes};
+use crate::{ast::types::StructLiteralField, scopes::Scopes};
 
 use super::type_variant::TypeVariant;
 

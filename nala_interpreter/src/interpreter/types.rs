@@ -1,7 +1,7 @@
 use crate::{
     ast::{terms::Value, types::StructLiteralField},
     errors::NalaRuntimeError,
-    scope::Scopes,
+    scopes::Scopes,
     types::struct_field::StructField,
 };
 

@@ -5,7 +5,7 @@ use std::{
 };
 
 use crate::{
-    scope::Scopes,
+    scopes::Scopes,
     types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
 };
 

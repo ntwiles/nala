@@ -1,7 +1,7 @@
 use crate::{
     ast::{terms::*, types::primitive_type::PrimitiveType},
     errors::*,
-    scope::Scopes,
+    scopes::Scopes,
     types::{type_variant::TypeVariant, NalaType},
 };
 

@@ -14,7 +14,7 @@ use crate::{
     },
     errors::*,
     io_context::IoContext,
-    scope::Scopes,
+    scopes::Scopes,
     types::type_variant::TypeVariant,
 };
 

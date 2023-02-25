@@ -1,4 +1,4 @@
-use crate::{ast::terms::Value, errors::NalaRuntimeError, scope::Scopes};
+use crate::{ast::terms::Value, errors::NalaRuntimeError, scopes::Scopes};
 
 pub fn do_add(
     left: Value,

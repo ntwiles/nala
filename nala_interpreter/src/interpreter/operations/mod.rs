@@ -9,7 +9,7 @@ use crate::{
     errors::NalaRuntimeError,
     interpreter::eval_term,
     io_context::IoContext,
-    scope::Scopes,
+    scopes::Scopes,
 };
 
 use super::functions::*;

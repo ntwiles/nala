@@ -12,7 +12,7 @@ use crate::{
     builtins::*,
     errors::NalaRuntimeError,
     io_context::IoContext,
-    scope::*,
+    scopes::*,
 };
 
 use self::{functions::*, variables::*};

@@ -7,7 +7,7 @@ use crate::{
     ast::{arrays::*, terms::Value, Expr},
     errors::NalaRuntimeError,
     io_context::IoContext,
-    scope::Scopes,
+    scopes::Scopes,
 };
 
 use super::basic::*;

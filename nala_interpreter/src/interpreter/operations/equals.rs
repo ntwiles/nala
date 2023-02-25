@@ -1,6 +1,6 @@
 use crate::{
     ast::{terms::*, types::primitive_type::PrimitiveType},
-    scope::Scopes,
+    scopes::Scopes,
     types::{type_variant::TypeVariant, NalaType},
 };
 

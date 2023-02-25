@@ -6,7 +6,7 @@ use crate::{
     ast::{objects::*, terms::*, *},
     errors::NalaRuntimeError,
     io_context::IoContext,
-    scope::Scopes,
+    scopes::Scopes,
 };
 
 pub fn eval_declare(

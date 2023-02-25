@@ -9,7 +9,7 @@ use crate::{
     },
     errors::NalaRuntimeError,
     io_context::IoContext,
-    scope::Scopes,
+    scopes::Scopes,
 };
 
 pub fn eval_if_else_chain(
