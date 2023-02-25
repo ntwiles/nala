@@ -23,11 +23,19 @@ pub enum Term {
     Value(Value),
 }
 
+// TODO: Find a home for this
+#[derive(Debug, Clone)]
+pub struct StoredFunc {
+    pub params: Vec<Param>,
+    pub return_type: TypeLiteralVariant,
+    pub block: Box<Block>,
+}
+
 #[derive(Debug, Clone)]
 pub enum Value {
     Array(Arc<Mutex<Vec<Value>>>),
     Bool(bool),
-    Func(Vec<Param>, TypeLiteralVariant, Box<Block>),
+    Func(StoredFunc),
     Variant(String, String, Option<Box<Value>>),
     Num(f32),
     Object(Arc<Mutex<HashMap<String, Value>>>),
@@ -66,7 +74,11 @@ impl fmt::Display for Value {
             }
             Value::Bool(b) => write!(f, "{}", b),
             Value::Break(_) => write!(f, "<Break>"),
-            Value::Func(params, return_type, _block) => {
+            Value::Func(StoredFunc {
+                params,
+                return_type,
+                block: _,
+            }) => {
                 let mut params: Vec<String> = params
                     .to_vec()
                     .iter()
@@ -115,7 +127,11 @@ impl Value {
             }
             Value::Bool(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
             Value::Break(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Break)),
-            Value::Func(params, return_type, _block) => {
+            Value::Func(StoredFunc {
+                params,
+                return_type,
+                block: _,
+            }) => {
                 let mut param_types: Vec<TypeVariant> = params
                     .into_iter()
                     .map(|p| TypeVariant::from_literal(p.clone().param_type, scopes, current_scope)) // TODO: Why do we need this clone?

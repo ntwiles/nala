@@ -5,10 +5,10 @@ func closureTestA(): Void {
         print(message);
     }
 
-    innerFuncA();
+    innerFunc();
 }
 
-func closureTestB(): Void {
+func closureTestB(): Func<Void> {
     const message = 'closures REALLY work!';
 
     func innerFunc(): Void {

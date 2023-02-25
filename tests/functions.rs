@@ -123,3 +123,48 @@ fn it_prints_function_type_correctly() {
     assert!(parse_and_interpret(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["Func<String, String>"]);
 }
+
+#[test]
+fn it_supports_closures_in_scope() {
+    let mut ctx = TestContext::new();
+
+    let nala = r#"
+        func closureTest(): Void {
+            const message = 'closures work!';
+        
+            func innerFunc(): Void {
+                print(message);
+            }
+        
+            innerFunc();
+        }
+
+        closureTest();
+    "#;
+
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["closures work!"]);
+}
+
+#[test]
+fn it_supports_closures_out_of_scope() {
+    let mut ctx = TestContext::new();
+
+    let nala = r#"
+        func closureTest(): Func<Void> {
+            const message = 'closures REALLY work!';
+        
+            func innerFunc(): Void {
+                print(message);
+            }
+        
+            innerFunc;
+        }
+
+        const funcToCall = closureTest();
+        funcToCall();
+    "#;
+
+    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["closures REALLY work!"]);
+}

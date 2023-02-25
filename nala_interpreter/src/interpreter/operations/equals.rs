@@ -33,8 +33,8 @@ fn variant_equals(
     left_variant: String,
     left_data: Option<Box<Value>>,
     right: Value,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
+    _scopes: &mut Scopes,
+    _current_scope: ScopeId,
 ) -> Value {
     if let Value::Variant(right_enum, right_variant, right_data) = right {
         let enums_match = left_enum == right_enum;
