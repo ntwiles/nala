@@ -16,6 +16,7 @@ pub fn eval_if_else_chain(
     chain: &IfElseChain,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    enclosing_scope: Option<ScopeId>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let IfElseChain {
@@ -25,7 +26,7 @@ pub fn eval_if_else_chain(
         else_block,
     } = chain;
 
-    if eval_cond(cond, scopes, current_scope, ctx)? {
+    if eval_cond(cond, scopes, current_scope, enclosing_scope, ctx)? {
         let block_scope = scopes.new_scope(Some(current_scope));
         return eval_block(&block, scopes, block_scope, ctx);
     }
@@ -33,7 +34,7 @@ pub fn eval_if_else_chain(
     for else_if in else_ifs.iter() {
         let ElseIf { cond, block } = else_if;
 
-        if eval_cond(cond, scopes, current_scope, ctx)? {
+        if eval_cond(cond, scopes, current_scope, enclosing_scope, ctx)? {
             let block_scope = scopes.new_scope(Some(current_scope));
             return eval_block(&block, scopes, block_scope, ctx);
         }
@@ -52,9 +53,10 @@ fn eval_cond(
     cond: &Expr,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    enclosing_scope: Option<ScopeId>,
     ctx: &mut dyn IoContext,
 ) -> Result<bool, NalaRuntimeError> {
-    if let Value::Bool(cond) = eval_expr(cond, scopes, current_scope, ctx)? {
+    if let Value::Bool(cond) = eval_expr(cond, scopes, current_scope, enclosing_scope, ctx)? {
         Ok(cond)
     } else {
         Err(NalaRuntimeError {
@@ -69,9 +71,10 @@ pub fn eval_for(
     block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    enclosing_scope: Option<ScopeId>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    let result = eval_expr(expr, scopes, current_scope, ctx)?;
+    let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
 
     let mut loop_result = Value::Void;
 
@@ -105,10 +108,11 @@ pub fn eval_wiles(
     block: &Block,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    enclosing_scope: Option<ScopeId>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     loop {
-        let result = eval_expr(expr, scopes, current_scope, ctx)?;
+        let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
 
         let condition = if let Value::Bool(condition) = result {
             condition
@@ -134,8 +138,9 @@ pub fn eval_break(
     expr: &Expr,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    enclosing_scope: Option<ScopeId>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
-    let val = eval_expr(expr, scopes, current_scope, ctx)?;
+    let val = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
     Ok(Value::Break(Box::new(val)))
 }

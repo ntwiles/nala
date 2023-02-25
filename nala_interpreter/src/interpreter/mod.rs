@@ -39,7 +39,7 @@ pub fn eval_tree(program: Program, ctx: &mut impl IoContext) -> Result<Value, Na
 
     match program {
         Program::Block(block) => eval_block(&block, &mut scopes, top_scope, ctx),
-        Program::Stmts(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, ctx),
+        Program::Stmts(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, None, ctx),
     }
 }
 
@@ -49,7 +49,7 @@ pub fn eval_term(
     current_scope: ScopeId,
 ) -> Result<Value, NalaRuntimeError> {
     match term {
-        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope)?),
+        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, None)?),
         Term::Value(value) => Ok(value),
     }
 }

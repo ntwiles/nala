@@ -38,6 +38,7 @@ pub fn eval_assign(
     value: &Value,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    enclosing_scope: Option<ScopeId>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match variable {
@@ -49,7 +50,7 @@ pub fn eval_assign(
                         eval_member_access(None, member_access, scopes, current_scope, ctx)?;
 
                     let index = if let Value::Num(index) =
-                        eval_expr(index_expr, scopes, current_scope, ctx)?
+                        eval_expr(index_expr, scopes, current_scope, enclosing_scope, ctx)?
                     {
                         index
                     } else {
@@ -65,8 +66,9 @@ pub fn eval_assign(
                     }
                 }
                 PlaceExpression::Symbol(ident) => {
-                    if scopes.binding_exists(&ident, current_scope) {
-                        let index_result = eval_expr(&index_expr, scopes, current_scope, ctx)?;
+                    if scopes.binding_exists(&ident, current_scope, enclosing_scope) {
+                        let index_result =
+                            eval_expr(&index_expr, scopes, current_scope, enclosing_scope, ctx)?;
 
                         if let Value::Void = value {
                             panic!("Cannot assign a value of type Void.");
@@ -78,7 +80,7 @@ pub fn eval_assign(
                             panic!("Index does not resolve to a Number.");
                         };
 
-                        let array = scopes.get_value(&ident, current_scope)?;
+                        let array = scopes.get_value(&ident, current_scope, enclosing_scope)?;
 
                         if let Value::Array(array) = array {
                             let array = Arc::clone(&array);
@@ -93,12 +95,12 @@ pub fn eval_assign(
             }
         }
         PlaceExpression::Symbol(ident) => {
-            if scopes.binding_exists(&ident, current_scope) {
+            if scopes.binding_exists(&ident, current_scope, enclosing_scope) {
                 if let Value::Void = value {
                     panic!("Cannot assign a value of type Void.");
                 }
 
-                let existing = scopes.get_value(&ident, current_scope)?;
+                let existing = scopes.get_value(&ident, current_scope, enclosing_scope)?;
 
                 let existing_type = existing.get_type(scopes, current_scope);
                 let value_type = value.get_type(scopes, current_scope);
@@ -123,9 +125,10 @@ pub fn eval_assign(
                     eval_member_access(None, &*parents, scopes, current_scope, ctx)?,
                     child,
                 ),
-                MemberAccess::MemberAccess(parent, child) => {
-                    (scopes.get_value(&parent, current_scope)?, child)
-                }
+                MemberAccess::MemberAccess(parent, child) => (
+                    scopes.get_value(&parent, current_scope, enclosing_scope)?,
+                    child,
+                ),
             };
 
             if let Value::Object(parent) = parent {
@@ -145,16 +148,19 @@ pub fn eval_place_expr(
     variable: &PlaceExpression,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    enclosing_scope: Option<ScopeId>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match variable {
         PlaceExpression::Index(place, expr) => {
-            let array = eval_place_expr(place, scopes, current_scope, ctx)?;
-            eval_index(&array, expr, scopes, current_scope, ctx)
+            let array = eval_place_expr(place, scopes, current_scope, enclosing_scope, ctx)?;
+            eval_index(&array, expr, scopes, current_scope, enclosing_scope, ctx)
         }
         PlaceExpression::Symbol(ident) => {
-            if scopes.binding_exists(&ident, current_scope) {
-                scopes.get_value(ident, current_scope)
+            // TODO: Why are we checking for binding and then getting the value in two steps?
+            // This check can probably just be removed, an error will be thrown regardless.
+            if scopes.binding_exists(&ident, current_scope, enclosing_scope) {
+                scopes.get_value(ident, current_scope, enclosing_scope)
             } else {
                 Err(NalaRuntimeError {
                     message: format!("Unknown identifier `{}`", ident),

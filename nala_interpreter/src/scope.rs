@@ -55,6 +55,7 @@ fn assign_immutable_binding_error(ident: &str) -> NalaRuntimeError {
     }
 }
 
+// Why is this a struct and not just a usize?
 #[derive(Debug, Clone, Copy)]
 pub struct ScopeId {
     index: usize,
@@ -105,14 +106,26 @@ impl Scopes {
         }
     }
 
+    // TODO: There must be a way to avoid all these gross match statements.
     pub fn get_value(
         self: &Self,
         ident: &str,
         starting_scope: ScopeId,
+        enclosing_scope: Option<ScopeId>,
     ) -> Result<Value, NalaRuntimeError> {
-        match self.get_maybe_value(ident, starting_scope) {
-            Some(value) => Ok(value),
-            None => Err(not_found_in_scope_error(ident)),
+        if let Some(enclosing_scope) = enclosing_scope {
+            match self.get_maybe_value(ident, enclosing_scope) {
+                Some(value) => return Ok(value),
+                None => match self.get_maybe_value(ident, starting_scope) {
+                    Some(value) => Ok(value),
+                    None => Err(not_found_in_scope_error(ident)),
+                },
+            }
+        } else {
+            match self.get_maybe_value(ident, starting_scope) {
+                Some(value) => Ok(value),
+                None => Err(not_found_in_scope_error(ident)),
+            }
         }
     }
 
@@ -206,8 +219,26 @@ impl Scopes {
         }
     }
 
-    pub fn binding_exists(self: &Self, ident: &str, current_scope: ScopeId) -> bool {
-        self.get_maybe_value(ident, current_scope).is_some()
+    fn binding_exists_enclosing(
+        self: &Self,
+        ident: &str,
+        enclosing_scope: Option<ScopeId>,
+    ) -> bool {
+        if let Some(enclosing_scope) = enclosing_scope {
+            self.get_maybe_value(ident, enclosing_scope).is_some()
+        } else {
+            false
+        }
+    }
+
+    pub fn binding_exists(
+        self: &Self,
+        ident: &str,
+        current_scope: ScopeId,
+        enclosing_scope: Option<ScopeId>,
+    ) -> bool {
+        self.binding_exists_enclosing(ident, enclosing_scope)
+            || self.get_maybe_value(ident, current_scope).is_some()
     }
 
     // TODO: Get rid of this and just have `add_binding` return a Result.

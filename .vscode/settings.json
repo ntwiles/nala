@@ -8,5 +8,6 @@
               "underline": false,
           }
       }
-  }
+  },
+  "editor.rulers": [80],
 }

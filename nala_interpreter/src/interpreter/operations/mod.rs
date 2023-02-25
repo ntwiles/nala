@@ -20,22 +20,23 @@ pub fn eval_addend(
     addend: &Addend,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    enclosing_scope: Option<ScopeId>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match addend {
         Addend::Add(left, right) => {
-            let left = eval_addend(left, scopes, current_scope, ctx)?;
-            let right = eval_factor(right, scopes, current_scope, ctx)?;
+            let left = eval_addend(left, scopes, current_scope, enclosing_scope, ctx)?;
+            let right = eval_factor(right, scopes, current_scope, enclosing_scope, ctx)?;
 
             do_add(left, right, scopes, current_scope)
         }
         Addend::Sub(left, right) => {
-            let left = eval_addend(left, scopes, current_scope, ctx)?;
-            let right = eval_factor(right, scopes, current_scope, ctx)?;
+            let left = eval_addend(left, scopes, current_scope, enclosing_scope, ctx)?;
+            let right = eval_factor(right, scopes, current_scope, enclosing_scope, ctx)?;
 
             do_subtract(left, right, scopes, current_scope)
         }
-        Addend::Factor(factor) => eval_factor(factor, scopes, current_scope, ctx),
+        Addend::Factor(factor) => eval_factor(factor, scopes, current_scope, enclosing_scope, ctx),
     }
 }
 
@@ -43,22 +44,25 @@ pub fn eval_factor(
     factor: &Factor,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    enclosing_scope: Option<ScopeId>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match factor {
         Factor::Mult(left, right) => {
-            let left = eval_factor(left, scopes, current_scope, ctx)?;
+            let left = eval_factor(left, scopes, current_scope, enclosing_scope, ctx)?;
             let right = eval_term(right.clone(), scopes, current_scope)?;
 
             do_multiply(left, right, scopes, current_scope)
         }
         Factor::Div(left, right) => {
-            let left = eval_factor(left, scopes, current_scope, ctx)?;
+            let left = eval_factor(left, scopes, current_scope, enclosing_scope, ctx)?;
             let right = eval_term(right.clone(), scopes, current_scope)?;
 
             do_divide(left, right, scopes, current_scope)
         }
-        Factor::Invocation(call) => eval_invocation(call, scopes, current_scope, ctx),
+        Factor::Invocation(call) => {
+            eval_invocation(call, scopes, current_scope, enclosing_scope, ctx)
+        }
     }
 }
 
@@ -78,13 +82,13 @@ mod tests {
 
             let mut scopes = Scopes::new();
             let top_scope = scopes.new_scope(None);
-            $interpreter($tree, &mut scopes, top_scope, &mut test_context)
+            $interpreter($tree, &mut scopes, top_scope, None, &mut test_context)
         }};
 
         ($tree: expr, $interpreter: expr, $ctx: expr) => {{
             let mut scopes = Scopes::new();
             let top_scope = scopes.new_scope(None);
-            $interpreter($tree, &mut scopes, top_scope, &mut $ctx)
+            $interpreter($tree, &mut scopes, top_scope, None, &mut $ctx)
         }};
     }
 

@@ -56,6 +56,7 @@ pub fn eval_func(
                     params: params.clone(), // TODO: Do we need this clone? Do we need to be borrowing in the params?
                     return_type: return_type.clone(),
                     block: block.clone(),
+                    closure_scope: current_scope,
                 }),
                 false,
             );
@@ -121,21 +122,22 @@ pub fn eval_invocation(
     call: &Invocation,
     scopes: &mut Scopes,
     current_scope: ScopeId,
+    enclosing_scope: Option<ScopeId>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match call {
         Invocation::Invocation(place, args) => {
-            let block = eval_place_expr(place, scopes, current_scope, ctx)?;
+            let block = eval_place_expr(place, scopes, current_scope, enclosing_scope, ctx)?;
 
             if let Value::Func(StoredFunc {
                 params,
-                return_type,
                 block,
+                closure_scope,
+                ..
             }) = block
             {
-                let func_scope = scopes.new_scope(Some(current_scope));
-
-                let args = eval_elems(&*args, scopes, func_scope, ctx)?;
+                let call_scope = scopes.new_scope(Some(current_scope));
+                let args = eval_elems(&*args, scopes, call_scope, enclosing_scope, ctx)?;
 
                 if params.len() != args.len() {
                     panic!(
@@ -170,19 +172,23 @@ pub fn eval_invocation(
                         }
                     }
 
-                    scopes.add_binding(&param.ident, func_scope, arg.clone(), false);
+                    scopes.add_binding(&param.ident, call_scope, arg.clone(), false);
                     param_args.entry(param.ident.clone()).or_insert(arg.clone());
                 }
 
                 match *block {
-                    Block::NalaBlock(stmts) => eval_stmts(&stmts, scopes, func_scope, ctx),
+                    Block::NalaBlock(stmts) => {
+                        eval_stmts(&stmts, scopes, call_scope, Some(closure_scope), ctx)
+                    }
                     Block::RustBlock(func) => Ok(func(param_args, ctx)),
                 }
             } else {
                 panic!("Cannot invoke a non-function.")
             }
         }
-        Invocation::PlaceExpression(place) => eval_place_expr(place, scopes, current_scope, ctx),
+        Invocation::PlaceExpression(place) => {
+            eval_place_expr(place, scopes, current_scope, enclosing_scope, ctx)
+        }
         Invocation::Value(value) => Ok(value.clone()),
     }
 }

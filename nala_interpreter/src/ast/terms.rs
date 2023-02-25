@@ -29,6 +29,7 @@ pub struct StoredFunc {
     pub params: Vec<Param>,
     pub return_type: TypeLiteralVariant,
     pub block: Box<Block>,
+    pub closure_scope: ScopeId,
 }
 
 #[derive(Debug, Clone)]
@@ -77,7 +78,7 @@ impl fmt::Display for Value {
             Value::Func(StoredFunc {
                 params,
                 return_type,
-                block: _,
+                ..
             }) => {
                 let mut params: Vec<String> = params
                     .to_vec()
@@ -130,7 +131,7 @@ impl Value {
             Value::Func(StoredFunc {
                 params,
                 return_type,
-                block: _,
+                ..
             }) => {
                 let mut param_types: Vec<TypeVariant> = params
                     .into_iter()
