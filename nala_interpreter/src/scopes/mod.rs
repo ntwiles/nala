@@ -4,7 +4,6 @@ use crate::{ast::terms::*, errors::*, types::struct_field::StructField};
 
 use self::scope::Scope;
 
-// TODO: Pull this out to its own file.
 #[derive(Debug)]
 pub struct Scopes {
     scopes: Vec<Scope>,
