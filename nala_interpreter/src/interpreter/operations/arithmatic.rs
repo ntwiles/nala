@@ -38,9 +38,9 @@ pub fn do_subtract(
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
     if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
-        return Err(RuntimeError {
-            message: "Cannot subtract between values of two different types.".to_string(),
-        });
+        return Err(RuntimeError::new(
+            "Cannot subtract between values of two different types.",
+        ));
     }
 
     if let Value::Num(left) = left {
@@ -61,9 +61,9 @@ pub fn do_multiply(
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
     if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
-        return Err(RuntimeError {
-            message: "Cannot multiply between values of two different types.".to_string(),
-        });
+        return Err(RuntimeError::new(
+            "Cannot multiply between values of two different types.",
+        ));
     }
 
     if let Value::Num(left) = left {
@@ -84,9 +84,9 @@ pub fn do_divide(
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
     if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
-        return Err(RuntimeError {
-            message: "Cannot divide between values of two different types.".to_string(),
-        });
+        return Err(RuntimeError::new(
+            "Cannot divide between values of two different types.",
+        ));
     }
 
     if let Value::Num(left) = left {
@@ -94,9 +94,7 @@ pub fn do_divide(
             if right != 0.0 {
                 Ok(Value::Num(left / right))
             } else {
-                Err(RuntimeError {
-                    message: "Cannot divide by zero.".to_string(),
-                })
+                Err(RuntimeError::new("Cannot divide by zero."))
             }
         } else {
             unreachable!()

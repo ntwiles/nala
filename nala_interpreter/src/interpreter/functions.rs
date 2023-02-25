@@ -155,7 +155,7 @@ fn nesting_not_supported_error(outer: String, inner: &Vec<TypeLiteralVariant>) -
         .collect::<Vec<String>>()
         .join(", ");
 
-    RuntimeError::new(format!(
+    RuntimeError::new(&format!(
         "Type `{outer}` does not support nesting. Type `{outer}<{inner}>` is invalid."
     ))
 }
@@ -165,7 +165,7 @@ fn wrong_arg_type_for_param_error(
     arg_type: String,
     param_type: String,
 ) -> RuntimeError {
-    RuntimeError::new(format!(
+    RuntimeError::new(&format!(
         "Passed value `{arg_value}` of type `{arg_type}` to function where `{param_type}` was expected.")
     )
 }

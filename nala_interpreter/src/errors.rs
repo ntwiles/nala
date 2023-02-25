@@ -4,7 +4,9 @@ pub struct RuntimeError {
 }
 
 impl RuntimeError {
-    pub fn new(message: String) -> RuntimeError {
-        RuntimeError { message }
+    pub fn new(message: &str) -> RuntimeError {
+        RuntimeError {
+            message: message.to_string(),
+        }
     }
 }

@@ -130,7 +130,7 @@ impl Scopes {
         is_mutable: bool,
     ) -> Result<Value, RuntimeError> {
         if self.binding_exists_local(ident, current_scope) {
-            Err(RuntimeError::new(format!(
+            Err(RuntimeError::new(&format!(
                 "Binding for {} already exists in local scope.",
                 ident
             )))
@@ -148,7 +148,7 @@ impl Scopes {
         fields: Vec<StructField>,
     ) -> Result<Value, RuntimeError> {
         if self.struct_binding_exists_local(ident, current_scope) {
-            Err(RuntimeError::new(format!(
+            Err(RuntimeError::new(&format!(
                 "Binding for struct {} already exists in local scope.",
                 ident
             )))
@@ -195,9 +195,8 @@ impl Scopes {
 }
 
 fn not_found_in_scope_error(ident: &str) -> RuntimeError {
-    RuntimeError::new(format!(
-        "Identifier '{}' was not found in this scope.",
-        ident
+    RuntimeError::new(&format!(
+        "Identifier '{ident}' was not found in this scope."
     ))
 }
 
