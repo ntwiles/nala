@@ -9,14 +9,14 @@ use crate::{
     },
     errors::NalaRuntimeError,
     io_context::IoContext,
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
 };
 
 pub fn eval_if_else_chain(
     chain: &IfElseChain,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let IfElseChain {
@@ -52,8 +52,8 @@ pub fn eval_if_else_chain(
 fn eval_cond(
     cond: &Expr,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<bool, NalaRuntimeError> {
     if let Value::Bool(cond) = eval_expr(cond, scopes, current_scope, enclosing_scope, ctx)? {
@@ -70,8 +70,8 @@ pub fn eval_for(
     expr: &Expr,
     block: &Block,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
@@ -107,8 +107,8 @@ pub fn eval_wiles(
     expr: &Expr,
     block: &Block,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     loop {
@@ -137,8 +137,8 @@ pub fn eval_wiles(
 pub fn eval_break(
     expr: &Expr,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let val = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;

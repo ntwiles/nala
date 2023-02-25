@@ -2,7 +2,7 @@ use crate::{
     ast::{terms::*, types::*, *},
     errors::NalaRuntimeError,
     io_context::IoContext,
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
 };
 
 use super::{basic::*, operations::*};
@@ -10,7 +10,7 @@ use super::{basic::*, operations::*};
 pub fn eval_variant(
     variant: &VariantValue,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let (enum_name, variant, data) = match variant {

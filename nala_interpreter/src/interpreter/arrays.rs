@@ -7,7 +7,7 @@ use crate::{
     ast::{arrays::*, terms::Value, Expr},
     errors::NalaRuntimeError,
     io_context::IoContext,
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
 };
 
 use super::basic::*;
@@ -16,8 +16,8 @@ pub fn eval_index(
     array: &Value,
     index_expr: &Expr,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let index = eval_expr(index_expr, scopes, current_scope, enclosing_scope, ctx)?;
@@ -40,8 +40,8 @@ pub fn eval_index(
 pub fn eval_array(
     array: &Array,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let values = eval_elems(&array.elems, scopes, current_scope, enclosing_scope, ctx)?;

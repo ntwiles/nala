@@ -2,7 +2,7 @@ use crate::{
     ast::{terms::*, types::primitive_type::PrimitiveType},
     errors::*,
     interpreter::operations::errors::*,
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
     types::{type_variant::TypeVariant, NalaType},
 };
 
@@ -10,7 +10,7 @@ pub fn eval_lt(
     left: Value,
     right: Value,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
 ) -> Result<Value, NalaRuntimeError> {
     match left {
         Value::Num(left) => Ok(num_lt(left, right, scopes, current_scope)),
@@ -20,7 +20,7 @@ pub fn eval_lt(
     }
 }
 
-fn num_lt(left: f32, right: Value, scopes: &mut Scopes, current_scope: ScopeId) -> Value {
+fn num_lt(left: f32, right: Value, scopes: &mut Scopes, current_scope: usize) -> Value {
     match right {
         Value::Num(right) => Value::Bool(left < right),
         right => panic_oper_not_impl_for(
@@ -31,7 +31,7 @@ fn num_lt(left: f32, right: Value, scopes: &mut Scopes, current_scope: ScopeId) 
     }
 }
 
-fn string_lt(left: String, right: Value, scopes: &mut Scopes, current_scope: ScopeId) -> Value {
+fn string_lt(left: String, right: Value, scopes: &mut Scopes, current_scope: usize) -> Value {
     match right {
         Value::String(right) => Value::Bool(left < right),
         right => panic_oper_not_impl_for(
@@ -42,7 +42,7 @@ fn string_lt(left: String, right: Value, scopes: &mut Scopes, current_scope: Sco
     }
 }
 
-fn bool_lt(left: bool, right: Value, scopes: &mut Scopes, current_scope: ScopeId) -> Value {
+fn bool_lt(left: bool, right: Value, scopes: &mut Scopes, current_scope: usize) -> Value {
     match right {
         Value::Bool(right) => Value::Bool(left < right),
         right => panic_oper_not_impl_for(

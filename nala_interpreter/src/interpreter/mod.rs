@@ -46,7 +46,7 @@ pub fn eval_tree(program: Program, ctx: &mut impl IoContext) -> Result<Value, Na
 pub fn eval_term(
     term: Term,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
 ) -> Result<Value, NalaRuntimeError> {
     match term {
         Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, None)?),

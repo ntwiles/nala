@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::{
     ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
 };
 
 use self::struct_field::StructField;
@@ -17,7 +17,7 @@ pub enum NalaType {
 }
 
 impl NalaType {
-    pub fn from_literal(literal: TypeLiteral, scopes: &mut Scopes, current_scope: ScopeId) -> Self {
+    pub fn from_literal(literal: TypeLiteral, scopes: &mut Scopes, current_scope: usize) -> Self {
         match literal {
             TypeLiteral::PrimitiveType(t) => NalaType::PrimitiveType(t),
             TypeLiteral::UserDefined(ident) => {

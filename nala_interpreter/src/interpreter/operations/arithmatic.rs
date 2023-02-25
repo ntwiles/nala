@@ -1,14 +1,10 @@
-use crate::{
-    ast::terms::Value,
-    errors::NalaRuntimeError,
-    scope::{ScopeId, Scopes},
-};
+use crate::{ast::terms::Value, errors::NalaRuntimeError, scope::Scopes};
 
 pub fn do_add(
     left: Value,
     right: Value,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
 ) -> Result<Value, NalaRuntimeError> {
     if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
         return Err(NalaRuntimeError {
@@ -39,7 +35,7 @@ pub fn do_subtract(
     left: Value,
     right: Value,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
 ) -> Result<Value, NalaRuntimeError> {
     if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
         return Err(NalaRuntimeError {
@@ -62,7 +58,7 @@ pub fn do_multiply(
     left: Value,
     right: Value,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
 ) -> Result<Value, NalaRuntimeError> {
     if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
         return Err(NalaRuntimeError {
@@ -85,7 +81,7 @@ pub fn do_divide(
     left: Value,
     right: Value,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
 ) -> Result<Value, NalaRuntimeError> {
     if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
         return Err(NalaRuntimeError {

@@ -16,7 +16,7 @@ pub fn eval_member_access(
     parent_obj: Option<Arc<Mutex<HashMap<String, Value>>>>,
     member_access: &MemberAccess,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match member_access {
@@ -71,8 +71,8 @@ pub fn eval_member_access(
 pub fn eval_object(
     object: &Object,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     let object: HashMap<String, Value> =
@@ -84,8 +84,8 @@ pub fn eval_object(
 fn eval_object_entries(
     entries: &Vec<KeyValuePair>,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<HashMap<String, Value>, NalaRuntimeError> {
     let results: Vec<Result<(String, Value), NalaRuntimeError>> = entries
@@ -110,8 +110,8 @@ fn eval_object_entries(
 fn eval_object_entry(
     entry: &KeyValuePair,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<(String, Value), NalaRuntimeError> {
     let value = eval_expr(&*entry.value, scopes, current_scope, enclosing_scope, ctx)?;

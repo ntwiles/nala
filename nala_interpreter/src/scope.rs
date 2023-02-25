@@ -4,13 +4,13 @@ use crate::{ast::terms::*, errors::*, types::struct_field::StructField};
 
 #[derive(Debug)]
 pub struct Scope {
-    parent: Option<ScopeId>,
+    parent: Option<usize>,
     bindings: HashMap<String, (Value, bool)>,
     type_bindings: HashMap<String, Vec<StructField>>,
 }
 
 impl Scope {
-    pub fn new(parent: Option<ScopeId>) -> Scope {
+    pub fn new(parent: Option<usize>) -> Scope {
         Scope {
             parent,
             bindings: HashMap::new(),
@@ -55,12 +55,6 @@ fn assign_immutable_binding_error(ident: &str) -> NalaRuntimeError {
     }
 }
 
-// Why is this a struct and not just a usize?
-#[derive(Debug, Clone, Copy)]
-pub struct ScopeId {
-    index: usize,
-}
-
 // TODO: Pull this out to its own file.
 #[derive(Debug)]
 pub struct Scopes {
@@ -72,14 +66,14 @@ impl Scopes {
         Scopes { scopes: vec![] }
     }
 
-    pub fn new_scope(&mut self, parent: Option<ScopeId>) -> ScopeId {
+    pub fn new_scope(&mut self, parent: Option<usize>) -> usize {
         let next_index = self.scopes.len();
         self.scopes.push(Scope::new(parent));
-        ScopeId { index: next_index }
+        next_index
     }
 
-    fn get_maybe_value(self: &Self, ident: &str, current_scope: ScopeId) -> Option<Value> {
-        let scope = self.scopes.get(current_scope.index).unwrap();
+    fn get_maybe_value(self: &Self, ident: &str, current_scope: usize) -> Option<Value> {
+        let scope = self.scopes.get(current_scope).unwrap();
 
         match scope.get_binding(&ident) {
             Some((value, _)) => Some(value),
@@ -93,9 +87,9 @@ impl Scopes {
     fn get_maybe_struct(
         self: &Self,
         ident: &str,
-        current_scope: ScopeId,
+        current_scope: usize,
     ) -> Option<&Vec<StructField>> {
-        let scope = self.scopes.get(current_scope.index).unwrap();
+        let scope = self.scopes.get(current_scope).unwrap();
 
         match scope.get_struct_binding(&ident) {
             Some(fields) => Some(fields),
@@ -110,8 +104,8 @@ impl Scopes {
     pub fn get_value(
         self: &Self,
         ident: &str,
-        starting_scope: ScopeId,
-        enclosing_scope: Option<ScopeId>,
+        starting_scope: usize,
+        enclosing_scope: Option<usize>,
     ) -> Result<Value, NalaRuntimeError> {
         if let Some(enclosing_scope) = enclosing_scope {
             match self.get_maybe_value(ident, enclosing_scope) {
@@ -132,7 +126,7 @@ impl Scopes {
     pub fn get_struct(
         self: &Self,
         ident: &str,
-        starting_scope: ScopeId,
+        starting_scope: usize,
     ) -> Result<Vec<StructField>, NalaRuntimeError> {
         match self.get_maybe_struct(ident, starting_scope) {
             Some(value) => Ok(value.clone()),
@@ -143,12 +137,12 @@ impl Scopes {
     fn find_scope_with_binding(
         self: &mut Self,
         ident: &str,
-        current_scope_id: ScopeId,
+        current_scope_id: usize,
     ) -> Option<&mut Scope> {
         if self.binding_exists_local(ident, current_scope_id) {
-            Some(self.scopes.get_mut(current_scope_id.index).unwrap())
+            Some(self.scopes.get_mut(current_scope_id).unwrap())
         } else {
-            let parent = self.scopes.get_mut(current_scope_id.index).unwrap().parent;
+            let parent = self.scopes.get_mut(current_scope_id).unwrap().parent;
 
             if let Some(parent) = parent {
                 self.find_scope_with_binding(ident, parent)
@@ -161,7 +155,7 @@ impl Scopes {
     pub fn mutate_value(
         self: &mut Self,
         ident: &str,
-        current_scope: ScopeId,
+        current_scope: usize,
         new_value: Value,
     ) -> Result<Value, NalaRuntimeError> {
         let scope = self.find_scope_with_binding(ident, current_scope);
@@ -183,7 +177,7 @@ impl Scopes {
     pub fn add_binding(
         self: &mut Self,
         ident: &str,
-        current_scope: ScopeId,
+        current_scope: usize,
         value: Value,
         is_mutable: bool,
     ) -> Result<Value, NalaRuntimeError> {
@@ -193,7 +187,7 @@ impl Scopes {
                 ident
             )))
         } else {
-            let scope = self.scopes.get_mut(current_scope.index).unwrap();
+            let scope = self.scopes.get_mut(current_scope).unwrap();
             scope.add_binding(ident, value, is_mutable);
             Ok(Value::Void)
         }
@@ -202,7 +196,7 @@ impl Scopes {
     pub fn add_struct_binding(
         self: &mut Self,
         ident: &str,
-        current_scope: ScopeId,
+        current_scope: usize,
         fields: Vec<StructField>,
     ) -> Result<Value, NalaRuntimeError> {
         if self.struct_binding_exists_local(ident, current_scope) {
@@ -211,17 +205,13 @@ impl Scopes {
                 ident
             )))
         } else {
-            let scope = self.scopes.get_mut(current_scope.index).unwrap();
+            let scope = self.scopes.get_mut(current_scope).unwrap();
             scope.add_struct_binding(ident, fields);
             Ok(Value::Void)
         }
     }
 
-    fn binding_exists_enclosing(
-        self: &Self,
-        ident: &str,
-        enclosing_scope: Option<ScopeId>,
-    ) -> bool {
+    fn binding_exists_enclosing(self: &Self, ident: &str, enclosing_scope: Option<usize>) -> bool {
         if let Some(enclosing_scope) = enclosing_scope {
             self.get_maybe_value(ident, enclosing_scope).is_some()
         } else {
@@ -232,24 +222,24 @@ impl Scopes {
     pub fn binding_exists(
         self: &Self,
         ident: &str,
-        current_scope: ScopeId,
-        enclosing_scope: Option<ScopeId>,
+        current_scope: usize,
+        enclosing_scope: Option<usize>,
     ) -> bool {
         self.binding_exists_enclosing(ident, enclosing_scope)
             || self.get_maybe_value(ident, current_scope).is_some()
     }
 
-    fn struct_binding_exists_local(self: &Self, ident: &str, current_scope: ScopeId) -> bool {
+    fn struct_binding_exists_local(self: &Self, ident: &str, current_scope: usize) -> bool {
         self.scopes
-            .get(current_scope.index)
+            .get(current_scope)
             .unwrap()
             .get_struct_binding(&ident)
             .is_some()
     }
 
-    fn binding_exists_local(self: &Self, ident: &str, current_scope: ScopeId) -> bool {
+    fn binding_exists_local(self: &Self, ident: &str, current_scope: usize) -> bool {
         self.scopes
-            .get(current_scope.index)
+            .get(current_scope)
             .unwrap()
             .get_binding(&ident)
             .is_some()

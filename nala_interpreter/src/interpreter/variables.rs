@@ -6,14 +6,14 @@ use crate::{
     ast::{objects::*, terms::*, *},
     errors::NalaRuntimeError,
     io_context::IoContext,
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
 };
 
 pub fn eval_declare(
     ident: &String,
     value: &Value,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
     is_mutable: bool,
 ) -> Result<Value, NalaRuntimeError> {
     if let Value::Void = value {
@@ -29,8 +29,8 @@ pub fn eval_assign(
     variable: &PlaceExpression,
     value: &Value,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match variable {
@@ -139,8 +139,8 @@ pub fn eval_assign(
 pub fn eval_place_expr(
     variable: &PlaceExpression,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match variable {

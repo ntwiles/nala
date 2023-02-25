@@ -1,17 +1,12 @@
 use crate::{
     ast::{terms::*, types::primitive_type::PrimitiveType},
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
     types::{type_variant::TypeVariant, NalaType},
 };
 
 use super::errors::panic_oper_not_impl_for;
 
-pub fn eval_equals(
-    left: Value,
-    right: Value,
-    scopes: &mut Scopes,
-    current_scope: ScopeId,
-) -> Value {
+pub fn eval_equals(left: Value, right: Value, scopes: &mut Scopes, current_scope: usize) -> Value {
     if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
         panic_oper_not_impl_for(
             "==",
@@ -34,7 +29,7 @@ fn variant_equals(
     left_data: Option<Box<Value>>,
     right: Value,
     _scopes: &mut Scopes,
-    _current_scope: ScopeId,
+    _current_scope: usize,
 ) -> Value {
     if let Value::Variant(right_enum, right_variant, right_data) = right {
         let enums_match = left_enum == right_enum;

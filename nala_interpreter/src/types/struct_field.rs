@@ -1,9 +1,6 @@
 use std::cmp::Ordering;
 
-use crate::{
-    ast::types::StructLiteralField,
-    scope::{ScopeId, Scopes},
-};
+use crate::{ast::types::StructLiteralField, scope::Scopes};
 
 use super::type_variant::TypeVariant;
 
@@ -17,7 +14,7 @@ impl StructField {
     pub fn from_literal(
         field: StructLiteralField,
         scopes: &mut Scopes,
-        current_scope: ScopeId,
+        current_scope: usize,
     ) -> Self {
         Self {
             ident: field.ident,

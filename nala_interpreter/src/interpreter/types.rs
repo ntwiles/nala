@@ -1,7 +1,7 @@
 use crate::{
     ast::{terms::Value, types::StructLiteralField},
     errors::NalaRuntimeError,
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
     types::struct_field::StructField,
 };
 
@@ -9,7 +9,7 @@ pub fn eval_struct(
     ident: &str,
     fields: Vec<StructLiteralField>,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
 ) -> Result<Value, NalaRuntimeError> {
     let fields = fields
         .into_iter()

@@ -5,7 +5,7 @@ use std::{
 };
 
 use crate::{
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
     types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
 };
 
@@ -29,7 +29,7 @@ pub struct StoredFunc {
     pub params: Vec<Param>,
     pub return_type: TypeLiteralVariant,
     pub block: Box<Block>,
-    pub closure_scope: ScopeId,
+    pub closure_scope: usize,
 }
 
 #[derive(Debug, Clone)]
@@ -110,7 +110,7 @@ impl fmt::Display for Value {
 }
 
 impl Value {
-    pub fn get_type(&self, scopes: &mut Scopes, current_scope: ScopeId) -> TypeVariant {
+    pub fn get_type(&self, scopes: &mut Scopes, current_scope: usize) -> TypeVariant {
         match self {
             Value::Array(items) => {
                 let items = Arc::clone(items);

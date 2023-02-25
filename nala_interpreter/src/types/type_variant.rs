@@ -1,9 +1,6 @@
 use std::fmt;
 
-use crate::{
-    ast::types::type_literal_variant::TypeLiteralVariant,
-    scope::{ScopeId, Scopes},
-};
+use crate::{ast::types::type_literal_variant::TypeLiteralVariant, scope::Scopes};
 
 use super::NalaType;
 
@@ -17,7 +14,7 @@ impl TypeVariant {
     pub fn from_literal(
         literal: TypeLiteralVariant,
         scopes: &mut Scopes,
-        current_scope: ScopeId,
+        current_scope: usize,
     ) -> Self {
         match literal {
             TypeLiteralVariant::Nested(p, c) => TypeVariant::Composite(

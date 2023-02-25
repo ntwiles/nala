@@ -9,7 +9,7 @@ use crate::{
     errors::NalaRuntimeError,
     interpreter::eval_term,
     io_context::IoContext,
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
 };
 
 use super::functions::*;
@@ -19,8 +19,8 @@ use self::arithmatic::*;
 pub fn eval_addend(
     addend: &Addend,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match addend {
@@ -43,8 +43,8 @@ pub fn eval_addend(
 pub fn eval_factor(
     factor: &Factor,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match factor {

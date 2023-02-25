@@ -14,7 +14,7 @@ use crate::{
     },
     errors::*,
     io_context::IoContext,
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
     types::type_variant::TypeVariant,
 };
 
@@ -34,7 +34,7 @@ fn wrong_arg_type_for_param_error(
 pub fn eval_func(
     func: &Func,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
 ) -> Result<Value, NalaRuntimeError> {
     let Func {
         ident,
@@ -115,8 +115,8 @@ fn check_param_type(param_type: &TypeLiteralVariant) -> Result<(), String> {
 pub fn eval_invocation(
     call: &Invocation,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match call {

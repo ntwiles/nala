@@ -1,7 +1,7 @@
 use crate::{
     ast::{terms::*, types::primitive_type::PrimitiveType},
     errors::*,
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
     types::{type_variant::TypeVariant, NalaType},
 };
 
@@ -11,7 +11,7 @@ pub fn eval_gt(
     left: Value,
     right: Value,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
 ) -> Result<Value, NalaRuntimeError> {
     match left {
         Value::Num(left) => match right {

@@ -12,13 +12,13 @@ use crate::{
     ast::{terms::*, *},
     errors::NalaRuntimeError,
     io_context::IoContext,
-    scope::{ScopeId, Scopes},
+    scope::Scopes,
 };
 
 pub fn eval_block(
     block: &Block,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
+    current_scope: usize,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     if let Block::NalaBlock(stmts) = block {
@@ -32,8 +32,8 @@ pub fn eval_block(
 pub fn eval_stmts(
     stmts: &Stmts,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match stmts {
@@ -53,8 +53,8 @@ pub fn eval_stmts(
 fn eval_stmt(
     stmt: &Stmt,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match stmt {
@@ -91,8 +91,8 @@ fn eval_stmt(
 pub fn eval_expr(
     expr: &Expr,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, NalaRuntimeError> {
     match expr {
@@ -123,8 +123,8 @@ pub fn eval_expr(
 pub fn eval_elems(
     elems: &Vec<Expr>,
     scopes: &mut Scopes,
-    current_scope: ScopeId,
-    enclosing_scope: Option<ScopeId>,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Vec<Value>, NalaRuntimeError> {
     let results: Vec<Result<Value, NalaRuntimeError>> = elems
