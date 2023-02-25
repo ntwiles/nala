@@ -156,17 +156,7 @@ pub fn eval_place_expr(
             let array = eval_place_expr(place, scopes, current_scope, enclosing_scope, ctx)?;
             eval_index(&array, expr, scopes, current_scope, enclosing_scope, ctx)
         }
-        PlaceExpression::Symbol(ident) => {
-            // TODO: Why are we checking for binding and then getting the value in two steps?
-            // This check can probably just be removed, an error will be thrown regardless.
-            if scopes.binding_exists(&ident, current_scope, enclosing_scope) {
-                scopes.get_value(ident, current_scope, enclosing_scope)
-            } else {
-                Err(NalaRuntimeError {
-                    message: format!("Unknown identifier `{}`", ident),
-                })
-            }
-        }
+        PlaceExpression::Symbol(ident) => scopes.get_value(ident, current_scope, enclosing_scope),
         PlaceExpression::MemberAccess(member_access) => {
             eval_member_access(None, member_access, scopes, current_scope, ctx)
         }
