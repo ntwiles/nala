@@ -21,7 +21,13 @@ impl NalaType {
         match literal {
             TypeLiteral::PrimitiveType(t) => NalaType::PrimitiveType(t),
             TypeLiteral::UserDefined(ident) => {
-                NalaType::Struct(scopes.get_struct(&ident, current_scope).unwrap())
+                let binding = scopes
+                    .get_type(&ident, current_scope)
+                    .unwrap()
+                    .as_struct()
+                    .unwrap();
+
+                NalaType::Struct(binding)
             }
             TypeLiteral::Struct(fields) => NalaType::Struct(
                 fields

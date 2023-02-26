@@ -44,6 +44,7 @@ pub enum Stmt {
     Assign(PlaceExpression, Expr),
     Break(Expr),
     Declare(String, Expr, bool),
+    Enum(String, Vec<VariantDeclare>),
     Expr(Expr),
     For(String, Expr, Box<Block>),
     Func(Func),

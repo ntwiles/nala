@@ -2,11 +2,13 @@ use std::collections::HashMap;
 
 use crate::{ast::terms::Value, types::struct_field::StructField};
 
+use super::TypeBinding;
+
 #[derive(Debug)]
 pub struct Scope {
     pub parent: Option<usize>,
     bindings: HashMap<String, (Value, bool)>,
-    type_bindings: HashMap<String, Vec<StructField>>,
+    type_bindings: HashMap<String, TypeBinding>,
 }
 
 impl Scope {
@@ -18,12 +20,12 @@ impl Scope {
         }
     }
 
-    pub fn add_struct_binding(self: &mut Self, ident: &str, fields: Vec<StructField>) {
-        self.type_bindings.insert(ident.to_owned(), fields);
-    }
-
     pub fn add_binding(self: &mut Self, ident: &str, value: Value, is_mutable: bool) {
         self.bindings.insert(ident.to_owned(), (value, is_mutable));
+    }
+
+    pub fn add_type_binding(self: &mut Self, ident: &str, value: TypeBinding) {
+        self.type_bindings.insert(ident.to_owned(), value);
     }
 
     pub fn get_binding(self: &Self, ident: &str) -> Option<(Value, bool)> {
@@ -34,7 +36,7 @@ impl Scope {
         }
     }
 
-    pub fn get_struct_binding(self: &Self, ident: &str) -> Option<&Vec<StructField>> {
+    pub fn get_type_binding(self: &Self, ident: &str) -> Option<&TypeBinding> {
         if let Some(binding) = self.type_bindings.get(ident) {
             Some(binding)
         } else {

@@ -1,8 +1,9 @@
 mod scope;
+pub mod type_binding;
 
-use crate::{ast::terms::*, errors::*, types::struct_field::StructField};
+use crate::{ast::terms::*, errors::*};
 
-use self::scope::Scope;
+use self::{scope::Scope, type_binding::TypeBinding};
 
 #[derive(Debug)]
 pub struct Scopes {
@@ -32,20 +33,14 @@ impl Scopes {
         }
     }
 
-    fn get_maybe_struct(
-        self: &Self,
-        ident: &str,
-        current_scope: usize,
-    ) -> Option<&Vec<StructField>> {
+    fn get_maybe_type(self: &Self, ident: &str, current_scope: usize) -> Option<&TypeBinding> {
         let scope = self.scopes.get(current_scope).unwrap();
 
-        match scope.get_struct_binding(&ident) {
-            Some(fields) => Some(fields),
-            None => match scope.parent {
-                Some(parent_scope) => self.get_maybe_struct(ident, parent_scope),
-                None => None,
-            },
-        }
+        scope.get_type_binding(ident).or_else(|| {
+            scope
+                .parent
+                .and_then(|parent_scope| self.get_maybe_type(ident, parent_scope))
+        })
     }
 
     // TODO: There must be a way to avoid all these gross match statements.
@@ -71,12 +66,12 @@ impl Scopes {
         }
     }
 
-    pub fn get_struct(
+    pub fn get_type(
         self: &Self,
         ident: &str,
         starting_scope: usize,
-    ) -> Result<Vec<StructField>, RuntimeError> {
-        match self.get_maybe_struct(ident, starting_scope) {
+    ) -> Result<TypeBinding, RuntimeError> {
+        match self.get_maybe_type(ident, starting_scope) {
             Some(value) => Ok(value.clone()),
             None => Err(not_found_in_scope_error(ident)),
         }
@@ -131,8 +126,7 @@ impl Scopes {
     ) -> Result<Value, RuntimeError> {
         if self.binding_exists_local(ident, current_scope) {
             Err(RuntimeError::new(&format!(
-                "Binding for {} already exists in local scope.",
-                ident
+                "Binding for {ident} already exists in local scope."
             )))
         } else {
             let scope = self.scopes.get_mut(current_scope).unwrap();
@@ -141,20 +135,19 @@ impl Scopes {
         }
     }
 
-    pub fn add_struct_binding(
+    pub fn add_type_binding(
         self: &mut Self,
         ident: &str,
         current_scope: usize,
-        fields: Vec<StructField>,
+        value: TypeBinding,
     ) -> Result<Value, RuntimeError> {
-        if self.struct_binding_exists_local(ident, current_scope) {
+        if self.type_binding_exists_local(ident, current_scope) {
             Err(RuntimeError::new(&format!(
-                "Binding for struct {} already exists in local scope.",
-                ident
+                "Binding for type {ident} already exists in local scope."
             )))
         } else {
             let scope = self.scopes.get_mut(current_scope).unwrap();
-            scope.add_struct_binding(ident, fields);
+            scope.add_type_binding(ident, value);
             Ok(Value::Void)
         }
     }
@@ -177,11 +170,11 @@ impl Scopes {
             || self.get_maybe_value(ident, current_scope).is_some()
     }
 
-    fn struct_binding_exists_local(self: &Self, ident: &str, current_scope: usize) -> bool {
+    fn type_binding_exists_local(self: &Self, ident: &str, current_scope: usize) -> bool {
         self.scopes
             .get(current_scope)
             .unwrap()
-            .get_struct_binding(&ident)
+            .get_type_binding(&ident)
             .is_some()
     }
 

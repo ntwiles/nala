@@ -4,7 +4,7 @@ use super::{
     functions::*,
     objects::*,
     operations::{equals::*, gt::*, lt::*, *},
-    types::eval_struct,
+    types::{eval_enum, eval_struct},
     variables::*,
 };
 
@@ -85,6 +85,7 @@ fn eval_stmt(
         Stmt::Expr(expr) => eval_expr(expr, scopes, current_scope, enclosing_scope, ctx),
         Stmt::Break(expr) => eval_break(expr, scopes, current_scope, enclosing_scope, ctx),
         Stmt::Struct(ident, fields) => eval_struct(ident, fields.clone(), scopes, current_scope),
+        Stmt::Enum(ident, variants) => eval_enum(ident, variants.clone(), scopes, current_scope),
     }
 }
 

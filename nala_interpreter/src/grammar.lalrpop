@@ -6,7 +6,7 @@ grammar;
 
 match {
     "{", "}", "(", ")", "[", "]", ";", ":", ".", ",",
-    "const", "mut", "if", "elif", "else", "for", "in", "wiles", "func", "break", "struct",
+    "const", "mut", "if", "elif", "else", "for", "in", "wiles", "func", "break", "struct", "enum",
     "=", "==", ">", "<", "+", "-", "*", "/",
     "Array", "Bool", "Func", "Number",  "Object", "String", "Void",
 
@@ -44,6 +44,7 @@ Stmt: ast::Stmt = {
         ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, return_type: r, block: Box::new(b)}),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
     "struct" <s:Symbol> "{" <ff:StructFields> "}" => ast::Stmt::Struct(s, ff),
+    "enum" <s:Symbol> "{" <v:VariantsDeclare> "}" => ast::Stmt::Enum(s, v),
     <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <e:Expr> ";" => ast::Stmt::Expr(e),
 };
