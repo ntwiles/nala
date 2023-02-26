@@ -34,20 +34,43 @@ pub fn eval_assign(
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match variable {
-        PlaceExpression::Index(place, index_expr) => {
-            match &**place {
-                PlaceExpression::Index(_, _) => todo!(),
-                PlaceExpression::MemberAccess(member_access) => {
-                    let array =
-                        eval_member_access(None, member_access, scopes, current_scope, ctx)?;
+        PlaceExpression::Index(place, index_expr) => match &**place {
+            PlaceExpression::Index(_, _) => todo!(),
+            PlaceExpression::MemberAccess(member_access) => {
+                let array = eval_member_access(None, member_access, scopes, current_scope, ctx)?;
 
-                    let index = if let Value::Num(index) =
-                        eval_expr(index_expr, scopes, current_scope, enclosing_scope, ctx)?
-                    {
+                let index = if let Value::Num(index) =
+                    eval_expr(index_expr, scopes, current_scope, enclosing_scope, ctx)?
+                {
+                    index
+                } else {
+                    todo!();
+                };
+
+                if let Value::Array(array) = array {
+                    let array = Arc::clone(&array);
+                    let mut array = array.lock().unwrap();
+                    array[index as usize] = value.clone();
+                } else {
+                    panic!("Trying to index into a non-Array.")
+                }
+            }
+            PlaceExpression::Symbol(ident) => {
+                if scopes.binding_exists(&ident, current_scope, enclosing_scope) {
+                    let index_result =
+                        eval_expr(&index_expr, scopes, current_scope, enclosing_scope, ctx)?;
+
+                    if let Value::Void = value {
+                        panic!("Cannot assign a value of type Void.");
+                    }
+
+                    let index = if let Value::Num(index) = index_result {
                         index
                     } else {
-                        todo!();
+                        panic!("Index does not resolve to a Number.");
                     };
+
+                    let array = scopes.get_value(&ident, current_scope, enclosing_scope)?;
 
                     if let Value::Array(array) = array {
                         let array = Arc::clone(&array);
@@ -57,35 +80,8 @@ pub fn eval_assign(
                         panic!("Trying to index into a non-Array.")
                     }
                 }
-                PlaceExpression::Symbol(ident) => {
-                    if scopes.binding_exists(&ident, current_scope, enclosing_scope) {
-                        let index_result =
-                            eval_expr(&index_expr, scopes, current_scope, enclosing_scope, ctx)?;
-
-                        if let Value::Void = value {
-                            panic!("Cannot assign a value of type Void.");
-                        }
-
-                        let index = if let Value::Num(index) = index_result {
-                            index
-                        } else {
-                            panic!("Index does not resolve to a Number.");
-                        };
-
-                        let array = scopes.get_value(&ident, current_scope, enclosing_scope)?;
-
-                        if let Value::Array(array) = array {
-                            let array = Arc::clone(&array);
-                            let mut array = array.lock().unwrap();
-                            array[index as usize] = value.clone();
-                            //return scopes.mutate_value(&ident, current_scope, Value::Array(array));
-                        } else {
-                            panic!("Trying to index into a non-Array.")
-                        }
-                    }
-                }
             }
-        }
+        },
         PlaceExpression::Symbol(ident) => {
             // TODO: Do we need to call binding_exists? Can we just call get_value?
             if scopes.binding_exists(&ident, current_scope, enclosing_scope) {
@@ -102,8 +98,8 @@ pub fn eval_assign(
                     return scopes.mutate_value(&ident, current_scope, value.clone());
                 } else {
                     return Err(RuntimeError::new(&format!(
-                        "Cannot assign a value of type {value_type} where {existing_type} is expected.",
-                    )));
+                    "Cannot assign a value of type {value_type} where {existing_type} is expected.",
+                )));
                 }
             } else {
                 panic!("Unknown identifier `{}`", ident);
