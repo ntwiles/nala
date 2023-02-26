@@ -1,6 +1,6 @@
 use nala_interpreter::io_context::TestContext;
 use regex::Regex;
-use test_util::{assert_regex_match, parse_and_interpret, rgx};
+use test_util::{assert_regex_match, parse_and_run, rgx};
 
 #[test]
 fn it_runs_declare_and_multiply() {
@@ -11,7 +11,7 @@ fn it_runs_declare_and_multiply() {
         print(7 * foo);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
+    assert!(parse_and_run(nala, &mut test_context).is_ok());
     assert_eq!(test_context.get_output(), vec!["28"]);
 }
 
@@ -24,7 +24,7 @@ fn it_runs_declare_basic() {
         print(foo);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
+    assert!(parse_and_run(nala, &mut test_context).is_ok());
     assert_eq!(test_context.get_output(), vec!["28"]);
 }
 
@@ -39,7 +39,7 @@ fn it_runs_declare_mutable() {
         print(mutable);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
+    assert!(parse_and_run(nala, &mut test_context).is_ok());
     assert_eq!(test_context.get_output(), vec!["7", "8"]);
 }
 
@@ -51,7 +51,7 @@ fn it_runs_string_special_chars() {
         print('!@#$%^&*()_+-=;:"');
     "#;
 
-    assert!(parse_and_interpret(nala, &mut test_context).is_ok());
+    assert!(parse_and_run(nala, &mut test_context).is_ok());
     assert_eq!(test_context.get_output(), vec!["!@#$%^&*()_+-=;:\""]);
 }
 
@@ -64,7 +64,7 @@ fn it_errors_when_assigning_wrong_type() {
         num = 'hello';
     "#;
 
-    let result = parse_and_interpret(nala, &mut TestContext::new());
+    let result = parse_and_run(nala, &mut TestContext::new());
 
     assert!(result.is_err());
     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
@@ -82,7 +82,7 @@ fn it_errors_when_assigning_type_void() {
         const void = returnVoid();
     "#;
 
-    let result = parse_and_interpret(nala, &mut TestContext::new());
+    let result = parse_and_run(nala, &mut TestContext::new());
 
     assert!(result.is_err());
     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)

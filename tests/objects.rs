@@ -1,6 +1,6 @@
 use nala_interpreter::io_context::TestContext;
 use regex::Regex;
-use test_util::{assert_regex_match, parse_and_interpret, rgx};
+use test_util::{assert_regex_match, parse_and_run, rgx};
 
 #[test]
 fn it_errors_when_doing_member_access_on_non_object() {
@@ -14,7 +14,7 @@ fn it_errors_when_doing_member_access_on_non_object() {
         const bad = object.number.field;
     "#;
 
-    let result = parse_and_interpret(nala, &mut TestContext::new());
+    let result = parse_and_run(nala, &mut TestContext::new());
 
     assert!(result.is_err());
     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)

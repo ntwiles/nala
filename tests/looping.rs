@@ -1,5 +1,5 @@
 use nala_interpreter::io_context::TestContext;
-use test_util::parse_and_interpret;
+use test_util::parse_and_run;
 
 #[test]
 fn it_runs_wiles_basic() {
@@ -15,7 +15,7 @@ fn it_runs_wiles_basic() {
         }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["h", "e", "l", "l"]);
 }
 
@@ -34,7 +34,7 @@ fn it_runs_array_for() {
         }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["foo", "bar", "baz", "qux"]);
 }
 
@@ -52,6 +52,6 @@ fn it_runs_array_empty() {
         print('This should print.');
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["This should print."]);
 }

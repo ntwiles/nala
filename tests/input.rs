@@ -1,5 +1,5 @@
 use nala_interpreter::io_context::TestContext;
-use test_util::parse_and_interpret;
+use test_util::parse_and_run;
 
 #[test]
 fn it_runs_input_basic() {
@@ -15,7 +15,7 @@ fn it_runs_input_basic() {
         print('Hello, ' + input);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), output);
 }
 
@@ -39,6 +39,6 @@ fn it_runs_input_numbers() {
         print(result);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), output);
 }

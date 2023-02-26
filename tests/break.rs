@@ -1,5 +1,5 @@
 use nala_interpreter::io_context::TestContext;
-use test_util::parse_and_interpret;
+use test_util::parse_and_run;
 
 #[test]
 fn it_runs_break_for() {
@@ -26,7 +26,7 @@ fn it_runs_break_for() {
         print(haystack[index]);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["needle"]);
 }
 
@@ -41,6 +41,6 @@ fn it_runs_break_wiles() {
         }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["foo"]);
 }

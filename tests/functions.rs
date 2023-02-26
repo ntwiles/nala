@@ -1,6 +1,6 @@
 use nala_interpreter::io_context::TestContext;
 use regex::Regex;
-use test_util::{assert_regex_match, parse_and_interpret, rgx};
+use test_util::{assert_regex_match, parse_and_run, rgx};
 
 #[test]
 fn it_runs_func_args() {
@@ -16,7 +16,7 @@ fn it_runs_func_args() {
         if (sum == 12) { print('works'); }
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["works"]);
 }
 
@@ -32,7 +32,7 @@ fn it_runs_func_basic() {
         printMessage();
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["Functions work!"]);
 }
 
@@ -52,7 +52,7 @@ fn it_runs_func_expressions() {
         print(foo() + bar());
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["foobar"]);
 }
 
@@ -69,7 +69,7 @@ fn it_runs_func_first_class() {
         bar('This should print.');
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["This should print."]);
 }
 
@@ -85,7 +85,7 @@ fn it_runs_func_return() {
         print(getMessage());
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["Function returns work!"]);
 }
 
@@ -102,7 +102,7 @@ fn it_errors_when_passing_primitive_when_nested_is_expected() {
         bad(false);
     "#;
 
-    let result = parse_and_interpret(nala, &mut TestContext::new());
+    let result = parse_and_run(nala, &mut TestContext::new());
 
     assert!(result.is_err());
     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
@@ -120,7 +120,7 @@ fn it_prints_function_type_correctly() {
         print(addFoo);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["Func<String, String>"]);
 }
 
@@ -142,7 +142,7 @@ fn it_supports_closures_in_scope() {
         closureTest();
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["closures work!"]);
 }
 
@@ -165,6 +165,6 @@ fn it_supports_closures_out_of_scope() {
         funcToCall();
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["closures REALLY work!"]);
 }

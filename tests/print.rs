@@ -1,5 +1,5 @@
 use nala_interpreter::io_context::TestContext;
-use test_util::parse_and_interpret;
+use test_util::parse_and_run;
 
 #[test]
 fn it_runs_print_expression() {
@@ -7,7 +7,7 @@ fn it_runs_print_expression() {
 
     let nala = "print(5 + 10 * 2 / 4 - 3);";
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["7"]);
 }
 
@@ -17,7 +17,7 @@ fn it_runs_print_hello_world() {
 
     let nala = "print('hello world');";
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["hello world"]);
 }
 
@@ -30,7 +30,7 @@ fn it_runs_print_multiple() {
         print(10 * 2 / 4 + 5 - 3);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["hello world", "7"]);
 }
 
@@ -40,7 +40,7 @@ fn it_runs_print_number() {
 
     let nala = "print(311);";
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["311"]);
 }
 
@@ -54,7 +54,7 @@ fn it_runs_print_string_concat_vars() {
         print(foo + bar);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["hello world"]);
 }
 
@@ -64,6 +64,6 @@ fn it_runs_print_string_concat() {
 
     let nala = "print('hello ' + 'world');";
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["hello world"]);
 }

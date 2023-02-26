@@ -1,6 +1,6 @@
 use nala_interpreter::io_context::TestContext;
 use regex::Regex;
-use test_util::{assert_regex_match, parse_and_interpret, rgx};
+use test_util::{assert_regex_match, parse_and_run, rgx};
 
 #[test]
 fn it_runs_array_index_assign() {
@@ -13,7 +13,7 @@ fn it_runs_array_index_assign() {
         print(array[2]);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["three", "foo"]);
 }
 
@@ -27,7 +27,7 @@ fn it_runs_array_index_expressions() {
         print(foo[0] + ' ' + bar[0]);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["hello world"]);
 }
 
@@ -40,7 +40,7 @@ fn it_runs_array_index() {
         print(array[1]);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["bar"]);
 }
 
@@ -54,7 +54,7 @@ fn it_runs_array_len() {
         print(length);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["5"]);
 }
 
@@ -72,7 +72,7 @@ fn it_runs_array_slice() {
         print(right[0]);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["this", "thing"]);
 }
 
@@ -86,7 +86,7 @@ fn it_allows_assign_to_index_place_expression() {
         print(letters[0]);
     "#;
 
-    assert!(parse_and_interpret(nala, &mut ctx).is_ok());
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["j"]);
 }
 
@@ -99,7 +99,7 @@ fn it_errors_when_indexing_array_with_string() {
         print(nums['0']);
     "#;
 
-    let result = parse_and_interpret(nala, &mut TestContext::new());
+    let result = parse_and_run(nala, &mut TestContext::new());
 
     assert!(result.is_err());
     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
@@ -117,7 +117,7 @@ fn it_errors_when_indexing_array_with_string() {
 //         print(length);
 //     "#;
 
-//     let result = parse_and_interpret(nala, &mut TestContext::new());
+//     let result = parse_and_run(nala, &mut TestContext::new());
 
 //     assert!(result.is_err());
 //     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
@@ -128,7 +128,7 @@ fn it_errors_when_declaring_array_multiple_types() {
     let expected_message = rgx!("Arrays can contain elements of only a single type.");
 
     let nala = "const bad = [0, '1'];";
-    let result = parse_and_interpret(nala, &mut TestContext::new());
+    let result = parse_and_run(nala, &mut TestContext::new());
 
     assert!(result.is_err());
     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)

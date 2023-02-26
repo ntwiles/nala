@@ -6,10 +6,7 @@ use nala_interpreter::{
     parser,
 };
 
-pub fn parse_and_interpret(
-    nala: &str,
-    test_context: &mut TestContext,
-) -> Result<Value, RuntimeError> {
+pub fn parse_and_run(nala: &str, test_context: &mut TestContext) -> Result<Value, RuntimeError> {
     let lines = nala.trim_start().trim_end().split("\n");
     let output: String = lines
         .enumerate()
