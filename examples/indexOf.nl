@@ -1,19 +1,35 @@
+/** TODO: We're using this struct because we don't yet support data in enum variants.
+ * Once we do, use the following:
+ *
+ * enum Result {
+ *     Some(Number),
+ *     None,
+ * }
+ */
 
-func indexOfString(haystack: Array<String>, needle: String ): Number {
+struct Result {
+    success: Bool,
+    index: Number,
+}
+
+
+func indexOfString(haystack: Array<String>, needle: String ): Result {
     mut i = 0;
 
     for item in haystack {
         if (item == needle) {
-            break(i);
+            break({ success: true, index: i });
         }
 
         i = i + 1;
     }
 
-    -1;
+    { success: false, index: 0 };
 }
 
 const names = [ 'Jimmy', 'Kim', 'Howard', 'Lalo' ];
-const index = indexOfString(names, 'Howard');
+const result = indexOfString(names, 'Howard');
 
-print(names[index]);
+if (result.success) {
+    print(names[result.index]);
+}

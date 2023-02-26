@@ -15,6 +15,7 @@ use self::branching::IfElseChain;
 use self::funcs::*;
 use self::math::*;
 use self::objects::*;
+use self::types::enum_variant::EnumVariantOrAddend;
 use self::types::type_literal_variant::TypeLiteralVariant;
 use self::types::StructLiteralField;
 
@@ -63,10 +64,9 @@ pub enum Stmts {
 
 #[derive(Debug, Clone)]
 pub enum Expr {
-    Addend(Addend),
     Array(Array),
-    EnumVariant(String, String),
-    Eq(Box<Expr>, Addend),
+    EnumVariant(EnumVariantOrAddend),
+    Eq(Box<Expr>, EnumVariantOrAddend),
     Gt(Box<Expr>, Addend),
     Lt(Box<Expr>, Addend),
     Object(Object),

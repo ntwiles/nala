@@ -75,19 +75,16 @@ VariantDeclare: ast::VariantDeclare = {
     <s:Symbol> "(" <t:TypeVariant> ")" => ast::VariantDeclare::Data(s, t)
 };
 
+Elems = Comma<Expr>;
+
 Expr: ast::Expr = {
-    <l:Expr> "==" <r:Addend> => ast::Expr::Eq(Box::new(l), r),
+    <l:Expr> "==" <r:EnumVariantOrAddend> => ast::Expr::Eq(Box::new(l), r),
     <l:Expr> ">" <r:Addend> => ast::Expr::Gt(Box::new(l), r),
     <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
-    Addend => ast::Expr::Addend(<>),
+    EnumVariantOrAddend => ast::Expr::EnumVariant(<>),
     Array => ast::Expr::Array(<>),
     Object => ast::Expr::Object(<>),
-    <s:Symbol> "::" <ss:Symbol> => ast::Expr::EnumVariant(s, ss),
 };
-
-Object: ast::objects::Object = {
-    "{" <KeyValuePairs> "}" => ast::objects::Object { entries: <>}
-}
 
 KeyValuePairs = Comma<KeyValuePair>;
 
@@ -95,17 +92,19 @@ KeyValuePair: ast::objects::KeyValuePair = {
     <s:Symbol> ":" <e:Expr> => ast::objects::KeyValuePair{ key: s, value: Box::new(e)}
 }
 
-Elems = Comma<Expr>;
-
-Array: ast::arrays::Array = {
-    "[" <Elems> "]" => ast::arrays::Array { elems: <> },
-};
-
 Params = Comma<Param>;
 
 Param: ast::funcs::Param = {
     <s:Symbol> ":" <t:TypeVariant> => ast::funcs::Param { ident: s, param_type: t }
 }
+
+Object: ast::objects::Object = {
+    "{" <KeyValuePairs> "}" => ast::objects::Object { entries: <>}
+}
+
+Array: ast::arrays::Array = {
+    "[" <Elems> "]" => ast::arrays::Array { elems: <> },
+};
 
 StructFields = Comma<StructField>;
 
@@ -135,6 +134,11 @@ PrimitiveType: ast::types::primitive_type::PrimitiveType = {
     "String" => ast::types::primitive_type::PrimitiveType::String,
     "Void" => ast::types::primitive_type::PrimitiveType::Void,
 }
+
+EnumVariantOrAddend: ast::types::enum_variant::EnumVariantOrAddend = {
+    <s:Symbol> "::" <ss:Symbol> => ast::types::enum_variant::EnumVariantOrAddend::EnumVariant(s, ss),
+    Addend => ast::types::enum_variant::EnumVariantOrAddend::Addend(<>),
+};
 
 pub Addend: ast::math::Addend = {
     <l:Addend> "+" <r:Factor> => ast::math::Addend::Add(Box::new(l), r),

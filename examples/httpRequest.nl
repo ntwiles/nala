@@ -1,6 +1,6 @@
 /* Usage for http requests in their current state.
  *
- * NOTE: These three `options` fields (method, url, body) are currently the only ones available. 
+ * TODO: These three `options` fields (method, url, body) are currently the only ones available. 
  * There's no way of setting headers yet, for example.
  */
 

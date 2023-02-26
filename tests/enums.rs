@@ -46,3 +46,21 @@ fn it_runs_enum_variant_assign() {
     assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["Boolean::True"]);
 }
+
+#[test]
+fn it_runs_enum_variant_compare() {
+    let mut ctx = TestContext::new();
+
+    let nala = r#"
+        enum Boolean {
+            True,
+            False,
+        }
+
+        const test = Boolean::True;
+        print(test == Boolean::True);
+    "#;
+
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["true"]);
+}

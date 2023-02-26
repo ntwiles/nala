@@ -10,7 +10,7 @@ use super::{
 };
 
 use crate::{
-    ast::{terms::*, *},
+    ast::{terms::*, types::enum_variant::EnumVariantOrAddend, *},
     errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
@@ -98,14 +98,13 @@ pub fn eval_expr(
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match expr {
-        Expr::Addend(addend) => eval_addend(addend, scopes, current_scope, enclosing_scope, ctx),
         Expr::Array(elems) => eval_array(elems, scopes, current_scope, enclosing_scope, ctx),
-        Expr::EnumVariant(ident, variant) => {
-            eval_enum_variant(ident, variant, scopes, current_scope, enclosing_scope, ctx)
+        Expr::EnumVariant(variant) => {
+            eval_enum_variant(variant, scopes, current_scope, enclosing_scope, ctx)
         }
         Expr::Eq(left, right) => {
             let left = eval_expr(left, scopes, current_scope, enclosing_scope, ctx)?;
-            let right = eval_addend(right, scopes, current_scope, enclosing_scope, ctx)?;
+            let right = eval_enum_variant(right, scopes, current_scope, enclosing_scope, ctx)?;
 
             Ok(eval_equals(left, right, scopes, current_scope))
         }

@@ -71,7 +71,7 @@ impl NalaType {
 impl fmt::Display for NalaType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            NalaType::Enum(enum_ident, variant_ident) => todo!(),
+            NalaType::Enum(_enum_ident, _variant_ident) => todo!(),
             NalaType::PrimitiveType(primitive) => write!(f, "{}", primitive),
             NalaType::Struct(fields) => {
                 write!(f, "{{ ")?;
@@ -96,7 +96,13 @@ impl fmt::Display for NalaType {
 impl PartialEq for NalaType {
     fn eq(&self, other: &Self) -> bool {
         match self {
-            NalaType::Enum(_, _) => todo!(),
+            NalaType::Enum(enum_ident, variant_ident) => {
+                if let NalaType::Enum(oei, ovi) = other {
+                    enum_ident == oei && variant_ident == ovi
+                } else {
+                    false
+                }
+            }
             NalaType::PrimitiveType(sp) => {
                 if let NalaType::PrimitiveType(op) = other {
                     sp == op
