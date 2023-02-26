@@ -1,6 +1,7 @@
 use super::{
     arrays::*,
     branching::*,
+    enums::eval_enum_variant,
     functions::*,
     objects::*,
     operations::{equals::*, gt::*, lt::*, *},
@@ -98,6 +99,10 @@ pub fn eval_expr(
 ) -> Result<Value, RuntimeError> {
     match expr {
         Expr::Addend(addend) => eval_addend(addend, scopes, current_scope, enclosing_scope, ctx),
+        Expr::Array(elems) => eval_array(elems, scopes, current_scope, enclosing_scope, ctx),
+        Expr::EnumVariant(ident, variant) => {
+            eval_enum_variant(ident, variant, scopes, current_scope, enclosing_scope, ctx)
+        }
         Expr::Eq(left, right) => {
             let left = eval_expr(left, scopes, current_scope, enclosing_scope, ctx)?;
             let right = eval_addend(right, scopes, current_scope, enclosing_scope, ctx)?;
@@ -116,7 +121,7 @@ pub fn eval_expr(
 
             eval_lt(left, right, scopes, current_scope)
         }
-        Expr::Array(elems) => eval_array(elems, scopes, current_scope, enclosing_scope, ctx),
+
         Expr::Object(object) => eval_object(object, scopes, current_scope, enclosing_scope, ctx),
     }
 }

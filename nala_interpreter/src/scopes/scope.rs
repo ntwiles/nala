@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{ast::terms::Value, types::struct_field::StructField};
+use crate::ast::terms::Value;
 
 use super::TypeBinding;
 

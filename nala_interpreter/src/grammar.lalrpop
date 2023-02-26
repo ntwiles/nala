@@ -5,7 +5,7 @@ use crate::ast;
 grammar;
 
 match {
-    "{", "}", "(", ")", "[", "]", ";", ":", ".", ",",
+    "{", "}", "(", ")", "[", "]", ";", ":", ".", ",", "::",
     "const", "mut", "if", "elif", "else", "for", "in", "wiles", "func", "break", "struct", "enum",
     "=", "==", ">", "<", "+", "-", "*", "/",
     "Array", "Bool", "Func", "Number",  "Object", "String", "Void",
@@ -82,6 +82,7 @@ Expr: ast::Expr = {
     Addend => ast::Expr::Addend(<>),
     Array => ast::Expr::Array(<>),
     Object => ast::Expr::Object(<>),
+    <s:Symbol> "::" <ss:Symbol> => ast::Expr::EnumVariant(s, ss),
 };
 
 Object: ast::objects::Object = {
@@ -153,6 +154,11 @@ Invocation: ast::funcs::Invocation = {
     <Value> => ast::funcs::Invocation::Value(<>),
 };
 
+Value: ast::terms::Value = {
+    Num => ast::terms::Value::Num(<>),
+    Str => ast::terms::Value::String(<>),
+}
+
 MemberAccess: ast::objects::MemberAccess = {
     <p:MemberAccess> "." <c:Symbol> => ast::objects::MemberAccess::MemberAccesses(Box::new(p), c),
     <p:Symbol> "." <c:Symbol> => ast::objects::MemberAccess::MemberAccess(p, c),
@@ -162,11 +168,6 @@ Term: ast::terms::Term = {
     Symbol => ast::terms::Term::Identifier(<>),
     Value => ast::terms::Term::Value(<>),
 };
-
-Value: ast::terms::Value = {
-    Num => ast::terms::Value::Num(<>),
-    Str => ast::terms::Value::String(<>),
-}
 
 Symbol: String = {
     r"[a-zA-Z_\-]+" => String::from_str(<>).unwrap()

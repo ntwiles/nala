@@ -12,6 +12,7 @@ pub mod type_variant;
 
 #[derive(Eq, Debug, Clone)]
 pub enum NalaType {
+    Enum(String, String),
     PrimitiveType(PrimitiveType),
     Struct(Vec<StructField>),
 }
@@ -39,12 +40,10 @@ impl NalaType {
     }
 
     pub fn is_assignable_to(&self, other: &Self) -> bool {
-        // println!(
-        //     "Checking assignable: {}, {}",
-        //     self.to_string(),
-        //     other.to_string()
-        // );
         match self {
+            NalaType::Enum(_enum_ident, _variant_ident) => {
+                todo!()
+            }
             NalaType::PrimitiveType(sp) => {
                 if let NalaType::PrimitiveType(op) = other {
                     sp.is_assignable_to(op)
@@ -72,6 +71,7 @@ impl NalaType {
 impl fmt::Display for NalaType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            NalaType::Enum(enum_ident, variant_ident) => todo!(),
             NalaType::PrimitiveType(primitive) => write!(f, "{}", primitive),
             NalaType::Struct(fields) => {
                 write!(f, "{{ ")?;
@@ -96,6 +96,7 @@ impl fmt::Display for NalaType {
 impl PartialEq for NalaType {
     fn eq(&self, other: &Self) -> bool {
         match self {
+            NalaType::Enum(_, _) => todo!(),
             NalaType::PrimitiveType(sp) => {
                 if let NalaType::PrimitiveType(op) = other {
                     sp == op

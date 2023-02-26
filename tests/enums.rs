@@ -28,3 +28,21 @@ fn it_runs_enum_declare_composite() {
 
     assert!(parse_and_run(nala, &mut ctx).is_ok());
 }
+
+#[test]
+fn it_runs_enum_variant_assign() {
+    let mut ctx = TestContext::new();
+
+    let nala = r#"
+        enum Boolean {
+            True,
+            False,
+        }
+
+        const test = Boolean::True;
+        print(test);
+    "#;
+
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["Boolean::True"]);
+}

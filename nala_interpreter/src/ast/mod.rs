@@ -63,12 +63,13 @@ pub enum Stmts {
 
 #[derive(Debug, Clone)]
 pub enum Expr {
+    Addend(Addend),
+    Array(Array),
+    EnumVariant(String, String),
     Eq(Box<Expr>, Addend),
     Gt(Box<Expr>, Addend),
     Lt(Box<Expr>, Addend),
-    Array(Array),
     Object(Object),
-    Addend(Addend),
 }
 
 #[derive(Debug, Clone)]

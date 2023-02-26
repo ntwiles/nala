@@ -163,7 +163,10 @@ impl Value {
                 TypeVariant::Type(NalaType::Struct(fields))
             }
             Value::String(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
-            Value::Variant(_, _, _) => todo!(),
+            Value::Variant(enum_ident, variant_ident, _) => TypeVariant::Type(NalaType::Enum(
+                enum_ident.to_owned(),
+                variant_ident.to_owned(),
+            )),
             Value::Void => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void)),
         }
     }
