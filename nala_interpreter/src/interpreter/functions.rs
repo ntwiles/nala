@@ -15,7 +15,7 @@ use crate::{
     errors::*,
     io_context::IoContext,
     scopes::Scopes,
-    types::type_variant::TypeVariant,
+    types::{type_variant::TypeVariant, NalaType},
 };
 
 pub fn eval_func(
@@ -88,7 +88,7 @@ pub fn eval_invocation(
                 params,
                 block,
                 closure_scope,
-                ..
+                return_type,
             }) = block
             {
                 let call_scope = scopes.new_scope(Some(current_scope));
@@ -131,11 +131,28 @@ pub fn eval_invocation(
                     param_args.entry(param.ident.clone()).or_insert(arg.clone());
                 }
 
-                match *block {
+                let return_value = match *block {
                     Block::NalaBlock(stmts) => {
-                        eval_stmts(&stmts, scopes, call_scope, Some(closure_scope), ctx)
+                        eval_stmts(&stmts, scopes, call_scope, Some(closure_scope), ctx)?
                     }
-                    Block::RustBlock(func) => Ok(func(param_args, ctx)),
+                    Block::RustBlock(func) => Ok(func(param_args, ctx))?,
+                };
+
+                let return_type = TypeVariant::from_literal(return_type, scopes, current_scope);
+
+                // TODO: This is a temporary bypass to support builtins until we have generics.
+                if let TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any)) = return_type
+                {
+                    return Ok(return_value);
+                }
+
+                if return_value
+                    .get_type(scopes, current_scope)
+                    .is_assignable_to(&return_type)
+                {
+                    Ok(return_value)
+                } else {
+                    Err(RuntimeError::new(&format!("Tried to return value `{return_value}` where value of type {return_type} was expected.")))
                 }
             } else {
                 panic!("Cannot invoke a non-function.")

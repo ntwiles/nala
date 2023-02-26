@@ -11,6 +11,7 @@ pub enum PrimitiveType {
     Symbol,
     Void,
     Object,
+    Any, // TODO: This is temporary until generics can be supported.
 }
 
 impl PrimitiveType {
@@ -32,6 +33,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::String => "String",
             PrimitiveType::Symbol => "<Symbol>",
             PrimitiveType::Void => "Void",
+            PrimitiveType::Any => "Any",
         };
 
         write!(f, "{}", type_name)

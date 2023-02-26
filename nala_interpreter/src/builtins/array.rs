@@ -60,13 +60,16 @@ pub fn get_slice_block() -> Func {
         param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number)),
     };
 
-    let inner_return_type =
-        TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
+    // let inner_return_type =
+    //     TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
 
-    let return_type = TypeLiteralVariant::Nested(
-        TypeLiteral::PrimitiveType(PrimitiveType::Array),
-        vec![inner_return_type],
-    );
+    // let return_type = TypeLiteralVariant::Nested(
+    //     TypeLiteral::PrimitiveType(PrimitiveType::Array),
+    //     vec![inner_return_type],
+    // );
+
+    // TODO: This is temporary until generics are implemented.
+    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Any));
 
     Func {
         ident: "slice".to_string(),

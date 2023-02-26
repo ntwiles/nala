@@ -168,3 +168,34 @@ fn it_supports_closures_out_of_scope() {
     assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["closures REALLY work!"]);
 }
+
+#[test]
+fn it_accepts_return_of_correct_type() {
+    let mut ctx = TestContext::new();
+
+    let nala = r#"
+        func returnString(): String {
+            'this returns a string.';
+        }
+
+        print(returnString());
+    "#;
+
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["this returns a string."]);
+}
+
+#[test]
+fn it_errors_on_return_of_wrong_type() {
+    let mut ctx = TestContext::new();
+
+    let nala = r#"
+        func returnString(): Number {
+            'this returns a string.';
+        }
+
+        print(returnString());
+    "#;
+
+    assert!(parse_and_run(nala, &mut ctx).is_err());
+}

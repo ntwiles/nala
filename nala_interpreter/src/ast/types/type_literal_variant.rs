@@ -4,6 +4,7 @@ use super::type_literal::TypeLiteral;
 
 #[derive(Debug, Clone)]
 pub enum TypeLiteralVariant {
+    // TODO: Rename this Composite.
     Nested(TypeLiteral, Vec<TypeLiteralVariant>),
     Type(TypeLiteral),
 }
