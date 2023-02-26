@@ -12,7 +12,6 @@ struct Result {
     index: Number,
 }
 
-
 func indexOfString(haystack: Array<String>, needle: String ): Result {
     mut i = 0;
 

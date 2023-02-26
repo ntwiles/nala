@@ -10,7 +10,7 @@ use super::{
 };
 
 use crate::{
-    ast::{terms::*, types::enum_variant::EnumVariantOrAddend, *},
+    ast::{terms::*, *},
     errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
