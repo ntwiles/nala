@@ -1,13 +1,13 @@
 // auto-generated: "lalrpop 0.19.7"
 // sha3: b9b2dbc5da47d2ef7ac1f2d318fcd52df9733df3e2de20802138533d952f4165
-use std::str::FromStr;
 use crate::ast;
+use std::str::FromStr;
 #[allow(unused_extern_crates)]
 extern crate lalrpop_util as __lalrpop_util;
 #[allow(unused_imports)]
 use self::__lalrpop_util::state_machine as __state_machine;
-extern crate core;
 extern crate alloc;
+extern crate core;
 
 #[cfg_attr(rustfmt, rustfmt_skip)]
 mod __parse__Addend {
@@ -14668,201 +14668,142 @@ mod __intern_token {
 pub(crate) use self::__lalrpop_util::lexer::Token;
 
 #[allow(unused_variables)]
-fn __action0<
-    'input,
->(
+fn __action0<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::Program, usize),
-) -> ast::Program
-{
+) -> ast::Program {
     __0
 }
 
 #[allow(unused_variables)]
-fn __action1<
-    'input,
->(
-    input: &'input str,
-    (_, __0, _): (usize, ast::Stmts, usize),
-) -> ast::Stmts
-{
+fn __action1<'input>(input: &'input str, (_, __0, _): (usize, ast::Stmts, usize)) -> ast::Stmts {
     __0
 }
 
 #[allow(unused_variables)]
-fn __action2<
-    'input,
->(
+fn __action2<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::math::Addend, usize),
-) -> ast::math::Addend
-{
+) -> ast::math::Addend {
     __0
 }
 
 #[allow(unused_variables)]
-fn __action3<
-    'input,
->(
+fn __action3<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::math::Factor, usize),
-) -> ast::math::Factor
-{
+) -> ast::math::Factor {
     __0
 }
 
 #[allow(unused_variables)]
-fn __action4<
-    'input,
->(
-    input: &'input str,
-    (_, __0, _): (usize, ast::Block, usize),
-) -> ast::Program
-{
+fn __action4<'input>(input: &'input str, (_, __0, _): (usize, ast::Block, usize)) -> ast::Program {
     ast::Program::Block(__0)
 }
 
 #[allow(unused_variables)]
-fn __action5<
-    'input,
->(
-    input: &'input str,
-    (_, __0, _): (usize, ast::Stmts, usize),
-) -> ast::Program
-{
+fn __action5<'input>(input: &'input str, (_, __0, _): (usize, ast::Stmts, usize)) -> ast::Program {
     ast::Program::Stmts(__0)
 }
 
 #[allow(unused_variables)]
-fn __action6<
-    'input,
->(
+fn __action6<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, __0, _): (usize, ast::Stmts, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::Block
-{
+) -> ast::Block {
     ast::Block::NalaBlock(__0)
 }
 
 #[allow(unused_variables)]
-fn __action7<
-    'input,
->(
+fn __action7<'input>(
     input: &'input str,
     (_, ss, _): (usize, ast::Stmts, usize),
     (_, s, _): (usize, ast::Stmt, usize),
-) -> ast::Stmts
-{
+) -> ast::Stmts {
     ast::Stmts::Stmts(Box::new(ss), s)
 }
 
 #[allow(unused_variables)]
-fn __action8<
-    'input,
->(
-    input: &'input str,
-    (_, __0, _): (usize, ast::Stmt, usize),
-) -> ast::Stmts
-{
+fn __action8<'input>(input: &'input str, (_, __0, _): (usize, ast::Stmt, usize)) -> ast::Stmts {
     ast::Stmts::Stmt(__0)
 }
 
 #[allow(unused_variables)]
-fn __action9<
-    'input,
->(
+fn __action9<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::Stmt
-{
+) -> ast::Stmt {
     ast::Stmt::Declare(s, e, false)
 }
 
 #[allow(unused_variables)]
-fn __action10<
-    'input,
->(
+fn __action10<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::Stmt
-{
+) -> ast::Stmt {
     ast::Stmt::Declare(s, e, true)
 }
 
 #[allow(unused_variables)]
-fn __action11<
-    'input,
->(
+fn __action11<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, p, _): (usize, ast::patterns::Pattern, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::Stmt
-{
+) -> ast::Stmt {
     ast::Stmt::PatternDeclare(s, p)
 }
 
 #[allow(unused_variables)]
-fn __action12<
-    'input,
->(
+fn __action12<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, b, _): (usize, ast::Block, usize),
-) -> ast::Stmt
-{
+) -> ast::Stmt {
     ast::Stmt::If(e, Box::new(b))
 }
 
 #[allow(unused_variables)]
-fn __action13<
-    'input,
->(
+fn __action13<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
     (_, b, _): (usize, ast::Block, usize),
-) -> ast::Stmt
-{
-    ast::Stmt::For(s,e, Box::new(b))
+) -> ast::Stmt {
+    ast::Stmt::For(s, e, Box::new(b))
 }
 
 #[allow(unused_variables)]
-fn __action14<
-    'input,
->(
+fn __action14<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, b, _): (usize, ast::Block, usize),
-) -> ast::Stmt
-{
+) -> ast::Stmt {
     ast::Stmt::Wiles(e, Box::new(b))
 }
 
 #[allow(unused_variables)]
-fn __action15<
-    'input,
->(
+fn __action15<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, s, _): (usize, String, usize),
@@ -14870,364 +14811,281 @@ fn __action15<
     (_, p, _): (usize, core::option::Option<ast::funcs::Params>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, b, _): (usize, ast::Block, usize),
-) -> ast::Stmt
-{
-    ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, block: Box::new(b)})
+) -> ast::Stmt {
+    ast::Stmt::Func(ast::funcs::Func {
+        ident: s,
+        params: p,
+        block: Box::new(b),
+    })
 }
 
 #[allow(unused_variables)]
-fn __action16<
-    'input,
->(
+fn __action16<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, v, _): (usize, ast::VariantsDeclare, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::Stmt
-{
+) -> ast::Stmt {
     ast::Stmt::Enum(s, Box::new(v))
 }
 
 #[allow(unused_variables)]
-fn __action17<
-    'input,
->(
+fn __action17<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, __0, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::Stmt
-{
+) -> ast::Stmt {
     ast::Stmt::Break(__0)
 }
 
 #[allow(unused_variables)]
-fn __action18<
-    'input,
->(
+fn __action18<'input>(
     input: &'input str,
     (_, s, _): (usize, ast::PlaceExpression, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::Stmt
-{
+) -> ast::Stmt {
     ast::Stmt::Assign(s, e)
 }
 
 #[allow(unused_variables)]
-fn __action19<
-    'input,
->(
+fn __action19<'input>(
     input: &'input str,
     (_, e, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::Stmt
-{
+) -> ast::Stmt {
     ast::Stmt::Expr(e)
 }
 
 #[allow(unused_variables)]
-fn __action20<
-    'input,
->(
+fn __action20<'input>(
     input: &'input str,
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::PlaceExpression
-{
+) -> ast::PlaceExpression {
     ast::PlaceExpression::Index(s, Box::new(e))
 }
 
 #[allow(unused_variables)]
-fn __action21<
-    'input,
->(
+fn __action21<'input>(
     input: &'input str,
     (_, __0, _): (usize, String, usize),
-) -> ast::PlaceExpression
-{
+) -> ast::PlaceExpression {
     ast::PlaceExpression::Symbol(__0)
 }
 
 #[allow(unused_variables)]
-fn __action22<
-    'input,
->(
+fn __action22<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::objects::MemberAccess, usize),
-) -> ast::PlaceExpression
-{
+) -> ast::PlaceExpression {
     ast::PlaceExpression::MemberAccess(__0)
 }
 
 #[allow(unused_variables)]
-fn __action23<
-    'input,
->(
+fn __action23<'input>(
     input: &'input str,
     (_, vv, _): (usize, ast::VariantsDeclare, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, v, _): (usize, ast::VariantDeclare, usize),
-) -> ast::VariantsDeclare
-{
+) -> ast::VariantsDeclare {
     ast::VariantsDeclare::Variants(Box::new(vv), v)
 }
 
 #[allow(unused_variables)]
-fn __action24<
-    'input,
->(
+fn __action24<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::VariantDeclare, usize),
-) -> ast::VariantsDeclare
-{
+) -> ast::VariantsDeclare {
     ast::VariantsDeclare::Variant(__0)
 }
 
 #[allow(unused_variables)]
-fn __action25<
-    'input,
->(
+fn __action25<'input>(
     input: &'input str,
     (_, __0, _): (usize, String, usize),
-) -> ast::VariantDeclare
-{
+) -> ast::VariantDeclare {
     ast::VariantDeclare::Empty(__0)
 }
 
 #[allow(unused_variables)]
-fn __action26<
-    'input,
->(
+fn __action26<'input>(
     input: &'input str,
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, t, _): (usize, ast::types::TypeVariant, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::VariantDeclare
-{
+) -> ast::VariantDeclare {
     ast::VariantDeclare::Data(s, t)
 }
 
 #[allow(unused_variables)]
-fn __action27<
-    'input,
->(
+fn __action27<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::patterns::IsPattern, usize),
-) -> ast::Expr
-{
+) -> ast::Expr {
     ast::Expr::IsPattern(__0)
 }
 
 #[allow(unused_variables)]
-fn __action28<
-    'input,
->(
+fn __action28<'input>(
     input: &'input str,
     (_, l, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, r, _): (usize, ast::math::Addend, usize),
-) -> ast::Expr
-{
+) -> ast::Expr {
     ast::Expr::Eq(Box::new(l), r)
 }
 
 #[allow(unused_variables)]
-fn __action29<
-    'input,
->(
+fn __action29<'input>(
     input: &'input str,
     (_, l, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, r, _): (usize, ast::math::Addend, usize),
-) -> ast::Expr
-{
+) -> ast::Expr {
     ast::Expr::Gt(Box::new(l), r)
 }
 
 #[allow(unused_variables)]
-fn __action30<
-    'input,
->(
+fn __action30<'input>(
     input: &'input str,
     (_, l, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, r, _): (usize, ast::math::Addend, usize),
-) -> ast::Expr
-{
+) -> ast::Expr {
     ast::Expr::Lt(Box::new(l), r)
 }
 
 #[allow(unused_variables)]
-fn __action31<
-    'input,
->(
+fn __action31<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::patterns::Unwrap, usize),
-) -> ast::Expr
-{
+) -> ast::Expr {
     ast::Expr::Unwrap(__0)
 }
 
 #[allow(unused_variables)]
-fn __action32<
-    'input,
->(
+fn __action32<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::VariantValue, usize),
-) -> ast::Expr
-{
+) -> ast::Expr {
     ast::Expr::VariantValue(__0)
 }
 
 #[allow(unused_variables)]
-fn __action33<
-    'input,
->(
+fn __action33<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::arrays::Array, usize),
-) -> ast::Expr
-{
+) -> ast::Expr {
     ast::Expr::Array(__0)
 }
 
 #[allow(unused_variables)]
-fn __action34<
-    'input,
->(
+fn __action34<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::objects::Object, usize),
-) -> ast::Expr
-{
+) -> ast::Expr {
     ast::Expr::Object(__0)
 }
 
 #[allow(unused_variables)]
-fn __action35<
-    'input,
->(
+fn __action35<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, p, _): (usize, ast::patterns::Pattern, usize),
-) -> ast::patterns::Unwrap
-{
+) -> ast::patterns::Unwrap {
     ast::patterns::Unwrap::Literal(Box::new(e), p)
 }
 
 #[allow(unused_variables)]
-fn __action36<
-    'input,
->(
+fn __action36<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, s, _): (usize, String, usize),
-) -> ast::patterns::Unwrap
-{
+) -> ast::patterns::Unwrap {
     ast::patterns::Unwrap::Symbol(Box::new(e), s)
 }
 
 #[allow(unused_variables)]
-fn __action37<
-    'input,
->(
+fn __action37<'input>(
     input: &'input str,
     (_, l, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, p, _): (usize, ast::patterns::Pattern, usize),
-) -> ast::patterns::IsPattern
-{
+) -> ast::patterns::IsPattern {
     ast::patterns::IsPattern::Literal(Box::new(l), p)
 }
 
 #[allow(unused_variables)]
-fn __action38<
-    'input,
->(
+fn __action38<'input>(
     input: &'input str,
     (_, l, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, s, _): (usize, String, usize),
-) -> ast::patterns::IsPattern
-{
+) -> ast::patterns::IsPattern {
     ast::patterns::IsPattern::Symbol(Box::new(l), s)
 }
 
 #[allow(unused_variables)]
-fn __action39<
-    'input,
->(
+fn __action39<'input>(
     input: &'input str,
     (_, e, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, v, _): (usize, String, usize),
     (_, p, _): (usize, core::option::Option<ast::patterns::Pattern>, usize),
-) -> ast::patterns::Pattern
-{
+) -> ast::patterns::Pattern {
     ast::patterns::Pattern::Enum(e, v, Box::new(p))
 }
 
 #[allow(unused_variables)]
-fn __action40<
-    'input,
->(
+fn __action40<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::patterns::Capture, usize),
-) -> ast::patterns::Pattern
-{
+) -> ast::patterns::Pattern {
     ast::patterns::Pattern::Capture(__0)
 }
 
 #[allow(unused_variables)]
-fn __action41<
-    'input,
->(
+fn __action41<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::patterns::Capture
-{
+) -> ast::patterns::Capture {
     ast::patterns::Capture::Capture
 }
 
 #[allow(unused_variables)]
-fn __action42<
-    'input,
->(
+fn __action42<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::patterns::Capture
-{
+) -> ast::patterns::Capture {
     ast::patterns::Capture::NoCapture
 }
 
 #[allow(unused_variables)]
-fn __action43<
-    'input,
->(
+fn __action43<'input>(
     input: &'input str,
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, v, _): (usize, String, usize),
-) -> ast::VariantValue
-{
+) -> ast::VariantValue {
     ast::VariantValue::VariantValue(s, v)
 }
 
 #[allow(unused_variables)]
-fn __action44<
-    'input,
->(
+fn __action44<'input>(
     input: &'input str,
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
@@ -15235,711 +15093,520 @@ fn __action44<
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::VariantValue
-{
+) -> ast::VariantValue {
     ast::VariantValue::VariantValueWithData(s, v, Box::new(e))
 }
 
 #[allow(unused_variables)]
-fn __action45<
-    'input,
->(
+fn __action45<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::math::Addend, usize),
-) -> ast::VariantValue
-{
+) -> ast::VariantValue {
     ast::VariantValue::Addend(__0)
 }
 
 #[allow(unused_variables)]
-fn __action46<
-    'input,
->(
+fn __action46<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, __0, _): (usize, ast::objects::KeyValuePairs, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::objects::Object
-{
-    ast::objects::Object { entries: Box::new(__0)}
+) -> ast::objects::Object {
+    ast::objects::Object {
+        entries: Box::new(__0),
+    }
 }
 
 #[allow(unused_variables)]
-fn __action47<
-    'input,
->(
+fn __action47<'input>(
     input: &'input str,
     (_, kk, _): (usize, ast::objects::KeyValuePairs, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, k, _): (usize, ast::objects::KeyValuePair, usize),
-) -> ast::objects::KeyValuePairs
-{
+) -> ast::objects::KeyValuePairs {
     ast::objects::KeyValuePairs::KeyValuePairs(Box::new(kk), k)
 }
 
 #[allow(unused_variables)]
-fn __action48<
-    'input,
->(
+fn __action48<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::objects::KeyValuePair, usize),
-) -> ast::objects::KeyValuePairs
-{
+) -> ast::objects::KeyValuePairs {
     ast::objects::KeyValuePairs::KeyValuePair(__0)
 }
 
 #[allow(unused_variables)]
-fn __action49<
-    'input,
->(
+fn __action49<'input>(
     input: &'input str,
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
-) -> ast::objects::KeyValuePair
-{
-    ast::objects::KeyValuePair{ key: s, value: Box::new(e)}
+) -> ast::objects::KeyValuePair {
+    ast::objects::KeyValuePair {
+        key: s,
+        value: Box::new(e),
+    }
 }
 
 #[allow(unused_variables)]
-fn __action50<
-    'input,
->(
+fn __action50<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, __0, _): (usize, ast::arrays::Elems, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::arrays::Array
-{
-    ast::arrays::Array { elems: Box::new(__0) }
+) -> ast::arrays::Array {
+    ast::arrays::Array {
+        elems: Box::new(__0),
+    }
 }
 
 #[allow(unused_variables)]
-fn __action51<
-    'input,
->(
+fn __action51<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
     (_, __1, _): (usize, &'input str, usize),
-) -> ast::arrays::Array
-{
-    ast::arrays::Array { elems: Box::new(ast::arrays::Elems::Empty) }
+) -> ast::arrays::Array {
+    ast::arrays::Array {
+        elems: Box::new(ast::arrays::Elems::Empty),
+    }
 }
 
 #[allow(unused_variables)]
-fn __action52<
-    'input,
->(
+fn __action52<'input>(
     input: &'input str,
     (_, ee, _): (usize, ast::arrays::Elems, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
-) -> ast::arrays::Elems
-{
+) -> ast::arrays::Elems {
     ast::arrays::Elems::Elems(Box::new(ee), e)
 }
 
 #[allow(unused_variables)]
-fn __action53<
-    'input,
->(
+fn __action53<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::Expr, usize),
-) -> ast::arrays::Elems
-{
+) -> ast::arrays::Elems {
     ast::arrays::Elems::Expr(__0)
 }
 
 #[allow(unused_variables)]
-fn __action54<
-    'input,
->(
+fn __action54<'input>(
     input: &'input str,
     (_, pp, _): (usize, ast::funcs::Params, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, p, _): (usize, ast::funcs::Param, usize),
-) -> ast::funcs::Params
-{
+) -> ast::funcs::Params {
     ast::funcs::Params::Params(Box::new(pp), p)
 }
 
 #[allow(unused_variables)]
-fn __action55<
-    'input,
->(
+fn __action55<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::funcs::Param, usize),
-) -> ast::funcs::Params
-{
+) -> ast::funcs::Params {
     ast::funcs::Params::Param(__0)
 }
 
 #[allow(unused_variables)]
-fn __action56<
-    'input,
->(
+fn __action56<'input>(
     input: &'input str,
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, t, _): (usize, ast::types::TypeVariant, usize),
-) -> ast::funcs::Param
-{
-    ast::funcs::Param { ident: s, param_type: t }
+) -> ast::funcs::Param {
+    ast::funcs::Param {
+        ident: s,
+        param_type: t,
+    }
 }
 
 #[allow(unused_variables)]
-fn __action57<
-    'input,
->(
+fn __action57<'input>(
     input: &'input str,
     (_, tt, _): (usize, ast::types::TypeVariants, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, t, _): (usize, ast::types::TypeVariant, usize),
-) -> ast::types::TypeVariants
-{
+) -> ast::types::TypeVariants {
     ast::types::TypeVariants::TypeVariants(Box::new(tt), t)
 }
 
 #[allow(unused_variables)]
-fn __action58<
-    'input,
->(
+fn __action58<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::types::TypeVariant, usize),
-) -> ast::types::TypeVariants
-{
+) -> ast::types::TypeVariants {
     ast::types::TypeVariants::TypeVariant(__0)
 }
 
 #[allow(unused_variables)]
-fn __action59<
-    'input,
->(
+fn __action59<'input>(
     input: &'input str,
     (_, t, _): (usize, ast::types::Type, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, tt, _): (usize, ast::types::TypeVariants, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::types::TypeVariant
-{
-    ast::types::TypeVariant::Nested(t, Box::new(tt))
+) -> ast::types::TypeVariant {
+    ast::types::TypeVariant::Composite(t, Box::new(tt))
 }
 
 #[allow(unused_variables)]
-fn __action60<
-    'input,
->(
+fn __action60<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::types::Type, usize),
-) -> ast::types::TypeVariant
-{
+) -> ast::types::TypeVariant {
     ast::types::TypeVariant::Type(__0)
 }
 
 #[allow(unused_variables)]
-fn __action61<
-    'input,
->(
+fn __action61<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::types::PrimitiveInterface, usize),
-) -> ast::types::TypeVariant
-{
+) -> ast::types::TypeVariant {
     ast::types::TypeVariant::Interface(__0)
 }
 
 #[allow(unused_variables)]
-fn __action62<
-    'input,
->(
+fn __action62<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::types::PrimitiveType, usize),
-) -> ast::types::Type
-{
+) -> ast::types::Type {
     ast::types::Type::PrimitiveType(__0)
 }
 
 #[allow(unused_variables)]
-fn __action63<
-    'input,
->(
-    input: &'input str,
-    (_, __0, _): (usize, String, usize),
-) -> ast::types::Type
-{
+fn __action63<'input>(input: &'input str, (_, __0, _): (usize, String, usize)) -> ast::types::Type {
     ast::types::Type::UserDefined(__0)
 }
 
 #[allow(unused_variables)]
-fn __action64<
-    'input,
->(
+fn __action64<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::types::PrimitiveType
-{
+) -> ast::types::PrimitiveType {
     ast::types::PrimitiveType::Array
 }
 
 #[allow(unused_variables)]
-fn __action65<
-    'input,
->(
+fn __action65<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::types::PrimitiveType
-{
+) -> ast::types::PrimitiveType {
     ast::types::PrimitiveType::Bool
 }
 
 #[allow(unused_variables)]
-fn __action66<
-    'input,
->(
+fn __action66<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::types::PrimitiveType
-{
+) -> ast::types::PrimitiveType {
     ast::types::PrimitiveType::Func
 }
 
 #[allow(unused_variables)]
-fn __action67<
-    'input,
->(
+fn __action67<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::types::PrimitiveType
-{
+) -> ast::types::PrimitiveType {
     ast::types::PrimitiveType::Number
 }
 
 #[allow(unused_variables)]
-fn __action68<
-    'input,
->(
+fn __action68<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::types::PrimitiveType
-{
+) -> ast::types::PrimitiveType {
     ast::types::PrimitiveType::String
 }
 
 #[allow(unused_variables)]
-fn __action69<
-    'input,
->(
+fn __action69<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::types::PrimitiveInterface
-{
+) -> ast::types::PrimitiveInterface {
     ast::types::PrimitiveInterface::IAdd
 }
 
 #[allow(unused_variables)]
-fn __action70<
-    'input,
->(
+fn __action70<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::types::PrimitiveInterface
-{
+) -> ast::types::PrimitiveInterface {
     ast::types::PrimitiveInterface::ICompare
 }
 
 #[allow(unused_variables)]
-fn __action71<
-    'input,
->(
+fn __action71<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::types::PrimitiveInterface
-{
+) -> ast::types::PrimitiveInterface {
     ast::types::PrimitiveInterface::IDivide
 }
 
 #[allow(unused_variables)]
-fn __action72<
-    'input,
->(
+fn __action72<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::types::PrimitiveInterface
-{
+) -> ast::types::PrimitiveInterface {
     ast::types::PrimitiveInterface::IEqual
 }
 
 #[allow(unused_variables)]
-fn __action73<
-    'input,
->(
+fn __action73<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::types::PrimitiveInterface
-{
+) -> ast::types::PrimitiveInterface {
     ast::types::PrimitiveInterface::IMultiply
 }
 
 #[allow(unused_variables)]
-fn __action74<
-    'input,
->(
+fn __action74<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::types::PrimitiveInterface
-{
+) -> ast::types::PrimitiveInterface {
     ast::types::PrimitiveInterface::IPrint
 }
 
 #[allow(unused_variables)]
-fn __action75<
-    'input,
->(
+fn __action75<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::types::PrimitiveInterface
-{
+) -> ast::types::PrimitiveInterface {
     ast::types::PrimitiveInterface::ISubtract
 }
 
 #[allow(unused_variables)]
-fn __action76<
-    'input,
->(
+fn __action76<'input>(
     input: &'input str,
     (_, l, _): (usize, ast::math::Addend, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, r, _): (usize, ast::math::Factor, usize),
-) -> ast::math::Addend
-{
+) -> ast::math::Addend {
     ast::math::Addend::Add(Box::new(l), r)
 }
 
 #[allow(unused_variables)]
-fn __action77<
-    'input,
->(
+fn __action77<'input>(
     input: &'input str,
     (_, l, _): (usize, ast::math::Addend, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, r, _): (usize, ast::math::Factor, usize),
-) -> ast::math::Addend
-{
+) -> ast::math::Addend {
     ast::math::Addend::Sub(Box::new(l), r)
 }
 
 #[allow(unused_variables)]
-fn __action78<
-    'input,
->(
+fn __action78<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::math::Factor, usize),
-) -> ast::math::Addend
-{
+) -> ast::math::Addend {
     ast::math::Addend::Factor(__0)
 }
 
 #[allow(unused_variables)]
-fn __action79<
-    'input,
->(
+fn __action79<'input>(
     input: &'input str,
     (_, l, _): (usize, ast::math::Factor, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, r, _): (usize, ast::terms::SymbolOrTerm, usize),
-) -> ast::math::Factor
-{
+) -> ast::math::Factor {
     ast::math::Factor::Mult(Box::new(l), r)
 }
 
 #[allow(unused_variables)]
-fn __action80<
-    'input,
->(
+fn __action80<'input>(
     input: &'input str,
     (_, l, _): (usize, ast::math::Factor, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, r, _): (usize, ast::terms::SymbolOrTerm, usize),
-) -> ast::math::Factor
-{
+) -> ast::math::Factor {
     ast::math::Factor::Div(Box::new(l), r)
 }
 
 #[allow(unused_variables)]
-fn __action81<
-    'input,
->(
+fn __action81<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::funcs::Call, usize),
-) -> ast::math::Factor
-{
+) -> ast::math::Factor {
     ast::math::Factor::Call(__0)
 }
 
 #[allow(unused_variables)]
-fn __action82<
-    'input,
->(
+fn __action82<'input>(
     input: &'input str,
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::arrays::Elems, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::funcs::Call
-{
+) -> ast::funcs::Call {
     ast::funcs::Call::Call(s, Box::new(e))
 }
 
 #[allow(unused_variables)]
-fn __action83<
-    'input,
->(
+fn __action83<'input>(
     input: &'input str,
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::funcs::Call
-{
+) -> ast::funcs::Call {
     ast::funcs::Call::Call(s, Box::new(ast::arrays::Elems::Empty))
 }
 
 #[allow(unused_variables)]
-fn __action84<
-    'input,
->(
+fn __action84<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::objects::MemberAccess, usize),
-) -> ast::funcs::Call
-{
+) -> ast::funcs::Call {
     ast::funcs::Call::MemberAccess(__0)
 }
 
 #[allow(unused_variables)]
-fn __action85<
-    'input,
->(
+fn __action85<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::arrays::Index, usize),
-) -> ast::funcs::Call
-{
+) -> ast::funcs::Call {
     ast::funcs::Call::Index(__0)
 }
 
 #[allow(unused_variables)]
-fn __action86<
-    'input,
->(
+fn __action86<'input>(
     input: &'input str,
     (_, m, _): (usize, ast::objects::MemberAccess, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, s, _): (usize, String, usize),
-) -> ast::objects::MemberAccess
-{
+) -> ast::objects::MemberAccess {
     ast::objects::MemberAccess::MemberAccesses(Box::new(m), s)
 }
 
 #[allow(unused_variables)]
-fn __action87<
-    'input,
->(
+fn __action87<'input>(
     input: &'input str,
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, ss, _): (usize, String, usize),
-) -> ast::objects::MemberAccess
-{
+) -> ast::objects::MemberAccess {
     ast::objects::MemberAccess::MemberAccess(s, ss)
 }
 
 #[allow(unused_variables)]
-fn __action88<
-    'input,
->(
+fn __action88<'input>(
     input: &'input str,
     (_, s, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, e, _): (usize, ast::Expr, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::arrays::Index
-{
+) -> ast::arrays::Index {
     ast::arrays::Index::Index(s, Box::new(e))
 }
 
 #[allow(unused_variables)]
-fn __action89<
-    'input,
->(
+fn __action89<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::terms::SymbolOrTerm, usize),
-) -> ast::arrays::Index
-{
+) -> ast::arrays::Index {
     ast::arrays::Index::SymbolOrTerm(__0)
 }
 
 #[allow(unused_variables)]
-fn __action90<
-    'input,
->(
+fn __action90<'input>(
     input: &'input str,
     (_, __0, _): (usize, String, usize),
-) -> ast::terms::SymbolOrTerm
-{
+) -> ast::terms::SymbolOrTerm {
     ast::terms::SymbolOrTerm::Symbol(__0)
 }
 
 #[allow(unused_variables)]
-fn __action91<
-    'input,
->(
+fn __action91<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::terms::Term, usize),
-) -> ast::terms::SymbolOrTerm
-{
+) -> ast::terms::SymbolOrTerm {
     ast::terms::SymbolOrTerm::Term(__0)
 }
 
 #[allow(unused_variables)]
-fn __action92<
-    'input,
->(
-    input: &'input str,
-    (_, __0, _): (usize, f32, usize),
-) -> ast::terms::Term
-{
+fn __action92<'input>(input: &'input str, (_, __0, _): (usize, f32, usize)) -> ast::terms::Term {
     ast::terms::Value::Num(__0)
 }
 
 #[allow(unused_variables)]
-fn __action93<
-    'input,
->(
-    input: &'input str,
-    (_, __0, _): (usize, String, usize),
-) -> ast::terms::Term
-{
+fn __action93<'input>(input: &'input str, (_, __0, _): (usize, String, usize)) -> ast::terms::Term {
     ast::terms::Value::String(__0)
 }
 
 #[allow(unused_variables)]
-fn __action94<
-    'input,
->(
-    input: &'input str,
-    (_, __0, _): (usize, &'input str, usize),
-) -> String
-{
+fn __action94<'input>(input: &'input str, (_, __0, _): (usize, &'input str, usize)) -> String {
     String::from_str(__0).unwrap()
 }
 
 #[allow(unused_variables)]
-fn __action95<
-    'input,
->(
-    input: &'input str,
-    (_, __0, _): (usize, &'input str, usize),
-) -> f32
-{
+fn __action95<'input>(input: &'input str, (_, __0, _): (usize, &'input str, usize)) -> f32 {
     f32::from_str(__0).unwrap()
 }
 
 #[allow(unused_variables)]
-fn __action96<
-    'input,
->(
-    input: &'input str,
-    (_, __0, _): (usize, &'input str, usize),
-) -> String
-{
+fn __action96<'input>(input: &'input str, (_, __0, _): (usize, &'input str, usize)) -> String {
     String::from_str(&__0[1..__0.len() - 1]).unwrap()
 }
 
 #[allow(unused_variables)]
-fn __action97<
-    'input,
->(
+fn __action97<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::patterns::Pattern, usize),
-) -> core::option::Option<ast::patterns::Pattern>
-{
+) -> core::option::Option<ast::patterns::Pattern> {
     Some(__0)
 }
 
 #[allow(unused_variables)]
-fn __action98<
-    'input,
->(
+fn __action98<'input>(
     input: &'input str,
     __lookbehind: &usize,
     __lookahead: &usize,
-) -> core::option::Option<ast::patterns::Pattern>
-{
+) -> core::option::Option<ast::patterns::Pattern> {
     None
 }
 
 #[allow(unused_variables)]
-fn __action99<
-    'input,
->(
+fn __action99<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, __0, _): (usize, ast::patterns::Pattern, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::patterns::Pattern
-{
+) -> ast::patterns::Pattern {
     __0
 }
 
 #[allow(unused_variables)]
-fn __action100<
-    'input,
->(
+fn __action100<'input>(
     input: &'input str,
     (_, __0, _): (usize, ast::funcs::Params, usize),
-) -> core::option::Option<ast::funcs::Params>
-{
+) -> core::option::Option<ast::funcs::Params> {
     Some(__0)
 }
 
 #[allow(unused_variables)]
-fn __action101<
-    'input,
->(
+fn __action101<'input>(
     input: &'input str,
     __lookbehind: &usize,
     __lookahead: &usize,
-) -> core::option::Option<ast::funcs::Params>
-{
+) -> core::option::Option<ast::funcs::Params> {
     None
 }
 
 #[allow(unused_variables)]
-fn __action102<
-    'input,
->(
+fn __action102<'input>(
     input: &'input str,
     __0: (usize, &'input str, usize),
     __1: (usize, ast::patterns::Pattern, usize),
     __2: (usize, &'input str, usize),
-) -> core::option::Option<ast::patterns::Pattern>
-{
+) -> core::option::Option<ast::patterns::Pattern> {
     let __start0 = __0.0.clone();
     let __end0 = __2.2.clone();
-    let __temp0 = __action99(
-        input,
-        __0,
-        __1,
-        __2,
-    );
+    let __temp0 = __action99(input, __0, __1, __2);
     let __temp0 = (__start0, __temp0, __end0);
-    __action97(
-        input,
-        __temp0,
-    )
+    __action97(input, __temp0)
 }
 
 #[allow(unused_variables)]
-fn __action103<
-    'input,
->(
+fn __action103<'input>(
     input: &'input str,
     __0: (usize, String, usize),
     __1: (usize, &'input str, usize),
@@ -15947,57 +15614,30 @@ fn __action103<
     __3: (usize, &'input str, usize),
     __4: (usize, ast::patterns::Pattern, usize),
     __5: (usize, &'input str, usize),
-) -> ast::patterns::Pattern
-{
+) -> ast::patterns::Pattern {
     let __start0 = __3.0.clone();
     let __end0 = __5.2.clone();
-    let __temp0 = __action102(
-        input,
-        __3,
-        __4,
-        __5,
-    );
+    let __temp0 = __action102(input, __3, __4, __5);
     let __temp0 = (__start0, __temp0, __end0);
-    __action39(
-        input,
-        __0,
-        __1,
-        __2,
-        __temp0,
-    )
+    __action39(input, __0, __1, __2, __temp0)
 }
 
 #[allow(unused_variables)]
-fn __action104<
-    'input,
->(
+fn __action104<'input>(
     input: &'input str,
     __0: (usize, String, usize),
     __1: (usize, &'input str, usize),
     __2: (usize, String, usize),
-) -> ast::patterns::Pattern
-{
+) -> ast::patterns::Pattern {
     let __start0 = __2.2.clone();
     let __end0 = __2.2.clone();
-    let __temp0 = __action98(
-        input,
-        &__start0,
-        &__end0,
-    );
+    let __temp0 = __action98(input, &__start0, &__end0);
     let __temp0 = (__start0, __temp0, __end0);
-    __action39(
-        input,
-        __0,
-        __1,
-        __2,
-        __temp0,
-    )
+    __action39(input, __0, __1, __2, __temp0)
 }
 
 #[allow(unused_variables)]
-fn __action105<
-    'input,
->(
+fn __action105<'input>(
     input: &'input str,
     __0: (usize, &'input str, usize),
     __1: (usize, String, usize),
@@ -16005,71 +15645,56 @@ fn __action105<
     __3: (usize, ast::funcs::Params, usize),
     __4: (usize, &'input str, usize),
     __5: (usize, ast::Block, usize),
-) -> ast::Stmt
-{
+) -> ast::Stmt {
     let __start0 = __3.0.clone();
     let __end0 = __3.2.clone();
-    let __temp0 = __action100(
-        input,
-        __3,
-    );
+    let __temp0 = __action100(input, __3);
     let __temp0 = (__start0, __temp0, __end0);
-    __action15(
-        input,
-        __0,
-        __1,
-        __2,
-        __temp0,
-        __4,
-        __5,
-    )
+    __action15(input, __0, __1, __2, __temp0, __4, __5)
 }
 
 #[allow(unused_variables)]
-fn __action106<
-    'input,
->(
+fn __action106<'input>(
     input: &'input str,
     __0: (usize, &'input str, usize),
     __1: (usize, String, usize),
     __2: (usize, &'input str, usize),
     __3: (usize, &'input str, usize),
     __4: (usize, ast::Block, usize),
-) -> ast::Stmt
-{
+) -> ast::Stmt {
     let __start0 = __2.2.clone();
     let __end0 = __3.0.clone();
-    let __temp0 = __action101(
-        input,
-        &__start0,
-        &__end0,
-    );
+    let __temp0 = __action101(input, &__start0, &__end0);
     let __temp0 = (__start0, __temp0, __end0);
-    __action15(
-        input,
-        __0,
-        __1,
-        __2,
-        __temp0,
-        __3,
-        __4,
-    )
+    __action15(input, __0, __1, __2, __temp0, __3, __4)
 }
 
-pub trait __ToTriple<'input, >
-{
-    fn to_triple(value: Self) -> Result<(usize,Token<'input>,usize), __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>;
+pub trait __ToTriple<'input> {
+    fn to_triple(
+        value: Self,
+    ) -> Result<
+        (usize, Token<'input>, usize),
+        __lalrpop_util::ParseError<usize, Token<'input>, &'static str>,
+    >;
 }
 
-impl<'input, > __ToTriple<'input, > for (usize, Token<'input>, usize)
-{
-    fn to_triple(value: Self) -> Result<(usize,Token<'input>,usize), __lalrpop_util::ParseError<usize, Token<'input>, &'static str>> {
+impl<'input> __ToTriple<'input> for (usize, Token<'input>, usize) {
+    fn to_triple(
+        value: Self,
+    ) -> Result<
+        (usize, Token<'input>, usize),
+        __lalrpop_util::ParseError<usize, Token<'input>, &'static str>,
+    > {
         Ok(value)
     }
 }
-impl<'input, > __ToTriple<'input, > for Result<(usize, Token<'input>, usize), &'static str>
-{
-    fn to_triple(value: Self) -> Result<(usize,Token<'input>,usize), __lalrpop_util::ParseError<usize, Token<'input>, &'static str>> {
+impl<'input> __ToTriple<'input> for Result<(usize, Token<'input>, usize), &'static str> {
+    fn to_triple(
+        value: Self,
+    ) -> Result<
+        (usize, Token<'input>, usize),
+        __lalrpop_util::ParseError<usize, Token<'input>, &'static str>,
+    > {
         match value {
             Ok(v) => Ok(v),
             Err(error) => Err(__lalrpop_util::ParseError::User { error }),

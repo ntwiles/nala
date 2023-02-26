@@ -114,7 +114,7 @@ StructField: ast::types::StructLiteralField = {
 TypeVariants = Comma<TypeVariant>;
 
 TypeVariant: ast::types::type_literal_variant::TypeLiteralVariant = {
-    <t:Type> "<" <tt:TypeVariants> ">" => ast::types::type_literal_variant::TypeLiteralVariant::Nested(t, tt),
+    <t:Type> "<" <tt:TypeVariants> ">" => ast::types::type_literal_variant::TypeLiteralVariant::Composite(t, tt),
     <Type> => ast::types::type_literal_variant::TypeLiteralVariant::Type(<>),
 }
 

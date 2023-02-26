@@ -17,7 +17,7 @@ impl TypeVariant {
         current_scope: usize,
     ) -> Self {
         match literal {
-            TypeLiteralVariant::Nested(p, c) => TypeVariant::Composite(
+            TypeLiteralVariant::Composite(p, c) => TypeVariant::Composite(
                 NalaType::from_literal(p, scopes, current_scope),
                 c.into_iter()
                     .map(|l| TypeVariant::from_literal(l, scopes, current_scope))

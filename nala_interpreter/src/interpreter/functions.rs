@@ -56,7 +56,7 @@ fn check_param_types(params: &Vec<Param>) -> Result<(), RuntimeError> {
 }
 
 fn check_param_type(param_type: &TypeLiteralVariant) -> Result<(), RuntimeError> {
-    if let TypeLiteralVariant::Nested(outer, inner) = param_type {
+    if let TypeLiteralVariant::Composite(outer, inner) = param_type {
         let outer = if let TypeLiteral::PrimitiveType(outer) = outer {
             outer
         } else {

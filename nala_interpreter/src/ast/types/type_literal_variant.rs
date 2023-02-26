@@ -4,15 +4,14 @@ use super::type_literal::TypeLiteral;
 
 #[derive(Debug, Clone)]
 pub enum TypeLiteralVariant {
-    // TODO: Rename this Composite.
-    Nested(TypeLiteral, Vec<TypeLiteralVariant>),
+    Composite(TypeLiteral, Vec<TypeLiteralVariant>),
     Type(TypeLiteral),
 }
 
 impl fmt::Display for TypeLiteralVariant {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            TypeLiteralVariant::Nested(v, vv) => {
+            TypeLiteralVariant::Composite(v, vv) => {
                 let children = vv
                     .iter()
                     .map(|vv| vv.to_string())
@@ -28,8 +27,8 @@ impl fmt::Display for TypeLiteralVariant {
 impl PartialEq for TypeLiteralVariant {
     fn eq(&self, other: &Self) -> bool {
         match self {
-            TypeLiteralVariant::Nested(mv, mg) => {
-                if let TypeLiteralVariant::Nested(ov, og) = other {
+            TypeLiteralVariant::Composite(mv, mg) => {
+                if let TypeLiteralVariant::Composite(ov, og) = other {
                     mv == ov && mg == og
                 } else {
                     false
