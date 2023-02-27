@@ -73,14 +73,12 @@ fn builtin_readnum(
     _args: HashMap<String, Value>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
-    let mut input = ctx.read();
+    let input = ctx.read();
 
-    input = input.trim().to_string();
-    let result = input.parse::<f32>();
-
-    // TODO: Replace panic with RuntimeError.
-    match result {
-        Ok(num) => Ok(Value::Num(num)),
-        Err(_) => panic!("Could not parse input '{}' as type Num.", input),
-    }
+    input
+        .trim()
+        .to_string()
+        .parse::<f32>()
+        .map(|num| Value::Num(num))
+        .map_err(|_| RuntimeError::new(&format!("Could not parse input `{input}` as type Number.")))
 }
