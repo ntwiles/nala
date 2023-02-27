@@ -28,7 +28,9 @@ pub fn eval_index(
             let array = array.lock().unwrap();
             Ok(array.get(index as usize).unwrap().clone())
         } else {
-            panic!("Cannot index into a value which is not an array.");
+            Err(RuntimeError::new(
+                "Cannot index into a value which is not an array.",
+            ))
         }
     } else {
         Err(RuntimeError::new("Cannot index using non-numeric value."))

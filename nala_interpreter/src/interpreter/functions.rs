@@ -155,8 +155,7 @@ pub fn eval_invocation(
                     Err(RuntimeError::new(&format!("Tried to return value `{return_value}` where value of type `{return_type}` was expected.")))
                 }
             } else {
-                // TODO: Replace this with a runtime error.
-                panic!("Cannot invoke a non-function.")
+                Err(RuntimeError::new(&format!("Cannot invoke a non-function.")))
             }
         }
         Invocation::PlaceExpression(place) => {
