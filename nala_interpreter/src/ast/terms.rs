@@ -135,8 +135,6 @@ impl fmt::Display for Value {
                     "".to_string()
                 };
 
-                println!("VariantIdent: {}", variant_ident);
-
                 write!(f, "{0}::{1}{2}", enum_ident, variant_ident, data)
             }
             Value::Void => write!(f, "Void"),
