@@ -1,3 +1,4 @@
+// TODO: Somehow nested objects on structs was broken. Fix this and add a test.
 struct Message {
     firstWord: String,
     second: {
