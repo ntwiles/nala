@@ -5,24 +5,24 @@ Nala is an interpreted, expression-oriented programming language with terse synt
 
 ## Features
 
-- [x] Basic console i/o.
-- [x] Lexical scope.
-- [x] Conditional branching.
-- [x] Arrays and loops.
-- [x] Functions (first-class citizens).
-- [x] Structural type system.
-- [x] Object literals and member access.
+- [x] Basic console I/O.
+- [x] Lexical scope
+- [x] Conditional branching
+- [x] Arrays and loops
+- [x] Functions (first-class citizens)
+- [x] Structural type system
+- [x] Object literals and member access
 - [x] Comments (single-line, multi-line)
-- [ ] Filesystem / Network IO. (Started)
-- [ ] Generics.
-- [ ] Error recovery.
-- [ ] Enum types with data.
-- [ ] Pattern matching.
-- [ ] Function pipelines.
-- [ ] Async / await.
-- [ ] Garbage collection.
-- [ ] Module and package systems.
-- [ ] String interpolation.
+- [ ] Enum sum types (Started)
+- [ ] Filesystem / Network I/O (Started)
+- [ ] Generics
+- [ ] Error recovery
+- [ ] Pattern matching
+- [ ] Function pipelines
+- [ ] Async / await
+- [ ] Garbage collection
+- [ ] Module and package systems
+- [ ] String interpolation
 
 ## Usage
 
