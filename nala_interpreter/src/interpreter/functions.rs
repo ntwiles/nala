@@ -135,7 +135,7 @@ pub fn eval_invocation(
                     Block::NalaBlock(stmts) => {
                         eval_stmts(&stmts, scopes, call_scope, Some(closure_scope), ctx)?
                     }
-                    Block::RustBlock(func) => Ok(func(param_args, ctx))?,
+                    Block::RustBlock(func) => Ok(func(param_args, ctx)?)?,
                 };
 
                 let return_type = TypeVariant::from_literal(return_type, scopes, current_scope);

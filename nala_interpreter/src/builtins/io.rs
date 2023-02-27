@@ -10,6 +10,7 @@ use crate::{
         },
         *,
     },
+    errors::RuntimeError,
     io_context::IoContext,
 };
 
@@ -51,25 +52,35 @@ pub fn get_readnum_block() -> Func {
     }
 }
 
-fn builtin_print(args: HashMap<String, Value>, ctx: &mut dyn IoContext) -> Value {
+fn builtin_print(
+    args: HashMap<String, Value>,
+    ctx: &mut dyn IoContext,
+) -> Result<Value, RuntimeError> {
     let message = args.get("message").unwrap();
     ctx.print(&message.to_string());
-    Value::Void
+    Ok(Value::Void)
 }
 
-fn builtin_read(_args: HashMap<String, Value>, ctx: &mut dyn IoContext) -> Value {
+fn builtin_read(
+    _args: HashMap<String, Value>,
+    ctx: &mut dyn IoContext,
+) -> Result<Value, RuntimeError> {
     let input = ctx.read();
-    Value::String(input.trim().to_string())
+    Ok(Value::String(input.trim().to_string()))
 }
 
-fn builtin_readnum(_args: HashMap<String, Value>, ctx: &mut dyn IoContext) -> Value {
+fn builtin_readnum(
+    _args: HashMap<String, Value>,
+    ctx: &mut dyn IoContext,
+) -> Result<Value, RuntimeError> {
     let mut input = ctx.read();
 
     input = input.trim().to_string();
     let result = input.parse::<f32>();
 
+    // TODO: Replace panic with RuntimeError.
     match result {
-        Ok(num) => Value::Num(num),
+        Ok(num) => Ok(Value::Num(num)),
         Err(_) => panic!("Could not parse input '{}' as type Num.", input),
     }
 }

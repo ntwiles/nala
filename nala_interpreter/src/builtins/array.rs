@@ -13,6 +13,7 @@ use crate::{
         },
         *,
     },
+    errors::RuntimeError,
     io_context::IoContext,
 };
 
@@ -79,19 +80,25 @@ pub fn get_slice_block() -> Func {
     }
 }
 
-fn builtin_len(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> Value {
+fn builtin_len(
+    args: HashMap<String, Value>,
+    _context: &mut dyn IoContext,
+) -> Result<Value, RuntimeError> {
     let array = args.get("array").unwrap();
 
     if let Value::Array(array) = array {
         let array = Arc::clone(array);
         let array = array.lock().unwrap();
-        Value::Num(array.len() as f32)
+        Ok(Value::Num(array.len() as f32))
     } else {
         unreachable!()
     }
 }
 
-fn builtin_slice(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> Value {
+fn builtin_slice(
+    args: HashMap<String, Value>,
+    _context: &mut dyn IoContext,
+) -> Result<Value, RuntimeError> {
     let array = if let Value::Array(array) = args.get("array").unwrap() {
         array
     } else {
@@ -113,5 +120,7 @@ fn builtin_slice(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> 
     let array = Arc::clone(array);
     let array = array.lock().unwrap();
 
-    Value::Array(Arc::new(Mutex::new(array[start..end].to_owned())))
+    Ok(Value::Array(Arc::new(Mutex::new(
+        array[start..end].to_owned(),
+    ))))
 }

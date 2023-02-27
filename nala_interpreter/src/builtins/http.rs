@@ -56,7 +56,10 @@ pub fn get_http_block(scopes: &mut Scopes, scope: usize) -> Result<Func, Runtime
     })
 }
 
-fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> Value {
+fn builtin_http(
+    args: HashMap<String, Value>,
+    _context: &mut dyn IoContext,
+) -> Result<Value, RuntimeError> {
     let options = args.get("options").unwrap();
 
     let mutex = if let Value::Object(reference) = options {
@@ -67,8 +70,8 @@ fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> V
 
     let options = mutex.lock().unwrap();
 
-    let url = options["url"].unwrap_string();
-    let method = options["method"].unwrap_string();
+    let url = options["url"].as_string()?;
+    let method = options["method"].as_string()?;
 
     let body = if let Some(Value::String(body)) = options.get("body") {
         Some(body)
@@ -119,7 +122,7 @@ fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> V
         }
     }
 
-    Value::Object(Arc::new(Mutex::new(fields)))
+    Ok(Value::Object(Arc::new(Mutex::new(fields))))
 }
 
 fn build_value(value: serde_json::Value) -> Value {

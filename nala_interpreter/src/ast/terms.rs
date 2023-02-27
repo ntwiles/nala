@@ -56,12 +56,13 @@ pub enum Value {
 }
 
 impl Value {
-    pub fn unwrap_string(&self) -> String {
+    pub fn as_string(&self) -> Result<String, RuntimeError> {
         if let Value::String(string) = self {
-            string.to_owned()
+            Ok(string.to_owned())
         } else {
-            // TODO: Replace this with an error.
-            panic!("Term `{}` is not a String!", self);
+            Err(RuntimeError::new(&format!(
+                "Term `{self}` is not a String."
+            )))
         }
     }
 

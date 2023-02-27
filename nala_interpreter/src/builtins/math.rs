@@ -10,6 +10,7 @@ use crate::{
         },
         *,
     },
+    errors::RuntimeError,
     io_context::IoContext,
 };
 
@@ -29,11 +30,14 @@ pub fn get_floor_block() -> Func {
     }
 }
 
-fn builtin_floor(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> Value {
+fn builtin_floor(
+    args: HashMap<String, Value>,
+    _context: &mut dyn IoContext,
+) -> Result<Value, RuntimeError> {
     let num = args.get("num").unwrap();
 
     if let Value::Num(num) = num {
-        Value::Num(num.floor())
+        Ok(Value::Num(num.floor()))
     } else {
         unreachable!()
     }
