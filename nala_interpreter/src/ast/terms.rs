@@ -203,11 +203,7 @@ impl Value {
                 TypeVariant::Type(NalaType::Struct(fields))
             }
             Value::String(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
-            Value::Variant(EnumVariantValue {
-                enum_ident,
-                variant_ident,
-                ..
-            }) => {
+            Value::Variant(EnumVariantValue { enum_ident, .. }) => {
                 let variants = scopes
                     .get_type(enum_ident, current_scope)
                     .unwrap()
