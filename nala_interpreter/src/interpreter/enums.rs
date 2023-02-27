@@ -33,7 +33,7 @@ pub fn eval_enum_variant(
             // TODO: Support data in variants.
             let data = if let Some(data) = data {
                 let data = eval_expr(data, scopes, current_scope, None, ctx)?;
-                let data_type = data.get_type(scopes, current_scope);
+                let data_type = data.get_type(scopes, current_scope)?;
 
                 let expected_data_type = match expected_data_type {
                     Some(expected_data_type) => expected_data_type,
@@ -45,12 +45,12 @@ pub fn eval_enum_variant(
                 };
 
                 if !(data
-                    .get_type(scopes, current_scope)
+                    .get_type(scopes, current_scope)?
                     .is_assignable_to(&expected_data_type))
                 {
                     return Err(RuntimeError::new(&format!(
                             "Created variant with wrong data type. Expected `{expected_data_type}` but got `{0}`",
-                            data.get_type(scopes, current_scope),
+                            data.get_type(scopes, current_scope)?,
                         )));
                 }
 

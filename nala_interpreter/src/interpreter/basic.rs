@@ -106,7 +106,7 @@ pub fn eval_expr(
             let left = eval_expr(left, scopes, current_scope, enclosing_scope, ctx)?;
             let right = eval_enum_variant(right, scopes, current_scope, enclosing_scope, ctx)?;
 
-            Ok(eval_equals(left, right, scopes, current_scope))
+            eval_equals(left, right, scopes, current_scope)
         }
         Expr::Gt(left, right) => {
             let left = eval_expr(left, scopes, current_scope, enclosing_scope, ctx)?;

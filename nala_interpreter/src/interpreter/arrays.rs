@@ -45,11 +45,11 @@ pub fn eval_array(
     let values = eval_elems(&array.elems, scopes, current_scope, enclosing_scope, ctx)?;
 
     if let Some(first) = values.clone().first() {
-        let first_type = first.get_type(scopes, current_scope);
+        let first_type = first.get_type(scopes, current_scope)?;
 
         for value in values.clone() {
-            if value.get_type(scopes, current_scope) != first_type {
-                let second_type = value.get_type(scopes, current_scope);
+            if value.get_type(scopes, current_scope)? != first_type {
+                let second_type = value.get_type(scopes, current_scope)?;
 
                 return Err(RuntimeError::new(
                     &format!("Arrays can contain elements of only a single type. Found elements of types `{first_type}` and `{second_type}`.",

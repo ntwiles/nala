@@ -5,6 +5,7 @@ use std::{
 };
 
 use crate::{
+    errors::RuntimeError,
     scopes::Scopes,
     types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
 };
@@ -150,13 +151,17 @@ impl fmt::Display for Value {
 }
 
 impl Value {
-    pub fn get_type(&self, scopes: &mut Scopes, current_scope: usize) -> TypeVariant {
-        match self {
+    pub fn get_type(
+        &self,
+        scopes: &mut Scopes,
+        current_scope: usize,
+    ) -> Result<TypeVariant, RuntimeError> {
+        let result = match self {
             Value::Array(items) => {
                 let items = Arc::clone(items);
                 let items = items.lock().unwrap();
                 let elem_type = if items.len() > 0 {
-                    items.first().unwrap().get_type(scopes, current_scope)
+                    items.first().unwrap().get_type(scopes, current_scope)?
                 } else {
                     todo!("Handle the case where trying to get the type of an empty array.")
                 };
@@ -194,9 +199,9 @@ impl Value {
                     .unwrap()
                     .clone()
                     .into_iter()
-                    .map(|(ident, v)| StructField {
-                        ident,
-                        field_type: v.get_type(scopes, current_scope),
+                    .map(|(ident, v)| {
+                        let field_type = v.get_type(scopes, current_scope).unwrap();
+                        StructField { ident, field_type }
                     })
                     .collect();
 
@@ -205,15 +210,16 @@ impl Value {
             Value::String(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
             Value::Variant(EnumVariantValue { enum_ident, .. }) => {
                 let variants = scopes
-                    .get_type(enum_ident, current_scope)
-                    .unwrap()
+                    .get_type(enum_ident, current_scope)?
                     .as_enum()
                     .unwrap();
 
                 TypeVariant::Type(NalaType::Enum(enum_ident.to_owned(), variants))
             }
             Value::Void => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void)),
-        }
+        };
+
+        Ok(result)
     }
 }
 

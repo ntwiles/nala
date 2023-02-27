@@ -13,42 +13,75 @@ pub fn eval_lt(
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
     match left {
-        Value::Num(left) => Ok(num_lt(left, right, scopes, current_scope)),
-        Value::String(left) => Ok(string_lt(left, right, scopes, current_scope)),
-        Value::Bool(left) => Ok(bool_lt(left, right, scopes, current_scope)),
-        left => panic_oper_not_impl("<", &left.get_type(scopes, current_scope)),
+        Value::Num(left) => Ok(num_lt(left, right, scopes, current_scope)?),
+        Value::String(left) => Ok(string_lt(left, right, scopes, current_scope)?),
+        Value::Bool(left) => Ok(bool_lt(left, right, scopes, current_scope)?),
+        left => {
+            let left_type = left.get_type(scopes, current_scope)?;
+            panic_oper_not_impl("<", &left_type);
+        }
     }
 }
 
-fn num_lt(left: f32, right: Value, scopes: &mut Scopes, current_scope: usize) -> Value {
-    match right {
+fn num_lt(
+    left: f32,
+    right: Value,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<Value, RuntimeError> {
+    let result = match right {
         Value::Num(right) => Value::Bool(left < right),
-        right => panic_oper_not_impl_for(
-            "<",
-            &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
-            &right.get_type(scopes, current_scope),
-        ),
-    }
+        right => {
+            let right_type = right.get_type(scopes, current_scope)?;
+            panic_oper_not_impl_for(
+                "<",
+                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
+                &right_type,
+            )
+        }
+    };
+
+    Ok(result)
 }
 
-fn string_lt(left: String, right: Value, scopes: &mut Scopes, current_scope: usize) -> Value {
-    match right {
+fn string_lt(
+    left: String,
+    right: Value,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<Value, RuntimeError> {
+    let result = match right {
         Value::String(right) => Value::Bool(left < right),
-        right => panic_oper_not_impl_for(
-            "<",
-            &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
-            &right.get_type(scopes, current_scope),
-        ),
-    }
+        right => {
+            let right_type = right.get_type(scopes, current_scope)?;
+            panic_oper_not_impl_for(
+                "<",
+                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
+                &right_type,
+            )
+        }
+    };
+
+    Ok(result)
 }
 
-fn bool_lt(left: bool, right: Value, scopes: &mut Scopes, current_scope: usize) -> Value {
-    match right {
+fn bool_lt(
+    left: bool,
+    right: Value,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<Value, RuntimeError> {
+    let result = match right {
         Value::Bool(right) => Value::Bool(left < right),
-        right => panic_oper_not_impl_for(
-            "<",
-            &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
-            &right.get_type(scopes, current_scope),
-        ),
-    }
+        right => {
+            let right_type = right.get_type(scopes, current_scope)?;
+            panic_oper_not_impl_for(
+                "<",
+                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
+                &right_type,
+            )
+        }
+    };
+
+    Ok(result)
 }

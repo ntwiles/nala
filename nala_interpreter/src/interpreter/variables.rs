@@ -91,8 +91,8 @@ pub fn eval_assign(
 
                 let existing = scopes.get_value(&ident, current_scope, enclosing_scope)?;
 
-                let existing_type = existing.get_type(scopes, current_scope);
-                let value_type = value.get_type(scopes, current_scope);
+                let existing_type = existing.get_type(scopes, current_scope)?;
+                let value_type = value.get_type(scopes, current_scope)?;
 
                 if existing_type == value_type {
                     return scopes.mutate_value(&ident, current_scope, value.clone());

@@ -6,7 +6,7 @@ pub fn do_add(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
+    if left.get_type(scopes, current_scope)? != right.get_type(scopes, current_scope)? {
         return Err(RuntimeError::new(
             "Cannot add between values of two different types.",
         ));
@@ -37,7 +37,7 @@ pub fn do_subtract(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
+    if left.get_type(scopes, current_scope)? != right.get_type(scopes, current_scope)? {
         return Err(RuntimeError::new(
             "Cannot subtract between values of two different types.",
         ));
@@ -60,7 +60,7 @@ pub fn do_multiply(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
+    if left.get_type(scopes, current_scope)? != right.get_type(scopes, current_scope)? {
         return Err(RuntimeError::new(
             "Cannot multiply between values of two different types.",
         ));
@@ -83,7 +83,7 @@ pub fn do_divide(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    if left.get_type(scopes, current_scope) != right.get_type(scopes, current_scope) {
+    if left.get_type(scopes, current_scope)? != right.get_type(scopes, current_scope)? {
         return Err(RuntimeError::new(
             "Cannot divide between values of two different types.",
         ));

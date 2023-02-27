@@ -19,7 +19,7 @@ pub fn eval_gt(
             right => panic_oper_not_impl_for(
                 ">",
                 &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
-                &right.get_type(scopes, current_scope),
+                &right.get_type(scopes, current_scope)?,
             ),
         },
         Value::String(left) => match right {
@@ -27,9 +27,12 @@ pub fn eval_gt(
             right => panic_oper_not_impl_for(
                 ">",
                 &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
-                &right.get_type(scopes, current_scope),
+                &right.get_type(scopes, current_scope)?,
             ),
         },
-        left => panic_oper_not_impl(">", &left.get_type(scopes, current_scope)),
+        left => {
+            let left_type = left.get_type(scopes, current_scope)?;
+            panic_oper_not_impl(">", &left_type)
+        }
     }
 }
