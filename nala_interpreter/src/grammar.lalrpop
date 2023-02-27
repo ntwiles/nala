@@ -120,7 +120,6 @@ TypeVariant: ast::types::type_literal_variant::TypeLiteralVariant = {
 }
 
 Type: ast::types::type_literal::TypeLiteral = {
-    "{" <ff:StructFields> "}" => ast::types::type_literal::TypeLiteral::Struct(ff),
     <PrimitiveType> => ast::types::type_literal::TypeLiteral::PrimitiveType(<>),
     <Symbol> => ast::types::type_literal::TypeLiteral::UserDefined(<>),
 }

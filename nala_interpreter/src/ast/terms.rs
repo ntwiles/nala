@@ -91,8 +91,24 @@ impl fmt::Display for Value {
                 write!(f, "Func<{}>", params.join(", "))
             }
             Value::Num(n) => write!(f, "{}", n),
-            // TODO: Do we really want to just print <Object> here?
-            Value::Object(_) => write!(f, "<Object>"),
+            Value::Object(fields) => {
+                write!(f, "{{ ")?;
+
+                write!(
+                    f,
+                    "{}",
+                    fields
+                        .lock()
+                        .unwrap()
+                        .iter()
+                        .map(|(key, value)| format!("{}: {}", key, value))
+                        .fold(String::new(), |a, b| a + &b + ", ")
+                )?;
+
+                write!(f, "}}")?;
+
+                Ok(())
+            }
             Value::String(t) => write!(f, "{}", t),
             Value::Type(type_kind) => write!(f, "{}", type_kind),
             Value::Variant(e, v, d) => {

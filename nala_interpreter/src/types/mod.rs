@@ -30,12 +30,6 @@ impl NalaType {
 
                 NalaType::Struct(binding)
             }
-            TypeLiteral::Struct(fields) => NalaType::Struct(
-                fields
-                    .into_iter()
-                    .map(|f| StructField::from_literal(f, scopes, current_scope))
-                    .collect(),
-            ),
         }
     }
 

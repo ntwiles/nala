@@ -12,43 +12,48 @@ use crate::{
         terms::*,
         types::{
             primitive_type::PrimitiveType, type_literal::TypeLiteral,
-            type_literal_variant::TypeLiteralVariant, StructLiteralField,
+            type_literal_variant::TypeLiteralVariant,
         },
         *,
     },
+    errors::RuntimeError,
     io_context::IoContext,
+    scopes::{type_binding::TypeBinding, Scopes},
+    types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
 };
 
-pub fn get_http_block() -> Func {
+pub fn get_http_block(scopes: &mut Scopes, scope: usize) -> Result<Func, RuntimeError> {
+    // TODO: Once we have generics implemented we can let require that users pass the return type.
+    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Any));
+
     let options_fields = vec![
-        StructLiteralField::new(
-            "method",
-            TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String)),
-        ),
-        StructLiteralField::new(
-            "url",
-            TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String)),
-        ),
-        StructLiteralField::new(
-            "body",
-            TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String)),
-        ),
+        StructField {
+            ident: String::from("method"),
+            field_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
+        },
+        StructField {
+            ident: String::from("url"),
+            field_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
+        },
+        StructField {
+            ident: String::from("body"),
+            field_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
+        },
     ];
+
+    scopes.add_type_binding("HttpOptions", scope, TypeBinding::Struct(options_fields))?;
 
     let params = vec![Param {
         ident: String::from("options"),
-        param_type: TypeLiteralVariant::Type(TypeLiteral::Struct(options_fields)),
+        param_type: TypeLiteralVariant::Type(TypeLiteral::UserDefined("HttpOptions".to_string())),
     }];
 
-    // TODO: Don't type this Object, type the fields.
-    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Object));
-
-    Func {
+    Ok(Func {
         ident: "http".to_string(),
         params,
         return_type,
         block: Box::new(Block::RustBlock(builtin_http)),
-    }
+    })
 }
 
 fn builtin_http(args: HashMap<String, Value>, _context: &mut dyn IoContext) -> Value {

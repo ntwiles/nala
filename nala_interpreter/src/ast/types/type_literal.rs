@@ -1,12 +1,11 @@
 use std::fmt;
 
-use super::{primitive_type::PrimitiveType, StructLiteralField};
+use super::primitive_type::PrimitiveType;
 
 #[derive(Debug, Clone)]
 pub enum TypeLiteral {
     PrimitiveType(PrimitiveType),
     UserDefined(String),
-    Struct(Vec<StructLiteralField>),
 }
 
 impl fmt::Display for TypeLiteral {
@@ -14,7 +13,6 @@ impl fmt::Display for TypeLiteral {
         match self {
             TypeLiteral::PrimitiveType(primitive) => write!(f, "{}", primitive),
             TypeLiteral::UserDefined(the_type) => write!(f, "{}", the_type),
-            TypeLiteral::Struct(_) => todo!(),
         }
     }
 }
@@ -36,7 +34,6 @@ impl PartialEq for TypeLiteral {
                     false
                 }
             }
-            TypeLiteral::Struct(_) => todo!(),
         }
     }
 }
