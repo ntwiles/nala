@@ -32,17 +32,24 @@ pub struct StoredFunc {
     pub closure_scope: usize,
 }
 
+// TODO: Find a home for this
+#[derive(Debug, Clone)]
+pub struct EnumVariantValue {
+    pub enum_ident: String,
+    pub variant_ident: String,
+    pub data: Option<Box<Value>>,
+}
+
 #[derive(Debug, Clone)]
 pub enum Value {
     Array(Arc<Mutex<Vec<Value>>>),
     Bool(bool),
     Func(StoredFunc),
-    Variant(String, String, Option<Box<Value>>),
+    Variant(EnumVariantValue),
     Num(f32),
     Object(Arc<Mutex<HashMap<String, Value>>>),
     String(String),
     Type(TypeLiteralVariant),
-
     Break(Box<Value>),
     Void,
 }
@@ -52,14 +59,25 @@ impl Value {
         if let Value::String(string) = self {
             string.to_owned()
         } else {
+            // TODO: Replace this with an error.
             panic!("Term `{}` is not a String!", self);
         }
     }
 
     pub fn unwrap_variant(&self) -> (String, String, Option<Box<Value>>) {
-        if let Value::Variant(enum_name, variant_name, data) = self {
-            (enum_name.to_owned(), variant_name.to_owned(), data.clone())
+        if let Value::Variant(EnumVariantValue {
+            enum_ident,
+            variant_ident,
+            data,
+        }) = self
+        {
+            (
+                enum_ident.to_owned(),
+                variant_ident.to_owned(),
+                data.clone(),
+            )
         } else {
+            // TODO: Replace this with an error.
             panic!("Term `{}` is not a Variant!", self);
         }
     }
@@ -111,14 +129,20 @@ impl fmt::Display for Value {
             }
             Value::String(t) => write!(f, "{}", t),
             Value::Type(type_kind) => write!(f, "{}", type_kind),
-            Value::Variant(e, v, d) => {
-                let d = if let Some(d) = d {
-                    format!("({0})", d)
+            Value::Variant(EnumVariantValue {
+                enum_ident,
+                variant_ident,
+                data,
+            }) => {
+                let data = if let Some(data) = data {
+                    format!("({0})", data)
                 } else {
                     "".to_string()
                 };
 
-                write!(f, "{0}::{1}{2}", e, v, d)
+                println!("VariantIdent: {}", variant_ident);
+
+                write!(f, "{0}::{1}{2}", enum_ident, variant_ident, data)
             }
             Value::Void => write!(f, "Void"),
         }
@@ -179,10 +203,19 @@ impl Value {
                 TypeVariant::Type(NalaType::Struct(fields))
             }
             Value::String(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
-            Value::Variant(enum_ident, variant_ident, _) => TypeVariant::Type(NalaType::Enum(
-                enum_ident.to_owned(),
-                variant_ident.to_owned(),
-            )),
+            Value::Variant(EnumVariantValue {
+                enum_ident,
+                variant_ident,
+                ..
+            }) => {
+                let variants = scopes
+                    .get_type(enum_ident, current_scope)
+                    .unwrap()
+                    .as_enum()
+                    .unwrap();
+
+                TypeVariant::Type(NalaType::Enum(enum_ident.to_owned(), variants))
+            }
             Value::Void => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void)),
         }
     }

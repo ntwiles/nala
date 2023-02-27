@@ -1,34 +1,23 @@
-/** TODO: We're using this struct because we don't yet support data in enum variants.
- * Once we do, use the following:
- *
- * enum Result {
- *     Some(Number),
- *     None,
- * }
- */
 
-struct Result {
-    success: Bool,
-    index: Number,
+enum IndexOfStringResult {
+    Found(Number),
+    NotFound,
 }
 
-func indexOfString(haystack: Array<String>, needle: String ): Result {
+func indexOfString(haystack: Array<String>, needle: String ): IndexOfStringResult {
     mut i = 0;
 
     for item in haystack {
         if (item == needle) {
-            break({ success: true, index: i });
+            break(IndexOfStringResult::Found(i));
         }
 
         i = i + 1;
     }
 
-    { success: false, index: 0 };
+    IndexOfStringResult::NotFound;
 }
 
 const names = [ 'Jimmy', 'Kim', 'Howard', 'Lalo' ];
 const result = indexOfString(names, 'Howard');
-
-if (result.success) {
-    print(names[result.index]);
-}
+print(result); // TODO: This proves that the right result is found, but doesn't yet let us extract it.

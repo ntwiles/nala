@@ -2,7 +2,7 @@ use std::fmt;
 
 use super::primitive_type::PrimitiveType;
 
-#[derive(Debug, Clone)]
+#[derive(Eq, Debug, Clone)]
 pub enum TypeLiteral {
     PrimitiveType(PrimitiveType),
     UserDefined(String),

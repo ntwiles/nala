@@ -135,7 +135,8 @@ PrimitiveType: ast::types::primitive_type::PrimitiveType = {
 }
 
 EnumVariantOrAddend: ast::types::enum_variant::EnumVariantOrAddend = {
-    <s:Symbol> "::" <ss:Symbol> => ast::types::enum_variant::EnumVariantOrAddend::EnumVariant(s, ss),
+    <s:Symbol> "::" <ss:Symbol> "(" <e:Expr> ")" => ast::types::enum_variant::EnumVariantOrAddend::EnumVariant(s, ss, Some(Box::new(e))),
+    <s:Symbol> "::" <ss:Symbol> => ast::types::enum_variant::EnumVariantOrAddend::EnumVariant(s, ss, None),
     Addend => ast::types::enum_variant::EnumVariantOrAddend::Addend(<>),
 };
 

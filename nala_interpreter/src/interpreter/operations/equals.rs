@@ -16,9 +16,11 @@ pub fn eval_equals(left: Value, right: Value, scopes: &mut Scopes, current_scope
     }
 
     match left {
-        Value::Variant(left_enum, left_variant, data) => {
-            variant_equals(left_enum, left_variant, data, right, scopes, current_scope)
-        }
+        Value::Variant(EnumVariantValue {
+            enum_ident: left_enum,
+            variant_ident: left_variant,
+            data,
+        }) => variant_equals(left_enum, left_variant, data, right, scopes, current_scope),
         _ => Value::Bool(left == right),
     }
 }
@@ -31,7 +33,12 @@ fn variant_equals(
     _scopes: &mut Scopes,
     _current_scope: usize,
 ) -> Value {
-    if let Value::Variant(right_enum, right_variant, right_data) = right {
+    if let Value::Variant(EnumVariantValue {
+        enum_ident: right_enum,
+        variant_ident: right_variant,
+        data: right_data,
+    }) = right
+    {
         let enums_match = left_enum == right_enum;
         let variants_match = left_variant == right_variant;
 

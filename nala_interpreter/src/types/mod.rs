@@ -1,8 +1,11 @@
 use std::fmt;
 
 use crate::{
-    ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
-    scopes::Scopes,
+    ast::{
+        types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
+        VariantDeclare,
+    },
+    scopes::{type_binding::TypeBinding, Scopes},
 };
 
 use self::struct_field::StructField;
@@ -12,7 +15,7 @@ pub mod type_variant;
 
 #[derive(Eq, Debug, Clone)]
 pub enum NalaType {
-    Enum(String, String),
+    Enum(String, Vec<VariantDeclare>),
     PrimitiveType(PrimitiveType),
     Struct(Vec<StructField>),
 }
@@ -22,21 +25,25 @@ impl NalaType {
         match literal {
             TypeLiteral::PrimitiveType(t) => NalaType::PrimitiveType(t),
             TypeLiteral::UserDefined(ident) => {
-                let binding = scopes
-                    .get_type(&ident, current_scope)
-                    .unwrap()
-                    .as_struct()
-                    .unwrap();
+                let binding = scopes.get_type(&ident, current_scope).unwrap();
 
-                NalaType::Struct(binding)
+                match binding {
+                    TypeBinding::Enum(variants) => NalaType::Enum(ident, variants),
+                    TypeBinding::Struct(fields) => NalaType::Struct(fields),
+                }
             }
         }
     }
 
     pub fn is_assignable_to(&self, other: &Self) -> bool {
         match self {
-            NalaType::Enum(_enum_ident, _variant_ident) => {
-                todo!()
+            NalaType::Enum(enum_ident, variant_ident) => {
+                if let NalaType::Enum(oei, ovi) = other {
+                    // TODO: Just because the names match doesn't mean they are the same type.
+                    enum_ident == oei && variant_ident == ovi
+                } else {
+                    false
+                }
             }
             NalaType::PrimitiveType(sp) => {
                 if let NalaType::PrimitiveType(op) = other {
@@ -65,7 +72,7 @@ impl NalaType {
 impl fmt::Display for NalaType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            NalaType::Enum(_enum_ident, _variant_ident) => todo!(),
+            NalaType::Enum(enum_ident, _variant_ident) => write!(f, "{enum_ident}"),
             NalaType::PrimitiveType(primitive) => write!(f, "{}", primitive),
             NalaType::Struct(fields) => {
                 write!(f, "{{ ")?;
