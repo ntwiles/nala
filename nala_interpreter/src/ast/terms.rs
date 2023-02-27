@@ -66,21 +66,14 @@ impl Value {
         }
     }
 
-    pub fn unwrap_variant(&self) -> (String, String, Option<Box<Value>>) {
-        if let Value::Variant(EnumVariantValue {
-            enum_ident,
-            variant_ident,
-            data,
-        }) = self
-        {
-            (
-                enum_ident.to_owned(),
-                variant_ident.to_owned(),
-                data.clone(),
-            )
+    pub fn as_variant(&self) -> Result<EnumVariantValue, RuntimeError> {
+        if let Value::Variant(variant) = self {
+            Ok(variant.clone())
         } else {
-            // TODO: Replace this with an error.
-            panic!("Term `{}` is not a Variant!", self);
+            Err(RuntimeError::new(&format!(
+                "Term `{}` is not a Variant!",
+                self
+            )))
         }
     }
 }
