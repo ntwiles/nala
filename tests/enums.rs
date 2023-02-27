@@ -64,3 +64,21 @@ fn it_runs_enum_variant_compare() {
     assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["true"]);
 }
+
+#[test]
+fn it_runs_enum_variant_with_data() {
+    let mut ctx = TestContext::new();
+
+    let nala = r#"
+        enum Option {
+            Some(String),
+            None,
+        }
+
+        const test = Option::Some('hello');
+        print(test);
+    "#;
+
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["Option::Some(hello)"]);
+}
