@@ -2,6 +2,7 @@ mod array;
 mod http;
 mod io;
 mod math;
+mod void;
 
 use std::collections::HashMap;
 
@@ -12,10 +13,10 @@ use crate::{
     scopes::Scopes,
 };
 
-use self::array::*;
 use self::http::*;
 use self::io::*;
 use self::math::*;
+use self::{array::*, void::get_void_block};
 
 pub type BuiltinFunc =
     fn(HashMap<String, Value>, &mut dyn IoContext) -> Result<Value, RuntimeError>;
@@ -23,11 +24,12 @@ pub type BuiltinFunc =
 pub fn get_builtins(scopes: &mut Scopes, scope: usize) -> Result<Vec<Func>, RuntimeError> {
     Ok(vec![
         get_floor_block(),
+        get_http_block(scopes, scope)?,
         get_len_block(),
         get_print_block(),
         get_read_block(),
         get_readnum_block(),
         get_slice_block(),
-        get_http_block(scopes, scope)?,
+        get_void_block(),
     ])
 }
