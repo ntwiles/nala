@@ -40,10 +40,7 @@ pub fn main(path: &str) -> () {
         let message = parse_result.unwrap_err();
         println!(
             "{}",
-            format!(
-                "Nala Parse Error:\n  file:\n    {0} \n  message:\n    {1}",
-                path, message
-            )
+            format!("Nala Parse Error:\n  file:\n    {path} \n  message:\n    {message}")
         );
 
         return;

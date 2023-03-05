@@ -15246,7 +15246,7 @@ fn __action59<'input>(
     (_, tt, _): (usize, ast::types::TypeVariants, usize),
     (_, _, _): (usize, &'input str, usize),
 ) -> ast::types::TypeVariant {
-    ast::types::TypeVariant::Composite(t, Box::new(tt))
+    ast::types::TypeVariant::Generic(t, Box::new(tt))
 }
 
 #[allow(unused_variables)]

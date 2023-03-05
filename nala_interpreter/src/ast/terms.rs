@@ -158,7 +158,7 @@ impl Value {
                     todo!("Handle the case where trying to get the type of an empty array.")
                 };
 
-                TypeVariant::Composite(
+                TypeVariant::Generic(
                     NalaType::PrimitiveType(PrimitiveType::Array),
                     vec![elem_type],
                 )
@@ -181,7 +181,7 @@ impl Value {
                     current_scope,
                 ));
 
-                TypeVariant::Composite(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
+                TypeVariant::Generic(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
             }
             Value::Type(_) => todo!("What is this?"),
             Value::Num(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
