@@ -3,6 +3,7 @@ pub mod branching;
 pub mod funcs;
 pub mod math;
 pub mod objects;
+pub mod patterns;
 pub mod terms;
 pub mod types;
 
@@ -12,6 +13,7 @@ use crate::builtins::BuiltinFunc;
 
 use self::arrays::*;
 use self::branching::IfElseChain;
+use self::branching::Match;
 use self::funcs::*;
 use self::math::*;
 use self::objects::*;
@@ -52,6 +54,7 @@ pub enum Stmt {
     IfElseChain(Box<IfElseChain>),
     Wiles(Expr, Box<Block>),
     Struct(String, Vec<StructLiteralField>),
+    Match(Match),
 }
 
 // TODO: Implement this as a Vec<Stmt> instead of a linked list.

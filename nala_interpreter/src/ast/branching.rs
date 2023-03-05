@@ -1,4 +1,4 @@
-use super::{Block, Expr};
+use super::{patterns::Pattern, Block, Expr};
 
 #[derive(Clone, Debug)]
 pub struct IfElseChain {
@@ -16,5 +16,17 @@ pub struct ElseIf {
 
 #[derive(Clone, Debug)]
 pub struct Else {
+    pub block: Box<Block>,
+}
+
+#[derive(Clone, Debug)]
+pub struct Match {
+    pub expr: Expr,
+    pub cases: Vec<MatchCase>,
+}
+
+#[derive(Clone, Debug)]
+pub struct MatchCase {
+    pub pattern: Pattern,
     pub block: Box<Block>,
 }

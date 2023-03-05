@@ -32,7 +32,7 @@ pub fn eval_enum_variant(
 
             // TODO: Support data in variants.
             let data = if let Some(data) = data {
-                let data = eval_expr(data, scopes, current_scope, None, ctx)?;
+                let data = eval_expr(data, scopes, current_scope, None, ctx)?; // TODO: Should we be passing None here?
                 let data_type = data.get_type(scopes, current_scope)?;
 
                 let expected_data_type = match expected_data_type {

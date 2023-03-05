@@ -20,10 +20,11 @@ pub fn eval_block(
     block: &Block,
     scopes: &mut Scopes,
     current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     if let Block::NalaBlock(stmts) = block {
-        eval_stmts(stmts, scopes, current_scope, None, ctx)
+        eval_stmts(stmts, scopes, current_scope, enclosing_scope, ctx)
     } else {
         // TODO: If we accept a Block as a param, probably all variants should be valid arguments.
         panic!("Do not pass Rust blocks to eval_block")
@@ -59,17 +60,17 @@ fn eval_stmt(
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match stmt {
-        Stmt::Declare(ident, expr, is_mutable) => {
-            let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
-            eval_declare(ident, &result, scopes, current_scope, is_mutable.clone())
-        }
         Stmt::Assign(ident, expr) => {
             let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
             eval_assign(ident, &result, scopes, current_scope, enclosing_scope, ctx)
         }
-        Stmt::IfElseChain(chain) => {
-            eval_if_else_chain(chain, scopes, current_scope, enclosing_scope, ctx)
+        Stmt::Break(expr) => eval_break(expr, scopes, current_scope, enclosing_scope, ctx),
+        Stmt::Declare(ident, expr, is_mutable) => {
+            let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
+            eval_declare(ident, &result, scopes, current_scope, is_mutable.clone())
         }
+        Stmt::Enum(ident, variants) => eval_enum(ident, variants.clone(), scopes, current_scope),
+        Stmt::Expr(expr) => eval_expr(expr, scopes, current_scope, enclosing_scope, ctx),
         Stmt::For(ident, expr, block) => eval_for(
             ident,
             &expr,
@@ -79,14 +80,17 @@ fn eval_stmt(
             enclosing_scope,
             ctx,
         ),
+        Stmt::Func(func) => eval_func(func, scopes, current_scope),
+        Stmt::IfElseChain(chain) => {
+            eval_if_else_chain(chain, scopes, current_scope, enclosing_scope, ctx)
+        }
+        Stmt::Match(the_match) => {
+            eval_match(the_match, scopes, current_scope, enclosing_scope, ctx)
+        }
+        Stmt::Struct(ident, fields) => eval_struct(ident, fields.clone(), scopes, current_scope),
         Stmt::Wiles(expr, block) => {
             eval_wiles(&expr, block, scopes, current_scope, enclosing_scope, ctx)
         }
-        Stmt::Func(func) => eval_func(func, scopes, current_scope),
-        Stmt::Expr(expr) => eval_expr(expr, scopes, current_scope, enclosing_scope, ctx),
-        Stmt::Break(expr) => eval_break(expr, scopes, current_scope, enclosing_scope, ctx),
-        Stmt::Struct(ident, fields) => eval_struct(ident, fields.clone(), scopes, current_scope),
-        Stmt::Enum(ident, variants) => eval_enum(ident, variants.clone(), scopes, current_scope),
     }
 }
 

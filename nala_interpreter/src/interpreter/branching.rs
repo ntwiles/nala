@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use crate::{
     ast::{
-        branching::{Else, ElseIf, IfElseChain},
+        branching::{Else, ElseIf, IfElseChain, Match, MatchCase},
         terms::*,
         *,
     },
@@ -28,7 +28,7 @@ pub fn eval_if_else_chain(
 
     if eval_cond(cond, scopes, current_scope, enclosing_scope, ctx)? {
         let block_scope = scopes.new_scope(Some(current_scope));
-        return eval_block(&block, scopes, block_scope, ctx);
+        return eval_block(&block, scopes, block_scope, enclosing_scope, ctx);
     }
 
     for else_if in else_ifs.iter() {
@@ -36,14 +36,14 @@ pub fn eval_if_else_chain(
 
         if eval_cond(cond, scopes, current_scope, enclosing_scope, ctx)? {
             let block_scope = scopes.new_scope(Some(current_scope));
-            return eval_block(&block, scopes, block_scope, ctx);
+            return eval_block(&block, scopes, block_scope, enclosing_scope, ctx);
         }
     }
 
     if let Some(else_block) = else_block {
         let Else { block } = else_block;
         let block_scope = scopes.new_scope(Some(current_scope));
-        return eval_block(&block, scopes, block_scope, ctx);
+        return eval_block(&block, scopes, block_scope, enclosing_scope, ctx);
     }
 
     Ok(Value::Void)
@@ -87,7 +87,7 @@ pub fn eval_for(
 
             scopes.add_binding(ident, block_scope, item.clone(), false)?;
 
-            loop_result = eval_block(&block, scopes, block_scope, ctx)?;
+            loop_result = eval_block(&block, scopes, block_scope, enclosing_scope, ctx)?;
 
             if let Value::Break(value) = loop_result {
                 return Ok(*value);
@@ -121,7 +121,7 @@ pub fn eval_wiles(
         };
 
         if condition {
-            let result = eval_block(block, scopes, current_scope, ctx)?;
+            let result = eval_block(block, scopes, current_scope, enclosing_scope, ctx)?;
 
             if let Value::Break(value) = result {
                 return Ok(*value);
@@ -143,4 +143,32 @@ pub fn eval_break(
 ) -> Result<Value, RuntimeError> {
     let val = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
     Ok(Value::Break(Box::new(val)))
+}
+
+pub fn eval_match(
+    the_match: &Match,
+    scopes: &mut Scopes,
+    current_scope: usize,
+    enclosing_scope: Option<usize>,
+    ctx: &mut dyn IoContext,
+) -> Result<Value, RuntimeError> {
+    let Match { expr, cases } = the_match;
+
+    let expr = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
+
+    for case in cases.iter() {
+        let MatchCase { pattern, block } = case;
+
+        if let Some(bindings) = pattern.matches(&expr) {
+            let block_scope = scopes.new_scope(Some(current_scope));
+
+            for (ident, value) in bindings.iter() {
+                scopes.add_binding(ident, block_scope, value.clone(), false)?;
+            }
+
+            return eval_block(&block, scopes, block_scope, enclosing_scope, ctx);
+        }
+    }
+
+    Ok(Value::Void)
 }

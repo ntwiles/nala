@@ -86,3 +86,5 @@ fn it_runs_if_elif_else() {
     assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["should print"]);
 }
+
+// TODO: Test match statements.

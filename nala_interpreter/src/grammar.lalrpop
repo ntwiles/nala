@@ -5,8 +5,9 @@ use crate::ast;
 grammar;
 
 match {
-    "{", "}", "(", ")", "[", "]", ";", ":", ".", ",", "::",
-    "const", "mut", "if", "elif", "else", "for", "in", "wiles", "func", "break", "struct", "enum",
+    "{", "}", "(", ")", "[", "]", ";", ":", ".", ",", "::", "=>",
+    "const", "mut", "if", "elif", "else", "for", "in", "wiles", "func", 
+    "break", "struct", "enum", "match",
     "=", "==", ">", "<", "+", "-", "*", "/",
     "Array", "Bool", "Func", "Number",  "Object", "String", "Void",
 
@@ -46,12 +47,26 @@ Stmt: ast::Stmt = {
     "struct" <s:Symbol> "{" <ff:StructFields> "}" => ast::Stmt::Struct(s, ff),
     "enum" <s:Symbol> "{" <v:VariantsDeclare> "}" => ast::Stmt::Enum(s, v),
     <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
-    <e:Expr> ";" => ast::Stmt::Expr(e),
+    <Expr> ";" => ast::Stmt::Expr(<>),
+    <Match> => ast::Stmt::Match(<>)
 };
 
 IfElseChain: ast::branching::IfElseChain = { 
     "if" "(" <c:Expr> ")" <b:Block> <ei:ElseIf*> <e:Else?> => 
         ast::branching::IfElseChain { cond: c, block: Box::new(b), else_ifs: ei, else_block: e },
+};
+
+Match: ast::branching::Match = {
+    "match" "(" <e:Expr> ")" "{" <c:MatchCase*> "}" => ast::branching::Match { expr: e, cases: c }
+};
+
+MatchCase: ast::branching::MatchCase = {
+    <p:Pattern> "=>" <b:Block> => ast::branching::MatchCase { pattern: p, block: Box::new(b) }
+};
+
+Pattern: ast::patterns::Pattern = {
+    <e:Symbol> "::" <v:Symbol> "(" <i:Symbol> ")" => ast::patterns::Pattern::Variant(e, v, Some(i)),
+    <e:Symbol> "::" <v:Symbol> => ast::patterns::Pattern::Variant(e, v, None),
 };
 
 ElseIf: ast::branching::ElseIf = {

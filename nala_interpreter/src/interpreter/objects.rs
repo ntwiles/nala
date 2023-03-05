@@ -42,7 +42,7 @@ pub fn eval_member_access(
         MemberAccess::MemberAccess(parent, child) => {
             let object = match parent_obj {
                 Some(_parent_obj) => todo!(),
-                None => scopes.get_value(parent, current_scope, None)?,
+                None => scopes.get_value(parent, current_scope, None)?, // TODO: Should we be ignoring enclosing scope here?
             };
 
             if let Value::Object(reference) = object {

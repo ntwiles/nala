@@ -39,7 +39,7 @@ pub fn eval_tree(program: Program, ctx: &mut impl IoContext) -> Result<Value, Ru
     }
 
     match program {
-        Program::Block(block) => eval_block(&block, &mut scopes, top_scope, ctx),
+        Program::Block(block) => eval_block(&block, &mut scopes, top_scope, None, ctx),
         Program::Stmts(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, None, ctx),
     }
 }
@@ -50,7 +50,7 @@ pub fn eval_term(
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
     match term {
-        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, None)?),
+        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, None)?), // TODO: Should we be ignoring the enclosing scope here?
         Term::Value(value) => Ok(value),
     }
 }

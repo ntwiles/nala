@@ -18,6 +18,20 @@ func indexOfString(haystack: Array<String>, needle: String ): IndexOfStringResul
     IndexOfStringResult::NotFound;
 }
 
-const names = [ 'Jimmy', 'Kim', 'Howard', 'Lalo' ];
-const result = indexOfString(names, 'Howard');
-print(result); // TODO: This proves that the right result is found, but doesn't yet let us extract it.
+func makeSearchForName(names: Array<String>): Func<String, Void> {
+    func searchForName(name: String): Void {
+        match (indexOfString(names, name)) {
+            IndexOfStringResult::Found(index) => { 
+                print('Name "' + name + '" Found: ' + names[index] + '!'); 
+            }
+            IndexOfStringResult::NotFound => { print('Name "' + name + '" not found!'); }
+        }
+    }
+
+    searchForName;
+}
+
+const searchForName = makeSearchForName([ 'Jimmy', 'Kim', 'Howard', 'Lalo' ]);
+
+searchForName('Howard');
+searchForName('Mike');
