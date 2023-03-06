@@ -13,7 +13,7 @@ pub enum TypeBinding {
 impl TypeBinding {
     pub fn as_enum(&self) -> Result<(Vec<VariantDeclare>, Option<TypeArgs>), RuntimeError> {
         match self {
-            TypeBinding::Enum(variants, args) => Ok((variants.clone(), args.clone())),
+            TypeBinding::Enum(variants, type_args) => Ok((variants.clone(), type_args.clone())),
             _ => Err(RuntimeError::new("Expected an enum type.")),
         }
     }
@@ -22,6 +22,13 @@ impl TypeBinding {
         match self {
             TypeBinding::Struct(fields) => Ok(fields.clone()),
             _ => Err(RuntimeError::new("Expected a struct type.")),
+        }
+    }
+
+    pub fn is_generic(&self) -> bool {
+        match self {
+            TypeBinding::Enum(_, type_args) => type_args.is_some(),
+            TypeBinding::Struct(_) => false,
         }
     }
 }

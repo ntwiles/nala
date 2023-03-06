@@ -30,7 +30,7 @@ pub fn eval_func(
         return_type,
     } = func;
 
-    check_param_types(&params)?;
+    check_param_types(&params, scopes, current_scope)?;
 
     scopes.add_binding(
         &ident,
@@ -45,8 +45,14 @@ pub fn eval_func(
     )
 }
 
-fn check_param_types(params: &Vec<Param>) -> Result<(), RuntimeError> {
-    let mut results = params.iter().map(|p| check_param_type(&p.param_type));
+fn check_param_types(
+    params: &Vec<Param>,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<(), RuntimeError> {
+    let mut results = params
+        .iter()
+        .map(|p| check_param_type(&p.param_type, scopes, current_scope));
 
     if let Some(Err(err)) = results.find(|r| r.is_err()) {
         Err(err)
@@ -55,22 +61,31 @@ fn check_param_types(params: &Vec<Param>) -> Result<(), RuntimeError> {
     }
 }
 
-fn check_param_type(param_type: &TypeLiteralVariant) -> Result<(), RuntimeError> {
+fn check_param_type(
+    param_type: &TypeLiteralVariant,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<(), RuntimeError> {
     if let TypeLiteralVariant::Composite(outer, inner) = param_type {
-        let outer = if let TypeLiteral::PrimitiveType(outer) = outer {
-            outer
-        } else {
-            return Err(type_args_not_supported_error(outer.to_string(), inner));
-        };
+        match outer {
+            TypeLiteral::PrimitiveType(outer) => match outer {
+                PrimitiveType::Array => Ok(()),
+                PrimitiveType::Func => Ok(()),
+                _ => Err(type_args_not_supported_error(outer.to_string(), inner)),
+            },
+            TypeLiteral::UserDefined(ident) => {
+                let binding = scopes.get_type(&ident, current_scope)?;
 
-        return match outer {
-            PrimitiveType::Array => Ok(()),
-            PrimitiveType::Func => Ok(()),
-            _ => Err(type_args_not_supported_error(outer.to_string(), inner)),
-        };
+                if binding.is_generic() {
+                    Ok(())
+                } else {
+                    Err(type_args_not_supported_error(outer.to_string(), inner))
+                }
+            }
+        }
+    } else {
+        Ok(())
     }
-
-    Ok(())
 }
 
 pub fn eval_invocation(
@@ -111,6 +126,13 @@ pub fn eval_invocation(
 
                     let param_type =
                         TypeVariant::from_literal(param.param_type.clone(), scopes, current_scope)?;
+
+                    /*
+                     * TODO: This is where our issue is. This results in `Option<T><Number>`
+                     * because we're storing generic args in two different ways;
+                     * both using TypeVariant::Generic and using type_args in enum.
+                     */
+                    // println!("Param type: {:?}", param_type);
 
                     /*
                      * TODO: We're temporarily only doing type checking on NalaBlocks, so that builtins

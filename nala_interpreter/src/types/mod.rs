@@ -16,7 +16,7 @@ pub mod type_variant;
 
 #[derive(Eq, Debug, Clone)]
 pub enum NalaType {
-    Enum(String, Option<TypeArgs>, Vec<VariantDeclare>),
+    Enum(String, Vec<VariantDeclare>),
     PrimitiveType(PrimitiveType),
     Struct(Vec<StructField>),
 }
@@ -30,9 +30,7 @@ impl NalaType {
         match literal {
             TypeLiteral::PrimitiveType(t) => Ok(NalaType::PrimitiveType(t)),
             TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
-                TypeBinding::Enum(variants, type_args) => {
-                    Ok(NalaType::Enum(ident, type_args, variants))
-                }
+                TypeBinding::Enum(variants, type_args) => Ok(NalaType::Enum(ident, variants)),
                 TypeBinding::Struct(fields) => Ok(NalaType::Struct(fields)),
             },
         }
@@ -40,9 +38,8 @@ impl NalaType {
 
     pub fn is_assignable_to(&self, other: &Self) -> bool {
         match self {
-            // TODO: Use type args.
-            NalaType::Enum(enum_ident, _type_args, variant_ident) => {
-                if let NalaType::Enum(oei, _ota, ovi) = other {
+            NalaType::Enum(enum_ident, variant_ident) => {
+                if let NalaType::Enum(oei, ovi) = other {
                     // TODO: Just because the names match doesn't mean they are the same type.
                     enum_ident == oei && variant_ident == ovi
                 } else {
@@ -76,10 +73,7 @@ impl NalaType {
 impl fmt::Display for NalaType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            NalaType::Enum(enum_ident, type_args, _variant_ident) => match type_args {
-                Some(type_args) => write!(f, "{enum_ident}<{}>", type_args.to_string()),
-                None => write!(f, "{enum_ident}"),
-            },
+            NalaType::Enum(enum_ident, _variant_ident) => write!(f, "{enum_ident}"),
             NalaType::PrimitiveType(primitive) => write!(f, "{}", primitive),
             NalaType::Struct(fields) => {
                 write!(f, "{{ ")?;
@@ -104,8 +98,8 @@ impl fmt::Display for NalaType {
 impl PartialEq for NalaType {
     fn eq(&self, other: &Self) -> bool {
         match self {
-            NalaType::Enum(enum_ident, _type_args, variant_ident) => {
-                if let NalaType::Enum(oei, _ota, ovi) = other {
+            NalaType::Enum(enum_ident, variant_ident) => {
+                if let NalaType::Enum(oei, ovi) = other {
                     enum_ident == oei && variant_ident == ovi
                 } else {
                     false

@@ -10,7 +10,10 @@ use crate::{
     types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
 };
 
-use super::{types::primitive_type::PrimitiveType, *};
+use super::{
+    types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
+    *,
+};
 
 #[derive(Debug, Clone)]
 pub enum SymbolOrTerm {
@@ -205,25 +208,60 @@ impl Value {
             }
             Value::String(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
             Value::Variant(EnumVariantValue {
-                enum_ident, data, ..
+                enum_ident,
+                data,
+                variant_ident,
             }) => {
                 let (variants, type_arg) = scopes
                     .get_type(enum_ident, current_scope)?
                     .as_enum()
                     .unwrap();
 
-                let type_arg = if let Some(data) = data {
-                    match type_arg {
-                        Some(TypeArgs::Generic(_)) => Some(TypeArgs::Concrete(Box::new(
-                            data.get_type(scopes, current_scope)?,
-                        ))),
-                        _ => type_arg,
+                if let Some(TypeArgs::Generic(type_arg)) = type_arg {
+                    if let Some(data) = data {
+                        let found_variant = variants.iter().find(|v| match v {
+                            VariantDeclare::Data(ident, _) => ident == variant_ident,
+                            VariantDeclare::Empty(ident) => ident == variant_ident,
+                        });
+
+                        if let Some(VariantDeclare::Data(
+                            _,
+                            TypeLiteralVariant::Type(TypeLiteral::UserDefined(ident)),
+                        )) = found_variant
+                        {
+                            if type_arg == *ident {
+                                TypeVariant::Generic(
+                                    NalaType::Enum(enum_ident.to_owned(), variants),
+                                    vec![data.get_type(scopes, current_scope)?],
+                                )
+                            } else {
+                                TypeVariant::Generic(
+                                    NalaType::Enum(enum_ident.to_owned(), variants),
+                                    vec![TypeVariant::Type(NalaType::PrimitiveType(
+                                        PrimitiveType::Any,
+                                    ))],
+                                )
+                            }
+                        } else {
+                            TypeVariant::Generic(
+                                NalaType::Enum(enum_ident.to_owned(), variants),
+                                vec![TypeVariant::Type(NalaType::PrimitiveType(
+                                    PrimitiveType::Any,
+                                ))],
+                            )
+                        }
+                    } else {
+                        // TODO: Remove use of Any, this is a hack.
+                        TypeVariant::Generic(
+                            NalaType::Enum(enum_ident.to_owned(), variants),
+                            vec![TypeVariant::Type(NalaType::PrimitiveType(
+                                PrimitiveType::Any,
+                            ))],
+                        )
                     }
                 } else {
-                    type_arg
-                };
-
-                TypeVariant::Type(NalaType::Enum(enum_ident.to_owned(), type_arg, variants))
+                    TypeVariant::Type(NalaType::Enum(enum_ident.to_owned(), variants))
+                }
             }
             Value::Void => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void)),
         };
