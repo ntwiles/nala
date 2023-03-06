@@ -13,7 +13,7 @@ use crate::{
 pub fn eval_declare(
     ident: &String,
     expr: &Expr,
-    declared_type: &Option<TypeLiteralVariant>,
+    declared_type: Option<TypeLiteralVariant>,
     is_mutable: bool,
     scopes: &mut Scopes,
     current_scope: usize,
@@ -21,6 +21,12 @@ pub fn eval_declare(
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     let value = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
+
+    if let Value::Void = value {
+        return Err(RuntimeError::new(
+            "Cannot declare a variable with a value of type Void.",
+        ));
+    }
 
     if let Some(declared_type) = declared_type {
         let declared_type =
@@ -33,15 +39,17 @@ pub fn eval_declare(
                 "Tried to declare variable `{ident}` with explicit type `{declared_type}` but value of type `{actual_type}` was given.",
             )));
         }
+
+        scopes.add_binding(
+            &ident,
+            value.clone(),
+            Some(declared_type),
+            current_scope,
+            is_mutable,
+        );
     }
 
-    if let Value::Void = value {
-        return Err(RuntimeError::new(
-            "Cannot declare a variable with a value of type Void.",
-        ));
-    }
-
-    scopes.add_binding(&ident, current_scope, value.clone(), is_mutable)
+    scopes.add_binding(&ident, value.clone(), None, current_scope, is_mutable)
 }
 
 pub fn eval_assign(

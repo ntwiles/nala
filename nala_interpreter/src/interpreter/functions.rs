@@ -34,13 +34,14 @@ pub fn eval_func(
 
     scopes.add_binding(
         &ident,
-        current_scope,
         Value::Func(StoredFunc {
             params: params.clone(), // TODO: Do we need this clone? Do we need to be borrowing in the params?
             return_type: return_type.clone(),
             block: block.clone(),
             closure_scope: current_scope,
         }),
+        None,
+        current_scope,
         false,
     )
 }
@@ -149,7 +150,7 @@ pub fn eval_invocation(
                         }
                     }
 
-                    scopes.add_binding(&param.ident, call_scope, arg.clone(), false)?;
+                    scopes.add_binding(&param.ident, arg.clone(), None, call_scope, false)?;
                     param_args.entry(param.ident.clone()).or_insert(arg.clone());
                 }
 

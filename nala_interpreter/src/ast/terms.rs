@@ -146,6 +146,7 @@ impl fmt::Display for Value {
 }
 
 impl Value {
+    // TODO: Change this to `infer_type`.
     pub fn get_type(
         &self,
         scopes: &mut Scopes,

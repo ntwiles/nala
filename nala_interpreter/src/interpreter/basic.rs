@@ -68,7 +68,7 @@ fn eval_stmt(
         Stmt::Declare(ident, expr, declared_type, is_mutable) => eval_declare(
             ident,
             &expr,
-            declared_type,
+            declared_type.clone(),
             is_mutable.clone(),
             scopes,
             current_scope,

@@ -1,9 +1,10 @@
 mod scope;
 pub mod type_binding;
+pub mod value_binding;
 
-use crate::{ast::terms::*, errors::*};
+use crate::{ast::terms::*, errors::*, types::type_variant::TypeVariant};
 
-use self::{scope::Scope, type_binding::TypeBinding};
+use self::{scope::Scope, type_binding::TypeBinding, value_binding::ValueBinding};
 
 #[derive(Debug)]
 pub struct Scopes {
@@ -25,7 +26,7 @@ impl Scopes {
         let scope = self.scopes.get(current_scope).unwrap();
 
         match scope.get_binding(&ident) {
-            Some((value, _)) => Some(value),
+            Some(ValueBinding { value, .. }) => Some(value),
             None => match scope.parent {
                 Some(parent_scope) => self.get_maybe_value(ident, parent_scope),
                 None => None,
@@ -104,9 +105,9 @@ impl Scopes {
         let scope = self.find_scope_with_binding(ident, current_scope);
 
         if let Some(scope) = scope {
-            let (_, is_mutable) = scope.get_binding(ident).unwrap();
+            let ValueBinding { is_mutable, .. } = scope.get_binding(ident).unwrap();
             if is_mutable {
-                scope.add_binding(ident, new_value, true)
+                scope.add_binding(ident, new_value, None, true)
             } else {
                 return Err(assign_immutable_binding_error(ident));
             }
@@ -120,8 +121,9 @@ impl Scopes {
     pub fn add_binding(
         self: &mut Self,
         ident: &str,
-        current_scope: usize,
         value: Value,
+        declared_type: Option<TypeVariant>,
+        current_scope: usize,
         is_mutable: bool,
     ) -> Result<Value, RuntimeError> {
         if self.binding_exists_local(ident, current_scope) {
@@ -130,7 +132,7 @@ impl Scopes {
             )))
         } else {
             let scope = self.scopes.get_mut(current_scope).unwrap();
-            scope.add_binding(ident, value, is_mutable);
+            scope.add_binding(ident, value, declared_type, is_mutable);
             Ok(Value::Void)
         }
     }
