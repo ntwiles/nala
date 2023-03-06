@@ -92,7 +92,7 @@ fn it_runs_func_return() {
 #[test]
 fn it_errors_when_passing_primitive_when_nested_is_expected() {
     let expected_message =
-        rgx!("Type `Bool` does not support nesting. Type `Bool<String>` is invalid.");
+        rgx!("Type `Bool` does not support type arguments. Type `Bool<String>` is invalid.");
 
     let nala = r#"
         func bad(arg: Bool<String>): Void {
