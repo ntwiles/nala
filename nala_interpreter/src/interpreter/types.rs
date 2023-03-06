@@ -11,7 +11,7 @@ use crate::{
 
 pub fn eval_struct(
     ident: &str,
-    type_args: &Option<TypeArgs>,
+    type_args: Option<TypeArgs>,
     fields: Vec<StructLiteralField>,
     scopes: &mut Scopes,
     current_scope: usize,
@@ -31,16 +31,16 @@ pub fn eval_struct(
 
 pub fn eval_enum(
     ident: &str,
-    type_args: &Option<TypeArgs>,
+    type_args: Option<TypeArgs>,
     variants: Vec<VariantDeclare>,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    let binding = TypeBinding::Enum(variants);
-
-    println!("type_args: {:?}", type_args);
-
     scopes
-        .add_type_binding(&ident, current_scope, binding)
+        .add_type_binding(
+            &ident,
+            current_scope,
+            TypeBinding::Enum(variants, type_args.clone()),
+        )
         .map(|_| Value::Void)
 }

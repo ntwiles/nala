@@ -1,15 +1,19 @@
-use crate::{ast::VariantDeclare, errors::RuntimeError, types::struct_field::StructField};
+use crate::{
+    ast::{types::TypeArgs, VariantDeclare},
+    errors::RuntimeError,
+    types::struct_field::StructField,
+};
 
 #[derive(Clone, Debug)]
 pub enum TypeBinding {
-    Enum(Vec<VariantDeclare>),
+    Enum(Vec<VariantDeclare>, Option<TypeArgs>),
     Struct(Vec<StructField>),
 }
 
 impl TypeBinding {
-    pub fn as_enum(&self) -> Result<Vec<VariantDeclare>, RuntimeError> {
+    pub fn as_enum(&self) -> Result<(Vec<VariantDeclare>, Option<TypeArgs>), RuntimeError> {
         match self {
-            TypeBinding::Enum(variants) => Ok(variants.clone()),
+            TypeBinding::Enum(variants, args) => Ok((variants.clone(), args.clone())),
             _ => Err(RuntimeError::new("Expected an enum type.")),
         }
     }

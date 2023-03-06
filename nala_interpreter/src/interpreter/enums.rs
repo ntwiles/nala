@@ -1,5 +1,12 @@
 use crate::{
-    ast::{terms::*, types::enum_variant::EnumVariantOrAddend, *},
+    ast::{
+        terms::*,
+        types::{
+            enum_variant::EnumVariantOrAddend, type_literal::TypeLiteral,
+            type_literal_variant::TypeLiteralVariant, TypeArgs,
+        },
+        *,
+    },
     errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
@@ -20,21 +27,35 @@ pub fn eval_enum_variant(
             eval_addend(addend, scopes, current_scope, enclosing_scope, ctx)
         }
         EnumVariantOrAddend::EnumVariant(enum_ident, variant_ident, data) => {
-            let the_enum = scopes.get_type(enum_ident, current_scope)?.as_enum()?;
+            let (existing_variants, existing_type_args) =
+                scopes.get_type(enum_ident, current_scope)?.as_enum()?;
 
-            let existing_variant = find_variant(&the_enum, variant_ident)?;
+            let existing_variant = find_variant(&existing_variants, variant_ident)?;
 
-            let expected_data_type = if let VariantDeclare::Data(_, data) = existing_variant {
-                Some(TypeVariant::from_literal(data, scopes, current_scope)?)
-            } else {
-                None
-            };
-
-            // TODO: Support data in variants.
             let data = if let Some(data) = data {
                 let data = eval_expr(data, scopes, current_scope, None, ctx)?; // TODO: Should we be passing None here?
                 let data_type = data.get_type(scopes, current_scope)?;
 
+                // TODO: This is a mess, clean this up.
+                let expected_data_type = if let VariantDeclare::Data(_, data) = existing_variant {
+                    if let Some(TypeArgs::Generic(type_args)) = existing_type_args {
+                        if let TypeLiteralVariant::Type(TypeLiteral::UserDefined(data)) = data {
+                            if type_args == data {
+                                Some(data_type.clone())
+                            } else {
+                                todo!()
+                            }
+                        } else {
+                            todo!()
+                        }
+                    } else {
+                        Some(TypeVariant::from_literal(data, scopes, current_scope)?)
+                    }
+                } else {
+                    None
+                };
+
+                // TODO: Merge this with the above.
                 let expected_data_type = match expected_data_type {
                     Some(expected_data_type) => expected_data_type,
                     None => {

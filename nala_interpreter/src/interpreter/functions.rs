@@ -60,13 +60,13 @@ fn check_param_type(param_type: &TypeLiteralVariant) -> Result<(), RuntimeError>
         let outer = if let TypeLiteral::PrimitiveType(outer) = outer {
             outer
         } else {
-            return Err(nesting_not_supported_error(outer.to_string(), inner));
+            return Err(type_args_not_supported_error(outer.to_string(), inner));
         };
 
         return match outer {
             PrimitiveType::Array => Ok(()),
             PrimitiveType::Func => Ok(()),
-            _ => Err(nesting_not_supported_error(outer.to_string(), inner)),
+            _ => Err(type_args_not_supported_error(outer.to_string(), inner)),
         };
     }
 
@@ -165,7 +165,7 @@ pub fn eval_invocation(
     }
 }
 
-fn nesting_not_supported_error(outer: String, inner: &Vec<TypeLiteralVariant>) -> RuntimeError {
+fn type_args_not_supported_error(outer: String, inner: &Vec<TypeLiteralVariant>) -> RuntimeError {
     let inner = inner
         .iter()
         .map(|i| i.to_string())
@@ -173,7 +173,7 @@ fn nesting_not_supported_error(outer: String, inner: &Vec<TypeLiteralVariant>) -
         .join(", ");
 
     RuntimeError::new(&format!(
-        "Type `{outer}` does not support nesting. Type `{outer}<{inner}>` is invalid."
+        "Type `{outer}` does not support type arguments. Type `{outer}<{inner}>` is invalid."
     ))
 }
 

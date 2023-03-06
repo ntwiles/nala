@@ -1,3 +1,7 @@
+use std::fmt::{Display, Formatter, Result};
+
+use crate::types::type_variant::TypeVariant;
+
 use self::type_literal_variant::TypeLiteralVariant;
 
 pub mod enum_variant;
@@ -20,8 +24,17 @@ impl StructLiteralField {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Eq, Clone, PartialEq)]
 pub enum TypeArgs {
-    TypeVariant(TypeLiteralVariant),
-    Symbol(String),
+    Generic(String),
+    Concrete(Box<TypeVariant>),
+}
+
+impl Display for TypeArgs {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        match self {
+            TypeArgs::Generic(s) => write!(f, "{}", s),
+            TypeArgs::Concrete(i) => write!(f, "{}", i),
+        }
+    }
 }

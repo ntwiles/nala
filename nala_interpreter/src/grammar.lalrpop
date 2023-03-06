@@ -52,7 +52,7 @@ Stmt: ast::Stmt = {
 };
 
 TypeArgs: ast::types::TypeArgs = {
-    "<" <s:Symbol> ">" => ast::types::TypeArgs::Symbol(s)
+    "<" <s:Symbol> ">" => ast::types::TypeArgs::Generic(s)
 };
 
 IfElseChain: ast::branching::IfElseChain = { 

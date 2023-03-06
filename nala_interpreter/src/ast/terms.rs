@@ -204,13 +204,26 @@ impl Value {
                 TypeVariant::Type(NalaType::Struct(fields))
             }
             Value::String(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
-            Value::Variant(EnumVariantValue { enum_ident, .. }) => {
-                let variants = scopes
+            Value::Variant(EnumVariantValue {
+                enum_ident, data, ..
+            }) => {
+                let (variants, type_arg) = scopes
                     .get_type(enum_ident, current_scope)?
                     .as_enum()
                     .unwrap();
 
-                TypeVariant::Type(NalaType::Enum(enum_ident.to_owned(), variants))
+                let type_arg = if let Some(data) = data {
+                    match type_arg {
+                        Some(TypeArgs::Generic(_)) => Some(TypeArgs::Concrete(Box::new(
+                            data.get_type(scopes, current_scope)?,
+                        ))),
+                        _ => type_arg,
+                    }
+                } else {
+                    type_arg
+                };
+
+                TypeVariant::Type(NalaType::Enum(enum_ident.to_owned(), type_arg, variants))
             }
             Value::Void => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void)),
         };
