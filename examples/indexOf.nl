@@ -1,30 +1,30 @@
 
-enum IndexOfStringResult {
-    Found(Number),
-    NotFound,
+enum Option<T> {
+    Some(T),
+    None,
 }
 
-func indexOfString(haystack: Array<String>, needle: String ): IndexOfStringResult {
+func indexOfString(haystack: Array<String>, needle: String ): Option {
     mut i = 0;
 
     for item in haystack {
         if (item == needle) {
-            break(IndexOfStringResult::Found(i));
+            break(Option::Some(i));
         }
 
         i = i + 1;
     }
 
-    IndexOfStringResult::NotFound;
+    Option::None;
 }
 
 func makeSearchForName(names: Array<String>): Func<String, Void> {
     func searchForName(name: String): Void {
         match (indexOfString(names, name)) {
-            IndexOfStringResult::Found(index) => { 
+            Option::Some(index) => { 
                 print('Name "' + name + '" Found: ' + names[index] + '!'); 
             }
-            IndexOfStringResult::NotFound => { print('Name "' + name + '" not found!'); }
+            Option::None => { print('Name "' + name + '" not found!'); }
         }
     }
 

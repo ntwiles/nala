@@ -5,6 +5,7 @@ use crate::{
         types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
         VariantDeclare,
     },
+    errors::RuntimeError,
     scopes::{type_binding::TypeBinding, Scopes},
 };
 
@@ -21,17 +22,17 @@ pub enum NalaType {
 }
 
 impl NalaType {
-    pub fn from_literal(literal: TypeLiteral, scopes: &mut Scopes, current_scope: usize) -> Self {
+    pub fn from_literal(
+        literal: TypeLiteral,
+        scopes: &mut Scopes,
+        current_scope: usize,
+    ) -> Result<Self, RuntimeError> {
         match literal {
-            TypeLiteral::PrimitiveType(t) => NalaType::PrimitiveType(t),
-            TypeLiteral::UserDefined(ident) => {
-                let binding = scopes.get_type(&ident, current_scope).unwrap();
-
-                match binding {
-                    TypeBinding::Enum(variants) => NalaType::Enum(ident, variants),
-                    TypeBinding::Struct(fields) => NalaType::Struct(fields),
-                }
-            }
+            TypeLiteral::PrimitiveType(t) => Ok(NalaType::PrimitiveType(t)),
+            TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
+                TypeBinding::Enum(variants) => Ok(NalaType::Enum(ident, variants)),
+                TypeBinding::Struct(fields) => Ok(NalaType::Struct(fields)),
+            },
         }
     }
 

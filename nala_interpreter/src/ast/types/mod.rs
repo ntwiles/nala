@@ -19,3 +19,9 @@ impl StructLiteralField {
         }
     }
 }
+
+#[derive(Debug, Clone)]
+pub enum TypeArgs {
+    TypeVariant(TypeLiteralVariant),
+    Symbol(String),
+}

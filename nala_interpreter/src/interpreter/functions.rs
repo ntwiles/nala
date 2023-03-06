@@ -110,7 +110,7 @@ pub fn eval_invocation(
                     let arg_type = arg.get_type(scopes, current_scope)?;
 
                     let param_type =
-                        TypeVariant::from_literal(param.param_type.clone(), scopes, current_scope);
+                        TypeVariant::from_literal(param.param_type.clone(), scopes, current_scope)?;
 
                     /*
                      * TODO: We're temporarily only doing type checking on NalaBlocks, so that builtins
@@ -138,7 +138,7 @@ pub fn eval_invocation(
                     Block::RustBlock(func) => Ok(func(param_args, ctx)?)?,
                 };
 
-                let return_type = TypeVariant::from_literal(return_type, scopes, current_scope);
+                let return_type = TypeVariant::from_literal(return_type, scopes, current_scope)?;
 
                 // TODO: This is a temporary bypass to support builtins until we have generics.
                 if let TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any)) = return_type

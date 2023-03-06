@@ -69,7 +69,9 @@ fn eval_stmt(
             let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
             eval_declare(ident, &result, scopes, current_scope, is_mutable.clone())
         }
-        Stmt::Enum(ident, variants) => eval_enum(ident, variants.clone(), scopes, current_scope),
+        Stmt::Enum(ident, type_args, variants) => {
+            eval_enum(ident, type_args, variants.clone(), scopes, current_scope)
+        }
         Stmt::Expr(expr) => eval_expr(expr, scopes, current_scope, enclosing_scope, ctx),
         Stmt::For(ident, expr, block) => eval_for(
             ident,
@@ -87,7 +89,9 @@ fn eval_stmt(
         Stmt::Match(the_match) => {
             eval_match(the_match, scopes, current_scope, enclosing_scope, ctx)
         }
-        Stmt::Struct(ident, fields) => eval_struct(ident, fields.clone(), scopes, current_scope),
+        Stmt::Struct(ident, type_args, fields) => {
+            eval_struct(ident, type_args, fields.clone(), scopes, current_scope)
+        }
         Stmt::Wiles(expr, block) => {
             eval_wiles(&expr, block, scopes, current_scope, enclosing_scope, ctx)
         }

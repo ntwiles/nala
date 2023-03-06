@@ -172,14 +172,18 @@ impl Value {
             }) => {
                 let mut param_types: Vec<TypeVariant> = params
                     .into_iter()
-                    .map(|p| TypeVariant::from_literal(p.clone().param_type, scopes, current_scope)) // TODO: Why do we need this clone?
+                    .map(|p| {
+                        TypeVariant::from_literal(p.clone().param_type, scopes, current_scope)
+                            // TODO: Remove this unwrap().
+                            .unwrap()
+                    }) // TODO: Why do we need this clone?
                     .collect();
 
                 param_types.push(TypeVariant::from_literal(
                     return_type.clone(),
                     scopes,
                     current_scope,
-                ));
+                )?);
 
                 TypeVariant::Generic(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
             }

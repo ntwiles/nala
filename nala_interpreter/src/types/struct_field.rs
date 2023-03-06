@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-use crate::{ast::types::StructLiteralField, scopes::Scopes};
+use crate::{ast::types::StructLiteralField, errors::RuntimeError, scopes::Scopes};
 
 use super::type_variant::TypeVariant;
 
@@ -15,11 +15,11 @@ impl StructField {
         field: StructLiteralField,
         scopes: &mut Scopes,
         current_scope: usize,
-    ) -> Self {
-        Self {
+    ) -> Result<Self, RuntimeError> {
+        Ok(Self {
             ident: field.ident,
-            field_type: TypeVariant::from_literal(field.field_type, scopes, current_scope),
-        }
+            field_type: TypeVariant::from_literal(field.field_type, scopes, current_scope)?,
+        })
     }
 }
 

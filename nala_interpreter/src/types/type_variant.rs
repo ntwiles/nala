@@ -1,6 +1,8 @@
 use std::fmt;
 
-use crate::{ast::types::type_literal_variant::TypeLiteralVariant, scopes::Scopes};
+use crate::{
+    ast::types::type_literal_variant::TypeLiteralVariant, errors::RuntimeError, scopes::Scopes,
+};
 
 use super::NalaType;
 
@@ -15,17 +17,20 @@ impl TypeVariant {
         literal: TypeLiteralVariant,
         scopes: &mut Scopes,
         current_scope: usize,
-    ) -> Self {
+    ) -> Result<Self, RuntimeError> {
         match literal {
-            TypeLiteralVariant::Composite(p, c) => TypeVariant::Generic(
-                NalaType::from_literal(p, scopes, current_scope),
+            TypeLiteralVariant::Composite(p, c) => Ok(TypeVariant::Generic(
+                NalaType::from_literal(p, scopes, current_scope)?,
                 c.into_iter()
-                    .map(|l| TypeVariant::from_literal(l, scopes, current_scope))
+                    // TODO: Remove this .unwrap().
+                    .map(|l| TypeVariant::from_literal(l, scopes, current_scope).unwrap())
                     .collect(),
-            ),
-            TypeLiteralVariant::Type(t) => {
-                TypeVariant::Type(NalaType::from_literal(t, scopes, current_scope))
-            }
+            )),
+            TypeLiteralVariant::Type(t) => Ok(TypeVariant::Type(NalaType::from_literal(
+                t,
+                scopes,
+                current_scope,
+            )?)),
         }
     }
 

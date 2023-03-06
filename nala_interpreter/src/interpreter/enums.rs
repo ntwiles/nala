@@ -25,7 +25,7 @@ pub fn eval_enum_variant(
             let existing_variant = find_variant(&the_enum, variant_ident)?;
 
             let expected_data_type = if let VariantDeclare::Data(_, data) = existing_variant {
-                Some(TypeVariant::from_literal(data, scopes, current_scope))
+                Some(TypeVariant::from_literal(data, scopes, current_scope)?)
             } else {
                 None
             };
