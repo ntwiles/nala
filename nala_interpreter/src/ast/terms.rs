@@ -146,8 +146,7 @@ impl fmt::Display for Value {
 }
 
 impl Value {
-    // TODO: Change this to `infer_type`.
-    pub fn get_type(
+    pub fn infer_type(
         &self,
         scopes: &mut Scopes,
         current_scope: usize,
@@ -157,7 +156,7 @@ impl Value {
                 let items = Arc::clone(items);
                 let items = items.lock().unwrap();
                 let elem_type = if items.len() > 0 {
-                    items.first().unwrap().get_type(scopes, current_scope)?
+                    items.first().unwrap().infer_type(scopes, current_scope)?
                 } else {
                     todo!("Handle the case where trying to get the type of an empty array.")
                 };
@@ -200,7 +199,7 @@ impl Value {
                     .clone()
                     .into_iter()
                     .map(|(ident, v)| {
-                        let field_type = v.get_type(scopes, current_scope).unwrap();
+                        let field_type = v.infer_type(scopes, current_scope).unwrap();
                         StructField { ident, field_type }
                     })
                     .collect();
@@ -233,7 +232,7 @@ impl Value {
                             if type_arg == *ident {
                                 TypeVariant::Generic(
                                     NalaType::Enum(enum_ident.to_owned(), variants),
-                                    vec![data.get_type(scopes, current_scope)?],
+                                    vec![data.infer_type(scopes, current_scope)?],
                                 )
                             } else {
                                 TypeVariant::Generic(

@@ -33,7 +33,7 @@ pub fn eval_enum_variant(
 
             let data = if let Some(data) = data {
                 let data = eval_expr(data, scopes, current_scope, None, ctx)?; // TODO: Should we be passing None here?
-                let data_type = data.get_type(scopes, current_scope)?;
+                let data_type = data.infer_type(scopes, current_scope)?;
 
                 // TODO: This is a mess, clean this up.
                 let expected_data_type = if let VariantDeclare::Data(_, data) = existing_variant {
@@ -65,12 +65,12 @@ pub fn eval_enum_variant(
                 };
 
                 if !(data
-                    .get_type(scopes, current_scope)?
+                    .infer_type(scopes, current_scope)?
                     .is_assignable_to(&expected_data_type))
                 {
                     return Err(RuntimeError::new(&format!(
                             "Created variant with wrong data type. Expected `{expected_data_type}` but got `{0}`",
-                            data.get_type(scopes, current_scope)?,
+                            data.infer_type(scopes, current_scope)?,
                         )));
                 }
 

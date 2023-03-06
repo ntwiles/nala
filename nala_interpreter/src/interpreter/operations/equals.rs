@@ -13,11 +13,11 @@ pub fn eval_equals(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    if left.get_type(scopes, current_scope)? != right.get_type(scopes, current_scope)? {
+    if left.infer_type(scopes, current_scope)? != right.infer_type(scopes, current_scope)? {
         panic_oper_not_impl_for(
             "==",
             &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
-            &right.get_type(scopes, current_scope)?,
+            &right.infer_type(scopes, current_scope)?,
         )
     }
 

@@ -17,7 +17,7 @@ pub fn eval_lt(
         Value::String(left) => Ok(string_lt(left, right, scopes, current_scope)?),
         Value::Bool(left) => Ok(bool_lt(left, right, scopes, current_scope)?),
         left => {
-            let left_type = left.get_type(scopes, current_scope)?;
+            let left_type = left.infer_type(scopes, current_scope)?;
             panic_oper_not_impl("<", &left_type);
         }
     }
@@ -32,7 +32,7 @@ fn num_lt(
     let result = match right {
         Value::Num(right) => Value::Bool(left < right),
         right => {
-            let right_type = right.get_type(scopes, current_scope)?;
+            let right_type = right.infer_type(scopes, current_scope)?;
             panic_oper_not_impl_for(
                 "<",
                 &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
@@ -53,7 +53,7 @@ fn string_lt(
     let result = match right {
         Value::String(right) => Value::Bool(left < right),
         right => {
-            let right_type = right.get_type(scopes, current_scope)?;
+            let right_type = right.infer_type(scopes, current_scope)?;
             panic_oper_not_impl_for(
                 "<",
                 &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
@@ -74,7 +74,7 @@ fn bool_lt(
     let result = match right {
         Value::Bool(right) => Value::Bool(left < right),
         right => {
-            let right_type = right.get_type(scopes, current_scope)?;
+            let right_type = right.infer_type(scopes, current_scope)?;
             panic_oper_not_impl_for(
                 "<",
                 &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
