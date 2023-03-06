@@ -4,6 +4,7 @@ enum Option<T> {
     None,
 }
 
+// TODO: Support generic functions.
 func indexOfString(haystack: Array<String>, needle: String ): Option<Number> {
     mut i = 0;
 

@@ -1,5 +1,26 @@
 use std::fmt;
 
+/* TODO: Get rid of Any. Right now Any is being used in generics to type an enum
+ * variant whose value does not allow inference of the generic type. For example,
+ * with the following type:
+ *
+ * Option<T> {
+ *   Some(T),
+ *   None,
+ * }
+ *
+ * A value Option::Some(8) is known to be of type Option<Number>, but a value of
+ * Option::None cannot be inferred. In the future, we should force a type declaration
+ * for such values. Right now though we do not support explicit type declarations when
+ * declaring variables, so we type the value as Option<Any>
+ *
+ * Additionally: Builtin functions like `print()` were created before generics were
+ * supported. They're currently type to accept Any but should be changed when support
+ * for generic functions is added.
+ *
+ * Do not use `Any` for any situations beyond those outlined above.
+ *
+ */
 #[derive(Eq, Debug, Clone)]
 pub enum PrimitiveType {
     Array,
@@ -11,7 +32,7 @@ pub enum PrimitiveType {
     Symbol,
     Void,
     Object,
-    Any, // TODO: This is temporary until generics can be supported.
+    Any,
 }
 
 impl PrimitiveType {
