@@ -174,7 +174,7 @@ pub fn eval_invocation(
                 {
                     Ok(return_value)
                 } else {
-                    Err(RuntimeError::new(&format!("Tried to return value `{return_value}` where value of type `{return_type}` was expected.")))
+                    Err(RuntimeError::new(&format!("Tried to return value `{return_value}` of type `{0}` where value of type `{return_type}` was expected.", return_value.get_type(scopes, current_scope)?)))
                 }
             } else {
                 Err(RuntimeError::new(&format!("Cannot invoke a non-function.")))

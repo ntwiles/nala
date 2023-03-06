@@ -17,7 +17,12 @@ pub enum PrimitiveType {
 impl PrimitiveType {
     pub fn is_assignable_to(&self, param: &PrimitiveType) -> bool {
         // TODO: Is this a good way to compare types?
-        self.to_string() == param.to_string()
+        // TODO: Get rid of Any when we have a better solution.
+        if let PrimitiveType::Any = self {
+            true
+        } else {
+            self.to_string() == param.to_string()
+        }
     }
 }
 

@@ -199,3 +199,5 @@ fn it_errors_on_return_of_wrong_type() {
 
     assert!(parse_and_run(nala, &mut ctx).is_err());
 }
+
+// TODO: Cover trying to return value of wrong type case.

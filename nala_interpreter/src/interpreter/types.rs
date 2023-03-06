@@ -11,7 +11,7 @@ use crate::{
 
 pub fn eval_struct(
     ident: &str,
-    type_args: Option<TypeArgs>,
+    _type_args: Option<TypeArgs>,
     fields: Vec<StructLiteralField>,
     scopes: &mut Scopes,
     current_scope: usize,

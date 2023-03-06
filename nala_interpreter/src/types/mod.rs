@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::{
     ast::{
-        types::{primitive_type::PrimitiveType, type_literal::TypeLiteral, TypeArgs},
+        types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
         VariantDeclare,
     },
     errors::RuntimeError,
@@ -30,7 +30,7 @@ impl NalaType {
         match literal {
             TypeLiteral::PrimitiveType(t) => Ok(NalaType::PrimitiveType(t)),
             TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
-                TypeBinding::Enum(variants, type_args) => Ok(NalaType::Enum(ident, variants)),
+                TypeBinding::Enum(variants, _type_args) => Ok(NalaType::Enum(ident, variants)),
                 TypeBinding::Struct(fields) => Ok(NalaType::Struct(fields)),
             },
         }
