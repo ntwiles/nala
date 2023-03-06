@@ -46,10 +46,10 @@ pub fn eval_declare(
             Some(declared_type),
             current_scope,
             is_mutable,
-        );
+        )
+    } else {
+        scopes.add_binding(&ident, value.clone(), None, current_scope, is_mutable)
     }
-
-    scopes.add_binding(&ident, value.clone(), None, current_scope, is_mutable)
 }
 
 pub fn eval_assign(

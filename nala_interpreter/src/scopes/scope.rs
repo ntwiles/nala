@@ -27,8 +27,14 @@ impl Scope {
         declared_type: Option<TypeVariant>,
         is_mutable: bool,
     ) {
-        self.bindings
-            .insert(ident.to_owned(), ValueBinding { value, is_mutable });
+        self.bindings.insert(
+            ident.to_owned(),
+            ValueBinding {
+                value,
+                declared_type,
+                is_mutable,
+            },
+        );
     }
 
     pub fn add_type_binding(self: &mut Self, ident: &str, value: TypeBinding) {
