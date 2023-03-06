@@ -33,7 +33,18 @@ pub fn eval_tree(program: Program, ctx: &mut impl IoContext) -> Result<Value, Ru
 
     // Builtin constants.
     for (ident, value) in get_constants().iter() {
-        if let Err(e) = eval_declare(ident, &value, &mut scopes, top_scope, false) {
+        let expr = Expr::from_value(value.clone());
+
+        if let Err(e) = eval_declare(
+            ident,
+            &expr,
+            &None,
+            false,
+            &mut scopes,
+            top_scope,
+            None,
+            ctx,
+        ) {
             panic!("Error loading Nala constants: {0}", e.message)
         }
     }

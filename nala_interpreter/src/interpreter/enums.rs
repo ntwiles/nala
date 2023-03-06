@@ -3,9 +3,8 @@ use crate::{
         terms::*,
         types::{
             enum_variant::EnumVariantOrAddend, type_literal::TypeLiteral,
-            type_literal_variant::TypeLiteralVariant, TypeArgs,
+            type_literal_variant::TypeLiteralVariant, variant_declare::VariantDeclare, TypeArgs,
         },
-        *,
     },
     errors::RuntimeError,
     io_context::IoContext,

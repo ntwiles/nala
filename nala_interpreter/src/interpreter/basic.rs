@@ -65,10 +65,16 @@ fn eval_stmt(
             eval_assign(ident, &result, scopes, current_scope, enclosing_scope, ctx)
         }
         Stmt::Break(expr) => eval_break(expr, scopes, current_scope, enclosing_scope, ctx),
-        Stmt::Declare(ident, expr, is_mutable) => {
-            let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
-            eval_declare(ident, &result, scopes, current_scope, is_mutable.clone())
-        }
+        Stmt::Declare(ident, expr, declared_type, is_mutable) => eval_declare(
+            ident,
+            &expr,
+            declared_type,
+            is_mutable.clone(),
+            scopes,
+            current_scope,
+            enclosing_scope,
+            ctx,
+        ),
         Stmt::Enum(ident, type_args, variants) => eval_enum(
             ident,
             type_args.clone(),

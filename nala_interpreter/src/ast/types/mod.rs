@@ -8,6 +8,7 @@ pub mod enum_variant;
 pub mod primitive_type;
 pub mod type_literal;
 pub mod type_literal_variant;
+pub mod variant_declare;
 
 #[derive(Debug, Clone)]
 pub struct StructLiteralField {

@@ -3,19 +3,38 @@ use std::sync::Arc;
 use super::{arrays::eval_index, eval_expr, objects::*};
 
 use crate::{
-    ast::{objects::*, terms::*, *},
+    ast::{objects::*, terms::*, types::type_literal_variant::TypeLiteralVariant, *},
     errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
+    types::type_variant::TypeVariant,
 };
 
 pub fn eval_declare(
     ident: &String,
-    value: &Value,
+    expr: &Expr,
+    declared_type: &Option<TypeLiteralVariant>,
+    is_mutable: bool,
     scopes: &mut Scopes,
     current_scope: usize,
-    is_mutable: bool,
+    enclosing_scope: Option<usize>,
+    ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
+    let value = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
+
+    if let Some(declared_type) = declared_type {
+        let declared_type =
+            TypeVariant::from_literal(declared_type.clone(), scopes, current_scope)?;
+
+        let actual_type = value.get_type(scopes, current_scope)?;
+
+        if declared_type != actual_type {
+            return Err(RuntimeError::new(&format!(
+                "Tried to declare variable `{ident}` with explicit type `{declared_type}` but value of type `{actual_type}` was given.",
+            )));
+        }
+    }
+
     if let Value::Void = value {
         return Err(RuntimeError::new(
             "Cannot declare a variable with a value of type Void.",

@@ -1,5 +1,5 @@
 use crate::{
-    ast::{types::TypeArgs, VariantDeclare},
+    ast::types::{variant_declare::VariantDeclare, TypeArgs},
     errors::RuntimeError,
     types::struct_field::StructField,
 };

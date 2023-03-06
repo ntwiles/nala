@@ -36,8 +36,8 @@ pub Stmts: ast::Stmts = {
 };
 
 Stmt: ast::Stmt = {
-    "const" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, false),
-    "mut" <s:Symbol> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, true),
+    "const" <s:Symbol> <t:TypeDeclaration?> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, t, false),
+    "mut" <s:Symbol> <t:TypeDeclaration?> "="  <e:Expr> ";" => ast::Stmt::Declare(s, e, t, true),
     <c:IfElseChain> => ast::Stmt::IfElseChain(Box::new(c)),
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
@@ -49,6 +49,10 @@ Stmt: ast::Stmt = {
     <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <Expr> ";" => ast::Stmt::Expr(<>),
     <Match> => ast::Stmt::Match(<>)
+};
+
+TypeDeclaration: ast::types::type_literal_variant::TypeLiteralVariant = {
+    ":" <TypeVariant> => <>
 };
 
 TypeArgs: ast::types::TypeArgs = {
@@ -89,9 +93,9 @@ PlaceExpression: ast::PlaceExpression = {
 
 VariantsDeclare = Comma<VariantDeclare>;
 
-VariantDeclare: ast::VariantDeclare = {
-    <Symbol> => ast::VariantDeclare::Empty(<>),
-    <s:Symbol> "(" <t:TypeVariant> ")" => ast::VariantDeclare::Data(s, t)
+VariantDeclare: ast::types::variant_declare::VariantDeclare = {
+    <Symbol> => ast::types::variant_declare::VariantDeclare::Empty(<>),
+    <s:Symbol> "(" <t:TypeVariant> ")" => ast::types::variant_declare::VariantDeclare::Data(s, t)
 };
 
 Elems = Comma<Expr>;

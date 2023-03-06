@@ -1,8 +1,7 @@
 use crate::{
     ast::{
         terms::Value,
-        types::{StructLiteralField, TypeArgs},
-        VariantDeclare,
+        types::{variant_declare::VariantDeclare, StructLiteralField, TypeArgs},
     },
     errors::RuntimeError,
     scopes::{type_binding::TypeBinding, Scopes},

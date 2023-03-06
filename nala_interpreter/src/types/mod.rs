@@ -1,9 +1,8 @@
 use std::fmt;
 
 use crate::{
-    ast::{
-        types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
-        VariantDeclare,
+    ast::types::{
+        primitive_type::PrimitiveType, type_literal::TypeLiteral, variant_declare::VariantDeclare,
     },
     errors::RuntimeError,
     scopes::{type_binding::TypeBinding, Scopes},
