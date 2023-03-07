@@ -156,6 +156,8 @@ pub fn eval_match(
 
     let expr = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
 
+    // TODO: Throw error if not all cases are covered.
+
     for case in cases.iter() {
         let MatchCase { pattern, block } = case;
 
