@@ -40,7 +40,7 @@ pub fn eval_enum_variant(
                     if let Some(TypeArgs::Generic(type_args)) = existing_type_args {
                         if let TypeLiteralVariant::Type(TypeLiteral::UserDefined(data)) = data {
                             if type_args == data {
-                                Some(data_type.clone())
+                                data_type.clone()
                             } else {
                                 todo!()
                             }
@@ -48,20 +48,12 @@ pub fn eval_enum_variant(
                             todo!()
                         }
                     } else {
-                        Some(TypeVariant::from_literal(data, scopes, current_scope)?)
+                        TypeVariant::from_literal(data, scopes, current_scope)?
                     }
                 } else {
-                    None
-                };
-
-                // TODO: Merge this with the above.
-                let expected_data_type = match expected_data_type {
-                    Some(expected_data_type) => expected_data_type,
-                    None => {
-                        return Err(RuntimeError::new(&format!(
-                            "Passed data type {data_type} when none was expected.",
-                        )))
-                    }
+                    Err(RuntimeError::new(&format!(
+                        "Passed data type {data_type} when none was expected.",
+                    )))?
                 };
 
                 if !(infer_type(&data, scopes, current_scope)?

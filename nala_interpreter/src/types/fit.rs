@@ -1,10 +1,7 @@
 use crate::{
     ast::{
-        terms::{EnumVariantValue, Value},
-        types::{
-            primitive_type::PrimitiveType, type_literal_variant::TypeLiteralVariant,
-            variant_declare::VariantDeclare,
-        },
+        terms::Value,
+        types::{primitive_type::PrimitiveType, variant_declare::VariantDeclare},
     },
     errors::RuntimeError,
     scopes::Scopes,
