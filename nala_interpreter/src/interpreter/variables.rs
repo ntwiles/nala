@@ -7,7 +7,10 @@ use crate::{
     errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
-    types::{inference::infer_type, type_variant::TypeVariant},
+    types::{
+        inference::{fits_type, infer_type},
+        type_variant::TypeVariant,
+    },
 };
 
 pub fn eval_declare(
@@ -32,12 +35,9 @@ pub fn eval_declare(
         let declared_type =
             TypeVariant::from_literal(declared_type.clone(), scopes, current_scope)?;
 
-        // TODO: Check that value aligns with declared type.
-        let actual_type = infer_type(&value, scopes, current_scope)?;
-
-        if declared_type != actual_type {
+        if !fits_type(&value, &declared_type, scopes, current_scope)? {
             return Err(RuntimeError::new(&format!(
-                "Tried to declare variable `{ident}` with explicit type `{declared_type}` but value of type `{actual_type}` was given.",
+                "Tried to declare variable `{ident}` with explicit type `{declared_type}` but value does not fit that type.",
             )));
         }
 
