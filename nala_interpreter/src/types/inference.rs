@@ -85,6 +85,7 @@ pub fn infer_type(
                 .as_enum()
                 .unwrap();
 
+            // TODO: Absolute mess, redo all this and remove use of Any.
             if let Some(TypeArgs::Generic(type_arg)) = type_arg {
                 if let Some(data) = data {
                     let found_variant = variants.iter().find(|v| match v {
@@ -119,7 +120,6 @@ pub fn infer_type(
                         )
                     }
                 } else {
-                    // TODO: Remove use of Any, this is a hack.
                     TypeVariant::Generic(
                         NalaType::Enum(enum_ident.to_owned(), variants),
                         vec![TypeVariant::Type(NalaType::PrimitiveType(
