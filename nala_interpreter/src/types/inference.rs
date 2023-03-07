@@ -75,50 +75,47 @@ pub fn infer_type(
             TypeVariant::Type(NalaType::Struct(fields))
         }
         Value::String(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
-        Value::Variant(EnumVariantValue {
-            enum_ident,
-            data,
-            variant_ident,
-        }) => {
-            let (variants, type_arg) = scopes
-                .get_type(enum_ident, current_scope)?
-                .as_enum()
-                .unwrap();
+        Value::Variant(variant) => infer_variant(variant, scopes, current_scope)?,
+        Value::Void => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void)),
+    };
 
-            // TODO: Absolute mess, redo all this and remove use of Any.
-            if let Some(TypeArgs::Generic(type_arg)) = type_arg {
-                if let Some(data) = data {
-                    let found_variant = variants.iter().find(|v| match v {
-                        VariantDeclare::Data(ident, _) => ident == variant_ident,
-                        VariantDeclare::Empty(ident) => ident == variant_ident,
-                    });
+    Ok(result)
+}
 
-                    if let Some(VariantDeclare::Data(
-                        _,
-                        TypeLiteralVariant::Type(TypeLiteral::UserDefined(ident)),
-                    )) = found_variant
-                    {
-                        if type_arg == *ident {
-                            TypeVariant::Generic(
-                                NalaType::Enum(enum_ident.to_owned(), variants),
-                                vec![infer_type(data, scopes, current_scope)?],
-                            )
-                        } else {
-                            TypeVariant::Generic(
-                                NalaType::Enum(enum_ident.to_owned(), variants),
-                                vec![TypeVariant::Type(NalaType::PrimitiveType(
-                                    PrimitiveType::Any,
-                                ))],
-                            )
-                        }
-                    } else {
-                        TypeVariant::Generic(
-                            NalaType::Enum(enum_ident.to_owned(), variants),
-                            vec![TypeVariant::Type(NalaType::PrimitiveType(
-                                PrimitiveType::Any,
-                            ))],
-                        )
-                    }
+// TODO: Absolute mess, redo all this and remove use of Any.
+fn infer_variant(
+    value: &EnumVariantValue,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<TypeVariant, RuntimeError> {
+    let EnumVariantValue {
+        enum_ident,
+        variant_ident,
+        data,
+    } = value;
+
+    let (variants, type_arg) = scopes
+        .get_type(&enum_ident, current_scope)?
+        .as_enum()
+        .unwrap();
+
+    let result = if let Some(TypeArgs::Generic(type_arg)) = type_arg {
+        if let Some(data) = data {
+            let found_variant = variants.iter().find(|v| match v {
+                VariantDeclare::Data(ident, _) => ident == variant_ident,
+                VariantDeclare::Empty(ident) => ident == variant_ident,
+            });
+
+            if let Some(VariantDeclare::Data(
+                _,
+                TypeLiteralVariant::Type(TypeLiteral::UserDefined(ident)),
+            )) = found_variant
+            {
+                if type_arg == *ident {
+                    TypeVariant::Generic(
+                        NalaType::Enum(enum_ident.to_owned(), variants),
+                        vec![infer_type(data, scopes, current_scope)?],
+                    )
                 } else {
                     TypeVariant::Generic(
                         NalaType::Enum(enum_ident.to_owned(), variants),
@@ -128,10 +125,23 @@ pub fn infer_type(
                     )
                 }
             } else {
-                TypeVariant::Type(NalaType::Enum(enum_ident.to_owned(), variants))
+                TypeVariant::Generic(
+                    NalaType::Enum(enum_ident.to_owned(), variants),
+                    vec![TypeVariant::Type(NalaType::PrimitiveType(
+                        PrimitiveType::Any,
+                    ))],
+                )
             }
+        } else {
+            TypeVariant::Generic(
+                NalaType::Enum(enum_ident.to_owned(), variants),
+                vec![TypeVariant::Type(NalaType::PrimitiveType(
+                    PrimitiveType::Any,
+                ))],
+            )
         }
-        Value::Void => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void)),
+    } else {
+        TypeVariant::Type(NalaType::Enum(enum_ident.to_owned(), variants))
     };
 
     Ok(result)
