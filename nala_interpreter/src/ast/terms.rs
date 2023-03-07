@@ -4,16 +4,9 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::{
-    errors::RuntimeError,
-    scopes::Scopes,
-    types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
-};
+use crate::errors::RuntimeError;
 
-use super::{
-    types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
-    *,
-};
+use super::*;
 
 #[derive(Debug, Clone)]
 pub enum SymbolOrTerm {

@@ -65,10 +65,10 @@ pub fn infer_type(
                 .lock()
                 .unwrap()
                 .clone()
-                .into_iter()
-                .map(|(ident, v)| {
-                    let field_type = infer_type(value, scopes, current_scope).unwrap();
-                    StructField { ident, field_type }
+                .iter()
+                .map(|(ident, v)| StructField {
+                    ident: ident.clone(),
+                    field_type: infer_type(v, scopes, current_scope).unwrap(),
                 })
                 .collect();
 
