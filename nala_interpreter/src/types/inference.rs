@@ -144,7 +144,7 @@ pub fn fits_type(
     current_scope: usize,
 ) -> Result<bool, RuntimeError> {
     match type_variant {
-        TypeVariant::Generic(outer, inner) => match outer {
+        TypeVariant::Generic(outer, _inner) => match outer {
             NalaType::PrimitiveType(PrimitiveType::Any) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Array) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Bool) => todo!(),
