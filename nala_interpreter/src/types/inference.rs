@@ -82,24 +82,22 @@ pub fn infer_type(
     Ok(result)
 }
 
-// TODO: Absolute mess, redo all this and remove use of Any.
+// TODO: Absolute mess, redo all this.
 fn infer_variant(
-    value: &EnumVariantValue,
-    scopes: &mut Scopes,
-    current_scope: usize,
-) -> Result<TypeVariant, RuntimeError> {
-    let EnumVariantValue {
+    EnumVariantValue {
         enum_ident,
         variant_ident,
         data,
-    } = value;
-
+    }: &EnumVariantValue,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<TypeVariant, RuntimeError> {
     let (variants, type_arg) = scopes
         .get_type(&enum_ident, current_scope)?
         .as_enum()
         .unwrap();
 
-    let result = if let Some(TypeArgs::Generic(type_arg)) = type_arg {
+    if let Some(TypeArgs::Generic(type_arg)) = type_arg {
         if let Some(data) = data {
             let found_variant = variants.iter().find(|v| match v {
                 VariantDeclare::Data(ident, _) => ident == variant_ident,
@@ -112,37 +110,28 @@ fn infer_variant(
             )) = found_variant
             {
                 if type_arg == *ident {
-                    TypeVariant::Generic(
+                    Ok(TypeVariant::Generic(
                         NalaType::Enum(enum_ident.to_owned(), variants),
                         vec![infer_type(data, scopes, current_scope)?],
-                    )
+                    ))
                 } else {
-                    TypeVariant::Generic(
+                    Ok(TypeVariant::Generic(
                         NalaType::Enum(enum_ident.to_owned(), variants),
                         vec![TypeVariant::Type(NalaType::PrimitiveType(
                             PrimitiveType::Any,
                         ))],
-                    )
+                    ))
                 }
             } else {
-                TypeVariant::Generic(
-                    NalaType::Enum(enum_ident.to_owned(), variants),
-                    vec![TypeVariant::Type(NalaType::PrimitiveType(
-                        PrimitiveType::Any,
-                    ))],
-                )
+                Err(RuntimeError::new("TODO"))
             }
         } else {
-            TypeVariant::Generic(
-                NalaType::Enum(enum_ident.to_owned(), variants),
-                vec![TypeVariant::Type(NalaType::PrimitiveType(
-                    PrimitiveType::Any,
-                ))],
-            )
+            Err(RuntimeError::new("TODO"))
         }
     } else {
-        TypeVariant::Type(NalaType::Enum(enum_ident.to_owned(), variants))
-    };
-
-    Ok(result)
+        Ok(TypeVariant::Type(NalaType::Enum(
+            enum_ident.to_owned(),
+            variants,
+        )))
+    }
 }
