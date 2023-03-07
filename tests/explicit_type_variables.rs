@@ -21,30 +21,30 @@ fn it_handles_declare_with_explicit_type() {
     assert_eq!(test_context.get_output(), vec!["7"]);
 }
 
-// #[test]
-// fn it_handles_declare_with_explicit_generic_type() {
-//     let mut test_context = TestContext::new();
+#[test]
+fn it_handles_declare_with_explicit_generic_type() {
+    let mut test_context = TestContext::new();
 
-//     let nala = r#"
-//         enum Foo<T> {
-//             Bar(T),
-//             Baz,
-//         }
+    let nala = r#"
+        enum Foo<T> {
+            Bar(T),
+            Baz,
+        }
 
-//         func printFoo(foo: Foo<Number>): Void {
-//             print(foo);
-//         }
+        func printFoo(foo: Foo<Number>): Void {
+            print(foo);
+        }
 
-//         const foo: Foo<Number> = Foo::Bar(7);
-//         printFoo(foo);
-//     "#;
+        const foo: Foo<Number> = Foo::Bar(7);
+        printFoo(foo);
+    "#;
 
-//     let result = parse_and_run(nala, &mut test_context);
+    let result = parse_and_run(nala, &mut test_context);
 
-//     assert!(result.is_ok());
-//     // TODO: Shouldn't this print "Foo<Number>::Bar(7)"?
-//     assert_eq!(test_context.get_output(), vec!["Foo::Bar(7)"]);
-// }
+    assert!(result.is_ok());
+    // TODO: Shouldn't this print "Foo<Number>::Bar(7)"?
+    assert_eq!(test_context.get_output(), vec!["Foo::Bar(7)"]);
+}
 
 #[test]
 fn it_handles_declare_with_unfit_value() {
