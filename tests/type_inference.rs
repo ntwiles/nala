@@ -46,6 +46,8 @@ fn it_errors_on_empty_array() {
 
 #[test]
 fn it_errors_if_no_info_for_inference() {
+    let expected_message = rgx!("Cannot infer type of value.");
+
     let nala = r#"
         enum Option<T> {
             Some(T),
@@ -56,23 +58,25 @@ fn it_errors_if_no_info_for_inference() {
     "#;
 
     let result = parse_and_run(nala, &mut TestContext::new());
-
     assert!(result.is_err());
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
 
-// #[test]
-// fn it_errors_if_not_enough_info_for_inference() {
-//     let nala = r#"
-//         enum Option<T> {
-//             This(T),
-//             That(Number),
-//             TheOther,
-//         }
+#[test]
+fn it_errors_if_not_enough_info_for_inference() {
+    let expected_message = rgx!("Cannot infer type of value.");
 
-//         const foo = Option::That(7);
-//     "#;
+    let nala = r#"
+        enum Option<T> {
+            This(T),
+            That(Number),
+            TheOther,
+        }
 
-//     let result = parse_and_run(nala, &mut TestContext::new());
+        const foo = Option::That(7);
+    "#;
 
-//     assert!(result.is_ok());
-// }
+    let result = parse_and_run(nala, &mut TestContext::new());
+    assert!(result.is_err());
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
+}

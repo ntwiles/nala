@@ -26,7 +26,7 @@ pub fn eval_enum_variant(
             eval_addend(addend, scopes, current_scope, enclosing_scope, ctx)
         }
         EnumVariantOrAddend::EnumVariant(enum_ident, variant_ident, data) => {
-            let (existing_variants, existing_type_args) =
+            let (existing_variants, enum_type_args) =
                 scopes.get_type(enum_ident, current_scope)?.as_enum()?;
 
             let existing_variant = find_variant(&existing_variants, variant_ident)?;
@@ -35,17 +35,18 @@ pub fn eval_enum_variant(
                 let data = eval_expr(data, scopes, current_scope, None, ctx)?; // TODO: Should we be passing None here?
                 let data_type = infer_type(&data, scopes, current_scope)?;
 
-                // TODO: This is a mess, clean this up.
                 let expected_data_type = if let VariantDeclare::Data(_, data) = existing_variant {
-                    if let Some(TypeArgs::Generic(type_args)) = existing_type_args {
-                        if let TypeLiteralVariant::Type(TypeLiteral::UserDefined(data)) = data {
-                            if type_args == data {
-                                data_type.clone()
-                            } else {
-                                todo!()
+                    if let Some(TypeArgs::Generic(enum_type_arg)) = enum_type_args {
+                        match data {
+                            // This is the case where the expected data type is generic.
+                            TypeLiteralVariant::Type(TypeLiteral::UserDefined(t)) => {
+                                if enum_type_arg == t {
+                                    data_type.clone()
+                                } else {
+                                    todo!()
+                                }
                             }
-                        } else {
-                            todo!()
+                            _ => TypeVariant::from_literal(data, scopes, current_scope)?,
                         }
                     } else {
                         TypeVariant::from_literal(data, scopes, current_scope)?
