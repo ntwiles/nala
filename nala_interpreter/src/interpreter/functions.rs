@@ -15,7 +15,7 @@ use crate::{
     errors::*,
     io_context::IoContext,
     scopes::Scopes,
-    types::{inference::infer_type, type_variant::TypeVariant, NalaType},
+    types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant, NalaType},
 };
 
 pub fn eval_func(
@@ -123,8 +123,6 @@ pub fn eval_invocation(
                 for (i, param) in params.iter().enumerate() {
                     let arg = args.get(i).unwrap();
 
-                    let arg_type = infer_type(&arg, scopes, current_scope)?;
-
                     let param_type =
                         TypeVariant::from_literal(param.param_type.clone(), scopes, current_scope)?;
 
@@ -141,6 +139,11 @@ pub fn eval_invocation(
                      * in favor of generics.
                      */
                     if let Block::NalaBlock(_) = *block {
+                        // TODO: This will error when any passing ambiguous values even though some should be valid.
+                        // e.g. passing Option::None when Option<Number> is expected should be valid, but infer_type
+                        // will fail for Option::None as things are now.
+                        let arg_type = infer_type(&arg, scopes, current_scope)?;
+
                         if !arg_type.is_assignable_to(&param_type) {
                             return Err(wrong_arg_type_for_param_error(
                                 arg.clone().to_string(),
@@ -169,8 +172,7 @@ pub fn eval_invocation(
                     return Ok(return_value);
                 }
 
-                if infer_type(&return_value, scopes, current_scope)?.is_assignable_to(&return_type)
-                {
+                if fits_type(&return_value, &return_type, scopes, current_scope)? {
                     Ok(return_value)
                 } else {
                     Err(RuntimeError::new(&format!("Tried to return value `{return_value}` of type `{0}` where value of type `{return_type}` was expected.", infer_type(&return_value, scopes, current_scope)?)))

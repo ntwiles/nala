@@ -1,7 +1,10 @@
 use crate::{
     ast::{
-        terms::Value,
-        types::{primitive_type::PrimitiveType, variant_declare::VariantDeclare},
+        terms::{StoredFunc, Value},
+        types::{
+            primitive_type::PrimitiveType, type_literal::TypeLiteral,
+            variant_declare::VariantDeclare,
+        },
     },
     errors::RuntimeError,
     scopes::Scopes,
@@ -11,11 +14,11 @@ use super::{inference::infer_type, type_variant::TypeVariant, NalaType};
 
 pub fn fits_type(
     value: &Value,
-    type_variant: &TypeVariant,
+    variant: &TypeVariant,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<bool, RuntimeError> {
-    match type_variant {
+    match variant {
         TypeVariant::Generic(outer, inner) => match outer {
             NalaType::PrimitiveType(PrimitiveType::Any) => Ok(true),
             NalaType::PrimitiveType(PrimitiveType::Array) => {
@@ -23,7 +26,9 @@ pub fn fits_type(
             }
             NalaType::PrimitiveType(PrimitiveType::Bool) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Break) => todo!(),
-            NalaType::PrimitiveType(PrimitiveType::Func) => todo!(),
+            NalaType::PrimitiveType(PrimitiveType::Func) => {
+                fits_func(inner, value, scopes, current_scope)
+            }
             NalaType::PrimitiveType(PrimitiveType::Number) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Object) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::String) => todo!(),
@@ -34,9 +39,7 @@ pub fn fits_type(
             }
             NalaType::Struct(_fields) => todo!(),
         },
-        TypeVariant::Type(_the_type) => {
-            Ok(&infer_type(value, scopes, current_scope)? == type_variant)
-        }
+        TypeVariant::Type(_the_type) => Ok(&infer_type(value, scopes, current_scope)? == variant),
     }
 }
 
@@ -56,6 +59,19 @@ fn fits_array(
         } else {
             Ok(true)
         }
+    } else {
+        Ok(false)
+    }
+}
+
+fn fits_func(
+    inner: &Vec<TypeVariant>,
+    value: &Value,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<bool, RuntimeError> {
+    if let Value::Func(StoredFunc { return_type, .. }) = value {
+        Ok(TypeVariant::from_literal(return_type.clone(), scopes, current_scope)? == inner[0])
     } else {
         Ok(false)
     }

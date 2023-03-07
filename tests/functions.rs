@@ -200,4 +200,26 @@ fn it_errors_on_return_of_wrong_type() {
     assert!(parse_and_run(nala, &mut ctx).is_err());
 }
 
+#[test]
+fn it_allows_ambiguous_type_variant_when_return_type_specified() {
+    let mut ctx = TestContext::new();
+
+    let nala = r#"
+        enum Option<T> {
+            Some(T),
+            None,
+        }
+        
+        func returnNone(): Option<Number> {
+            Option::None;
+        }
+        
+        const result: Option<Number> = returnNone();
+        print(result);
+    "#;
+
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["Option::None"]);
+}
+
 // TODO: Cover trying to return value of wrong type case.
