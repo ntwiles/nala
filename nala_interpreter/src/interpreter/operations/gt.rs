@@ -2,7 +2,7 @@ use crate::{
     ast::{terms::*, types::primitive_type::PrimitiveType},
     errors::*,
     scopes::Scopes,
-    types::{type_variant::TypeVariant, NalaType},
+    types::{inference::infer_type, type_variant::TypeVariant, NalaType},
 };
 
 use super::errors::*;
@@ -19,7 +19,7 @@ pub fn eval_gt(
             right => panic_oper_not_impl_for(
                 ">",
                 &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
-                &right.infer_type(scopes, current_scope)?,
+                &infer_type(&right, scopes, current_scope)?,
             ),
         },
         Value::String(left) => match right {
@@ -27,11 +27,11 @@ pub fn eval_gt(
             right => panic_oper_not_impl_for(
                 ">",
                 &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
-                &right.infer_type(scopes, current_scope)?,
+                &infer_type(&right, scopes, current_scope)?,
             ),
         },
         left => {
-            let left_type = left.infer_type(scopes, current_scope)?;
+            let left_type = infer_type(&left, scopes, current_scope)?;
             panic_oper_not_impl(">", &left_type)
         }
     }

@@ -7,7 +7,7 @@ use crate::{
     errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
-    types::type_variant::TypeVariant,
+    types::{inference::infer_type, type_variant::TypeVariant},
 };
 
 pub fn eval_declare(
@@ -33,7 +33,7 @@ pub fn eval_declare(
             TypeVariant::from_literal(declared_type.clone(), scopes, current_scope)?;
 
         // TODO: Check that value aligns with declared type.
-        let actual_type = value.infer_type(scopes, current_scope)?;
+        let actual_type = infer_type(&value, scopes, current_scope)?;
 
         if declared_type != actual_type {
             return Err(RuntimeError::new(&format!(
@@ -119,8 +119,8 @@ pub fn eval_assign(
 
                 let existing = scopes.get_value(&ident, current_scope, enclosing_scope)?;
 
-                let existing_type = existing.infer_type(scopes, current_scope)?;
-                let value_type = value.infer_type(scopes, current_scope)?;
+                let existing_type = infer_type(&existing, scopes, current_scope)?;
+                let value_type = infer_type(&value, scopes, current_scope)?;
 
                 if existing_type == value_type {
                     return scopes.mutate_value(&ident, current_scope, value.clone());

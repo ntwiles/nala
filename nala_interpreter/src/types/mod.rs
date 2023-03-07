@@ -1,3 +1,7 @@
+pub mod inference;
+pub mod struct_field;
+pub mod type_variant;
+
 use std::fmt;
 
 use crate::{
@@ -9,9 +13,6 @@ use crate::{
 };
 
 use self::struct_field::StructField;
-
-pub mod struct_field;
-pub mod type_variant;
 
 #[derive(Eq, Debug, Clone)]
 pub enum NalaType {

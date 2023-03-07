@@ -8,6 +8,7 @@ use crate::{
     errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
+    types::inference::infer_type,
 };
 
 use super::basic::*;
@@ -47,11 +48,12 @@ pub fn eval_array(
     let values = eval_elems(&array.elems, scopes, current_scope, enclosing_scope, ctx)?;
 
     if let Some(first) = values.clone().first() {
-        let first_type = first.infer_type(scopes, current_scope)?;
+        let first_type = infer_type(&first, scopes, current_scope)?;
 
+        // TODO: This calls infer_type() on the same value twice. This is inefficient.
         for value in values.clone() {
-            if value.infer_type(scopes, current_scope)? != first_type {
-                let second_type = value.infer_type(scopes, current_scope)?;
+            if infer_type(&value, scopes, current_scope)? != first_type {
+                let second_type = infer_type(&value, scopes, current_scope)?;
 
                 return Err(RuntimeError::new(
                     &format!("Arrays can contain elements of only a single type. Found elements of types `{first_type}` and `{second_type}`.",

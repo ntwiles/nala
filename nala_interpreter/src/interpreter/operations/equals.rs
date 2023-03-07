@@ -2,7 +2,7 @@ use crate::{
     ast::{terms::*, types::primitive_type::PrimitiveType},
     errors::RuntimeError,
     scopes::Scopes,
-    types::{type_variant::TypeVariant, NalaType},
+    types::{inference::infer_type, type_variant::TypeVariant, NalaType},
 };
 
 use super::errors::panic_oper_not_impl_for;
@@ -13,11 +13,11 @@ pub fn eval_equals(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    if left.infer_type(scopes, current_scope)? != right.infer_type(scopes, current_scope)? {
+    if infer_type(&left, scopes, current_scope)? != infer_type(&right, scopes, current_scope)? {
         panic_oper_not_impl_for(
             "==",
             &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
-            &right.infer_type(scopes, current_scope)?,
+            &infer_type(&right, scopes, current_scope)?,
         )
     }
 

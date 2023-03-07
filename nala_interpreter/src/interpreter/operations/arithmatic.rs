@@ -1,4 +1,6 @@
-use crate::{ast::terms::Value, errors::RuntimeError, scopes::Scopes};
+use crate::{
+    ast::terms::Value, errors::RuntimeError, scopes::Scopes, types::inference::infer_type,
+};
 
 pub fn do_add(
     left: Value,
@@ -6,7 +8,7 @@ pub fn do_add(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    if left.infer_type(scopes, current_scope)? != right.infer_type(scopes, current_scope)? {
+    if infer_type(&left, scopes, current_scope)? != infer_type(&right, scopes, current_scope)? {
         return Err(RuntimeError::new(
             "Cannot add between values of two different types.",
         ));
@@ -37,7 +39,7 @@ pub fn do_subtract(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    if left.infer_type(scopes, current_scope)? != right.infer_type(scopes, current_scope)? {
+    if infer_type(&left, scopes, current_scope)? != infer_type(&right, scopes, current_scope)? {
         return Err(RuntimeError::new(
             "Cannot subtract between values of two different types.",
         ));
@@ -60,7 +62,7 @@ pub fn do_multiply(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    if left.infer_type(scopes, current_scope)? != right.infer_type(scopes, current_scope)? {
+    if infer_type(&left, scopes, current_scope)? != infer_type(&right, scopes, current_scope)? {
         return Err(RuntimeError::new(
             "Cannot multiply between values of two different types.",
         ));
@@ -83,7 +85,7 @@ pub fn do_divide(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    if left.infer_type(scopes, current_scope)? != right.infer_type(scopes, current_scope)? {
+    if infer_type(&left, scopes, current_scope)? != infer_type(&right, scopes, current_scope)? {
         return Err(RuntimeError::new(
             "Cannot divide between values of two different types.",
         ));

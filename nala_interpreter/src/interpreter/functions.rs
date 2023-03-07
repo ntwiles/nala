@@ -15,7 +15,7 @@ use crate::{
     errors::*,
     io_context::IoContext,
     scopes::Scopes,
-    types::{type_variant::TypeVariant, NalaType},
+    types::{inference::infer_type, type_variant::TypeVariant, NalaType},
 };
 
 pub fn eval_func(
@@ -123,7 +123,7 @@ pub fn eval_invocation(
                 for (i, param) in params.iter().enumerate() {
                     let arg = args.get(i).unwrap();
 
-                    let arg_type = arg.infer_type(scopes, current_scope)?;
+                    let arg_type = infer_type(&arg, scopes, current_scope)?;
 
                     let param_type =
                         TypeVariant::from_literal(param.param_type.clone(), scopes, current_scope)?;
@@ -144,7 +144,7 @@ pub fn eval_invocation(
                         if !arg_type.is_assignable_to(&param_type) {
                             return Err(wrong_arg_type_for_param_error(
                                 arg.clone().to_string(),
-                                arg.infer_type(scopes, current_scope)?.to_string(),
+                                infer_type(&arg, scopes, current_scope)?.to_string(),
                                 param_type.to_string(),
                             ));
                         }
@@ -169,13 +169,11 @@ pub fn eval_invocation(
                     return Ok(return_value);
                 }
 
-                if return_value
-                    .infer_type(scopes, current_scope)?
-                    .is_assignable_to(&return_type)
+                if infer_type(&return_value, scopes, current_scope)?.is_assignable_to(&return_type)
                 {
                     Ok(return_value)
                 } else {
-                    Err(RuntimeError::new(&format!("Tried to return value `{return_value}` of type `{0}` where value of type `{return_type}` was expected.", return_value.infer_type(scopes, current_scope)?)))
+                    Err(RuntimeError::new(&format!("Tried to return value `{return_value}` of type `{0}` where value of type `{return_type}` was expected.", infer_type(&return_value, scopes, current_scope)?)))
                 }
             } else {
                 Err(RuntimeError::new(&format!("Cannot invoke a non-function.")))
