@@ -101,6 +101,8 @@ fn find_variant(
     let result = variants.iter().find(|v| compare_variant(v, needle));
     match result {
         Some(variant) => Ok(variant.clone()),
-        None => todo!(),
+        None => Err(RuntimeError::new(&format!(
+            "Could not find variant `{needle}`.",
+        ))),
     }
 }
