@@ -44,8 +44,6 @@ fn it_errors_on_empty_array() {
     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
 
-// TODO: This are failing now on .is_err(), fix this.
-
 #[test]
 fn it_errors_if_no_info_for_inference() {
     let nala = r#"
@@ -62,19 +60,20 @@ fn it_errors_if_no_info_for_inference() {
     assert!(result.is_err());
 }
 
-// #[test]
-// fn it_errors_if_not_enough_info_for_inference() {
-//     let nala = r#"
-//         enum Option<T> {
-//             This(T),
-//             That(Number),
-//             TheOther,
-//         }
+// TODO: This tests incomplete code which hits a todo! panic.
+#[test]
+fn it_errors_if_not_enough_info_for_inference() {
+    let nala = r#"
+        enum Option<T> {
+            This(T),
+            That(Number),
+            TheOther,
+        }
 
-//         const foo = Option::That(7);
-//     "#;
+        const foo = Option::That(7);
+    "#;
 
-//     let result = parse_and_run(nala, &mut TestContext::new());
+    let result = parse_and_run(nala, &mut TestContext::new());
 
-//     assert!(result.is_ok());
-// }
+    assert!(result.is_ok());
+}

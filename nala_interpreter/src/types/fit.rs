@@ -1,7 +1,10 @@
 use crate::{
     ast::{
-        terms::Value,
-        types::{primitive_type::PrimitiveType, variant_declare::VariantDeclare},
+        terms::{EnumVariantValue, Value},
+        types::{
+            primitive_type::PrimitiveType, type_literal_variant::TypeLiteralVariant,
+            variant_declare::VariantDeclare,
+        },
     },
     errors::RuntimeError,
     scopes::Scopes,
@@ -29,7 +32,9 @@ pub fn fits_type(
             NalaType::PrimitiveType(PrimitiveType::String) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Symbol) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Void) => todo!(),
-            NalaType::Enum(enum_ident, variants) => fits_enum(enum_ident, variants, value),
+            NalaType::Enum(enum_ident, variants) => {
+                fits_enum(inner, enum_ident, variants, value, scopes, current_scope)
+            }
             NalaType::Struct(_fields) => todo!(),
         },
         TypeVariant::Type(_the_type) => {
@@ -39,7 +44,7 @@ pub fn fits_type(
 }
 
 fn fits_array(
-    item_types: &Vec<TypeVariant>,
+    inner: &Vec<TypeVariant>,
     value: &Value,
     scopes: &mut Scopes,
     current_scope: usize,
@@ -50,7 +55,7 @@ fn fits_array(
         let first = items.first();
 
         if let Some(first) = first {
-            Ok(infer_type(first, scopes, current_scope)? == item_types[0])
+            Ok(infer_type(first, scopes, current_scope)? == inner[0])
         } else {
             Ok(true)
         }
@@ -60,17 +65,37 @@ fn fits_array(
 }
 
 fn fits_enum(
+    inner: &Vec<TypeVariant>,
     enum_ident: &str,
     variants: &Vec<VariantDeclare>,
     value: &Value,
+    scopes: &mut Scopes,
+    current_scope: usize,
 ) -> Result<bool, RuntimeError> {
     if let Value::Variant(value) = value {
-        Ok(
-            enum_ident == value.enum_ident
-                && find_variant(&value.variant_ident, variants).is_some(),
-        )
+        match find_variant(&value.variant_ident, variants) {
+            Some(VariantDeclare::Data(_, _)) => Ok(enum_ident == value.enum_ident
+                && data_fits(&inner[0], &value.data, scopes, current_scope)?),
+            Some(VariantDeclare::Empty(_)) => Ok(enum_ident == value.enum_ident),
+            None => Ok(false),
+        }
     } else {
         Ok(false)
+    }
+}
+
+fn data_fits(
+    expected_type: &TypeVariant,
+    data: &Option<Box<Value>>,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<bool, RuntimeError> {
+    println!("Got here.");
+    if let Some(data) = data {
+        println!("Checking data fits type: {:?} == {:?}", data, expected_type);
+        Ok(fits_type(data, &expected_type, scopes, current_scope))?
+    } else {
+        Ok(true)
     }
 }
 
