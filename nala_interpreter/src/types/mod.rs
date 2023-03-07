@@ -1,3 +1,4 @@
+pub mod fit;
 pub mod inference;
 pub mod struct_field;
 pub mod type_variant;

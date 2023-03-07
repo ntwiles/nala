@@ -7,10 +7,7 @@ use crate::{
     errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
-    types::{
-        inference::{fits_type, infer_type},
-        type_variant::TypeVariant,
-    },
+    types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
 };
 
 pub fn eval_declare(
