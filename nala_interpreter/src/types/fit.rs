@@ -1,10 +1,7 @@
 use crate::{
     ast::{
         terms::{StoredFunc, Value},
-        types::{
-            primitive_type::PrimitiveType, type_literal::TypeLiteral,
-            variant_declare::VariantDeclare,
-        },
+        types::{primitive_type::PrimitiveType, variant_declare::VariantDeclare},
     },
     errors::RuntimeError,
     scopes::Scopes,
