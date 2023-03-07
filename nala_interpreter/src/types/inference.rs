@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use crate::{
     ast::{
@@ -14,26 +14,14 @@ use crate::{
 
 use super::{struct_field::StructField, type_variant::TypeVariant, NalaType};
 
+// TODO: Create common error for these to return.
 pub fn infer_type(
     value: &Value,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<TypeVariant, RuntimeError> {
     let result = match value {
-        Value::Array(items) => {
-            let items = Arc::clone(&items);
-            let items = items.lock().unwrap();
-            let elem_type = if items.len() > 0 {
-                infer_type(items.first().unwrap(), scopes, current_scope)?
-            } else {
-                todo!("Handle the case where trying to get the type of an empty array.")
-            };
-
-            TypeVariant::Generic(
-                NalaType::PrimitiveType(PrimitiveType::Array),
-                vec![elem_type],
-            )
-        }
+        Value::Array(items) => infer_array(items, scopes, current_scope)?,
         Value::Bool(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
         Value::Break(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Break)),
         Value::Func(StoredFunc {
@@ -82,16 +70,37 @@ pub fn infer_type(
     Ok(result)
 }
 
-// TODO: Absolute mess, redo all this.
-fn infer_variant(
-    EnumVariantValue {
-        enum_ident,
-        variant_ident,
-        data,
-    }: &EnumVariantValue,
+fn infer_array(
+    items: &Arc<Mutex<Vec<Value>>>,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<TypeVariant, RuntimeError> {
+    let items = Arc::clone(&items);
+    let items = items.lock().unwrap();
+    let elem_type = if items.len() > 0 {
+        infer_type(items.first().unwrap(), scopes, current_scope)?
+    } else {
+        Err(cannot_infer_value_error())?
+    };
+
+    Ok(TypeVariant::Generic(
+        NalaType::PrimitiveType(PrimitiveType::Array),
+        vec![elem_type],
+    ))
+}
+
+// TODO: Absolute mess, redo all this.
+fn infer_variant(
+    variant: &EnumVariantValue,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<TypeVariant, RuntimeError> {
+    let EnumVariantValue {
+        enum_ident,
+        variant_ident,
+        data,
+    } = variant;
+
     let (variants, type_arg) = scopes
         .get_type(&enum_ident, current_scope)?
         .as_enum()
@@ -123,10 +132,10 @@ fn infer_variant(
                     ))
                 }
             } else {
-                Err(RuntimeError::new("TODO"))
+                Err(cannot_infer_value_error())
             }
         } else {
-            Err(RuntimeError::new("TODO"))
+            Err(cannot_infer_value_error())
         }
     } else {
         Ok(TypeVariant::Type(NalaType::Enum(
@@ -134,4 +143,9 @@ fn infer_variant(
             variants,
         )))
     }
+}
+
+// TODO: Put more info in this error.
+fn cannot_infer_value_error() -> RuntimeError {
+    RuntimeError::new(&format!("Cannot infer type of value."))
 }

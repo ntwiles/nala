@@ -46,6 +46,9 @@ pub fn eval_declare(
             is_mutable,
         )
     } else {
+        // Just done to see if there's enough information to infer type.
+        // TODO: A possible optimization could be to catch this once we know the type of the value.
+        infer_type(&value, scopes, current_scope)?;
         scopes.add_binding(&ident, value.clone(), None, current_scope, is_mutable)
     }
 }

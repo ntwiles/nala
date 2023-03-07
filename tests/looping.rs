@@ -43,7 +43,7 @@ fn it_runs_array_empty() {
     let mut ctx = TestContext::new();
 
     let nala = r#"
-        const empty = [];
+        const empty: Array<String> = [];
 
         for value in empty {
             print('This should not print');
