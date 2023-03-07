@@ -87,4 +87,22 @@ fn it_runs_if_elif_else() {
     assert_eq!(ctx.get_output(), vec!["should print"]);
 }
 
-// TODO: Test match statements.
+#[test]
+fn it_finds_correct_match_branch_based_on_pattern() {
+    let mut ctx = TestContext::new();
+
+    let nala = r#"
+        enum Selection { A, B, C }
+
+        const x = Selection::B;
+        
+        match (x) {
+            Selection::A => { print('should not print'); }
+            Selection::B => { print('should print'); }
+            Selection::C => { print('should not print either'); }
+        }
+    "#;
+
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["should print"]);
+}
