@@ -1,8 +1,12 @@
 use std::cmp::Ordering;
 
-use crate::{ast::types::StructLiteralField, errors::RuntimeError, scopes::Scopes};
+use crate::{
+    ast::types::{StructLiteralField, StructLiteralFieldValue},
+    errors::RuntimeError,
+    scopes::Scopes,
+};
 
-use super::type_variant::TypeVariant;
+use super::{type_variant::TypeVariant, NalaType};
 
 #[derive(Eq, Debug, Clone)]
 pub struct StructField {
@@ -18,7 +22,7 @@ impl StructField {
     ) -> Result<Self, RuntimeError> {
         Ok(Self {
             ident: field.ident,
-            value: TypeVariant::from_struct_literal_field(field.value, scopes, current_scope)?,
+            value: type_from_field(field.value, scopes, current_scope)?,
         })
     }
 }
@@ -38,5 +42,26 @@ impl PartialOrd for StructField {
 impl Ord for StructField {
     fn cmp(&self, other: &StructField) -> Ordering {
         self.ident.cmp(&other.ident)
+    }
+}
+
+pub fn type_from_field(
+    literal: StructLiteralFieldValue,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<TypeVariant, RuntimeError> {
+    match literal {
+        StructLiteralFieldValue::Nested(fields) => {
+            let fields: Vec<StructField> = fields
+                .into_iter()
+                .map(|field| StructField {
+                    ident: field.ident,
+                    value: type_from_field(field.value, scopes, current_scope).unwrap(),
+                })
+                .collect();
+
+            Ok(TypeVariant::Type(NalaType::Struct(fields)))
+        }
+        StructLiteralFieldValue::Type(t) => TypeVariant::from_literal(t, scopes, current_scope),
     }
 }
