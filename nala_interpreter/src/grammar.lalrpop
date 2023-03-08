@@ -132,7 +132,8 @@ Array: ast::arrays::Array = {
 StructFields = Comma<StructField>;
 
 StructField: ast::types::StructLiteralField = {
-    <s:Symbol> ":" <t:TypeVariant> => ast::types::StructLiteralField { ident: s, field_type: t },
+    <s:Symbol> ":" <t:TypeVariant> => ast::types::StructLiteralField { ident: s, value: ast::types::StructLiteralFieldValue::Type(t) },
+    <s:Symbol> ":" "{" <ff:StructFields> "}" => ast::types::StructLiteralField { ident: s, value: ast::types::StructLiteralFieldValue::Nested(ff) }
 }
 
 TypeVariants = Comma<TypeVariant>;

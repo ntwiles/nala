@@ -58,7 +58,7 @@ impl NalaType {
                 if let NalaType::Struct(ot) = other {
                     for ot in ot.iter() {
                         if let Some(found) = fields.iter().find(|f| *f == ot) {
-                            return found.field_type.is_assignable_to(&ot.field_type);
+                            return found.value.is_assignable_to(&ot.value);
                         }
                     }
 
@@ -84,7 +84,7 @@ impl fmt::Display for NalaType {
                     "{}",
                     fields
                         .iter()
-                        .map(|field| format!("{}: {}", field.ident, field.field_type.to_string()))
+                        .map(|field| format!("{}: {}", field.ident, field.value.to_string()))
                         .fold(String::new(), |a, b| a + &b + ", ")
                 )?;
 

@@ -11,16 +11,22 @@ pub mod type_literal_variant;
 pub mod variant_declare;
 
 #[derive(Debug, Clone)]
+pub enum StructLiteralFieldValue {
+    Nested(Vec<StructLiteralField>),
+    Type(TypeLiteralVariant),
+}
+
+#[derive(Debug, Clone)]
 pub struct StructLiteralField {
     pub ident: String,
-    pub field_type: TypeLiteralVariant,
+    pub value: StructLiteralFieldValue,
 }
 
 impl StructLiteralField {
-    pub fn new(ident: &str, field_type: TypeLiteralVariant) -> Self {
+    pub fn new(ident: &str, value: StructLiteralFieldValue) -> Self {
         Self {
             ident: ident.to_owned(),
-            field_type,
+            value,
         }
     }
 }

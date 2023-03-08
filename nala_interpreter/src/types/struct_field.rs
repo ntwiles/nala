@@ -7,7 +7,7 @@ use super::type_variant::TypeVariant;
 #[derive(Eq, Debug, Clone)]
 pub struct StructField {
     pub ident: String,
-    pub field_type: TypeVariant,
+    pub value: TypeVariant,
 }
 
 impl StructField {
@@ -18,14 +18,14 @@ impl StructField {
     ) -> Result<Self, RuntimeError> {
         Ok(Self {
             ident: field.ident,
-            field_type: TypeVariant::from_literal(field.field_type, scopes, current_scope)?,
+            value: TypeVariant::from_struct_literal_field(field.value, scopes, current_scope)?,
         })
     }
 }
 
 impl PartialEq for StructField {
     fn eq(self: &Self, other: &StructField) -> bool {
-        self.ident == other.ident && self.field_type == other.field_type
+        self.ident == other.ident && self.value == other.value
     }
 }
 

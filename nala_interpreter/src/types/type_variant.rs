@@ -1,10 +1,12 @@
 use std::fmt;
 
 use crate::{
-    ast::types::type_literal_variant::TypeLiteralVariant, errors::RuntimeError, scopes::Scopes,
+    ast::types::{type_literal_variant::TypeLiteralVariant, StructLiteralFieldValue},
+    errors::RuntimeError,
+    scopes::Scopes,
 };
 
-use super::NalaType;
+use super::{struct_field::StructField, NalaType};
 
 #[derive(Eq, Debug, Clone)]
 pub enum TypeVariant {
@@ -31,6 +33,28 @@ impl TypeVariant {
                 scopes,
                 current_scope,
             )?)),
+        }
+    }
+
+    pub fn from_struct_literal_field(
+        literal: StructLiteralFieldValue,
+        scopes: &mut Scopes,
+        current_scope: usize,
+    ) -> Result<Self, RuntimeError> {
+        match literal {
+            StructLiteralFieldValue::Nested(fields) => {
+                let fields: Vec<StructField> = fields
+                    .into_iter()
+                    .map(|field| StructField {
+                        ident: field.ident,
+                        value: Self::from_struct_literal_field(field.value, scopes, current_scope)
+                            .unwrap(),
+                    })
+                    .collect();
+
+                Ok(TypeVariant::Type(NalaType::Struct(fields)))
+            }
+            StructLiteralFieldValue::Type(t) => Self::from_literal(t, scopes, current_scope),
         }
     }
 
