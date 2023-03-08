@@ -60,6 +60,13 @@ impl TypeVariant {
             },
         }
     }
+
+    pub fn is_any(&self) -> bool {
+        match self {
+            TypeVariant::Generic(_, _) => false,
+            TypeVariant::Type(t) => t.is_any(),
+        }
+    }
 }
 
 impl fmt::Display for TypeVariant {

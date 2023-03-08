@@ -52,7 +52,8 @@ fn fits_array(
         let first = items.first();
 
         if let Some(first) = first {
-            Ok(infer_type(first, scopes, current_scope)? == inner[0])
+            println!("First: {:?}", first);
+            Ok(inner[0].is_any() || infer_type(first, scopes, current_scope)? == inner[0])
         } else {
             Ok(true)
         }

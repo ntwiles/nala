@@ -21,7 +21,7 @@ pub fn infer_type(
     current_scope: usize,
 ) -> Result<TypeVariant, RuntimeError> {
     let result = match value {
-        Value::Array(items) => infer_array(items, scopes, current_scope)?,
+        Value::Array(items) => infer_array(value, items, scopes, current_scope)?,
         Value::Bool(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
         Value::Break(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Break)),
         Value::Func(StoredFunc {
@@ -63,7 +63,7 @@ pub fn infer_type(
             TypeVariant::Type(NalaType::Struct(fields))
         }
         Value::String(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
-        Value::Variant(variant) => infer_variant(variant, scopes, current_scope)?,
+        Value::Variant(variant) => infer_variant(value, variant, scopes, current_scope)?,
         Value::Void => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void)),
     };
 
@@ -71,6 +71,7 @@ pub fn infer_type(
 }
 
 fn infer_array(
+    raw_value: &Value,
     items: &Arc<Mutex<Vec<Value>>>,
     scopes: &mut Scopes,
     current_scope: usize,
@@ -80,7 +81,7 @@ fn infer_array(
     let elem_type = if items.len() > 0 {
         infer_type(items.first().unwrap(), scopes, current_scope)?
     } else {
-        Err(cannot_infer_value_error())?
+        Err(cannot_infer_value_error(raw_value))?
     };
 
     Ok(TypeVariant::Generic(
@@ -89,8 +90,8 @@ fn infer_array(
     ))
 }
 
-// TODO: Absolute mess, redo all this.
 fn infer_variant(
+    raw_value: &Value,
     variant: &EnumVariantValue,
     scopes: &mut Scopes,
     current_scope: usize,
@@ -106,6 +107,7 @@ fn infer_variant(
         .as_enum()
         .unwrap();
 
+    // TODO: Absolute mess, redo all this.
     if let Some(TypeArgs::Generic(type_arg)) = type_arg {
         if let Some(data) = data {
             let found_variant = variants.iter().find(|v| match v {
@@ -132,10 +134,10 @@ fn infer_variant(
                     ))
                 }
             } else {
-                Err(cannot_infer_value_error())
+                Err(cannot_infer_value_error(raw_value))
             }
         } else {
-            Err(cannot_infer_value_error())
+            Err(cannot_infer_value_error(raw_value))
         }
     } else {
         Ok(TypeVariant::Type(NalaType::Enum(
@@ -145,7 +147,6 @@ fn infer_variant(
     }
 }
 
-// TODO: Put more info in this error.
-fn cannot_infer_value_error() -> RuntimeError {
-    RuntimeError::new(&format!("Cannot infer type of value."))
+fn cannot_infer_value_error(value: &Value) -> RuntimeError {
+    RuntimeError::new(&format!("Cannot infer type of value `{value}`."))
 }
