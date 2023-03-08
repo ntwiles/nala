@@ -31,7 +31,7 @@ fn it_infers_type_of_generic_if_possible() {
 
 #[test]
 fn it_errors_on_empty_array() {
-    let expected_message = rgx!("Cannot infer type of value.");
+    let expected_message = "Cannot infer type of value `<Array[0]>`.";
 
     let nala = r#"
         const empty = [];
@@ -40,7 +40,7 @@ fn it_errors_on_empty_array() {
     let result = parse_and_run(nala, &mut TestContext::new());
 
     assert!(result.is_err());
-    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
+    assert_eq!(expected_message, &result.clone().unwrap_err().message)
 }
 
 #[test]

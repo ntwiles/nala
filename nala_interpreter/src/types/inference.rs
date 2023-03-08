@@ -77,9 +77,12 @@ fn infer_array(
 ) -> Result<TypeVariant, RuntimeError> {
     let items = Arc::clone(&items);
     let items = items.lock().unwrap();
+
     let elem_type = if items.len() > 0 {
-        infer_type(items.first().unwrap(), scopes, current_scope)?
+        let first = items.first();
+        infer_type(first.unwrap(), scopes, current_scope)?
     } else {
+        drop(items);
         Err(cannot_infer_value_error(raw_value))?
     };
 
