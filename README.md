@@ -53,3 +53,7 @@ Comments are stripped before parsing in a preprocessing stage. This stage uses r
 single-line (`//`) and multi-line (`/* */`) comments, which are imperfect. Embedding comment sequences inside 
 strings (for example) will result in a portion of the string being stripped during preprocessing which in turn 
 will cause a parse error.
+
+## Questions / Contact
+
+You can find my contact information on my [github profile](https://github.com/ntwiles), please feel free to get in touch regarding Nala.
