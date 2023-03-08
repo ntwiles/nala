@@ -2,6 +2,7 @@ use std::fmt;
 
 use crate::{
     ast::types::type_literal_variant::TypeLiteralVariant, errors::RuntimeError, scopes::Scopes,
+    utils::accept_results,
 };
 
 use super::NalaType;
@@ -19,13 +20,19 @@ impl TypeVariant {
         current_scope: usize,
     ) -> Result<Self, RuntimeError> {
         match literal {
-            TypeLiteralVariant::Composite(p, c) => Ok(TypeVariant::Generic(
-                NalaType::from_literal(p, scopes, current_scope)?,
-                c.into_iter()
-                    // TODO: Remove this .unwrap().
-                    .map(|l| TypeVariant::from_literal(l, scopes, current_scope).unwrap())
-                    .collect(),
-            )),
+            TypeLiteralVariant::Composite(p, c) => {
+                let variants = c
+                    .into_iter()
+                    .map(|l| TypeVariant::from_literal(l, scopes, current_scope))
+                    .collect();
+
+                let variants = accept_results(variants)?;
+
+                Ok(TypeVariant::Generic(
+                    NalaType::from_literal(p, scopes, current_scope)?,
+                    variants,
+                ))
+            }
             TypeLiteralVariant::Type(t) => Ok(TypeVariant::Type(NalaType::from_literal(
                 t,
                 scopes,

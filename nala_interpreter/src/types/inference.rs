@@ -10,6 +10,7 @@ use crate::{
     },
     errors::RuntimeError,
     scopes::Scopes,
+    utils::accept_results,
 };
 
 use super::{struct_field::StructField, type_variant::TypeVariant, NalaType};
@@ -29,14 +30,12 @@ pub fn infer_type(
             return_type,
             ..
         }) => {
-            let mut param_types: Vec<TypeVariant> = params
+            let param_types = params
                 .into_iter()
-                .map(|p| {
-                    TypeVariant::from_literal(p.clone().param_type, scopes, current_scope)
-                        // TODO: Remove this unwrap().
-                        .unwrap()
-                }) // TODO: Why do we need this clone?
+                .map(|p| TypeVariant::from_literal(p.clone().param_type, scopes, current_scope)) // TODO: Why do we need this clone?
                 .collect();
+
+            let mut param_types = accept_results(param_types)?;
 
             param_types.push(TypeVariant::from_literal(
                 return_type.clone(),

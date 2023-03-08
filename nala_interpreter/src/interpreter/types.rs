@@ -6,6 +6,7 @@ use crate::{
     errors::RuntimeError,
     scopes::{type_binding::TypeBinding, Scopes},
     types::struct_field::StructField,
+    utils::accept_results,
 };
 
 pub fn eval_struct(
@@ -15,13 +16,12 @@ pub fn eval_struct(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    let binding = TypeBinding::Struct(
+    let binding = TypeBinding::Struct(accept_results(
         fields
             .into_iter()
-            // TODO: Remove this .unwrap().
-            .map(|f| StructField::from_literal(f, scopes, current_scope).unwrap())
+            .map(|f| StructField::from_literal(f, scopes, current_scope))
             .collect(),
-    );
+    )?);
 
     scopes
         .add_type_binding(&ident, current_scope, binding)

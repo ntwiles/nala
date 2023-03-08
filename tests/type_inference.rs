@@ -35,7 +35,6 @@ fn it_errors_on_empty_array() {
 
     let nala = r#"
         const empty = [];
-
     "#;
 
     let result = parse_and_run(nala, &mut TestContext::new());
