@@ -10,6 +10,7 @@ use crate::{
     errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
+    types::inference::infer_type,
 };
 
 pub fn eval_if_else_chain(
@@ -96,10 +97,11 @@ pub fn eval_for(
 
         Ok(loop_result)
     } else {
-        panic!(
-            "Cannot iterate over values of non-Array types. Found '{}' of type {:?}",
-            ident, loop_result
-        )
+        // TODO: Are these usages of infer_type safe now that it's fallible?
+        let result_type = infer_type(&result, scopes, current_scope)?;
+        Err(RuntimeError::new(&format!(
+            "Cannot iterate over values of non-Array types. Found '{result}' of type `{result_type}`"
+        )))
     }
 }
 
