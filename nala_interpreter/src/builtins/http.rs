@@ -130,7 +130,7 @@ fn build_value(value: serde_json::Value) -> Value {
         serde_json::Value::Array(items) => Value::Array(Arc::new(Mutex::new(
             items.into_iter().map(build_value).collect::<Vec<Value>>(),
         ))),
-        serde_json::Value::Null => Value::String(String::from("null")), // TODO: This is a placeholder until options are implemented.
+        serde_json::Value::Null => Value::String(String::from("null")), // TODO: This is a placeholder until options are implemented. (These are now implemented but not yet builtin.)
         serde_json::Value::Bool(value) => Value::Bool(value),
         serde_json::Value::Number(_) => todo!(),
         serde_json::Value::String(value) => Value::String(value),
