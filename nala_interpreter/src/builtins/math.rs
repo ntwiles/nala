@@ -26,7 +26,7 @@ pub fn get_floor_block() -> Func {
         ident: "floor".to_string(),
         params: vec![num_param],
         return_type,
-        block: Box::new(Block::RustBlock(builtin_floor)),
+        block: Box::new(FuncVariant::Builtin(builtin_floor)),
     }
 }
 

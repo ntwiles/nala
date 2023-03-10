@@ -8,7 +8,7 @@ use crate::{
             primitive_type::PrimitiveType, type_literal::TypeLiteral,
             type_literal_variant::TypeLiteralVariant,
         },
-        Block,
+        FuncVariant,
     },
     errors::RuntimeError,
     io_context::IoContext,
@@ -27,7 +27,7 @@ pub fn get_void_block() -> Func {
         ident: "void".to_string(),
         params: vec![param],
         return_type,
-        block: Box::new(Block::RustBlock(builtin_void)),
+        block: Box::new(FuncVariant::Builtin(builtin_void)),
     }
 }
 

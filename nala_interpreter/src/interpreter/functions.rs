@@ -127,7 +127,7 @@ pub fn eval_invocation(
                         TypeVariant::from_literal(param.param_type.clone(), scopes, current_scope)?;
 
                     /*
-                     * TODO: This is where our issue is. This results in `Option<T><Number>`
+                     * TODO: This results in `Option<T><Number>`
                      * because we're storing generic args in two different ways;
                      * both using TypeVariant::Generic and using type_args in enum.
                      */
@@ -138,7 +138,7 @@ pub fn eval_invocation(
                      * like `print()` can be called with args of any type. We should move away from this
                      * in favor of generics.
                      */
-                    if let Block::NalaBlock(_) = *block {
+                    if let FuncVariant::Nala(_) = *block {
                         // TODO: This will error when any passing ambiguous values even though some should be valid.
                         // e.g. passing Option::None when Option<Number> is expected should be valid, but infer_type
                         // will fail for Option::None as things are now.
@@ -158,10 +158,10 @@ pub fn eval_invocation(
                 }
 
                 let return_value = match *block {
-                    Block::NalaBlock(stmts) => {
+                    FuncVariant::Nala(stmts) => {
                         eval_stmts(&stmts, scopes, call_scope, Some(closure_scope), ctx)?
                     }
-                    Block::RustBlock(func) => Ok(func(param_args, ctx)?)?,
+                    FuncVariant::Builtin(func) => Ok(func(param_args, ctx)?)?,
                 };
 
                 let return_type = TypeVariant::from_literal(return_type, scopes, current_scope)?;

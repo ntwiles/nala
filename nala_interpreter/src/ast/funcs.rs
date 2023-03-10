@@ -5,7 +5,7 @@ pub struct Func {
     pub ident: String,
     pub params: Vec<Param>,
     pub return_type: TypeLiteralVariant,
-    pub block: Box<Block>,
+    pub block: Box<FuncVariant>,
 }
 
 #[derive(Debug, Clone)]

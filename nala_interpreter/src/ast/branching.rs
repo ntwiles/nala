@@ -1,4 +1,4 @@
-use super::{patterns::Pattern, Block, Expr, Stmts};
+use super::{patterns::Pattern, Expr, Stmts};
 
 #[derive(Clone, Debug)]
 pub struct IfElseChain {

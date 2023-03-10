@@ -31,17 +31,14 @@ pub enum Program {
 }
 
 #[derive(Clone)]
-pub enum Block {
-    NalaBlock(Stmts),
-    RustBlock(BuiltinFunc),
+pub enum FuncVariant {
+    Nala(Stmts),
+    Builtin(BuiltinFunc),
 }
 
-impl fmt::Debug for Block {
+impl fmt::Debug for FuncVariant {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        match self {
-            Block::NalaBlock(_) => write!(f, "<NalaBlock>"),
-            Block::RustBlock(_) => write!(f, "<RustBlock>"),
-        }
+        write!(f, "<Func>")
     }
 }
 

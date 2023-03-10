@@ -25,7 +25,7 @@ pub enum Term {
 pub struct StoredFunc {
     pub params: Vec<Param>,
     pub return_type: TypeLiteralVariant,
-    pub block: Box<Block>,
+    pub block: Box<FuncVariant>,
     pub closure_scope: usize,
 }
 
