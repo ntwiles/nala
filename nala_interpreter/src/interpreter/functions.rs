@@ -19,7 +19,7 @@ use crate::{
 };
 
 pub fn eval_func(
-    func: &Func,
+    func: Func,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
@@ -35,9 +35,9 @@ pub fn eval_func(
     scopes.add_binding(
         &ident,
         Value::Func(StoredFunc {
-            params: params.clone(), // TODO: Do we need this clone? Do we need to be borrowing in the params?
-            return_type: return_type.clone(),
-            block: block.clone(),
+            params,
+            return_type,
+            block,
             closure_scope: current_scope,
         }),
         None,

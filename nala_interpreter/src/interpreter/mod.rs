@@ -25,8 +25,8 @@ pub fn eval_tree(program: Program, ctx: &mut impl IoContext) -> Result<Value, Ru
     let top_scope = scopes.new_scope(None);
 
     // Builtin functions.
-    for func in get_builtins(&mut scopes, top_scope)?.iter() {
-        if let Err(e) = eval_func(&func, &mut scopes, top_scope) {
+    for func in get_builtins(&mut scopes, top_scope)?.into_iter() {
+        if let Err(e) = eval_func(func, &mut scopes, top_scope) {
             panic!("Error loading Nala builtins: {0}", e.message)
         }
     }
