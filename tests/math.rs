@@ -13,3 +13,5 @@ fn it_runs_num_floor() {
     assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["6"]);
 }
+
+// TODO: Cover operator not implemented errors.

@@ -16,23 +16,23 @@ pub fn eval_gt(
     match left {
         Value::Num(left) => match right {
             Value::Num(right) => Ok(Value::Bool(left > right)),
-            right => panic_oper_not_impl_for(
+            right => Err(oper_not_implemented_for_error(
                 ">",
                 &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
                 &infer_type(&right, scopes, current_scope)?,
-            ),
+            )),
         },
         Value::String(left) => match right {
             Value::String(right) => Ok(Value::Bool(left > right)),
-            right => panic_oper_not_impl_for(
+            right => Err(oper_not_implemented_for_error(
                 ">",
                 &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
                 &infer_type(&right, scopes, current_scope)?,
-            ),
+            )),
         },
         left => {
             let left_type = infer_type(&left, scopes, current_scope)?;
-            panic_oper_not_impl(">", &left_type)
+            Err(oper_not_implemented_error(">", &left_type))
         }
     }
 }

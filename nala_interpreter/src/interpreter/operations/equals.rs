@@ -5,7 +5,7 @@ use crate::{
     types::{inference::infer_type, type_variant::TypeVariant, NalaType},
 };
 
-use super::errors::panic_oper_not_impl_for;
+use super::errors::oper_not_implemented_for_error;
 
 pub fn eval_equals(
     left: Value,
@@ -14,11 +14,11 @@ pub fn eval_equals(
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
     if infer_type(&left, scopes, current_scope)? != infer_type(&right, scopes, current_scope)? {
-        panic_oper_not_impl_for(
+        Err(oper_not_implemented_for_error(
             "==",
             &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
             &infer_type(&right, scopes, current_scope)?,
-        )
+        ))?
     }
 
     let result = match left {
@@ -26,7 +26,7 @@ pub fn eval_equals(
             enum_ident: left_enum,
             variant_ident: left_variant,
             data,
-        }) => variant_equals(left_enum, left_variant, data, right, scopes, current_scope),
+        }) => variant_equals(left_enum, left_variant, data, right, scopes, current_scope)?,
         _ => Value::Bool(left == right),
     };
 
@@ -40,7 +40,7 @@ fn variant_equals(
     right: Value,
     _scopes: &mut Scopes,
     _current_scope: usize,
-) -> Value {
+) -> Result<Value, RuntimeError> {
     if let Value::Variant(EnumVariantValue {
         enum_ident: right_enum,
         variant_ident: right_variant,
@@ -57,16 +57,16 @@ fn variant_equals(
                 false
             };
 
-            Value::Bool(enums_match && variants_match && data_matches)
+            Ok(Value::Bool(enums_match && variants_match && data_matches))
         } else {
-            Value::Bool(enums_match && variants_match)
+            Ok(Value::Bool(enums_match && variants_match))
         }
     } else {
-        todo!()
-        // panic_oper_not_impl_for(
+        todo!("Implement this error once infer_type is working in this case.")
+        // Err(oper_not_implemented_for_error(
         //     "==",
-        //     &TypeVariant::Type(NalaType::UserDefined(left_enum)),
-        //     &right.get_type(),
-        // )
+        //     &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Symbol)),
+        //     &infer_type(&right, scopes, current_scope)?,
+        // ))?
     }
 }

@@ -1,15 +1,17 @@
-use crate::types::type_variant::TypeVariant;
+use crate::{errors::RuntimeError, types::type_variant::TypeVariant};
 
-pub fn panic_oper_not_impl(oper: &str, the_type: &TypeVariant) -> ! {
-    panic!(
-        "Operator `{0}` is not implemented for type {1}.",
-        oper, the_type,
-    )
+pub fn oper_not_implemented_error(oper: &str, the_type: &TypeVariant) -> RuntimeError {
+    RuntimeError::new(&format!(
+        "Operator `{oper}` is not implemented for type {the_type}.",
+    ))
 }
 
-pub fn panic_oper_not_impl_for(oper: &str, left: &TypeVariant, right: &TypeVariant) -> ! {
-    panic!(
-        "Operator `{0}` is not implemented for types {1} and {2}.",
-        oper, left, right
-    )
+pub fn oper_not_implemented_for_error(
+    oper: &str,
+    left: &TypeVariant,
+    right: &TypeVariant,
+) -> RuntimeError {
+    RuntimeError::new(&format!(
+        "Operator `{oper}` is not implemented for types {left} and {right}."
+    ))
 }

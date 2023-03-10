@@ -18,7 +18,7 @@ pub fn eval_lt(
         Value::Bool(left) => Ok(bool_lt(left, right, scopes, current_scope)?),
         left => {
             let left_type = infer_type(&left, scopes, current_scope)?;
-            panic_oper_not_impl("<", &left_type);
+            Err(oper_not_implemented_error("<", &left_type))
         }
     }
 }
@@ -33,11 +33,11 @@ fn num_lt(
         Value::Num(right) => Value::Bool(left < right),
         right => {
             let right_type = infer_type(&right, scopes, current_scope)?;
-            panic_oper_not_impl_for(
+            Err(oper_not_implemented_for_error(
                 "<",
                 &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
                 &right_type,
-            )
+            ))?
         }
     };
 
@@ -54,11 +54,11 @@ fn string_lt(
         Value::String(right) => Value::Bool(left < right),
         right => {
             let right_type = infer_type(&right, scopes, current_scope)?;
-            panic_oper_not_impl_for(
+            Err(oper_not_implemented_for_error(
                 "<",
                 &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
                 &right_type,
-            )
+            ))?
         }
     };
 
@@ -75,11 +75,11 @@ fn bool_lt(
         Value::Bool(right) => Value::Bool(left < right),
         right => {
             let right_type = infer_type(&right, scopes, current_scope)?;
-            panic_oper_not_impl_for(
+            Err(oper_not_implemented_for_error(
                 "<",
                 &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
                 &right_type,
-            )
+            ))?
         }
     };
 
