@@ -26,21 +26,22 @@ pub fn eval_enum_variant(
             eval_addend(addend, scopes, current_scope, enclosing_scope, ctx)
         }
         EnumVariantOrAddend::EnumVariant(enum_ident, variant_ident, data) => {
-            let (existing_variants, enum_type_args) =
+            let (existing_variants, existing_type_args) =
                 scopes.get_type(enum_ident, current_scope)?.as_enum()?;
 
             let existing_variant = find_variant(&existing_variants, variant_ident)?;
 
             let data = if let Some(data) = data {
-                let data = eval_expr(data, scopes, current_scope, None, ctx)?; // TODO: Should we be passing None here?
+                let data = eval_expr(data, scopes, current_scope, enclosing_scope, ctx)?;
                 let data_type = infer_type(&data, scopes, current_scope)?;
 
                 let expected_data_type = if let VariantDeclare::Data(_, data) = existing_variant {
-                    if let Some(TypeArgs::Generic(enum_type_arg)) = enum_type_args {
+                    if let Some(TypeArgs::Generic(existing_type_arg)) = existing_type_args {
                         match data {
-                            // This is the case where the expected data type is generic.
+                            // TODO: This is the case where the expected data type is
+                            // generic. This seems like a really dumb way to express that.
                             TypeLiteralVariant::Type(TypeLiteral::UserDefined(t)) => {
-                                if enum_type_arg == t {
+                                if existing_type_arg == t {
                                     data_type.clone()
                                 } else {
                                     todo!()

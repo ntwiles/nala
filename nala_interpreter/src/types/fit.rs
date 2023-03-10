@@ -52,7 +52,6 @@ fn fits_array(
         let first = items.first();
 
         if let Some(first) = first {
-            println!("First: {:?}", first);
             Ok(inner[0].is_any() || infer_type(first, scopes, current_scope)? == inner[0])
         } else {
             Ok(true)
@@ -101,9 +100,7 @@ fn data_fits(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<bool, RuntimeError> {
-    println!("Got here.");
     if let Some(data) = data {
-        println!("Checking data fits type: {:?} == {:?}", data, expected_type);
         Ok(fits_type(data, &expected_type, scopes, current_scope))?
     } else {
         Ok(true)
