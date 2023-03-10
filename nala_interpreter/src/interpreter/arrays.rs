@@ -50,11 +50,10 @@ pub fn eval_array(
     if let Some(first) = values.clone().first() {
         let first_type = infer_type(&first, scopes, current_scope)?;
 
-        // TODO: This calls infer_type() on the same value twice. This is inefficient.
         for value in values.clone() {
-            if infer_type(&value, scopes, current_scope)? != first_type {
-                let second_type = infer_type(&value, scopes, current_scope)?;
+            let second_type = infer_type(&value, scopes, current_scope)?;
 
+            if second_type != first_type {
                 return Err(RuntimeError::new(
                     &format!("Arrays can contain elements of only a single type. Found elements of types `{first_type}` and `{second_type}`.",
                 )));
