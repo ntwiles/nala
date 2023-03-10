@@ -80,7 +80,8 @@ pub fn eval_assign(
                     let mut array = array.lock().unwrap();
                     array[index as usize] = value.clone();
                 } else {
-                    panic!("Trying to index into a non-Array.")
+                    // TODO: Add test case for this error.
+                    Err(RuntimeError::new("Trying to index into a non-Array."))?
                 }
             }
             PlaceExpression::Symbol(ident) => {
@@ -88,14 +89,15 @@ pub fn eval_assign(
                     let index_result =
                         eval_expr(&index_expr, scopes, current_scope, enclosing_scope, ctx)?;
 
+                    // TODO: Add test cases for the three errors in this block.
                     if let Value::Void = value {
-                        panic!("Cannot assign a value of type Void.");
+                        Err(RuntimeError::new("Cannot assign a value of type Void."))?;
                     }
 
                     let index = if let Value::Num(index) = index_result {
                         index
                     } else {
-                        panic!("Index does not resolve to a Number.");
+                        Err(RuntimeError::new("Index does not resolve to a Number."))?
                     };
 
                     let array = scopes.get_value(&ident, current_scope, enclosing_scope)?;
@@ -105,16 +107,17 @@ pub fn eval_assign(
                         let mut array = array.lock().unwrap();
                         array[index as usize] = value.clone();
                     } else {
-                        panic!("Trying to index into a non-Array.")
+                        Err(RuntimeError::new("Trying to index into a non-Array."))?
                     }
                 }
             }
         },
         PlaceExpression::Symbol(ident) => {
             // TODO: Do we need to call binding_exists? Can we just call get_value?
+            // TODO: Add test cases for the three errors in this block.
             if scopes.binding_exists(&ident, current_scope, enclosing_scope) {
                 if let Value::Void = value {
-                    panic!("Cannot assign a value of type Void.");
+                    Err(RuntimeError::new("Cannot assign a value of type Void."))?;
                 }
 
                 let existing = scopes.get_value(&ident, current_scope, enclosing_scope)?;
@@ -130,7 +133,7 @@ pub fn eval_assign(
                 )));
                 }
             } else {
-                panic!("Unknown identifier `{}`", ident);
+                Err(RuntimeError::new(&format!("Unknown identifier `{ident}`")))?;
             }
         }
         PlaceExpression::MemberAccess(member_access) => {

@@ -92,7 +92,7 @@ fn eval_stmt(
             enclosing_scope,
             ctx,
         ),
-        Stmt::Func(func) => eval_func(func.clone(), scopes, current_scope), // TODO: Do we need this clone?
+        Stmt::Func(func) => eval_func(func.clone(), scopes, current_scope),
         Stmt::IfElseChain(chain) => {
             eval_if_else_chain(chain, scopes, current_scope, enclosing_scope, ctx)
         }

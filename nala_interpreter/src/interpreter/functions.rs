@@ -111,11 +111,11 @@ pub fn eval_invocation(
                 let args = eval_elems(&*args, scopes, call_scope, enclosing_scope, ctx)?;
 
                 if params.len() != args.len() {
-                    panic!(
+                    return Err(RuntimeError::new(&format!(
                         "Called function with wrong number of arguments: Expected {0}, got {1}.",
                         params.len(),
                         args.len()
-                    )
+                    )));
                 }
 
                 let mut param_args: HashMap<String, Value> = HashMap::new();

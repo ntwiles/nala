@@ -119,7 +119,9 @@ pub fn eval_wiles(
         let condition = if let Value::Bool(condition) = result {
             condition
         } else {
-            panic!("Wiles condition must resolve to a value of type Bool");
+            Err(RuntimeError::new(
+                "Wiles condition must resolve to a value of type Bool",
+            ))?
         };
 
         if condition {

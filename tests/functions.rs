@@ -109,6 +109,25 @@ fn it_errors_when_passing_primitive_when_nested_is_expected() {
 }
 
 #[test]
+fn it_errors_when_calling_func_with_wrong_num_args() {
+    let expected_message =
+        rgx!("Called function with wrong number of arguments: Expected 1, got 0");
+
+    let nala = r#"
+        func greet(message: String): Void {
+            print(message);
+        }
+        
+        greet();
+    "#;
+
+    let result = parse_and_run(nala, &mut TestContext::new());
+
+    assert!(result.is_err());
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
+}
+
+#[test]
 fn it_prints_function_type_correctly() {
     let mut ctx = TestContext::new();
 
