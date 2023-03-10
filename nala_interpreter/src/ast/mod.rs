@@ -26,7 +26,7 @@ use self::types::TypeArgs;
 
 #[derive(Debug)]
 pub enum Program {
-    Block(Block),
+    Block(Stmts),
     Stmts(Stmts),
 }
 
@@ -52,10 +52,10 @@ pub enum Stmt {
     Declare(String, Expr, Option<TypeLiteralVariant>, bool),
     Enum(String, Option<TypeArgs>, Vec<VariantDeclare>),
     Expr(Expr),
-    For(String, Expr, Box<Block>),
+    For(String, Expr, Box<Stmts>),
     Func(Func),
     IfElseChain(Box<IfElseChain>),
-    Wiles(Expr, Box<Block>),
+    Wiles(Expr, Box<Stmts>),
     Struct(String, Option<TypeArgs>, Vec<StructLiteralField>),
     Match(Match),
 }

@@ -1,9 +1,9 @@
-use super::{patterns::Pattern, Block, Expr};
+use super::{patterns::Pattern, Block, Expr, Stmts};
 
 #[derive(Clone, Debug)]
 pub struct IfElseChain {
     pub cond: Expr,
-    pub block: Box<Block>,
+    pub block: Stmts,
     pub else_ifs: Vec<ElseIf>,
     pub else_block: Option<Else>,
 }
@@ -11,12 +11,12 @@ pub struct IfElseChain {
 #[derive(Clone, Debug)]
 pub struct ElseIf {
     pub cond: Expr,
-    pub block: Box<Block>,
+    pub block: Stmts,
 }
 
 #[derive(Clone, Debug)]
 pub struct Else {
-    pub block: Box<Block>,
+    pub block: Stmts,
 }
 
 #[derive(Clone, Debug)]
@@ -28,5 +28,5 @@ pub struct Match {
 #[derive(Clone, Debug)]
 pub struct MatchCase {
     pub pattern: Pattern,
-    pub block: Box<Block>,
+    pub block: Stmts,
 }

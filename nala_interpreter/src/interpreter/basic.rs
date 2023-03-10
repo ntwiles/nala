@@ -16,21 +16,6 @@ use crate::{
     scopes::Scopes,
 };
 
-pub fn eval_block(
-    block: &Block,
-    scopes: &mut Scopes,
-    current_scope: usize,
-    enclosing_scope: Option<usize>,
-    ctx: &mut dyn IoContext,
-) -> Result<Value, RuntimeError> {
-    if let Block::NalaBlock(stmts) = block {
-        eval_stmts(stmts, scopes, current_scope, enclosing_scope, ctx)
-    } else {
-        // TODO: If we accept a Block as a param, probably all variants should be valid arguments.
-        panic!("Do not pass Rust blocks to eval_block")
-    }
-}
-
 pub fn eval_stmts(
     stmts: &Stmts,
     scopes: &mut Scopes,
