@@ -46,8 +46,9 @@ pub fn eval_declare(
             is_mutable,
         )
     } else {
-        // Just done to see if there's enough information to infer type.
-        // TODO: A possible optimization could be to catch this once we know the type of the value.
+        // Inference just done to see if there's enough information to infer type before binding.
+        // PERFORMANCE: A possible optimization could be to cache this on the binding once we
+        // know the type of the value.
         infer_type(&value, scopes, current_scope)?;
         scopes.add_binding(&ident, value.clone(), None, current_scope, is_mutable)
     }
@@ -113,27 +114,22 @@ pub fn eval_assign(
             }
         },
         PlaceExpression::Symbol(ident) => {
-            // TODO: Do we need to call binding_exists? Can we just call get_value?
-            // TODO: Add test cases for the three errors in this block.
-            if scopes.binding_exists(&ident, current_scope, enclosing_scope) {
-                if let Value::Void = value {
-                    Err(RuntimeError::new("Cannot assign a value of type Void."))?;
-                }
+            // TODO: Add test cases for the two errors in this block.
+            if let Value::Void = value {
+                Err(RuntimeError::new("Cannot assign a value of type Void."))?;
+            }
 
-                let existing = scopes.get_value(&ident, current_scope, enclosing_scope)?;
+            let existing = scopes.get_value(&ident, current_scope, enclosing_scope)?;
 
-                let existing_type = infer_type(&existing, scopes, current_scope)?;
-                let value_type = infer_type(&value, scopes, current_scope)?;
+            let existing_type = infer_type(&existing, scopes, current_scope)?;
+            let value_type = infer_type(&value, scopes, current_scope)?;
 
-                if existing_type == value_type {
-                    return scopes.mutate_value(&ident, current_scope, value.clone());
-                } else {
-                    return Err(RuntimeError::new(&format!(
-                    "Cannot assign a value of type {value_type} where {existing_type} is expected.",
-                )));
-                }
+            if existing_type == value_type {
+                scopes.mutate_value(&ident, current_scope, value.clone())?;
             } else {
-                Err(RuntimeError::new(&format!("Unknown identifier `{ident}`")))?;
+                Err(RuntimeError::new(&format!(
+                    "Cannot assign a value of type {value_type} where {existing_type} is expected.",
+                )))?
             }
         }
         PlaceExpression::MemberAccess(member_access) => {
