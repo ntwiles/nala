@@ -9,7 +9,7 @@ use crate::{
     errors::RuntimeError,
     io_context::IoContext,
     scopes::Scopes,
-    types::{inference::infer_type, type_variant::TypeVariant},
+    types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
 };
 
 use super::{basic::eval_expr, operations::eval_addend};
@@ -58,13 +58,11 @@ pub fn eval_enum_variant(
                     )))?
                 };
 
-                if !(infer_type(&data, scopes, current_scope)?
-                    .is_assignable_to(&expected_data_type))
-                {
+                if !fits_type(&data, &expected_data_type, scopes, current_scope)? {
                     return Err(RuntimeError::new(&format!(
-                            "Created variant with wrong data type. Expected `{expected_data_type}` but got `{0}`",
-                            infer_type(&data, scopes, current_scope)?,
-                        )));
+                        "Created variant with wrong data type. Expected `{expected_data_type}` but got `{0}`",
+                        infer_type(&data, scopes, current_scope)?,
+                    )));
                 }
 
                 Some(Box::new(data))

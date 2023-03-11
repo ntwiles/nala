@@ -41,38 +41,6 @@ impl TypeVariant {
         }
     }
 
-    pub fn is_assignable_to(&self, other: &Self) -> bool {
-        // TODO: Remove this once we remove support for Any.
-        if other.is_any() {
-            return true;
-        }
-
-        match self {
-            TypeVariant::Generic(sv, svv) => {
-                if let TypeVariant::Generic(ov, ovv) = other {
-                    if !sv.is_assignable_to(ov) {
-                        return false;
-                    }
-
-                    for (i, si) in svv.iter().enumerate() {
-                        let oi = &ovv[i];
-                        if !si.is_assignable_to(&oi) {
-                            return false;
-                        }
-                    }
-
-                    true
-                } else {
-                    false
-                }
-            }
-            TypeVariant::Type(st) => match other {
-                TypeVariant::Type(ot) => st.is_assignable_to(ot),
-                _ => false,
-            },
-        }
-    }
-
     pub fn is_any(&self) -> bool {
         match self {
             TypeVariant::Generic(_, _) => false,

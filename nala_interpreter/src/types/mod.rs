@@ -37,39 +37,6 @@ impl NalaType {
         }
     }
 
-    pub fn is_assignable_to(&self, other: &Self) -> bool {
-        match self {
-            NalaType::Enum(enum_ident, variant_ident) => {
-                if let NalaType::Enum(oei, ovi) = other {
-                    // TODO: Just because the names match doesn't mean they are the same type.
-                    enum_ident == oei && variant_ident == ovi
-                } else {
-                    false
-                }
-            }
-            NalaType::PrimitiveType(sp) => {
-                if let NalaType::PrimitiveType(op) = other {
-                    sp.is_assignable_to(op)
-                } else {
-                    false
-                }
-            }
-            NalaType::Struct(fields) => {
-                if let NalaType::Struct(ot) = other {
-                    for ot in ot.iter() {
-                        if let Some(found) = fields.iter().find(|f| *f == ot) {
-                            return found.value.is_assignable_to(&ot.value);
-                        }
-                    }
-
-                    true
-                } else {
-                    false
-                }
-            }
-        }
-    }
-
     pub fn is_any(&self) -> bool {
         // Is there really not a nicer way of doing this?
         if let NalaType::PrimitiveType(PrimitiveType::Any) = self {
