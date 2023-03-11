@@ -14,7 +14,6 @@ use crate::{
     io_context::IoContext,
 };
 
-// TODO: Write tests for void function.
 pub fn get_void_block() -> Func {
     let param = Param {
         ident: String::from("_"),
