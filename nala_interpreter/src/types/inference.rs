@@ -15,7 +15,6 @@ use crate::{
 
 use super::{struct_field::StructField, type_variant::TypeVariant, NalaType};
 
-// TODO: Create common error for these to return.
 pub fn infer_type(
     value: &Value,
     scopes: &mut Scopes,
@@ -32,7 +31,7 @@ pub fn infer_type(
         }) => {
             let param_types = params
                 .into_iter()
-                .map(|p| TypeVariant::from_literal(p.clone().param_type, scopes, current_scope)) // TODO: Why do we need this clone?
+                .map(|p| TypeVariant::from_literal(p.clone().param_type, scopes, current_scope))
                 .collect();
 
             let mut param_types = accept_results(param_types)?;
