@@ -76,7 +76,10 @@ fn fits_func(
     current_scope: usize,
 ) -> Result<bool, RuntimeError> {
     if let Value::Func(FuncValue { return_type, .. }) = value {
-        Ok(TypeVariant::from_literal(return_type.clone(), scopes, current_scope)? == inner[0])
+        Ok(
+            TypeVariant::from_literal(return_type.clone(), scopes, current_scope)?
+                == inner.last().unwrap().clone(),
+        )
     } else {
         Ok(false)
     }
@@ -112,19 +115,29 @@ fn fits_struct(
         let fields = fields.clone();
         let fields = fields.lock().unwrap();
 
-        for StructField {
-            ident: expected_ident,
-            value_type: expected_type,
-        } in expected_fields
-        {
-            if let Some(field) = fields.get(expected_ident) {
-                if !fits_type(field, expected_type, scopes, current_scope)? {
+        for (ident, value) in fields.iter() {
+            if let Some(expected_field) = expected_fields.iter().find(|f| &f.ident == ident) {
+                if !fits_type(value, &expected_field.value_type, scopes, current_scope)? {
                     return Ok(false);
                 }
             } else {
-                return Ok(false);
+                return Ok(true);
             }
         }
+
+        // for StructField {
+        //     ident: expected_ident,
+        //     value_type: expected_type,
+        // } in expected_fields
+        // {
+        //     if let Some(field) = fields.get(expected_ident) {
+        //         if !fits_type(field, expected_type, scopes, current_scope)? {
+        //             return Ok(false);
+        //         }
+        //     } else {
+        //         return Ok(false);
+        //     }
+        // }
 
         Ok(true)
     } else {

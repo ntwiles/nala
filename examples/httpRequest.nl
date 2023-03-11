@@ -47,5 +47,6 @@ print('Result Status: ' + result.statusCode);
 print('');
 
 for house in result.body {
+    // TODO: This is erroring right now, find out why.
     printHouseInfo(house);
 }

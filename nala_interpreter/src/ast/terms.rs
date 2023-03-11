@@ -92,7 +92,40 @@ impl Value {
 impl fmt::Debug for Value {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            Value::Func(FuncValue {
+                params,
+                return_type,
+                ..
+            }) => {
+                let mut params: Vec<String> = params
+                    .to_vec()
+                    .iter()
+                    .map(|p| p.param_type.to_string())
+                    .collect();
+
+                params.push(return_type.to_string());
+
+                write!(f, "Func<{}>", params.join(", "))
+            }
             Value::Num(n) => write!(f, "{}", n),
+            Value::Object(fields) => {
+                write!(f, "{{ ")?;
+
+                write!(
+                    f,
+                    "{}",
+                    fields
+                        .lock()
+                        .unwrap()
+                        .iter()
+                        .map(|(key, value)| format!("{}: {}", key, value))
+                        .fold(String::new(), |a, b| a + &b + ", ")
+                )?;
+
+                write!(f, "}}")?;
+
+                Ok(())
+            }
             Value::String(s) => write!(f, "'{}'", s),
             value => todo!("Implement Debug for Value {value}"),
         }

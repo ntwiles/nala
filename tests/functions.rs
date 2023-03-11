@@ -162,7 +162,7 @@ fn it_accepts_return_of_correct_type() {
 #[test]
 fn it_errors_on_return_of_wrong_type() {
     let expected_message =
-        rgx!("Tried to return value `a string` of type `String` where value of type `Number` was expected");
+        rgx!("Tried to return value `'a string'` of type `String` where value of type `Number` was expected");
 
     let nala = r#"
         func returnString(): Number {
