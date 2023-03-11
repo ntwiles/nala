@@ -18,16 +18,14 @@ pub enum Term {
     Value(Value),
 }
 
-// TODO: Find a home for this
 #[derive(Debug, Clone)]
-pub struct StoredFunc {
+pub struct FuncValue {
     pub params: Vec<Param>,
     pub return_type: TypeLiteralVariant,
     pub block: Box<FuncVariant>,
     pub closure_scope: usize,
 }
 
-// TODO: Find a home for this
 #[derive(Debug, Clone)]
 pub struct EnumVariantValue {
     pub enum_ident: String,
@@ -39,7 +37,7 @@ pub struct EnumVariantValue {
 pub enum Value {
     Array(Arc<Mutex<Vec<Value>>>),
     Bool(bool),
-    Func(StoredFunc),
+    Func(FuncValue),
     Variant(EnumVariantValue),
     Num(f32),
     Object(Arc<Mutex<HashMap<String, Value>>>),
@@ -101,7 +99,7 @@ impl fmt::Display for Value {
             }
             Value::Bool(b) => write!(f, "{}", b),
             Value::Break(_) => write!(f, "<Break>"),
-            Value::Func(StoredFunc {
+            Value::Func(FuncValue {
                 params,
                 return_type,
                 ..

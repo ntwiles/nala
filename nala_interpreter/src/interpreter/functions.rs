@@ -34,7 +34,7 @@ pub fn eval_func(
 
     scopes.add_binding(
         &ident,
-        Value::Func(StoredFunc {
+        Value::Func(FuncValue {
             params,
             return_type,
             block,
@@ -100,7 +100,7 @@ pub fn eval_invocation(
         Invocation::Invocation(place, args) => {
             let block = eval_place_expr(place, scopes, current_scope, enclosing_scope, ctx)?;
 
-            if let Value::Func(StoredFunc {
+            if let Value::Func(FuncValue {
                 params,
                 block,
                 closure_scope,

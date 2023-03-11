@@ -44,7 +44,6 @@ impl Scopes {
         })
     }
 
-    // TODO: There must be a way to avoid all these gross match statements.
     pub fn get_value(
         self: &Self,
         ident: &str,

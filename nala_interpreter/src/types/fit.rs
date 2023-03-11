@@ -1,6 +1,6 @@
 use crate::{
     ast::{
-        terms::{StoredFunc, Value},
+        terms::{FuncValue, Value},
         types::{primitive_type::PrimitiveType, variant_declare::VariantDeclare},
     },
     errors::RuntimeError,
@@ -75,7 +75,7 @@ fn fits_func(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<bool, RuntimeError> {
-    if let Value::Func(StoredFunc { return_type, .. }) = value {
+    if let Value::Func(FuncValue { return_type, .. }) = value {
         Ok(TypeVariant::from_literal(return_type.clone(), scopes, current_scope)? == inner[0])
     } else {
         Ok(false)

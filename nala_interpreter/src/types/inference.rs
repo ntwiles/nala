@@ -2,7 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::{
     ast::{
-        terms::{EnumVariantValue, StoredFunc, Value},
+        terms::{EnumVariantValue, FuncValue, Value},
         types::{
             primitive_type::PrimitiveType, type_literal::TypeLiteral,
             type_literal_variant::TypeLiteralVariant, variant_declare::VariantDeclare, TypeArgs,
@@ -24,7 +24,7 @@ pub fn infer_type(
         Value::Array(items) => infer_array(value, items, scopes, current_scope)?,
         Value::Bool(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
         Value::Break(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Break)),
-        Value::Func(StoredFunc {
+        Value::Func(FuncValue {
             params,
             return_type,
             ..

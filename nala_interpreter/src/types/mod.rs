@@ -19,7 +19,7 @@ use self::struct_field::StructField;
 pub enum NalaType {
     Enum(String, Vec<VariantDeclare>),
     PrimitiveType(PrimitiveType),
-    Struct(Vec<StructField>), // TODO: Regardless of how this is parsed, shouldn't we
+    Struct(Vec<StructField>), // PERFORMANCE: Regardless of how this is parsed, shouldn't we
                               // operate on it as a hashmap instead of a vec?
 }
 
