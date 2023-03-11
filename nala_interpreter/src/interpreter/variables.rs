@@ -68,7 +68,14 @@ pub fn eval_assign(
             PlaceExpression::MemberAccess(member_access) => {
                 // TODO: What is going on here? This is labeled as member access
                 // but it looks like an array index.
-                let array = eval_member_access(None, member_access, scopes, current_scope, ctx)?;
+                let array = eval_member_access(
+                    None,
+                    member_access,
+                    scopes,
+                    current_scope,
+                    enclosing_scope,
+                    ctx,
+                )?;
 
                 let index = if let Value::Num(index) =
                     eval_expr(index_expr, scopes, current_scope, enclosing_scope, ctx)?
@@ -137,7 +144,14 @@ pub fn eval_assign(
         PlaceExpression::MemberAccess(member_access) => {
             let (parent, child) = match &**member_access {
                 MemberAccess::MemberAccesses(parents, child) => (
-                    eval_member_access(None, &*parents, scopes, current_scope, ctx)?,
+                    eval_member_access(
+                        None,
+                        &*parents,
+                        scopes,
+                        current_scope,
+                        enclosing_scope,
+                        ctx,
+                    )?,
                     child,
                 ),
                 MemberAccess::MemberAccess(parent, child) => (
@@ -172,8 +186,13 @@ pub fn eval_place_expr(
             eval_index(&array, expr, scopes, current_scope, enclosing_scope, ctx)
         }
         PlaceExpression::Symbol(ident) => scopes.get_value(ident, current_scope, enclosing_scope),
-        PlaceExpression::MemberAccess(member_access) => {
-            eval_member_access(None, member_access, scopes, current_scope, ctx)
-        }
+        PlaceExpression::MemberAccess(member_access) => eval_member_access(
+            None,
+            member_access,
+            scopes,
+            current_scope,
+            enclosing_scope,
+            ctx,
+        ),
     }
 }

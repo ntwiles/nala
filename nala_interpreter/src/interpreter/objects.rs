@@ -17,11 +17,19 @@ pub fn eval_member_access(
     member_access: &MemberAccess,
     scopes: &mut Scopes,
     current_scope: usize,
+    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match member_access {
         MemberAccess::MemberAccesses(parents, child) => {
-            let object = eval_member_access(parent_obj, parents, scopes, current_scope, ctx)?;
+            let object = eval_member_access(
+                parent_obj,
+                parents,
+                scopes,
+                current_scope,
+                enclosing_scope,
+                ctx,
+            )?;
 
             if let Value::Object(reference) = object {
                 let object = Arc::clone(&reference);
@@ -42,7 +50,7 @@ pub fn eval_member_access(
         MemberAccess::MemberAccess(parent, child) => {
             let object = match parent_obj {
                 Some(_parent_obj) => todo!(),
-                None => scopes.get_value(parent, current_scope, None)?, // TODO: Should we be ignoring enclosing scope here?
+                None => scopes.get_value(parent, current_scope, enclosing_scope)?,
             };
 
             if let Value::Object(reference) = object {
