@@ -155,13 +155,6 @@ pub fn eval_invocation(
                 let expected_return_type =
                     TypeVariant::from_literal(expected_return_type, scopes, current_scope)?;
 
-                // TODO: This is a temporary bypass to support builtins until we have generics.
-                if let TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any)) =
-                    expected_return_type
-                {
-                    return Ok(return_value);
-                }
-
                 if fits_type(&return_value, &expected_return_type, scopes, current_scope)? {
                     Ok(return_value)
                 } else {
