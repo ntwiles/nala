@@ -29,7 +29,6 @@ pub fn fits_type(
                 fits_func(inner, value, scopes, current_scope)
             }
             NalaType::PrimitiveType(PrimitiveType::Number) => todo!(),
-            NalaType::PrimitiveType(PrimitiveType::Object) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::String) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Symbol) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Void) => todo!(),

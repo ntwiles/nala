@@ -31,7 +31,6 @@ pub enum PrimitiveType {
     String,
     Symbol,
     Void,
-    Object, // TODO: Should this exist?
     Any,
 }
 
@@ -43,7 +42,6 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Break => "<Break>",
             PrimitiveType::Func => "Func",
             PrimitiveType::Number => "Number",
-            PrimitiveType::Object => "<Object>",
             PrimitiveType::String => "String",
             PrimitiveType::Symbol => "<Symbol>",
             PrimitiveType::Void => "Void",

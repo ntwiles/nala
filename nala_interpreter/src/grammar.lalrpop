@@ -153,7 +153,6 @@ PrimitiveType: ast::types::primitive_type::PrimitiveType = {
     "Bool" => ast::types::primitive_type::PrimitiveType::Bool,
     "Func" => ast::types::primitive_type::PrimitiveType::Func,
     "Number" => ast::types::primitive_type::PrimitiveType::Number,
-    "Object" => ast::types::primitive_type::PrimitiveType::Object,
     "String" => ast::types::primitive_type::PrimitiveType::String,
     "Void" => ast::types::primitive_type::PrimitiveType::Void,
 }
