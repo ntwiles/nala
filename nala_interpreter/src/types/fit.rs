@@ -125,20 +125,6 @@ fn fits_struct(
             }
         }
 
-        // for StructField {
-        //     ident: expected_ident,
-        //     value_type: expected_type,
-        // } in expected_fields
-        // {
-        //     if let Some(field) = fields.get(expected_ident) {
-        //         if !fits_type(field, expected_type, scopes, current_scope)? {
-        //             return Ok(false);
-        //         }
-        //     } else {
-        //         return Ok(false);
-        //     }
-        // }
-
         Ok(true)
     } else {
         Ok(false)
