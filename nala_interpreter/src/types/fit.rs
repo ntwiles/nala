@@ -7,9 +7,7 @@ use crate::{
     scopes::Scopes,
 };
 
-use super::{
-    inference::infer_type, struct_field::StructField, type_variant::TypeVariant, NalaType,
-};
+use super::{struct_field::StructField, type_variant::TypeVariant, NalaType};
 
 pub fn fits_type(
     value: &Value,
@@ -60,8 +58,9 @@ fn fits_array(
         let first = items.first();
 
         if let Some(first) = first {
-            Ok(inner[0].is_any() || infer_type(first, scopes, current_scope)? == inner[0])
+            Ok(inner[0].is_any() || fits_type(first, &inner[0], scopes, current_scope)?)
         } else {
+            // Empty array, fits any type.
             Ok(true)
         }
     } else {
