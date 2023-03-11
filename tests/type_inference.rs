@@ -31,7 +31,7 @@ fn it_infers_type_of_generic_if_possible() {
 
 #[test]
 fn it_errors_on_empty_array() {
-    let expected_message = "Cannot infer type of value `<Array[0]>`.";
+    let expected_message = "Cannot infer type of value `[]`.";
 
     let nala = r#"
         const empty = [];

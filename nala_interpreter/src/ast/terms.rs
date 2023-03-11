@@ -92,6 +92,16 @@ impl Value {
 impl fmt::Debug for Value {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            Value::Array(a) => {
+                let items = a
+                    .clone()
+                    .lock()
+                    .unwrap()
+                    .iter()
+                    .fold(String::new(), |acc, curr| format!("{acc}{0:?}, ", &curr));
+
+                write!(f, "[{items}]")
+            }
             Value::Func(FuncValue {
                 params,
                 return_type,
@@ -118,13 +128,11 @@ impl fmt::Debug for Value {
                         .lock()
                         .unwrap()
                         .iter()
-                        .map(|(key, value)| format!("{}: {}", key, value))
+                        .map(|(key, value)| format!("{}: {:?}", key, value))
                         .fold(String::new(), |a, b| a + &b + ", ")
                 )?;
 
-                write!(f, "}}")?;
-
-                Ok(())
+                write!(f, "}}")
             }
             Value::String(s) => write!(f, "'{}'", s),
             value => todo!("Implement Debug for Value {value}"),
@@ -136,9 +144,14 @@ impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Value::Array(a) => {
-                let a = Arc::clone(a);
-                let a = a.lock().unwrap();
-                write!(f, "<Array[{}]>", a.len())
+                let items = a
+                    .clone()
+                    .lock()
+                    .unwrap()
+                    .iter()
+                    .fold(String::new(), |acc, curr| format!("{acc}{0:?}, ", &curr));
+
+                write!(f, "[{items}]")
             }
             Value::Bool(b) => write!(f, "{}", b),
             Value::Break(_) => write!(f, "<Break>"),
@@ -159,22 +172,14 @@ impl fmt::Display for Value {
             }
             Value::Num(n) => write!(f, "{}", n),
             Value::Object(fields) => {
-                write!(f, "{{ ")?;
+                let fields = fields
+                    .lock()
+                    .unwrap()
+                    .iter()
+                    .map(|(key, value)| format!("{}: {}", key, value))
+                    .fold(String::new(), |a, b| a + &b + ", ");
 
-                write!(
-                    f,
-                    "{}",
-                    fields
-                        .lock()
-                        .unwrap()
-                        .iter()
-                        .map(|(key, value)| format!("{}: {}", key, value))
-                        .fold(String::new(), |a, b| a + &b + ", ")
-                )?;
-
-                write!(f, "}}")?;
-
-                Ok(())
+                write!(f, "{{ {fields} }}")
             }
             Value::String(t) => write!(f, "{}", t),
             Value::Type(type_kind) => write!(f, "{}", type_kind),
