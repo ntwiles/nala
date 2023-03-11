@@ -11,9 +11,8 @@ struct HouseHead {
 
 struct HouseInfo {
     name: String,
-    mascot: String,
     heads: Array<HouseHead>,
-    houseGhost: String,
+    ghost: String,
     founder: String,
 }
 
@@ -25,7 +24,7 @@ struct Result {
 func printHouseInfo(house: HouseInfo): Void {
     print('House: ' + house.name);
     print('Founder: ' + house.founder);
-
+    print('Ghost: ' + house.ghost);
     print('Heads:');
     
     for head in house.heads {
@@ -47,6 +46,7 @@ print('Result Status: ' + result.statusCode);
 print('');
 
 for house in result.body {
-    // TODO: This is erroring inconsistently right now, find out why.
+    // TODO: Is seems as though this `house` value doesn't always get checked for 
+    // fit against the `HouseInfo` type. This seems to somehow change per run.
     printHouseInfo(house);
 }
