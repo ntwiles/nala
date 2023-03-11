@@ -70,8 +70,8 @@ fn builtin_http(
 
     let options = mutex.lock().unwrap();
 
-    let url = options["url"].as_string()?;
-    let method = options["method"].as_string()?;
+    let url = options["url"].as_string().unwrap();
+    let method = options["method"].as_string().unwrap();
 
     let body = if let Some(Value::String(body)) = options.get("body") {
         Some(body)

@@ -38,7 +38,6 @@ impl NalaType {
     }
 
     pub fn is_any(&self) -> bool {
-        // Is there really not a nicer way of doing this?
         if let NalaType::PrimitiveType(PrimitiveType::Any) = self {
             true
         } else {

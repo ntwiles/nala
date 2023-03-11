@@ -4,8 +4,6 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::errors::RuntimeError;
-
 use super::*;
 
 #[derive(Debug, Clone)]
@@ -76,24 +74,19 @@ impl Value {
         }
     }
 
-    pub fn as_string(&self) -> Result<String, RuntimeError> {
+    pub fn as_string(&self) -> Option<String> {
         if let Value::String(string) = self {
-            Ok(string.to_owned())
+            Some(string.to_owned())
         } else {
-            Err(RuntimeError::new(&format!(
-                "Term `{self}` is not a String."
-            )))
+            None
         }
     }
 
-    pub fn as_variant(&self) -> Result<EnumVariantValue, RuntimeError> {
+    pub fn as_variant(&self) -> Option<EnumVariantValue> {
         if let Value::Variant(variant) = self {
-            Ok(variant.clone())
+            Some(variant.clone())
         } else {
-            Err(RuntimeError::new(&format!(
-                "Term `{}` is not a Variant!",
-                self
-            )))
+            None
         }
     }
 }
@@ -142,6 +135,9 @@ impl fmt::Display for Value {
 
                 Ok(())
             }
+            // TODO: It's unclear here whether we should wrap this in quotes here.
+            // We need them for most cases, but wouldn't want them (for example)
+            // when printing out a string using the `print` function.
             Value::String(t) => write!(f, "{}", t),
             Value::Type(type_kind) => write!(f, "{}", type_kind),
             Value::Variant(EnumVariantValue {
