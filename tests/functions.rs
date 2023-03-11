@@ -161,17 +161,20 @@ fn it_accepts_return_of_correct_type() {
 
 #[test]
 fn it_errors_on_return_of_wrong_type() {
-    let mut ctx = TestContext::new();
+    let expected_message =
+        rgx!("Tried to return value `a string` of type `String` where value of type `Number` was expected");
 
     let nala = r#"
         func returnString(): Number {
-            'this returns a string.';
+            'a string';
         }
 
         print(returnString());
     "#;
 
-    assert!(parse_and_run(nala, &mut ctx).is_err());
+    let result = parse_and_run(nala, &mut TestContext::new());
+    assert!(result.is_err());
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
 
 #[test]
@@ -195,5 +198,3 @@ fn it_allows_ambiguous_type_variant_when_return_type_specified() {
     assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["Option::None"]);
 }
-
-// TODO: Cover trying to return value of wrong type case.
