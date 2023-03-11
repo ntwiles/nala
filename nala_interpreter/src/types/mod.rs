@@ -90,14 +90,11 @@ impl PartialEq for NalaType {
             }
             NalaType::Struct(fields) => {
                 if let NalaType::Struct(of) = other {
-                    // TODO: Can this be done without cloning?
-                    let mut fields = fields.clone();
-                    let mut of = of.clone();
-
-                    fields.sort();
-                    of.sort();
-
-                    fields == of
+                    !fields.iter().any(|field| {
+                        of.iter()
+                            .find(|f| f.ident == field.ident && f.value == field.value)
+                            .is_none()
+                    })
                 } else {
                     false
                 }
