@@ -11,7 +11,7 @@ use super::{type_variant::TypeVariant, NalaType};
 #[derive(Eq, Debug, Clone)]
 pub struct StructField {
     pub ident: String,
-    pub value: TypeVariant,
+    pub value: TypeVariant, // TODO: Is `value` the right name for this?
 }
 
 impl StructField {

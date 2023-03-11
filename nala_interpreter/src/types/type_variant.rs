@@ -42,6 +42,11 @@ impl TypeVariant {
     }
 
     pub fn is_assignable_to(&self, other: &Self) -> bool {
+        // TODO: Remove this once we remove support for Any.
+        if other.is_any() {
+            return true;
+        }
+
         match self {
             TypeVariant::Generic(sv, svv) => {
                 if let TypeVariant::Generic(ov, ovv) = other {

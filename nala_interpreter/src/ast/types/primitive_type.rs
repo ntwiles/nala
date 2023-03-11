@@ -31,7 +31,7 @@ pub enum PrimitiveType {
     String,
     Symbol,
     Void,
-    Object,
+    Object, // TODO: Should this exist?
     Any,
 }
 

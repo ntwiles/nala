@@ -18,7 +18,7 @@ use crate::{
 };
 
 pub fn get_len_block() -> Func {
-    let inner_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
+    let inner_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Any));
 
     let outer_type = TypeLiteralVariant::Composite(
         TypeLiteral::PrimitiveType(PrimitiveType::Array),
@@ -41,14 +41,16 @@ pub fn get_len_block() -> Func {
 }
 
 pub fn get_slice_block() -> Func {
+    let inner_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Any));
+
+    let outer_type = TypeLiteralVariant::Composite(
+        TypeLiteral::PrimitiveType(PrimitiveType::Array),
+        vec![inner_type],
+    );
+
     let array_param = Param {
         ident: String::from("array"),
-        param_type: TypeLiteralVariant::Composite(
-            TypeLiteral::PrimitiveType(PrimitiveType::Array),
-            vec![TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(
-                PrimitiveType::Any,
-            ))],
-        ),
+        param_type: outer_type,
     };
 
     let start_param = Param {

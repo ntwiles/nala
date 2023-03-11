@@ -52,6 +52,30 @@ pub enum Value {
 }
 
 impl Value {
+    pub fn is_number(&self) -> bool {
+        if let Value::Num(_) = self {
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn is_string(&self) -> bool {
+        if let Value::String(_) = self {
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn is_void(&self) -> bool {
+        if let Value::Void = self {
+            true
+        } else {
+            false
+        }
+    }
+
     pub fn as_string(&self) -> Result<String, RuntimeError> {
         if let Value::String(string) = self {
             Ok(string.to_owned())

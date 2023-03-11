@@ -17,7 +17,7 @@ use crate::{
 pub fn get_print_block() -> Func {
     let message_param = Param {
         ident: String::from("message"),
-        param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String)),
+        param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Any)),
     };
 
     let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Void));

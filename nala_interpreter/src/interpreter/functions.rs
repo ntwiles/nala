@@ -104,7 +104,7 @@ pub fn eval_invocation(
                 params,
                 block,
                 closure_scope,
-                return_type,
+                return_type: expected_return_type,
             }) = block
             {
                 let call_scope = scopes.new_scope(Some(current_scope));
@@ -133,24 +133,12 @@ pub fn eval_invocation(
                      */
                     // println!("Param type: {:?}", param_type);
 
-                    /*
-                     * TODO: We're temporarily only doing type checking on NalaBlocks, so that builtins
-                     * like `print()` can be called with args of any type. We should move away from this
-                     * in favor of generics.
-                     */
-                    if let FuncVariant::Nala(_) = *block {
-                        // TODO: This will error when any passing ambiguous values even though some should be valid.
-                        // e.g. passing Option::None when Option<Number> is expected should be valid, but infer_type
-                        // will fail for Option::None as things are now.
-                        let arg_type = infer_type(&arg, scopes, current_scope)?;
-
-                        if !arg_type.is_assignable_to(&param_type) {
-                            return Err(wrong_arg_type_for_param_error(
-                                arg.clone().to_string(),
-                                infer_type(&arg, scopes, current_scope)?.to_string(),
-                                param_type.to_string(),
-                            ));
-                        }
+                    if !fits_type(arg, &param_type, scopes, current_scope)? {
+                        return Err(wrong_arg_type_for_param_error(
+                            arg.clone().to_string(),
+                            infer_type(&arg, scopes, current_scope)?.to_string(),
+                            param_type.to_string(),
+                        ));
                     }
 
                     scopes.add_binding(&param.ident, arg.clone(), None, call_scope, false)?;
@@ -164,18 +152,20 @@ pub fn eval_invocation(
                     FuncVariant::Builtin(func) => Ok(func(param_args, ctx)?)?,
                 };
 
-                let return_type = TypeVariant::from_literal(return_type, scopes, current_scope)?;
+                let expected_return_type =
+                    TypeVariant::from_literal(expected_return_type, scopes, current_scope)?;
 
                 // TODO: This is a temporary bypass to support builtins until we have generics.
-                if let TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any)) = return_type
+                if let TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any)) =
+                    expected_return_type
                 {
                     return Ok(return_value);
                 }
 
-                if fits_type(&return_value, &return_type, scopes, current_scope)? {
+                if fits_type(&return_value, &expected_return_type, scopes, current_scope)? {
                     Ok(return_value)
                 } else {
-                    Err(RuntimeError::new(&format!("Tried to return value `{return_value}` of type `{0}` where value of type `{return_type}` was expected.", infer_type(&return_value, scopes, current_scope)?)))
+                    Err(RuntimeError::new(&format!("Tried to return value `{return_value}` of type `{0}` where value of type `{expected_return_type}` was expected.", infer_type(&return_value, scopes, current_scope)?)))
                 }
             } else {
                 Err(RuntimeError::new(&format!("Cannot invoke a non-function.")))
