@@ -51,9 +51,10 @@ pub fn eval_term(
     term: Term,
     scopes: &mut Scopes,
     current_scope: usize,
+    enclosing_scope: Option<usize>,
 ) -> Result<Value, RuntimeError> {
     match term {
-        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, None)?), // TODO: Should we be ignoring the enclosing scope here?
+        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, enclosing_scope)?),
         Term::Value(value) => Ok(value),
     }
 }

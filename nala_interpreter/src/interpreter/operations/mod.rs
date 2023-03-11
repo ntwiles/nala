@@ -50,13 +50,13 @@ pub fn eval_factor(
     match factor {
         Factor::Mult(left, right) => {
             let left = eval_factor(left, scopes, current_scope, enclosing_scope, ctx)?;
-            let right = eval_term(right.clone(), scopes, current_scope)?;
+            let right = eval_term(right.clone(), scopes, current_scope, enclosing_scope)?;
 
             do_multiply(left, right, scopes, current_scope)
         }
         Factor::Div(left, right) => {
             let left = eval_factor(left, scopes, current_scope, enclosing_scope, ctx)?;
-            let right = eval_term(right.clone(), scopes, current_scope)?;
+            let right = eval_term(right.clone(), scopes, current_scope, enclosing_scope)?;
 
             do_divide(left, right, scopes, current_scope)
         }
