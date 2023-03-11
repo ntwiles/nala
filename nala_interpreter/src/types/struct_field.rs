@@ -11,7 +11,7 @@ use super::{type_variant::TypeVariant, NalaType};
 #[derive(Eq, Debug, Clone)]
 pub struct StructField {
     pub ident: String,
-    pub value: TypeVariant, // TODO: Is `value` the right name for this?
+    pub value_type: TypeVariant,
 }
 
 impl StructField {
@@ -22,14 +22,14 @@ impl StructField {
     ) -> Result<Self, RuntimeError> {
         Ok(Self {
             ident: field.ident,
-            value: type_from_field(field.value, scopes, current_scope)?,
+            value_type: type_from_field(field.value, scopes, current_scope)?,
         })
     }
 }
 
 impl PartialEq for StructField {
     fn eq(self: &Self, other: &StructField) -> bool {
-        self.ident == other.ident && self.value == other.value
+        self.ident == other.ident && self.value_type == other.value_type
     }
 }
 
@@ -56,7 +56,7 @@ pub fn type_from_field(
                 .into_iter()
                 .map(|field| StructField {
                     ident: field.ident,
-                    value: type_from_field(field.value, scopes, current_scope).unwrap(),
+                    value_type: type_from_field(field.value, scopes, current_scope).unwrap(),
                 })
                 .collect();
 

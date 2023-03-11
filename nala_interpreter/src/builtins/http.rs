@@ -29,15 +29,15 @@ pub fn get_http_block(scopes: &mut Scopes, scope: usize) -> Result<Func, Runtime
     let options_fields = vec![
         StructField {
             ident: String::from("method"),
-            value: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
+            value_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
         },
         StructField {
             ident: String::from("url"),
-            value: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
+            value_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
         },
         StructField {
             ident: String::from("body"),
-            value: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
+            value_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
         },
     ];
 

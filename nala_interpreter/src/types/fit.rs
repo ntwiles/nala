@@ -114,7 +114,7 @@ fn fits_struct(
 
         for StructField {
             ident: expected_ident,
-            value: expected_type,
+            value_type: expected_type,
         } in expected_fields
         {
             if let Some(field) = fields.get(expected_ident) {

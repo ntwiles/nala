@@ -19,7 +19,8 @@ use self::struct_field::StructField;
 pub enum NalaType {
     Enum(String, Vec<VariantDeclare>),
     PrimitiveType(PrimitiveType),
-    Struct(Vec<StructField>),
+    Struct(Vec<StructField>), // TODO: Regardless of how this is parsed, shouldn't we
+                              // operate on it as a hashmap instead of a vec?
 }
 
 impl NalaType {
@@ -59,7 +60,7 @@ impl fmt::Display for NalaType {
                     "{}",
                     fields
                         .iter()
-                        .map(|field| format!("{}: {}", field.ident, field.value.to_string()))
+                        .map(|field| format!("{}: {}", field.ident, field.value_type.to_string()))
                         .fold(String::new(), |a, b| a + &b + ", ")
                 )?;
 
@@ -92,7 +93,7 @@ impl PartialEq for NalaType {
                 if let NalaType::Struct(of) = other {
                     !fields.iter().any(|field| {
                         of.iter()
-                            .find(|f| f.ident == field.ident && f.value == field.value)
+                            .find(|f| f.ident == field.ident && f.value_type == field.value_type)
                             .is_none()
                     })
                 } else {
