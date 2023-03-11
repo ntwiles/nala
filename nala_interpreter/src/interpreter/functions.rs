@@ -15,7 +15,7 @@ use crate::{
     errors::*,
     io_context::IoContext,
     scopes::Scopes,
-    types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant, NalaType},
+    types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
 };
 
 pub fn eval_func(
@@ -135,7 +135,7 @@ pub fn eval_invocation(
 
                     if !fits_type(arg, &param_type, scopes, current_scope)? {
                         return Err(wrong_arg_type_for_param_error(
-                            arg.clone().to_string(),
+                            arg,
                             infer_type(&arg, scopes, current_scope)?.to_string(),
                             param_type.to_string(),
                         ));
@@ -184,11 +184,11 @@ fn type_args_not_supported_error(outer: String, inner: &Vec<TypeLiteralVariant>)
 }
 
 fn wrong_arg_type_for_param_error(
-    arg_value: String,
+    arg_value: &Value,
     arg_type: String,
     param_type: String,
 ) -> RuntimeError {
     RuntimeError::new(&format!(
-        "Passed value `{arg_value}` of type `{arg_type}` to function where `{param_type}` was expected.")
+        "Passed value `{arg_value:?}` of type `{arg_type}` to function where `{param_type}` was expected.")
     )
 }

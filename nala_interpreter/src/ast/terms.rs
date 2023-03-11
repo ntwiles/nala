@@ -33,7 +33,7 @@ pub struct EnumVariantValue {
     pub data: Option<Box<Value>>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub enum Value {
     Array(Arc<Mutex<Vec<Value>>>),
     Bool(bool),
@@ -89,6 +89,16 @@ impl Value {
     }
 }
 
+impl fmt::Debug for Value {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Value::Num(n) => write!(f, "{}", n),
+            Value::String(s) => write!(f, "'{}'", s),
+            value => todo!("Implement Debug for Value {value}"),
+        }
+    }
+}
+
 impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -133,9 +143,6 @@ impl fmt::Display for Value {
 
                 Ok(())
             }
-            // TODO: It's unclear here whether we should wrap this in quotes here.
-            // We need them for most cases, but wouldn't want them (for example)
-            // when printing out a string using the `print` function.
             Value::String(t) => write!(f, "{}", t),
             Value::Type(type_kind) => write!(f, "{}", type_kind),
             Value::Variant(EnumVariantValue {
