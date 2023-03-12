@@ -58,7 +58,7 @@ pub fn eval_factor(
 
             do_divide(left, right, scopes, current_scope)
         }
-        Factor::Invocation(call) => eval_invocation(call, scopes, current_scope, ctx),
+        Factor::Call(call) => eval_call(call, scopes, current_scope, ctx),
     }
 }
 

@@ -172,13 +172,13 @@ pub Addend: ast::math::Addend = {
 pub Factor: ast::math::Factor = {
     <l:Factor> "*" <t:Term> => ast::math::Factor::Mult(Box::new(l), t),
     <l:Factor> "/" <t:Term> => ast::math::Factor::Div(Box::new(l), t), 
-    Invocation => ast::math::Factor::Invocation(<>),
+    Call => ast::math::Factor::Call(<>),
 };
 
-Invocation: ast::funcs::Invocation = {
-    <p:PlaceExpression> "(" <e:Elems> ")" => ast::funcs::Invocation::Invocation(p, e),
-    <PlaceExpression> => ast::funcs::Invocation::PlaceExpression(<>),
-    <Value> => ast::funcs::Invocation::Value(<>),
+Call: ast::funcs::Call = {
+    <p:PlaceExpression> "(" <e:Elems> ")" => ast::funcs::Call::Call(p, e),
+    <PlaceExpression> => ast::funcs::Call::PlaceExpression(<>),
+    <Value> => ast::funcs::Call::Value(<>),
 };
 
 Value: ast::terms::Value = {

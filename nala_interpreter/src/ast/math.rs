@@ -11,5 +11,5 @@ pub enum Addend {
 pub enum Factor {
     Mult(Box<Factor>, Term),
     Div(Box<Factor>, Term),
-    Invocation(Invocation),
+    Call(Call),
 }

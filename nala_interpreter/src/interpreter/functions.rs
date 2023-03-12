@@ -91,15 +91,14 @@ fn check_param_type(
     }
 }
 
-// TODO: Don't be an asshole just make it eval_call.
-pub fn eval_invocation(
-    call: &Invocation,
+pub fn eval_call(
+    call: &Call,
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match call {
-        Invocation::Invocation(place, args) => {
+        Call::Call(place, args) => {
             let block = eval_place_expr(place, scopes, current_scope, ctx)?;
 
             if let Value::Func(FuncValue {
@@ -166,8 +165,8 @@ pub fn eval_invocation(
                 Err(RuntimeError::new(&format!("Cannot invoke a non-function.")))
             }
         }
-        Invocation::PlaceExpression(place) => eval_place_expr(place, scopes, current_scope, ctx),
-        Invocation::Value(value) => Ok(value.clone()),
+        Call::PlaceExpression(place) => eval_place_expr(place, scopes, current_scope, ctx),
+        Call::Value(value) => Ok(value.clone()),
     }
 }
 

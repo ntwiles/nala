@@ -15,8 +15,8 @@ pub struct Param {
 }
 
 #[derive(Debug, Clone)]
-pub enum Invocation {
-    Invocation(PlaceExpression, Vec<Expr>),
+pub enum Call {
+    Call(PlaceExpression, Vec<Expr>),
     PlaceExpression(PlaceExpression),
     Value(Value),
 }

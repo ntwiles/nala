@@ -5,7 +5,6 @@ Nala is an interpreted, expression-oriented programming language with terse synt
 
 ## Features
 
-- [x] Lexical scope with closure support
 - [x] Structural type system with type inference
 - [x] Sum types (via enums)
 - [x] Object literals and member access

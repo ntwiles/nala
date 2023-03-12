@@ -77,9 +77,9 @@ pub enum Expr {
 
 impl Expr {
     pub fn from_value(value: Value) -> Self {
-        Expr::EnumVariant(EnumVariantOrAddend::Addend(Addend::Factor(
-            Factor::Invocation(Invocation::Value(value)),
-        )))
+        Expr::EnumVariant(EnumVariantOrAddend::Addend(Addend::Factor(Factor::Call(
+            Call::Value(value),
+        ))))
     }
 }
 
