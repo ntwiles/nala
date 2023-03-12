@@ -42,7 +42,6 @@ pub enum Value {
     Num(f32),
     Object(Arc<Mutex<HashMap<String, Value>>>),
     String(String),
-    Type(TypeLiteralVariant),
     Break(Box<Value>),
     Void,
 }
@@ -182,7 +181,6 @@ impl fmt::Display for Value {
                 write!(f, "{{ {fields} }}")
             }
             Value::String(t) => write!(f, "{}", t),
-            Value::Type(type_kind) => write!(f, "{}", type_kind),
             Value::Variant(EnumVariantValue {
                 enum_ident,
                 variant_ident,

@@ -44,7 +44,6 @@ pub fn infer_type(
 
             TypeVariant::Generic(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
         }
-        Value::Type(_) => todo!("What is this?"),
         Value::Num(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
         Value::Object(fields) => {
             let fields = fields
