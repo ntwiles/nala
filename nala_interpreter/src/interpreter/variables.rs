@@ -17,10 +17,9 @@ pub fn eval_declare(
     is_mutable: bool,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
-    let value = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
+    let value = eval_expr(expr, scopes, current_scope, ctx)?;
 
     if let Value::Void = value {
         return Err(RuntimeError::new(
@@ -59,7 +58,6 @@ pub fn eval_assign(
     value: &Value,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match variable {
@@ -68,22 +66,14 @@ pub fn eval_assign(
             PlaceExpression::MemberAccess(member_access) => {
                 // TODO: What is going on here? This is labeled as member access
                 // but it looks like an array index.
-                let array = eval_member_access(
-                    None,
-                    member_access,
-                    scopes,
-                    current_scope,
-                    enclosing_scope,
-                    ctx,
-                )?;
+                let array = eval_member_access(None, member_access, scopes, current_scope, ctx)?;
 
-                let index = if let Value::Num(index) =
-                    eval_expr(index_expr, scopes, current_scope, enclosing_scope, ctx)?
-                {
-                    index
-                } else {
-                    todo!();
-                };
+                let index =
+                    if let Value::Num(index) = eval_expr(index_expr, scopes, current_scope, ctx)? {
+                        index
+                    } else {
+                        todo!();
+                    };
 
                 if let Value::Array(array) = array {
                     let array = Arc::clone(&array);
@@ -95,9 +85,8 @@ pub fn eval_assign(
                 }
             }
             PlaceExpression::Symbol(ident) => {
-                if scopes.binding_exists(&ident, current_scope, enclosing_scope) {
-                    let index_result =
-                        eval_expr(&index_expr, scopes, current_scope, enclosing_scope, ctx)?;
+                if scopes.binding_exists(&ident, current_scope) {
+                    let index_result = eval_expr(&index_expr, scopes, current_scope, ctx)?;
 
                     // TODO: Add test cases for the three errors in this block.
                     if let Value::Void = value {
@@ -110,7 +99,7 @@ pub fn eval_assign(
                         Err(RuntimeError::new("Index does not resolve to a Number."))?
                     };
 
-                    let array = scopes.get_value(&ident, current_scope, enclosing_scope)?;
+                    let array = scopes.get_value(&ident, current_scope)?;
 
                     if let Value::Array(array) = array {
                         let array = Arc::clone(&array);
@@ -128,7 +117,7 @@ pub fn eval_assign(
                 Err(RuntimeError::new("Cannot assign a value of type Void."))?;
             }
 
-            let existing = scopes.get_value(&ident, current_scope, enclosing_scope)?;
+            let existing = scopes.get_value(&ident, current_scope)?;
 
             let existing_type = infer_type(&existing, scopes, current_scope)?;
             let value_type = infer_type(&value, scopes, current_scope)?;
@@ -144,20 +133,12 @@ pub fn eval_assign(
         PlaceExpression::MemberAccess(member_access) => {
             let (parent, child) = match &**member_access {
                 MemberAccess::MemberAccesses(parents, child) => (
-                    eval_member_access(
-                        None,
-                        &*parents,
-                        scopes,
-                        current_scope,
-                        enclosing_scope,
-                        ctx,
-                    )?,
+                    eval_member_access(None, &*parents, scopes, current_scope, ctx)?,
                     child,
                 ),
-                MemberAccess::MemberAccess(parent, child) => (
-                    scopes.get_value(&parent, current_scope, enclosing_scope)?,
-                    child,
-                ),
+                MemberAccess::MemberAccess(parent, child) => {
+                    (scopes.get_value(&parent, current_scope)?, child)
+                }
             };
 
             if let Value::Object(parent) = parent {
@@ -177,22 +158,16 @@ pub fn eval_place_expr(
     variable: &PlaceExpression,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match variable {
         PlaceExpression::Index(place, expr) => {
-            let array = eval_place_expr(place, scopes, current_scope, enclosing_scope, ctx)?;
-            eval_index(&array, expr, scopes, current_scope, enclosing_scope, ctx)
+            let array = eval_place_expr(place, scopes, current_scope, ctx)?;
+            eval_index(&array, expr, scopes, current_scope, ctx)
         }
-        PlaceExpression::Symbol(ident) => scopes.get_value(ident, current_scope, enclosing_scope),
-        PlaceExpression::MemberAccess(member_access) => eval_member_access(
-            None,
-            member_access,
-            scopes,
-            current_scope,
-            enclosing_scope,
-            ctx,
-        ),
+        PlaceExpression::Symbol(ident) => scopes.get_value(ident, current_scope),
+        PlaceExpression::MemberAccess(member_access) => {
+            eval_member_access(None, member_access, scopes, current_scope, ctx)
+        }
     }
 }

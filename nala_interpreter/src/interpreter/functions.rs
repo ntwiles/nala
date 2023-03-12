@@ -32,13 +32,15 @@ pub fn eval_func(
 
     check_param_types(&params, scopes, current_scope)?;
 
+    let closure_scope = scopes.new_scope(Some(current_scope));
+
     scopes.add_binding(
         &ident,
         Value::Func(FuncValue {
             params,
             return_type,
             block,
-            closure_scope: current_scope,
+            closure_scope,
         }),
         None,
         current_scope,
@@ -89,16 +91,16 @@ fn check_param_type(
     }
 }
 
+// TODO: Don't be an asshole just make it eval_call.
 pub fn eval_invocation(
     call: &Invocation,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match call {
         Invocation::Invocation(place, args) => {
-            let block = eval_place_expr(place, scopes, current_scope, enclosing_scope, ctx)?;
+            let block = eval_place_expr(place, scopes, current_scope, ctx)?;
 
             if let Value::Func(FuncValue {
                 params,
@@ -107,8 +109,7 @@ pub fn eval_invocation(
                 return_type: expected_return_type,
             }) = block
             {
-                let call_scope = scopes.new_scope(Some(current_scope));
-                let args = eval_elems(&*args, scopes, call_scope, enclosing_scope, ctx)?;
+                let args = eval_elems(&*args, scopes, current_scope, ctx)?;
 
                 if params.len() != args.len() {
                     return Err(RuntimeError::new(&format!(
@@ -117,6 +118,8 @@ pub fn eval_invocation(
                         args.len()
                     )));
                 }
+
+                let call_scope = scopes.new_scope(Some(closure_scope));
 
                 let mut param_args: HashMap<String, Value> = HashMap::new();
 
@@ -146,10 +149,8 @@ pub fn eval_invocation(
                 }
 
                 let return_value = match *block {
-                    FuncVariant::Nala(stmts) => {
-                        eval_stmts(&stmts, scopes, call_scope, Some(closure_scope), ctx)?
-                    }
-                    FuncVariant::Builtin(func) => Ok(func(param_args, ctx)?)?,
+                    FuncVariant::Nala(stmts) => eval_stmts(&stmts, scopes, call_scope, ctx)?,
+                    FuncVariant::Builtin(func) => func(param_args, ctx)?,
                 };
 
                 let expected_return_type =
@@ -165,9 +166,7 @@ pub fn eval_invocation(
                 Err(RuntimeError::new(&format!("Cannot invoke a non-function.")))
             }
         }
-        Invocation::PlaceExpression(place) => {
-            eval_place_expr(place, scopes, current_scope, enclosing_scope, ctx)
-        }
+        Invocation::PlaceExpression(place) => eval_place_expr(place, scopes, current_scope, ctx),
         Invocation::Value(value) => Ok(value.clone()),
     }
 }

@@ -18,10 +18,9 @@ pub fn eval_index(
     index_expr: &Expr,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
-    let index = eval_expr(index_expr, scopes, current_scope, enclosing_scope, ctx)?;
+    let index = eval_expr(index_expr, scopes, current_scope, ctx)?;
 
     if let Value::Num(index) = index {
         if let Value::Array(array) = array {
@@ -42,10 +41,9 @@ pub fn eval_array(
     array: &Array,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
-    let values = eval_elems(&array.elems, scopes, current_scope, enclosing_scope, ctx)?;
+    let values = eval_elems(&array.elems, scopes, current_scope, ctx)?;
 
     if let Some(first) = values.clone().first() {
         let first_type = infer_type(&first, scopes, current_scope)?;

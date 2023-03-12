@@ -48,21 +48,10 @@ impl Scopes {
         self: &Self,
         ident: &str,
         starting_scope: usize,
-        enclosing_scope: Option<usize>,
     ) -> Result<Value, RuntimeError> {
-        if let Some(enclosing_scope) = enclosing_scope {
-            match self.get_maybe_value(ident, enclosing_scope) {
-                Some(value) => return Ok(value),
-                None => match self.get_maybe_value(ident, starting_scope) {
-                    Some(value) => Ok(value),
-                    None => Err(not_found_in_scope_error(ident)),
-                },
-            }
-        } else {
-            match self.get_maybe_value(ident, starting_scope) {
-                Some(value) => Ok(value),
-                None => Err(not_found_in_scope_error(ident)),
-            }
+        match self.get_maybe_value(ident, starting_scope) {
+            Some(value) => Ok(value),
+            None => Err(not_found_in_scope_error(ident)),
         }
     }
 
@@ -153,22 +142,8 @@ impl Scopes {
         }
     }
 
-    fn binding_exists_enclosing(self: &Self, ident: &str, enclosing_scope: Option<usize>) -> bool {
-        if let Some(enclosing_scope) = enclosing_scope {
-            self.get_maybe_value(ident, enclosing_scope).is_some()
-        } else {
-            false
-        }
-    }
-
-    pub fn binding_exists(
-        self: &Self,
-        ident: &str,
-        current_scope: usize,
-        enclosing_scope: Option<usize>,
-    ) -> bool {
-        self.binding_exists_enclosing(ident, enclosing_scope)
-            || self.get_maybe_value(ident, current_scope).is_some()
+    pub fn binding_exists(self: &Self, ident: &str, current_scope: usize) -> bool {
+        self.get_maybe_value(ident, current_scope).is_some()
     }
 
     fn type_binding_exists_local(self: &Self, ident: &str, current_scope: usize) -> bool {

@@ -18,13 +18,10 @@ pub fn eval_enum_variant(
     variant: &EnumVariantOrAddend,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match variant {
-        EnumVariantOrAddend::Addend(addend) => {
-            eval_addend(addend, scopes, current_scope, enclosing_scope, ctx)
-        }
+        EnumVariantOrAddend::Addend(addend) => eval_addend(addend, scopes, current_scope, ctx),
         EnumVariantOrAddend::EnumVariant(enum_ident, variant_ident, data) => {
             let (existing_variants, existing_type_args) =
                 scopes.get_type(enum_ident, current_scope)?.as_enum()?;
@@ -32,7 +29,7 @@ pub fn eval_enum_variant(
             let existing_variant = find_variant(&existing_variants, variant_ident)?;
 
             let data = if let Some(data) = data {
-                let data = eval_expr(data, scopes, current_scope, enclosing_scope, ctx)?;
+                let data = eval_expr(data, scopes, current_scope, ctx)?;
                 let data_type = infer_type(&data, scopes, current_scope)?;
 
                 let expected_data_type = if let VariantDeclare::Data(_, data) = existing_variant {

@@ -35,15 +35,15 @@ pub fn eval_tree(program: Program, ctx: &mut impl IoContext) -> Result<Value, Ru
     for (ident, value) in get_constants().iter() {
         let expr = Expr::from_value(value.clone());
 
-        if let Err(e) = eval_declare(ident, &expr, None, false, &mut scopes, top_scope, None, ctx) {
+        if let Err(e) = eval_declare(ident, &expr, None, false, &mut scopes, top_scope, ctx) {
             panic!("Error loading Nala constants: {0}", e.message)
         }
     }
 
     // TODO: What is the difference between these two?
     match program {
-        Program::Block(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, None, ctx),
-        Program::Stmts(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, None, ctx),
+        Program::Block(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, ctx),
+        Program::Stmts(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, ctx),
     }
 }
 
@@ -51,10 +51,9 @@ pub fn eval_term(
     term: Term,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
 ) -> Result<Value, RuntimeError> {
     match term {
-        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope, enclosing_scope)?),
+        Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope)?),
         Term::Value(value) => Ok(value),
     }
 }

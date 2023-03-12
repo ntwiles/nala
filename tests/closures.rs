@@ -30,11 +30,11 @@ fn it_supports_closures_out_of_scope() {
     let nala = r#"
         func closureTest(): Func<Void> {
             const message = 'closures REALLY work!';
-        
+
             func innerFunc(): Void {
                 print(message);
             }
-        
+
             innerFunc;
         }
 
@@ -55,17 +55,17 @@ fn it_allows_passing_enclosed_variables_to_variants() {
             Some(T),
             None,
         }
-        
+
         func outer(): Func<Void> {
             const message = 'print me';
-        
+
             func inner(): Void {
                 print(Option::Some(message));
             }
-        
+
             inner;
         }
-        
+
         const inner = outer();
         inner();
     "#;

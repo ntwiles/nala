@@ -17,7 +17,6 @@ pub fn eval_if_else_chain(
     chain: &IfElseChain,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     let IfElseChain {
@@ -27,24 +26,24 @@ pub fn eval_if_else_chain(
         else_block,
     } = chain;
 
-    if eval_cond(cond, scopes, current_scope, enclosing_scope, ctx)? {
+    if eval_cond(cond, scopes, current_scope, ctx)? {
         let block_scope = scopes.new_scope(Some(current_scope));
-        return eval_stmts(&block, scopes, block_scope, enclosing_scope, ctx);
+        return eval_stmts(&block, scopes, block_scope, ctx);
     }
 
     for else_if in else_ifs.iter() {
         let ElseIf { cond, block } = else_if;
 
-        if eval_cond(cond, scopes, current_scope, enclosing_scope, ctx)? {
+        if eval_cond(cond, scopes, current_scope, ctx)? {
             let block_scope = scopes.new_scope(Some(current_scope));
-            return eval_stmts(block, scopes, block_scope, enclosing_scope, ctx);
+            return eval_stmts(block, scopes, block_scope, ctx);
         }
     }
 
     if let Some(else_block) = else_block {
         let Else { block } = else_block;
         let block_scope = scopes.new_scope(Some(current_scope));
-        return eval_stmts(&block, scopes, block_scope, enclosing_scope, ctx);
+        return eval_stmts(&block, scopes, block_scope, ctx);
     }
 
     Ok(Value::Void)
@@ -54,10 +53,9 @@ fn eval_cond(
     cond: &Expr,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<bool, RuntimeError> {
-    if let Value::Bool(cond) = eval_expr(cond, scopes, current_scope, enclosing_scope, ctx)? {
+    if let Value::Bool(cond) = eval_expr(cond, scopes, current_scope, ctx)? {
         Ok(cond)
     } else {
         Err(RuntimeError::new(
@@ -72,10 +70,9 @@ pub fn eval_for(
     block: &Stmts,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
-    let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
+    let result = eval_expr(expr, scopes, current_scope, ctx)?;
 
     let mut loop_result = Value::Void;
 
@@ -88,7 +85,7 @@ pub fn eval_for(
 
             scopes.add_binding(ident, item.clone(), None, block_scope, false)?;
 
-            loop_result = eval_stmts(&block, scopes, block_scope, enclosing_scope, ctx)?;
+            loop_result = eval_stmts(&block, scopes, block_scope, ctx)?;
 
             if let Value::Break(value) = loop_result {
                 return Ok(*value);
@@ -110,11 +107,10 @@ pub fn eval_wiles(
     block: &Stmts,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     loop {
-        let result = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
+        let result = eval_expr(expr, scopes, current_scope, ctx)?;
 
         let condition = if let Value::Bool(condition) = result {
             condition
@@ -125,7 +121,7 @@ pub fn eval_wiles(
         };
 
         if condition {
-            let result = eval_stmts(block, scopes, current_scope, enclosing_scope, ctx)?;
+            let result = eval_stmts(block, scopes, current_scope, ctx)?;
 
             if let Value::Break(value) = result {
                 return Ok(*value);
@@ -142,10 +138,9 @@ pub fn eval_break(
     expr: &Expr,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
-    let val = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
+    let val = eval_expr(expr, scopes, current_scope, ctx)?;
     Ok(Value::Break(Box::new(val)))
 }
 
@@ -153,12 +148,11 @@ pub fn eval_match(
     the_match: &Match,
     scopes: &mut Scopes,
     current_scope: usize,
-    enclosing_scope: Option<usize>,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     let Match { expr, cases } = the_match;
 
-    let expr = eval_expr(expr, scopes, current_scope, enclosing_scope, ctx)?;
+    let expr = eval_expr(expr, scopes, current_scope, ctx)?;
 
     // TODO: Throw error if not all cases are covered.
 
@@ -172,7 +166,7 @@ pub fn eval_match(
                 scopes.add_binding(ident, value.clone(), None, block_scope, false)?;
             }
 
-            return eval_stmts(&block, scopes, block_scope, enclosing_scope, ctx);
+            return eval_stmts(&block, scopes, block_scope, ctx);
         }
     }
 
