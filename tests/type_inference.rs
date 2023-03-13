@@ -31,7 +31,7 @@ fn it_infers_type_of_generic_if_possible() {
 
 #[test]
 fn it_errors_on_empty_array() {
-    let expected_message = "Cannot infer type of value `[]`.";
+    let expected_message = "Cannot infer type of an empty array.";
 
     let nala = r#"
         const empty = [];
@@ -45,7 +45,7 @@ fn it_errors_on_empty_array() {
 
 #[test]
 fn it_errors_if_no_info_for_inference() {
-    let expected_message = rgx!("Cannot infer type of value.");
+    let expected_message = rgx!("Not enough information to infer type of generic enum variant.");
 
     let nala = r#"
         enum Option<T> {
@@ -63,7 +63,7 @@ fn it_errors_if_no_info_for_inference() {
 
 #[test]
 fn it_errors_if_not_enough_info_for_inference() {
-    let expected_message = rgx!("Cannot infer type of value.");
+    let expected_message = rgx!("Can't assign value of type `Option<T>` because it's generic. Try declaring the type explicitly.");
 
     let nala = r#"
         enum Option<T> {

@@ -30,6 +30,8 @@ pub fn eval_func(
         return_type,
     } = func;
 
+    // TODO: Do we need to do this? I think this will already error in a helpful way.
+    // Check what happens if this is removed.
     check_param_types(&params, scopes, current_scope)?;
 
     let closure_scope = scopes.new_scope(Some(current_scope));
@@ -79,7 +81,7 @@ fn check_param_type(
             TypeLiteral::UserDefined(ident) => {
                 let binding = scopes.get_type(&ident, current_scope)?;
 
-                if binding.is_generic() {
+                if binding.get_generic_ident().is_some() {
                     Ok(())
                 } else {
                     Err(type_args_not_supported_error(outer.to_string(), inner))

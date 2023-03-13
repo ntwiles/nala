@@ -1,19 +1,18 @@
-use crate::{
-    ast::types::{variant_declare::VariantDeclare, TypeArgs},
-    errors::RuntimeError,
-    types::struct_field::StructField,
-};
+use crate::{errors::RuntimeError, types::struct_field::StructField};
+
+use super::enum_binding::EnumBinding;
 
 #[derive(Clone, Debug)]
 pub enum TypeBinding {
-    Enum(Vec<VariantDeclare>, Option<TypeArgs>),
+    Enum(EnumBinding),
     Struct(Vec<StructField>),
+    Generic(String),
 }
 
 impl TypeBinding {
-    pub fn as_enum(&self) -> Result<(Vec<VariantDeclare>, Option<TypeArgs>), RuntimeError> {
+    pub fn as_enum(&self) -> Result<EnumBinding, RuntimeError> {
         match self {
-            TypeBinding::Enum(variants, type_args) => Ok((variants.clone(), type_args.clone())),
+            TypeBinding::Enum(binding) => Ok(binding.clone()),
             _ => Err(RuntimeError::new("Expected an enum type.")),
         }
     }
@@ -25,10 +24,10 @@ impl TypeBinding {
         }
     }
 
-    pub fn is_generic(&self) -> bool {
+    pub fn get_generic_ident(&self) -> Option<String> {
         match self {
-            TypeBinding::Enum(_, type_args) => type_args.is_some(),
-            TypeBinding::Struct(_) => false,
+            TypeBinding::Enum(binding) => binding.generic_ident.clone(),
+            _ => None,
         }
     }
 }

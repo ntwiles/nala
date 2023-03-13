@@ -1,3 +1,4 @@
+pub mod enum_binding;
 mod scope;
 pub mod type_binding;
 pub mod value_binding;

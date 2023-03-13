@@ -17,10 +17,12 @@ use self::struct_field::StructField;
 
 #[derive(Eq, Debug, Clone)]
 pub enum NalaType {
+    // TODO: I think using VariantDeclare is wrong here. This is for resolved types, but VariantDeclare
+    // comprises TypeLiteralVariant. We likely need a new type.
     Enum(String, Vec<VariantDeclare>),
     PrimitiveType(PrimitiveType),
-    Struct(Vec<StructField>), // PERFORMANCE: Regardless of how this is parsed, shouldn't we
-                              // operate on it as a hashmap instead of a vec?
+    Struct(Vec<StructField>),
+    Generic(String),
 }
 
 impl NalaType {
@@ -30,16 +32,34 @@ impl NalaType {
         current_scope: usize,
     ) -> Result<Self, RuntimeError> {
         match literal {
-            TypeLiteral::PrimitiveType(t) => Ok(NalaType::PrimitiveType(t)),
+            TypeLiteral::PrimitiveType(t) => Ok(Self::PrimitiveType(t)),
             TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
-                TypeBinding::Enum(variants, _type_args) => Ok(NalaType::Enum(ident, variants)),
-                TypeBinding::Struct(fields) => Ok(NalaType::Struct(fields)),
+                TypeBinding::Enum(binding) => Ok(Self::Enum(ident, binding.variants)),
+                TypeBinding::Struct(fields) => Ok(Self::Struct(fields)),
+                TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
             },
         }
     }
 
+    pub fn get_generic_ident(&self) -> Option<String> {
+        match self {
+            Self::Enum(_, _) => None,
+            Self::PrimitiveType(_) => None,
+            Self::Struct(fields) => {
+                for field in fields {
+                    if let Some(ident) = field.value_type.get_generic_ident() {
+                        return Some(ident);
+                    }
+                }
+
+                None
+            }
+            Self::Generic(ident) => Some(ident.clone()),
+        }
+    }
+
     pub fn is_any(&self) -> bool {
-        if let NalaType::PrimitiveType(PrimitiveType::Any) = self {
+        if let Self::PrimitiveType(PrimitiveType::Any) = self {
             true
         } else {
             false
@@ -50,9 +70,9 @@ impl NalaType {
 impl fmt::Display for NalaType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            NalaType::Enum(enum_ident, _variant_ident) => write!(f, "{enum_ident}"),
-            NalaType::PrimitiveType(primitive) => write!(f, "{}", primitive),
-            NalaType::Struct(fields) => {
+            Self::Enum(enum_ident, _variant_ident) => write!(f, "{enum_ident}"),
+            Self::PrimitiveType(primitive) => write!(f, "{}", primitive),
+            Self::Struct(fields) => {
                 write!(f, "{{ ")?;
 
                 write!(
@@ -68,6 +88,7 @@ impl fmt::Display for NalaType {
 
                 Ok(())
             }
+            Self::Generic(ident) => write!(f, "{ident}"),
         }
     }
 }
@@ -75,22 +96,22 @@ impl fmt::Display for NalaType {
 impl PartialEq for NalaType {
     fn eq(&self, other: &Self) -> bool {
         match self {
-            NalaType::Enum(enum_ident, variant_ident) => {
-                if let NalaType::Enum(oei, ovi) = other {
+            Self::Enum(enum_ident, variant_ident) => {
+                if let Self::Enum(oei, ovi) = other {
                     enum_ident == oei && variant_ident == ovi
                 } else {
                     false
                 }
             }
-            NalaType::PrimitiveType(sp) => {
-                if let NalaType::PrimitiveType(op) = other {
+            Self::PrimitiveType(sp) => {
+                if let Self::PrimitiveType(op) = other {
                     sp == op
                 } else {
                     false
                 }
             }
-            NalaType::Struct(fields) => {
-                if let NalaType::Struct(of) = other {
+            Self::Struct(fields) => {
+                if let Self::Struct(of) = other {
                     !fields.iter().any(|field| {
                         of.iter()
                             .find(|f| f.ident == field.ident && f.value_type == field.value_type)
@@ -100,6 +121,7 @@ impl PartialEq for NalaType {
                     false
                 }
             }
+            Self::Generic(_ident) => todo!(),
         }
     }
 }

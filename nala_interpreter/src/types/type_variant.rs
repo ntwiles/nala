@@ -9,7 +9,7 @@ use super::NalaType;
 
 #[derive(Eq, Debug, Clone)]
 pub enum TypeVariant {
-    Generic(NalaType, Vec<TypeVariant>),
+    Composite(NalaType, Vec<TypeVariant>),
     Type(NalaType),
 }
 
@@ -28,7 +28,7 @@ impl TypeVariant {
 
                 let variants = accept_results(variants)?;
 
-                Ok(TypeVariant::Generic(
+                Ok(TypeVariant::Composite(
                     NalaType::from_literal(p, scopes, current_scope)?,
                     variants,
                 ))
@@ -41,9 +41,19 @@ impl TypeVariant {
         }
     }
 
+    pub fn get_generic_ident(&self) -> Option<String> {
+        match self {
+            TypeVariant::Composite(_outer, inner) => inner
+                .iter()
+                .find(|i| i.get_generic_ident().is_some())
+                .map(|i| i.get_generic_ident().unwrap()),
+            TypeVariant::Type(t) => t.get_generic_ident(),
+        }
+    }
+
     pub fn is_any(&self) -> bool {
         match self {
-            TypeVariant::Generic(_, _) => false,
+            TypeVariant::Composite(_, _) => false,
             TypeVariant::Type(t) => t.is_any(),
         }
     }
@@ -52,7 +62,7 @@ impl TypeVariant {
 impl fmt::Display for TypeVariant {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            TypeVariant::Generic(v, vv) => {
+            TypeVariant::Composite(v, vv) => {
                 let children = vv
                     .iter()
                     .map(|vv| vv.to_string())
@@ -68,8 +78,8 @@ impl fmt::Display for TypeVariant {
 impl PartialEq for TypeVariant {
     fn eq(&self, other: &Self) -> bool {
         match self {
-            TypeVariant::Generic(mv, mg) => {
-                if let TypeVariant::Generic(ov, og) = other {
+            TypeVariant::Composite(mv, mg) => {
+                if let TypeVariant::Composite(ov, og) = other {
                     mv == ov && mg == og
                 } else {
                     false

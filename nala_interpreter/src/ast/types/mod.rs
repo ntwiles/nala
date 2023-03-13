@@ -31,6 +31,8 @@ impl StructLiteralField {
     }
 }
 
+// TODO: Maybe we need a separate type TypeParams which is exclusively for generics
+// when declaring a type.
 #[derive(Debug, Eq, Clone, PartialEq)]
 pub enum TypeArgs {
     Generic(String),

@@ -1,10 +1,7 @@
 use crate::{
     ast::{
         terms::*,
-        types::{
-            enum_variant::EnumVariantOrAddend, type_literal::TypeLiteral,
-            type_literal_variant::TypeLiteralVariant, variant_declare::VariantDeclare, TypeArgs,
-        },
+        types::{enum_variant::EnumVariantOrAddend, variant_declare::VariantDeclare},
     },
     errors::RuntimeError,
     io_context::IoContext,
@@ -23,35 +20,25 @@ pub fn eval_enum_variant(
     match variant {
         EnumVariantOrAddend::Addend(addend) => eval_addend(addend, scopes, current_scope, ctx),
         EnumVariantOrAddend::EnumVariant(enum_ident, variant_ident, data) => {
-            let (existing_variants, existing_type_args) =
-                scopes.get_type(enum_ident, current_scope)?.as_enum()?;
+            let enum_type = scopes.get_type(enum_ident, current_scope)?.as_enum()?;
 
-            let existing_variant = find_variant(&existing_variants, variant_ident)?;
+            let existing_variant = find_variant(&enum_type.variants, variant_ident)?;
 
             let data = if let Some(data) = data {
                 let data = eval_expr(data, scopes, current_scope, ctx)?;
                 let data_type = infer_type(&data, scopes, current_scope)?;
 
-                let expected_data_type = if let VariantDeclare::Data(_, data) = existing_variant {
-                    if let Some(TypeArgs::Generic(existing_type_arg)) = existing_type_args {
-                        match data {
-                            // TODO: This is the case where the expected data type is
-                            // generic. This seems like a really dumb way to express that.
-                            TypeLiteralVariant::Type(TypeLiteral::UserDefined(t)) => {
-                                if existing_type_arg == t {
-                                    data_type.clone()
-                                } else {
-                                    todo!()
-                                }
-                            }
-                            _ => TypeVariant::from_literal(data, scopes, current_scope)?,
-                        }
-                    } else {
-                        TypeVariant::from_literal(data, scopes, current_scope)?
-                    }
+                let expected_data_type = if let VariantDeclare::Data(_, expected_data_type) =
+                    &existing_variant
+                {
+                    TypeVariant::from_literal(
+                        expected_data_type.clone(),
+                        scopes,
+                        enum_type.closure_scope,
+                    )?
                 } else {
                     Err(RuntimeError::new(&format!(
-                        "Passed data type {data_type} when none was expected.",
+                        "Passed data `{data:?}` of type type `{data_type}` when no data was expected.",
                     )))?
                 };
 

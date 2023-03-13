@@ -3,17 +3,14 @@ use std::sync::{Arc, Mutex};
 use crate::{
     ast::{
         terms::{EnumVariantValue, FuncValue, Value},
-        types::{
-            primitive_type::PrimitiveType, type_literal::TypeLiteral,
-            type_literal_variant::TypeLiteralVariant, variant_declare::VariantDeclare, TypeArgs,
-        },
+        types::{primitive_type::PrimitiveType, variant_declare::VariantDeclare},
     },
     errors::RuntimeError,
     scopes::Scopes,
     utils::accept_results,
 };
 
-use super::{struct_field::StructField, type_variant::TypeVariant, NalaType};
+use super::{fit::fits_type, struct_field::StructField, type_variant::TypeVariant, NalaType};
 
 pub fn infer_type(
     value: &Value,
@@ -21,7 +18,7 @@ pub fn infer_type(
     current_scope: usize,
 ) -> Result<TypeVariant, RuntimeError> {
     let result = match value {
-        Value::Array(items) => infer_array(value, items, scopes, current_scope)?,
+        Value::Array(items) => infer_array(items, scopes, current_scope)?,
         Value::Bool(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
         Value::Break(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Break)),
         Value::Func(FuncValue {
@@ -42,7 +39,7 @@ pub fn infer_type(
                 current_scope,
             )?);
 
-            TypeVariant::Generic(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
+            TypeVariant::Composite(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
         }
         Value::Num(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
         Value::Object(fields) => {
@@ -60,7 +57,7 @@ pub fn infer_type(
             TypeVariant::Type(NalaType::Struct(fields))
         }
         Value::String(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
-        Value::Variant(variant) => infer_variant(value, variant, scopes, current_scope)?,
+        Value::Variant(variant) => infer_variant(variant, scopes, current_scope)?,
         Value::Void => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void)),
     };
 
@@ -68,7 +65,6 @@ pub fn infer_type(
 }
 
 fn infer_array(
-    raw_value: &Value,
     items: &Arc<Mutex<Vec<Value>>>,
     scopes: &mut Scopes,
     current_scope: usize,
@@ -81,17 +77,18 @@ fn infer_array(
         infer_type(first.unwrap(), scopes, current_scope)?
     } else {
         drop(items);
-        Err(cannot_infer_value_error(raw_value))?
+        Err(RuntimeError::new(&format!(
+            "Cannot infer type of an empty array."
+        )))?
     };
 
-    Ok(TypeVariant::Generic(
+    Ok(TypeVariant::Composite(
         NalaType::PrimitiveType(PrimitiveType::Array),
         vec![elem_type],
     ))
 }
 
 fn infer_variant(
-    raw_value: &Value,
     variant: &EnumVariantValue,
     scopes: &mut Scopes,
     current_scope: usize,
@@ -105,51 +102,74 @@ fn infer_variant(
     // TODO: This appears to be the only reason that infer_type needs to accept
     // scopes and current_scope. Another clue that maybe enum variant values should
     // contain type information.
-    let (variants, type_arg) = scopes
+    let enum_type = scopes
         .get_type(&enum_ident, current_scope)?
         .as_enum()
         .unwrap();
 
-    // TODO: Absolute mess, redo all this.
-    if let Some(TypeArgs::Generic(type_arg)) = type_arg {
-        if let Some(data) = data {
-            let found_variant = variants.iter().find(|v| match v {
-                VariantDeclare::Data(ident, _) => ident == variant_ident,
-                VariantDeclare::Empty(ident) => ident == variant_ident,
-            });
+    let existing_variant = enum_type.variants.iter().find(|v| match v {
+        VariantDeclare::Data(ident, _) => ident == variant_ident,
+        VariantDeclare::Empty(ident) => ident == variant_ident,
+    });
 
-            if let Some(VariantDeclare::Data(
-                _,
-                TypeLiteralVariant::Type(TypeLiteral::UserDefined(ident)),
-            )) = found_variant
-            {
-                if type_arg == *ident {
-                    Ok(TypeVariant::Generic(
-                        NalaType::Enum(enum_ident.to_owned(), variants),
-                        vec![infer_type(data, scopes, current_scope)?],
+    let existing_variant = match existing_variant {
+        Some(v) => v,
+        None => todo!("Enum variant not found"),
+    };
+
+    match existing_variant {
+        VariantDeclare::Data(_ident, data_type) => {
+            let expected_data_type =
+                TypeVariant::from_literal(data_type.clone(), scopes, enum_type.closure_scope)?;
+
+            let data = match data {
+                Some(d) => d,
+                None => todo!("Expected data but none was supplied error."),
+            };
+
+            if fits_type(data, &expected_data_type, scopes, current_scope)? {
+                if let Some(generic_ident) = enum_type.get_generic_ident() {
+                    println!("expected_type: {}", data_type);
+
+                    let inner_type = if let Some(ident) = expected_data_type.get_generic_ident() {
+                        if ident == generic_ident {
+                            infer_type(data, scopes, current_scope)?
+                        } else {
+                            unreachable!("This is currently unreachable because we don't support multiple generic types.")
+                        }
+                    } else {
+                        TypeVariant::Type(NalaType::Generic(generic_ident))
+                    };
+
+                    println!("data_type: {}", data_type);
+
+                    Ok(TypeVariant::Composite(
+                        NalaType::Enum(enum_ident.to_owned(), enum_type.variants),
+                        vec![inner_type],
                     ))
                 } else {
-                    Ok(TypeVariant::Generic(
-                        NalaType::Enum(enum_ident.to_owned(), variants),
-                        vec![TypeVariant::Type(NalaType::PrimitiveType(
-                            PrimitiveType::Any,
-                        ))],
-                    ))
+                    Ok(TypeVariant::Type(NalaType::Enum(
+                        enum_ident.to_owned(),
+                        enum_type.variants,
+                    )))
                 }
             } else {
-                Err(cannot_infer_value_error(raw_value))
+                todo!("")
             }
-        } else {
-            Err(cannot_infer_value_error(raw_value))
         }
-    } else {
-        Ok(TypeVariant::Type(NalaType::Enum(
-            enum_ident.to_owned(),
-            variants,
-        )))
+        VariantDeclare::Empty(_ident) => {
+            if enum_type.get_generic_ident().is_some() {
+                // TODO: I don't think we want to error here, we're moved towards letting inferrence
+                // happen for generic types and erroring instead on assignment or call.
+                Err(RuntimeError::new(&format!(
+                    "Not enough information to infer type of generic enum variant."
+                )))
+            } else {
+                Ok(TypeVariant::Type(NalaType::Enum(
+                    enum_ident.to_owned(),
+                    enum_type.variants,
+                )))
+            }
+        }
     }
-}
-
-fn cannot_infer_value_error(value: &Value) -> RuntimeError {
-    RuntimeError::new(&format!("Cannot infer type of value `{value}`."))
 }

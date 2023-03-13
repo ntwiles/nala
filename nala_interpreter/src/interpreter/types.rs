@@ -4,7 +4,7 @@ use crate::{
         types::{variant_declare::VariantDeclare, StructLiteralField, TypeArgs},
     },
     errors::RuntimeError,
-    scopes::{type_binding::TypeBinding, Scopes},
+    scopes::{enum_binding::EnumBinding, type_binding::TypeBinding, Scopes},
     types::struct_field::StructField,
     utils::accept_results,
 };
@@ -35,11 +35,35 @@ pub fn eval_enum(
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
+    let closure_scope = scopes.new_scope(Some(current_scope));
+
+    if let Some(type_arg) = &type_args {
+        match type_arg {
+            TypeArgs::Concrete(_the_type) => todo!(),
+            TypeArgs::Generic(ident) => {
+                scopes.add_type_binding(
+                    &ident,
+                    closure_scope,
+                    TypeBinding::Generic(ident.clone()),
+                )?;
+            }
+        }
+    }
+
+    let generic_ident = match type_args {
+        Some(TypeArgs::Generic(ident)) => Some(ident),
+        _ => None,
+    };
+
     scopes
         .add_type_binding(
             &ident,
             current_scope,
-            TypeBinding::Enum(variants, type_args.clone()),
+            TypeBinding::Enum(EnumBinding {
+                variants,
+                closure_scope,
+                generic_ident,
+            }),
         )
         .map(|_| Value::Void)
 }

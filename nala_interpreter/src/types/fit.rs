@@ -16,7 +16,7 @@ pub fn fits_type(
     current_scope: usize,
 ) -> Result<bool, RuntimeError> {
     match variant {
-        TypeVariant::Generic(outer, inner) => match outer {
+        TypeVariant::Composite(outer, inner) => match outer {
             NalaType::PrimitiveType(PrimitiveType::Any) => Ok(true),
             NalaType::PrimitiveType(PrimitiveType::Array) => {
                 fits_array(inner, value, scopes, current_scope)
@@ -34,6 +34,7 @@ pub fn fits_type(
                 fits_enum(inner, enum_ident, variants, value, scopes, current_scope)
             }
             NalaType::Struct(_fields) => todo!(),
+            _ => todo!(),
         },
         TypeVariant::Type(the_type) => match the_type {
             NalaType::Struct(fields) => fits_struct(fields, value, scopes, current_scope),
@@ -41,6 +42,7 @@ pub fn fits_type(
             NalaType::PrimitiveType(PrimitiveType::Number) => Ok(value.is_number()),
             NalaType::PrimitiveType(PrimitiveType::String) => Ok(value.is_string()),
             NalaType::PrimitiveType(PrimitiveType::Void) => Ok(value.is_void()),
+            NalaType::Generic(_ident) => Ok(true),
             _ => todo!(),
         },
     }
