@@ -40,7 +40,6 @@ pub fn eval_tree(program: Program, ctx: &mut impl IoContext) -> Result<Value, Ru
         }
     }
 
-    // TODO: What is the difference between these two?
     match program {
         Program::Block(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, ctx),
         Program::Stmts(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, ctx),

@@ -117,7 +117,6 @@ pub fn eval_assign(
             }
         },
         PlaceExpression::Symbol(ident) => {
-            // TODO: Add test cases for the two errors in this block.
             if let Value::Void = value {
                 Err(RuntimeError::new("Cannot assign a value of type Void."))?;
             }
