@@ -130,13 +130,6 @@ pub fn eval_call(
                     let param_type =
                         TypeVariant::from_literal(param.param_type.clone(), scopes, current_scope)?;
 
-                    /*
-                     * TODO: This results in `Option<T><Number>`
-                     * because we're storing generic args in two different ways;
-                     * both using TypeVariant::Generic and using type_args in enum.
-                     */
-                    // println!("Param type: {:?}", param_type);
-
                     if !fits_type(arg, &param_type, scopes, current_scope)? {
                         return Err(wrong_arg_type_for_param_error(
                             arg,
