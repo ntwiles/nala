@@ -17,8 +17,6 @@ use self::{enum_variants::EnumVariant, struct_field::StructField};
 
 #[derive(Eq, Debug, Clone)]
 pub enum NalaType {
-    // TODO: I think using VariantDeclare is wrong here. This is for resolved types, but VariantDeclare
-    // comprises TypeLiteralVariant. We likely need a new type.
     Enum(String, Vec<EnumVariant>),
     PrimitiveType(PrimitiveType),
     Struct(Vec<StructField>),
