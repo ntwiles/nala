@@ -47,6 +47,14 @@ pub enum Value {
 }
 
 impl Value {
+    pub fn is_bool(&self) -> bool {
+        if let Value::Bool(_) = self {
+            true
+        } else {
+            false
+        }
+    }
+
     pub fn is_number(&self) -> bool {
         if let Value::Num(_) = self {
             true

@@ -106,6 +106,21 @@ fn it_errors_when_indexing_array_with_string() {
 }
 
 #[test]
+fn it_errors_when_indexing_non_array() {
+    let expected_message = rgx!("Cannot index into a value which is not an array.");
+
+    let nala = r#"
+        const num = 7;
+        print(num[0]);
+    "#;
+
+    let result = parse_and_run(nala, &mut TestContext::new());
+
+    assert!(result.is_err());
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
+}
+
+#[test]
 fn it_errors_when_passing_number_arg_to_len() {
     let expected_message =
         rgx!("Passed value `7` of type `Number` to function where `Array<Any>` was expected.");

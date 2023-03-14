@@ -87,7 +87,6 @@ pub fn eval_assign(
                     let mut array = array.lock().unwrap();
                     array[index as usize] = value.clone();
                 } else {
-                    // TODO: Add test case for this error.
                     Err(RuntimeError::new("Trying to index into a non-Array."))?
                 }
             }
@@ -95,7 +94,6 @@ pub fn eval_assign(
                 if scopes.binding_exists(&ident, current_scope) {
                     let index_result = eval_expr(&index_expr, scopes, current_scope, ctx)?;
 
-                    // TODO: Add test cases for the three errors in this block.
                     if let Value::Void = value {
                         Err(RuntimeError::new("Cannot assign a value of type Void."))?;
                     }

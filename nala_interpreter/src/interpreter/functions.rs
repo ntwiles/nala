@@ -30,8 +30,6 @@ pub fn eval_func(
         return_type,
     } = func;
 
-    // TODO: Do we need to do this? I think this will already error in a helpful way.
-    // Check what happens if this is removed.
     check_param_types(&params, scopes, current_scope)?;
 
     let closure_scope = scopes.new_scope(Some(current_scope));

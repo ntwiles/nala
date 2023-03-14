@@ -21,7 +21,7 @@ pub fn fits_type(
             NalaType::PrimitiveType(PrimitiveType::Array) => {
                 fits_array(inner, value, scopes, current_scope)
             }
-            NalaType::PrimitiveType(PrimitiveType::Bool) => todo!(),
+            NalaType::PrimitiveType(PrimitiveType::Bool) => Ok(value.is_bool()),
             NalaType::PrimitiveType(PrimitiveType::Break) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Func) => {
                 fits_func(inner, value, scopes, current_scope)

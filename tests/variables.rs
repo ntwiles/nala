@@ -44,6 +44,24 @@ fn it_runs_declare_mutable() {
 }
 
 #[test]
+fn it_errors_when_declaring_type_void() {
+    let expected_message = rgx!("Cannot declare a variable with a value of type Void.");
+
+    let nala = r#"
+        func returnVoid(): Void {
+            const void = 'void';
+        }
+        
+        const void = returnVoid();
+    "#;
+
+    let result = parse_and_run(nala, &mut TestContext::new());
+
+    assert!(result.is_err());
+    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
+}
+
+#[test]
 fn it_runs_string_special_chars() {
     let mut test_context = TestContext::new();
 
@@ -72,14 +90,15 @@ fn it_errors_when_assigning_wrong_type() {
 
 #[test]
 fn it_errors_when_assigning_type_void() {
-    let expected_message = rgx!("Cannot declare a variable with a value of type Void.");
+    let expected_message = rgx!("Cannot assign a value of type Void.");
 
     let nala = r#"
         func returnVoid(): Void {
-            const void = 'void';
+            print('this func returns void');
         }
         
-        const void = returnVoid();
+        mut foo = 7;
+        foo = returnVoid();
     "#;
 
     let result = parse_and_run(nala, &mut TestContext::new());
