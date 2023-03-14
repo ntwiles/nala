@@ -10,7 +10,10 @@ use crate::{
     utils::accept_results,
 };
 
-use super::{fit::fits_type, struct_field::StructField, type_variant::TypeVariant, NalaType};
+use super::{
+    enum_variants::EnumVariant, fit::fits_type, struct_field::StructField,
+    type_variant::TypeVariant, NalaType,
+};
 
 pub fn infer_type(
     value: &Value,
@@ -139,14 +142,26 @@ pub fn infer_variant(
                         TypeVariant::Type(NalaType::Generic(generic_ident))
                     };
 
+                    let variants = enum_type
+                        .variants
+                        .into_iter()
+                        .map(EnumVariant::from_variant_declare)
+                        .collect();
+
                     Ok(TypeVariant::Composite(
-                        NalaType::Enum(enum_ident.to_owned(), enum_type.variants),
+                        NalaType::Enum(enum_ident.to_owned(), variants),
                         vec![inner_type],
                     ))
                 } else {
+                    let variants = enum_type
+                        .variants
+                        .into_iter()
+                        .map(EnumVariant::from_variant_declare)
+                        .collect();
+
                     Ok(TypeVariant::Type(NalaType::Enum(
                         enum_ident.to_owned(),
-                        enum_type.variants,
+                        variants,
                     )))
                 }
             } else {
@@ -161,9 +176,15 @@ pub fn infer_variant(
                     "Not enough information to infer type of generic enum variant."
                 )))
             } else {
+                let variants = enum_type
+                    .variants
+                    .into_iter()
+                    .map(EnumVariant::from_variant_declare)
+                    .collect();
+
                 Ok(TypeVariant::Type(NalaType::Enum(
                     enum_ident.to_owned(),
-                    enum_type.variants,
+                    variants,
                 )))
             }
         }

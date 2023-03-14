@@ -1,3 +1,4 @@
+mod enum_variants;
 pub mod fit;
 pub mod inference;
 pub mod struct_field;
@@ -6,20 +7,18 @@ pub mod type_variant;
 use std::fmt;
 
 use crate::{
-    ast::types::{
-        primitive_type::PrimitiveType, type_literal::TypeLiteral, variant_declare::VariantDeclare,
-    },
+    ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
     errors::RuntimeError,
     scopes::{type_binding::TypeBinding, Scopes},
 };
 
-use self::struct_field::StructField;
+use self::{enum_variants::EnumVariant, struct_field::StructField};
 
 #[derive(Eq, Debug, Clone)]
 pub enum NalaType {
     // TODO: I think using VariantDeclare is wrong here. This is for resolved types, but VariantDeclare
     // comprises TypeLiteralVariant. We likely need a new type.
-    Enum(String, Vec<VariantDeclare>),
+    Enum(String, Vec<EnumVariant>),
     PrimitiveType(PrimitiveType),
     Struct(Vec<StructField>),
     Generic(String),
@@ -34,7 +33,15 @@ impl NalaType {
         match literal {
             TypeLiteral::PrimitiveType(t) => Ok(Self::PrimitiveType(t)),
             TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
-                TypeBinding::Enum(binding) => Ok(Self::Enum(ident, binding.variants)),
+                TypeBinding::Enum(binding) => {
+                    let variants = binding
+                        .variants
+                        .into_iter()
+                        .map(EnumVariant::from_variant_declare)
+                        .collect();
+
+                    Ok(Self::Enum(ident, variants))
+                }
                 TypeBinding::Struct(fields) => Ok(Self::Struct(fields)),
                 TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
             },

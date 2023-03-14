@@ -7,7 +7,9 @@ use crate::{
     scopes::Scopes,
 };
 
-use super::{struct_field::StructField, type_variant::TypeVariant, NalaType};
+use super::{
+    enum_variants::EnumVariant, struct_field::StructField, type_variant::TypeVariant, NalaType,
+};
 
 pub fn fits_type(
     value: &Value,
@@ -89,16 +91,16 @@ fn fits_func(
 fn fits_enum(
     inner: &Vec<TypeVariant>,
     enum_ident: &str,
-    variants: &Vec<VariantDeclare>,
+    variants: &Vec<EnumVariant>,
     value: &Value,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<bool, RuntimeError> {
     if let Value::Variant(value) = value {
         match find_variant(&value.variant_ident, variants) {
-            Some(VariantDeclare::Data(_, _)) => Ok(enum_ident == value.enum_ident
+            Some(EnumVariant::Data(_, _)) => Ok(enum_ident == value.enum_ident
                 && data_fits(&inner[0], &value.data, scopes, current_scope)?),
-            Some(VariantDeclare::Empty(_)) => Ok(enum_ident == value.enum_ident),
+            Some(EnumVariant::Empty(_)) => Ok(enum_ident == value.enum_ident),
             None => Ok(false),
         }
     } else {
@@ -147,10 +149,10 @@ fn data_fits(
 
 fn find_variant<'a>(
     variant_ident: &str,
-    variants: &'a Vec<VariantDeclare>,
-) -> Option<&'a VariantDeclare> {
+    variants: &'a Vec<EnumVariant>,
+) -> Option<&'a EnumVariant> {
     variants.iter().find(|v| match v {
-        VariantDeclare::Data(ident, _) => ident == variant_ident,
-        VariantDeclare::Empty(ident) => ident == variant_ident,
+        EnumVariant::Data(ident, _) => ident == variant_ident,
+        EnumVariant::Empty(ident) => ident == variant_ident,
     })
 }
