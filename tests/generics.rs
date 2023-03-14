@@ -31,5 +31,5 @@ fn it_allows_generic_enum_variant_assign() {
     "#;
 
     assert!(parse_and_run(nala, &mut ctx).is_ok());
-    assert_eq!(ctx.get_output(), vec!["Option::Some(1)"]);
+    assert_eq!(ctx.get_output(), vec!["Some(1)"]);
 }

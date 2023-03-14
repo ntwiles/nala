@@ -196,5 +196,5 @@ fn it_allows_ambiguous_type_variant_when_return_type_specified() {
     "#;
 
     assert!(parse_and_run(nala, &mut ctx).is_ok());
-    assert_eq!(ctx.get_output(), vec!["Option::None"]);
+    assert_eq!(ctx.get_output(), vec!["None"]);
 }

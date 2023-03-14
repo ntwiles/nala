@@ -88,7 +88,7 @@ fn infer_array(
     ))
 }
 
-fn infer_variant(
+pub fn infer_variant(
     variant: &EnumVariantValue,
     scopes: &mut Scopes,
     current_scope: usize,

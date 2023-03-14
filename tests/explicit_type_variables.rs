@@ -42,8 +42,7 @@ fn it_handles_declare_with_explicit_generic_type() {
     let result = parse_and_run(nala, &mut test_context);
 
     assert!(result.is_ok());
-    // TODO: This should print "Foo<Number>::Bar(7)"
-    assert_eq!(test_context.get_output(), vec!["Foo::Bar(7)"]);
+    assert_eq!(test_context.get_output(), vec!["Bar(7)"]);
 }
 
 #[test]

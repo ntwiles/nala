@@ -44,7 +44,7 @@ fn it_runs_enum_variant_assign() {
     "#;
 
     assert!(parse_and_run(nala, &mut ctx).is_ok());
-    assert_eq!(ctx.get_output(), vec!["Boolean::True"]);
+    assert_eq!(ctx.get_output(), vec!["True"]);
 }
 
 #[test]
@@ -80,5 +80,5 @@ fn it_runs_enum_variant_with_data() {
     "#;
 
     assert!(parse_and_run(nala, &mut ctx).is_ok());
-    assert_eq!(ctx.get_output(), vec!["Option::Some(hello)"]);
+    assert_eq!(ctx.get_output(), vec!["Some(hello)"]);
 }

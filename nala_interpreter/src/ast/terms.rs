@@ -135,9 +135,9 @@ impl fmt::Debug for Value {
             }
             Value::String(s) => write!(f, "'{}'", s),
             Value::Variant(EnumVariantValue {
-                enum_ident,
                 variant_ident,
                 data,
+                ..
             }) => {
                 let data = if let Some(data) = data {
                     format!("({0})", data)
@@ -145,12 +145,7 @@ impl fmt::Debug for Value {
                     "".to_string()
                 };
 
-                // TODO: This will write (for example) `Option::Some(1)` rather
-                // than `Option<Number>::Some(1)` like we ultimately will want.
-                // We need to figure out a way to get the concrete enum type here
-                // and also deal with the fact that we may not yet have enough
-                // information to infer the concrete type.
-                write!(f, "{0}::{1}{2}", enum_ident, variant_ident, data)
+                write!(f, "{variant_ident}{data}")
             }
             value => todo!("Implement Debug for Value {value}"),
         }
@@ -200,9 +195,9 @@ impl fmt::Display for Value {
             }
             Value::String(t) => write!(f, "{}", t),
             Value::Variant(EnumVariantValue {
-                enum_ident,
                 variant_ident,
                 data,
+                ..
             }) => {
                 let data = if let Some(data) = data {
                     format!("({0})", data)
@@ -210,12 +205,7 @@ impl fmt::Display for Value {
                     "".to_string()
                 };
 
-                // TODO: This will write (for example) `Option::Some(1)` rather
-                // than `Option<Number>::Some(1)` like we ultimately will want.
-                // We need to figure out a way to get the concrete enum type here
-                // and also deal with the fact that we may not yet have enough
-                // information to infer the concrete type.
-                write!(f, "{0}::{1}{2}", enum_ident, variant_ident, data)
+                write!(f, "{variant_ident}{data}")
             }
             Value::Void => write!(f, "Void"),
         }
