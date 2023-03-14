@@ -10,6 +10,7 @@ use crate::{
     ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
     errors::RuntimeError,
     scopes::{type_binding::TypeBinding, Scopes},
+    utils::accept_results,
 };
 
 use self::{enum_variants::EnumVariant, struct_field::StructField};
@@ -36,9 +37,17 @@ impl NalaType {
                 TypeBinding::Enum(binding) => {
                     let variants = binding
                         .variants
-                        .into_iter()
-                        .map(EnumVariant::from_variant_declare)
+                        .iter()
+                        .map(|v| {
+                            EnumVariant::from_variant_declare(
+                                v.clone(), // TODO: Find a way to avoid this clone.
+                                scopes,
+                                binding.closure_scope,
+                            )
+                        })
                         .collect();
+
+                    let variants = accept_results(variants)?;
 
                     Ok(Self::Enum(ident, variants))
                 }

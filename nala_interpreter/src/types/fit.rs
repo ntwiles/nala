@@ -1,7 +1,7 @@
 use crate::{
     ast::{
         terms::{FuncValue, Value},
-        types::{primitive_type::PrimitiveType, variant_declare::VariantDeclare},
+        types::primitive_type::PrimitiveType,
     },
     errors::RuntimeError,
     scopes::Scopes,

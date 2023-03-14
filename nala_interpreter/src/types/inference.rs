@@ -144,9 +144,17 @@ pub fn infer_variant(
 
                     let variants = enum_type
                         .variants
-                        .into_iter()
-                        .map(EnumVariant::from_variant_declare)
+                        .iter()
+                        .map(|v| {
+                            EnumVariant::from_variant_declare(
+                                v.clone(), // TODO: Find a way to avoid this clone.
+                                scopes,
+                                enum_type.closure_scope,
+                            )
+                        })
                         .collect();
+
+                    let variants = accept_results(variants)?;
 
                     Ok(TypeVariant::Composite(
                         NalaType::Enum(enum_ident.to_owned(), variants),
@@ -155,9 +163,17 @@ pub fn infer_variant(
                 } else {
                     let variants = enum_type
                         .variants
-                        .into_iter()
-                        .map(EnumVariant::from_variant_declare)
+                        .iter()
+                        .map(|v| {
+                            EnumVariant::from_variant_declare(
+                                v.clone(), // TODO: Find a way to avoid this clone.
+                                scopes,
+                                enum_type.closure_scope,
+                            )
+                        })
                         .collect();
+
+                    let variants = accept_results(variants)?;
 
                     Ok(TypeVariant::Type(NalaType::Enum(
                         enum_ident.to_owned(),
@@ -178,9 +194,17 @@ pub fn infer_variant(
             } else {
                 let variants = enum_type
                     .variants
-                    .into_iter()
-                    .map(EnumVariant::from_variant_declare)
+                    .iter()
+                    .map(|v| {
+                        EnumVariant::from_variant_declare(
+                            v.clone(), // TODO: Find a way to avoid this clone.
+                            scopes,
+                            enum_type.closure_scope,
+                        )
+                    })
                     .collect();
+
+                let variants = accept_results(variants)?;
 
                 Ok(TypeVariant::Type(NalaType::Enum(
                     enum_ident.to_owned(),
