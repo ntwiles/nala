@@ -129,8 +129,6 @@ fn infer_variant(
 
             if fits_type(data, &expected_data_type, scopes, current_scope)? {
                 if let Some(generic_ident) = enum_type.get_generic_ident() {
-                    println!("expected_type: {}", data_type);
-
                     let inner_type = if let Some(ident) = expected_data_type.get_generic_ident() {
                         if ident == generic_ident {
                             infer_type(data, scopes, current_scope)?
@@ -140,8 +138,6 @@ fn infer_variant(
                     } else {
                         TypeVariant::Type(NalaType::Generic(generic_ident))
                     };
-
-                    println!("data_type: {}", data_type);
 
                     Ok(TypeVariant::Composite(
                         NalaType::Enum(enum_ident.to_owned(), enum_type.variants),
