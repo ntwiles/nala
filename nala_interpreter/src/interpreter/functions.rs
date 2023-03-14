@@ -153,7 +153,6 @@ pub fn eval_call(
                 if fits_type(&return_value, &expected_return_type, scopes, current_scope)? {
                     Ok(return_value)
                 } else {
-                    // TODO: We have a use of infer_type here which might error.
                     Err(RuntimeError::new(&format!("Tried to return value `{return_value:?}` of type `{0}` where value of type `{expected_return_type}` was expected.", infer_type(&return_value, scopes, current_scope)?)))
                 }
             } else {

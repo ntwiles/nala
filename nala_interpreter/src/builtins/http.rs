@@ -23,7 +23,7 @@ use crate::{
 };
 
 pub fn get_http_block(scopes: &mut Scopes, scope: usize) -> Result<Func, RuntimeError> {
-    // TODO: Once we have generics implemented we can let require that users pass the return type.
+    // TODO: Once we have generic function implemented we can let require that users pass the return type.
     let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Any));
 
     let options_fields = vec![
@@ -108,7 +108,8 @@ fn builtin_http(
         }
         Err(error) => {
             // TODO: Status is optional because the error might not have been generated from a response.
-            // Defaulting to an empty string probably isn't the best way to handle that case.
+            // Defaulting to an empty string probably isn't the best way to handle that case. We should
+            // make Option a builtin type so that we can leverage it here.
             fields.insert(
                 String::from("statusCode"),
                 Value::String(
