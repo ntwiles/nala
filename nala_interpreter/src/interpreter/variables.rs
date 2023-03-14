@@ -47,7 +47,6 @@ pub fn eval_declare(
     } else {
         // PERFORMANCE: A possible optimization could be to cache this on the binding once we
         // know the type of the value so we don't have to run all this again.
-
         let inferred_type = infer_type(&value, scopes, current_scope)?;
 
         if inferred_type.get_generic_ident().is_some() {

@@ -33,7 +33,7 @@ pub fn fits_type(
             NalaType::PrimitiveType(PrimitiveType::Symbol) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Void) => todo!(),
             NalaType::Enum(enum_ident, variants) => {
-                fits_enum(inner, enum_ident, variants, value, scopes, current_scope)
+                fits_enum(value, inner, enum_ident, variants, scopes, current_scope)
             }
             NalaType::Struct(_fields) => todo!(),
             _ => todo!(),
@@ -45,6 +45,14 @@ pub fn fits_type(
             NalaType::PrimitiveType(PrimitiveType::String) => Ok(value.is_string()),
             NalaType::PrimitiveType(PrimitiveType::Void) => Ok(value.is_void()),
             NalaType::Generic(_ident) => Ok(true),
+            NalaType::Enum(enum_ident, variants) => fits_enum(
+                value,
+                &vec![variant.clone()],
+                enum_ident,
+                variants,
+                scopes,
+                current_scope,
+            ),
             _ => todo!(),
         },
     }
@@ -89,17 +97,17 @@ fn fits_func(
 }
 
 fn fits_enum(
-    inner: &Vec<TypeVariant>,
+    value: &Value,
+    expected_data_types: &Vec<TypeVariant>,
     enum_ident: &str,
     variants: &Vec<EnumVariant>,
-    value: &Value,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<bool, RuntimeError> {
     if let Value::Variant(value) = value {
         match find_variant(&value.variant_ident, variants) {
             Some(EnumVariant::Data(_, _)) => Ok(enum_ident == value.enum_ident
-                && data_fits(&inner[0], &value.data, scopes, current_scope)?),
+                && data_fits(&expected_data_types[0], &value.data, scopes, current_scope)?),
             Some(EnumVariant::Empty(_)) => Ok(enum_ident == value.enum_ident),
             None => Ok(false),
         }
