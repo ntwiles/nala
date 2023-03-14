@@ -71,5 +71,5 @@ fn it_allows_passing_enclosed_variables_to_variants() {
     "#;
 
     assert!(parse_and_run(nala, &mut ctx).is_ok());
-    assert_eq!(ctx.get_output(), vec!["Some(print me)"]);
+    assert_eq!(ctx.get_output(), vec!["Some('print me')"]);
 }

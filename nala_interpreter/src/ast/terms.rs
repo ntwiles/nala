@@ -200,7 +200,7 @@ impl fmt::Display for Value {
                 ..
             }) => {
                 let data = if let Some(data) = data {
-                    format!("({0})", data)
+                    format!("({0:?})", data)
                 } else {
                     "".to_string()
                 };
