@@ -16,11 +16,6 @@ fn it_infers_type_of_number() {
 #[test]
 fn it_infers_type_of_generic_if_possible() {
     let nala = r#"
-        enum Option<T> {
-            Some(T),
-            None,
-        }
-
         const foo = Option::Some(1);
     "#;
 
@@ -48,11 +43,6 @@ fn it_errors_if_no_info_for_inference() {
     let expected_message = rgx!("Not enough information to infer type of generic enum variant.");
 
     let nala = r#"
-        enum Option<T> {
-            Some(T),
-            None,
-        }
-
         const foo = Option::None;
     "#;
 
@@ -63,16 +53,16 @@ fn it_errors_if_no_info_for_inference() {
 
 #[test]
 fn it_errors_if_not_enough_info_for_inference() {
-    let expected_message = rgx!("Can't assign value of type `Option<T>` because it's generic. Try declaring the type explicitly.");
+    let expected_message = rgx!("Can't assign value of type `What<T>` because it's generic. Try declaring the type explicitly.");
 
     let nala = r#"
-        enum Option<T> {
+        enum What<T> {
             This(T),
             That(Number),
             TheOther,
         }
 
-        const foo = Option::That(7);
+        const foo = What::That(7);
     "#;
 
     let result = parse_and_run(nala, &mut TestContext::new());

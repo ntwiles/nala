@@ -9,36 +9,30 @@ mod types;
 mod variables;
 
 use crate::{
-    ast::{terms::*, *},
+    ast::{
+        terms::*,
+        types::{
+            type_literal::TypeLiteral, type_literal_variant::TypeLiteralVariant,
+            variant_declare::VariantDeclare, TypeArgs,
+        },
+        *,
+    },
     builtins::*,
     errors::RuntimeError,
     io_context::IoContext,
     scopes::*,
 };
 
-use self::{functions::*, variables::*};
+use self::{functions::*, types::eval_enum, variables::*};
 use basic::*;
 
-pub fn eval_tree(program: Program, ctx: &mut impl IoContext) -> Result<Value, RuntimeError> {
+pub fn eval_program(program: Program, ctx: &mut impl IoContext) -> Result<Value, RuntimeError> {
     let mut scopes = Scopes::new();
-
     let top_scope = scopes.new_scope(None);
 
-    // Builtin functions.
-    for func in get_builtins(&mut scopes, top_scope)?.into_iter() {
-        if let Err(e) = eval_func(func, &mut scopes, top_scope) {
-            panic!("Error loading Nala builtins: {0}", e.message)
-        }
-    }
-
-    // Builtin constants.
-    for (ident, value) in get_constants().iter() {
-        let expr = Expr::from_value(value.clone());
-
-        if let Err(e) = eval_declare(ident, &expr, None, false, &mut scopes, top_scope, ctx) {
-            panic!("Error loading Nala constants: {0}", e.message)
-        }
-    }
+    load_types(&mut scopes, top_scope)?;
+    load_constants(&mut scopes, top_scope, ctx);
+    load_builtins(&mut scopes, top_scope)?;
 
     match program {
         Program::Block(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, ctx),
@@ -57,10 +51,44 @@ pub fn eval_term(
     }
 }
 
-fn get_constants() -> Vec<(String, Value)> {
-    let constants = vec![
+fn load_types(scopes: &mut Scopes, current_scope: usize) -> Result<(), RuntimeError> {
+    let type_args = Some(TypeArgs::Generic(String::from("T")));
+    let variants = vec![
+        VariantDeclare::Data(
+            String::from("Some"),
+            TypeLiteralVariant::Type(TypeLiteral::UserDefined(String::from("T"))),
+        ),
+        VariantDeclare::Empty(String::from("None")),
+    ];
+
+    if let Err(e) = eval_enum("Option", type_args, variants, scopes, current_scope) {
+        panic!("Error loading builtin types: {0}", e.message)
+    }
+
+    Ok(())
+}
+
+fn load_constants(scopes: &mut Scopes, top_scope: usize, ctx: &mut impl IoContext) {
+    for (ident, value) in vec![
         (String::from("true"), Value::Bool(true)),
         (String::from("false"), Value::Bool(false)),
-    ];
-    constants
+    ]
+    .iter()
+    {
+        let expr = Expr::from_value(value.clone());
+
+        if let Err(e) = eval_declare(ident, &expr, None, false, scopes, top_scope, ctx) {
+            panic!("Error loading builtin constants: {0}", e.message)
+        }
+    }
+}
+
+fn load_builtins(scopes: &mut Scopes, top_scope: usize) -> Result<(), RuntimeError> {
+    for func in get_builtins(scopes, top_scope)?.into_iter() {
+        if let Err(e) = eval_func(func, scopes, top_scope) {
+            panic!("Error loading builtin functions: {0}", e.message)
+        }
+    }
+
+    Ok(())
 }

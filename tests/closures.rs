@@ -51,11 +51,6 @@ fn it_allows_passing_enclosed_variables_to_variants() {
     let mut ctx = TestContext::new();
 
     let nala = r#"
-        enum Option<T> {
-            Some(T),
-            None,
-        }
-
         func outer(): Func<Void> {
             const message = 'print me';
 

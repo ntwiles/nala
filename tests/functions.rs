@@ -182,11 +182,6 @@ fn it_allows_ambiguous_type_variant_when_return_type_specified() {
     let mut ctx = TestContext::new();
 
     let nala = r#"
-        enum Option<T> {
-            Some(T),
-            None,
-        }
-        
         func returnNone(): Option<Number> {
             Option::None;
         }

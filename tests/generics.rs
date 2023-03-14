@@ -6,9 +6,9 @@ fn it_allows_generic_enum_declare() {
     let mut ctx = TestContext::new();
 
     let nala = r#"
-        enum Option<T> {
-            Some(T),
-            None,
+        enum Variants<T> {
+            Foo(T),
+            Bar,
         }
     "#;
 
@@ -21,11 +21,6 @@ fn it_allows_generic_enum_variant_assign() {
     let mut ctx = TestContext::new();
 
     let nala = r#"
-        enum Option<T> {
-            Some(T),
-            None,
-        }
-
         const test = Option::Some(1);
         print(test);
     "#;

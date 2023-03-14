@@ -1,9 +1,3 @@
-// TODO: Make this a builtin type.
-enum Option<T> {
-    Some(T),
-    None,
-}
-
 // TODO: Support generic functions.
 func indexOfString(haystack: Array<String>, needle: String ): Option<Number> {
     mut i = 0;

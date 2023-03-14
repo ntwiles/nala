@@ -2,7 +2,7 @@ extern crate nala_interpreter;
 extern crate regex;
 
 use nala_interpreter::{
-    ast::terms::Value, errors::RuntimeError, interpreter::eval_tree, io_context::TestContext,
+    ast::terms::Value, errors::RuntimeError, interpreter::eval_program, io_context::TestContext,
     parser,
 };
 
@@ -19,7 +19,7 @@ pub fn parse_and_run(nala: &str, test_context: &mut TestContext) -> Result<Value
     let result = parser::parse_code(nala.to_owned());
 
     match result {
-        Ok(parsed) => eval_tree(parsed, test_context),
+        Ok(parsed) => eval_program(parsed, test_context),
         Err(_) => panic!("Could not parse nala!"),
     }
 }

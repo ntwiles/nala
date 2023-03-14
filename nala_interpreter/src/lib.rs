@@ -46,8 +46,8 @@ pub fn main(path: &str) -> () {
         return;
     }
 
-    match eval_tree(parse_result.unwrap(), &mut ctx) {
+    match eval_program(parse_result.unwrap(), &mut ctx) {
         Ok(_) => println!("Execution completed."),
-        Err(e) => println!("Nala Runtime Error: {0}", e.message),
+        Err(e) => println!("Nala Runtime Error: {}", e.message),
     }
 }
