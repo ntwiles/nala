@@ -30,9 +30,9 @@ pub fn eval_program(program: Program, ctx: &mut impl IoContext) -> Result<Value,
     let mut scopes = Scopes::new();
     let top_scope = scopes.new_scope(None);
 
-    load_types(&mut scopes, top_scope)?;
-    load_constants(&mut scopes, top_scope, ctx);
-    load_builtins(&mut scopes, top_scope)?;
+    load_builtin_types(&mut scopes, top_scope)?;
+    load_builtin_constants(&mut scopes, top_scope, ctx);
+    load_builtin_functions(&mut scopes, top_scope)?;
 
     match program {
         Program::Block(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, ctx),
@@ -51,7 +51,7 @@ pub fn eval_term(
     }
 }
 
-fn load_types(scopes: &mut Scopes, current_scope: usize) -> Result<(), RuntimeError> {
+fn load_builtin_types(scopes: &mut Scopes, current_scope: usize) -> Result<(), RuntimeError> {
     let type_args = Some(TypeArgs::Generic(String::from("T")));
     let variants = vec![
         VariantDeclare::Data(
@@ -68,7 +68,7 @@ fn load_types(scopes: &mut Scopes, current_scope: usize) -> Result<(), RuntimeEr
     Ok(())
 }
 
-fn load_constants(scopes: &mut Scopes, top_scope: usize, ctx: &mut impl IoContext) {
+fn load_builtin_constants(scopes: &mut Scopes, top_scope: usize, ctx: &mut impl IoContext) {
     for (ident, value) in vec![
         (String::from("true"), Value::Bool(true)),
         (String::from("false"), Value::Bool(false)),
@@ -83,7 +83,7 @@ fn load_constants(scopes: &mut Scopes, top_scope: usize, ctx: &mut impl IoContex
     }
 }
 
-fn load_builtins(scopes: &mut Scopes, top_scope: usize) -> Result<(), RuntimeError> {
+fn load_builtin_functions(scopes: &mut Scopes, top_scope: usize) -> Result<(), RuntimeError> {
     for func in get_builtins(scopes, top_scope)?.into_iter() {
         if let Err(e) = eval_func(func, scopes, top_scope) {
             panic!("Error loading builtin functions: {0}", e.message)
