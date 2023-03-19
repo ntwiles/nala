@@ -13,47 +13,43 @@ use super::{
 
 pub fn fits_type(
     value: &Value,
-    variant: &TypeVariant,
+    type_variant: &TypeVariant,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<bool, RuntimeError> {
-    match variant {
+    match type_variant {
         TypeVariant::Composite(outer, inner) => match outer {
-            NalaType::PrimitiveType(PrimitiveType::Any) => Ok(true),
             NalaType::PrimitiveType(PrimitiveType::Array) => {
                 fits_array(inner, value, scopes, current_scope)
             }
-            NalaType::PrimitiveType(PrimitiveType::Bool) => Ok(value.is_bool()),
             NalaType::PrimitiveType(PrimitiveType::Break) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Func) => {
                 fits_func(inner, value, scopes, current_scope)
             }
-            NalaType::PrimitiveType(PrimitiveType::Number) => todo!(),
-            NalaType::PrimitiveType(PrimitiveType::String) => todo!(),
-            NalaType::PrimitiveType(PrimitiveType::Symbol) => todo!(),
-            NalaType::PrimitiveType(PrimitiveType::Void) => todo!(),
             NalaType::Enum(enum_ident, variants) => {
                 fits_enum(value, inner, enum_ident, variants, scopes, current_scope)
             }
-            NalaType::Struct(_fields) => todo!(),
-            _ => todo!(),
+            NalaType::Struct(_fields) => todo!(), // TODO: Support generic structs.
+            NalaType::Generic(_) => todo!(),
+            _ => unreachable!(), // The remaining primitive types aren't composite.
         },
         TypeVariant::Type(the_type) => match the_type {
-            NalaType::Struct(fields) => fits_struct(fields, value, scopes, current_scope),
             NalaType::PrimitiveType(PrimitiveType::Any) => Ok(true),
+            NalaType::PrimitiveType(PrimitiveType::Bool) => Ok(value.is_bool()),
             NalaType::PrimitiveType(PrimitiveType::Number) => Ok(value.is_number()),
             NalaType::PrimitiveType(PrimitiveType::String) => Ok(value.is_string()),
             NalaType::PrimitiveType(PrimitiveType::Void) => Ok(value.is_void()),
+            NalaType::Struct(fields) => fits_struct(fields, value, scopes, current_scope),
             NalaType::Generic(_ident) => Ok(true),
             NalaType::Enum(enum_ident, variants) => fits_enum(
                 value,
-                &vec![variant.clone()],
+                &vec![type_variant.clone()],
                 enum_ident,
                 variants,
                 scopes,
                 current_scope,
             ),
-            _ => todo!(),
+            _ => unreachable!(), // The remaining primitive types are composite only.
         },
     }
 }
