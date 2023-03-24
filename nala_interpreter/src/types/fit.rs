@@ -35,7 +35,6 @@ pub fn fits_type(
             )))?,
         },
         TypeVariant::Type(the_type) => match the_type {
-            NalaType::PrimitiveType(PrimitiveType::Any) => Ok(true),
             NalaType::PrimitiveType(PrimitiveType::Bool) => Ok(value.is_bool()),
             NalaType::PrimitiveType(PrimitiveType::Number) => Ok(value.is_number()),
             NalaType::PrimitiveType(PrimitiveType::String) => Ok(value.is_string()),
@@ -67,7 +66,7 @@ fn fits_array(
         let first = items.first();
 
         if let Some(first) = first {
-            Ok(inner[0].is_any() || fits_type(first, &inner[0], scopes, current_scope)?)
+            Ok(fits_type(first, &inner[0], scopes, current_scope)?)
         } else {
             // Empty array, fits any type.
             Ok(true)

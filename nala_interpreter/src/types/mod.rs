@@ -74,14 +74,6 @@ impl NalaType {
             Self::Generic(ident) => Some(ident.clone()),
         }
     }
-
-    pub fn is_any(&self) -> bool {
-        if let Self::PrimitiveType(PrimitiveType::Any) = self {
-            true
-        } else {
-            false
-        }
-    }
 }
 
 impl fmt::Display for NalaType {

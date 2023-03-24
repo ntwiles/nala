@@ -123,7 +123,7 @@ fn it_errors_when_indexing_non_array() {
 #[test]
 fn it_errors_when_passing_number_arg_to_len() {
     let expected_message =
-        rgx!("Passed value `7` of type `Number` to function where `Array<Any>` was expected.");
+        rgx!("Passed value `7` of type `Number` to function where `Array<T>` was expected.");
 
     let nala = r#"
         const num = 7;

@@ -18,7 +18,9 @@ fn it_prints_strings_without_quotes() {
 
 #[test]
 fn it_prints_strings_with_quotes_in_erros() {
-    let expected_error = rgx!("Passed value `'should print'` of type `String` to function where `Array<Any>` was expected");
+    let expected_error = rgx!(
+        "Passed value `'should print'` of type `String` to function where `Array<T>` was expected"
+    );
 
     let nala = r#"
         const test = 'should print';

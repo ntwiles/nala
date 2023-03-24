@@ -10,7 +10,7 @@ use crate::{
 pub fn get_print_block() -> FuncValue {
     let message_param = Param {
         ident: String::from("message"),
-        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any)),
+        param_type: TypeVariant::Type(NalaType::Generic(String::from("T"))),
     };
 
     let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void));

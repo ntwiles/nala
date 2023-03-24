@@ -11,7 +11,7 @@ use crate::{
 };
 
 pub fn get_len_block() -> FuncValue {
-    let inner_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any));
+    let inner_type = TypeVariant::Type(NalaType::Generic(String::from("T")));
 
     let outer_type = TypeVariant::Composite(
         NalaType::PrimitiveType(PrimitiveType::Array),
@@ -35,7 +35,7 @@ pub fn get_len_block() -> FuncValue {
 }
 
 pub fn get_slice_block() -> FuncValue {
-    let inner_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any));
+    let inner_type = TypeVariant::Type(NalaType::Generic(String::from("T")));
 
     let outer_type = TypeVariant::Composite(
         NalaType::PrimitiveType(PrimitiveType::Array),
@@ -57,7 +57,7 @@ pub fn get_slice_block() -> FuncValue {
         param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
     };
 
-    let inner_return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any));
+    let inner_return_type = TypeVariant::Type(NalaType::Generic(String::from("T")));
 
     let return_type = TypeVariant::Composite(
         NalaType::PrimitiveType(PrimitiveType::Array),

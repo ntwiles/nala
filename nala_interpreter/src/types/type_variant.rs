@@ -50,13 +50,6 @@ impl TypeVariant {
             TypeVariant::Type(t) => t.get_generic_ident(),
         }
     }
-
-    pub fn is_any(&self) -> bool {
-        match self {
-            TypeVariant::Composite(_, _) => false,
-            TypeVariant::Type(t) => t.is_any(),
-        }
-    }
 }
 
 impl fmt::Display for TypeVariant {

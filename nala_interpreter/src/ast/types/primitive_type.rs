@@ -1,12 +1,5 @@
 use std::fmt;
 
-/*
- * TODO: Get rid of Any. Builtin functions like `print()` were created before generics were
- * supported. They're currently typed to accept Any but should be changed when support
- * for generic functions is added.
- *
- * Do not use `Any` for any situations beyond builtin functions.
- */
 #[derive(Eq, Debug, Clone)]
 pub enum PrimitiveType {
     Array,
@@ -16,7 +9,6 @@ pub enum PrimitiveType {
     Number,
     String,
     Void,
-    Any,
 }
 
 impl fmt::Display for PrimitiveType {
@@ -29,7 +21,6 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Number => "Number",
             PrimitiveType::String => "String",
             PrimitiveType::Void => "Void",
-            PrimitiveType::Any => "Any",
         };
 
         write!(f, "{}", type_name)
