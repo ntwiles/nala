@@ -11,10 +11,9 @@ use crate::{
     types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
 };
 
-// TODO: Can this take ownership of value?
 pub fn eval_declare(
     ident: &String,
-    value: &Value,
+    value: Value,
     declared_type: Option<TypeVariantLiteral>,
     is_mutable: bool,
     scopes: &mut Scopes,
@@ -38,7 +37,7 @@ pub fn eval_declare(
 
         scopes.add_binding(
             &ident,
-            value.clone(),
+            value,
             Some(declared_type),
             current_scope,
             is_mutable,
@@ -53,7 +52,7 @@ pub fn eval_declare(
                 "Can't assign value of type `{inferred_type}` because it's generic. Try declaring the type explicitly.",
             )));
         } else {
-            scopes.add_binding(&ident, value.clone(), None, current_scope, is_mutable)
+            scopes.add_binding(&ident, value, None, current_scope, is_mutable)
         }
     }
 }

@@ -77,9 +77,9 @@ fn load_builtin_constants(scopes: &mut Scopes, top_scope: usize) {
         (String::from("true"), Value::Bool(true)),
         (String::from("false"), Value::Bool(false)),
     ]
-    .iter()
+    .into_iter()
     {
-        if let Err(e) = eval_declare(ident, &value, None, false, scopes, top_scope) {
+        if let Err(e) = eval_declare(&ident, value, None, false, scopes, top_scope) {
             panic!("Error loading builtin constants: {0}", e.message)
         }
     }

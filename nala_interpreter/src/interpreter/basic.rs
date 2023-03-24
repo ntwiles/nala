@@ -47,7 +47,7 @@ fn eval_stmt(
         Stmt::Break(expr) => eval_break(expr, scopes, current_scope, ctx),
         Stmt::Declare(ident, expr, declared_type, is_mutable) => eval_declare(
             ident,
-            &eval_expr(&expr, scopes, current_scope, ctx)?,
+            eval_expr(&expr, scopes, current_scope, ctx)?,
             declared_type.clone(),
             is_mutable.clone(),
             scopes,
