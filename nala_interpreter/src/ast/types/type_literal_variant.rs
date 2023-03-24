@@ -2,17 +2,16 @@ use std::fmt;
 
 use super::type_literal::TypeLiteral;
 
-// TODO: Rename to TypeVariantLiteral
 #[derive(Eq, Debug, Clone)]
-pub enum TypeLiteralVariant {
-    Composite(TypeLiteral, Vec<TypeLiteralVariant>),
+pub enum TypeVariantLiteral {
+    Composite(TypeLiteral, Vec<Self>),
     Type(TypeLiteral),
 }
 
-impl fmt::Display for TypeLiteralVariant {
+impl fmt::Display for TypeVariantLiteral {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            TypeLiteralVariant::Composite(v, vv) => {
+            Self::Composite(v, vv) => {
                 let children = vv
                     .iter()
                     .map(|vv| vv.to_string())
@@ -20,23 +19,23 @@ impl fmt::Display for TypeLiteralVariant {
                     .join(",");
                 write!(f, "{0}<{1}>", v, children)
             }
-            TypeLiteralVariant::Type(t) => write!(f, "{}", t),
+            Self::Type(t) => write!(f, "{}", t),
         }
     }
 }
 
-impl PartialEq for TypeLiteralVariant {
+impl PartialEq for TypeVariantLiteral {
     fn eq(&self, other: &Self) -> bool {
         match self {
-            TypeLiteralVariant::Composite(mv, mg) => {
-                if let TypeLiteralVariant::Composite(ov, og) = other {
+            Self::Composite(mv, mg) => {
+                if let Self::Composite(ov, og) = other {
                     mv == ov && mg == og
                 } else {
                     false
                 }
             }
-            TypeLiteralVariant::Type(me) => {
-                if let TypeLiteralVariant::Type(other) = other {
+            Self::Type(me) => {
+                if let Self::Type(other) = other {
                     me == other
                 } else {
                     false

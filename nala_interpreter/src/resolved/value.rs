@@ -35,6 +35,7 @@ impl Value {
             ValueLiteral::String(string) => Value::String(string),
         }
     }
+
     pub fn is_bool(&self) -> bool {
         if let Value::Bool(_) = self {
             true

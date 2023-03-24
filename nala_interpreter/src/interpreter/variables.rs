@@ -3,7 +3,7 @@ use std::sync::Arc;
 use super::{arrays::eval_index, eval_expr, objects::*};
 
 use crate::{
-    ast::{objects::*, types::type_literal_variant::TypeLiteralVariant, *},
+    ast::{objects::*, types::type_literal_variant::TypeVariantLiteral, *},
     errors::RuntimeError,
     io_context::IoContext,
     resolved::value::Value,
@@ -15,7 +15,7 @@ use crate::{
 pub fn eval_declare(
     ident: &String,
     value: &Value,
-    declared_type: Option<TypeLiteralVariant>,
+    declared_type: Option<TypeVariantLiteral>,
     is_mutable: bool,
     scopes: &mut Scopes,
     current_scope: usize,

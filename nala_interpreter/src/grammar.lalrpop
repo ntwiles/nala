@@ -51,7 +51,7 @@ Stmt: ast::Stmt = {
     <Match> => ast::Stmt::Match(<>)
 };
 
-TypeDeclaration: ast::types::type_literal_variant::TypeLiteralVariant = {
+TypeDeclaration: ast::types::type_literal_variant::TypeVariantLiteral = {
     ":" <TypeVariant> => <>
 };
 
@@ -59,7 +59,7 @@ TypeParams: String = {
     "<" <s:Symbol> ">" => s
 };
 
-TypeArgs: ast::types::type_literal_variant::TypeLiteralVariant = {
+TypeArgs: ast::types::type_literal_variant::TypeVariantLiteral = {
     "<" <t:TypeVariant> ">" => <>
 };
 
@@ -142,9 +142,9 @@ StructField: ast::types::StructLiteralField = {
 
 TypeVariants = Comma<TypeVariant>;
 
-TypeVariant: ast::types::type_literal_variant::TypeLiteralVariant = {
-    <t:Type> "<" <tt:TypeVariants> ">" => ast::types::type_literal_variant::TypeLiteralVariant::Composite(t, tt),
-    <Type> => ast::types::type_literal_variant::TypeLiteralVariant::Type(<>),
+TypeVariant: ast::types::type_literal_variant::TypeVariantLiteral = {
+    <t:Type> "<" <tt:TypeVariants> ">" => ast::types::type_literal_variant::TypeVariantLiteral::Composite(t, tt),
+    <Type> => ast::types::type_literal_variant::TypeVariantLiteral::Type(<>),
 }
 
 Type: ast::types::type_literal::TypeLiteral = {
@@ -186,7 +186,7 @@ Call: ast::funcs::Call = {
 };
 
 // TODO: This uses Rust-style turbofish just to avoid a parse conflict. Do we really need to do that?
-CallTypeArgs: ast::types::type_literal_variant::TypeLiteralVariant = {
+CallTypeArgs: ast::types::type_literal_variant::TypeVariantLiteral = {
     "::<" <t:TypeVariant> ">" => <>,
 }
 

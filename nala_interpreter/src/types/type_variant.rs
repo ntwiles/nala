@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::{
-    ast::types::type_literal_variant::TypeLiteralVariant, errors::RuntimeError, scopes::Scopes,
+    ast::types::type_literal_variant::TypeVariantLiteral, errors::RuntimeError, scopes::Scopes,
     utils::accept_results,
 };
 
@@ -15,12 +15,12 @@ pub enum TypeVariant {
 
 impl TypeVariant {
     pub fn from_literal(
-        literal: TypeLiteralVariant,
+        literal: TypeVariantLiteral,
         scopes: &mut Scopes,
         current_scope: usize,
     ) -> Result<Self, RuntimeError> {
         match literal {
-            TypeLiteralVariant::Composite(p, c) => {
+            TypeVariantLiteral::Composite(p, c) => {
                 let variants = c
                     .into_iter()
                     .map(|l| TypeVariant::from_literal(l, scopes, current_scope))
@@ -33,7 +33,7 @@ impl TypeVariant {
                     variants,
                 ))
             }
-            TypeLiteralVariant::Type(t) => Ok(TypeVariant::Type(NalaType::from_literal(
+            TypeVariantLiteral::Type(t) => Ok(TypeVariant::Type(NalaType::from_literal(
                 t,
                 scopes,
                 current_scope,

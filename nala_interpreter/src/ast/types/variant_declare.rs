@@ -1,11 +1,11 @@
 use std::fmt;
 
-use super::type_literal_variant::TypeLiteralVariant;
+use super::type_literal_variant::TypeVariantLiteral;
 
 #[derive(Eq, Debug, Clone)]
 pub enum VariantDeclare {
     Empty(String),
-    Data(String, TypeLiteralVariant),
+    Data(String, TypeVariantLiteral),
 }
 
 impl fmt::Display for VariantDeclare {

@@ -18,7 +18,7 @@ use self::funcs::*;
 use self::math::*;
 use self::objects::*;
 use self::types::enum_variant::EnumVariantOrAddend;
-use self::types::type_literal_variant::TypeLiteralVariant;
+use self::types::type_literal_variant::TypeVariantLiteral;
 use self::types::variant_declare::VariantDeclare;
 use self::types::StructLiteralField;
 
@@ -44,7 +44,7 @@ impl fmt::Debug for FuncVariant {
 pub enum Stmt {
     Assign(PlaceExpression, Expr),
     Break(Expr),
-    Declare(String, Expr, Option<TypeLiteralVariant>, bool),
+    Declare(String, Expr, Option<TypeVariantLiteral>, bool),
     Enum(String, Option<String>, Vec<VariantDeclare>),
     Expr(Expr),
     For(String, Expr, Box<Stmts>),

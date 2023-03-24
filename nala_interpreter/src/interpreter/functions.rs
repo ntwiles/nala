@@ -5,7 +5,7 @@ use super::{basic::*, variables::*};
 use crate::{
     ast::{
         funcs::{Call, FuncDeclare, ParamDeclare},
-        types::type_literal_variant::TypeLiteralVariant,
+        types::type_literal_variant::TypeVariantLiteral,
         *,
     },
     errors::*,
@@ -115,7 +115,7 @@ fn check_param_types(
 
 fn check_param_type(
     ident: &str,
-    param_type: &TypeLiteralVariant,
+    param_type: &TypeVariantLiteral,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Param, RuntimeError> {
@@ -170,7 +170,7 @@ pub fn eval_call(
 }
 
 fn handle_type_args(
-    type_args: &Option<TypeLiteralVariant>,
+    type_args: &Option<TypeVariantLiteral>,
     type_params: Option<String>,
     scopes: &mut Scopes,
     call_scope: usize,

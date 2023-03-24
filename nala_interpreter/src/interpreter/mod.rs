@@ -12,7 +12,7 @@ use crate::{
     ast::{
         terms::*,
         types::{
-            type_literal::TypeLiteral, type_literal_variant::TypeLiteralVariant,
+            type_literal::TypeLiteral, type_literal_variant::TypeVariantLiteral,
             variant_declare::VariantDeclare,
         },
         *,
@@ -60,7 +60,7 @@ fn load_builtin_types(scopes: &mut Scopes, current_scope: usize) -> Result<(), R
     let variants = vec![
         VariantDeclare::Data(
             String::from("Some"),
-            TypeLiteralVariant::Type(TypeLiteral::UserDefined(String::from("T"))),
+            TypeVariantLiteral::Type(TypeLiteral::UserDefined(String::from("T"))),
         ),
         VariantDeclare::Empty(String::from("None")),
     ];

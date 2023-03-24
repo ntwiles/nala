@@ -1,4 +1,4 @@
-use self::type_literal_variant::TypeLiteralVariant;
+use self::type_literal_variant::TypeVariantLiteral;
 
 pub mod enum_variant;
 pub mod primitive_type;
@@ -9,7 +9,7 @@ pub mod variant_declare;
 #[derive(Debug, Clone)]
 pub enum StructLiteralFieldValue {
     Nested(Vec<StructLiteralField>),
-    Type(TypeLiteralVariant),
+    Type(TypeVariantLiteral),
 }
 
 #[derive(Debug, Clone)]
