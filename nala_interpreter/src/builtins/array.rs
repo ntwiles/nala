@@ -5,7 +5,6 @@ use std::{
 
 use crate::{
     ast::{
-        funcs::*,
         terms::*,
         types::{
             primitive_type::PrimitiveType, type_literal::TypeLiteral,
@@ -15,13 +14,14 @@ use crate::{
     },
     errors::RuntimeError,
     io_context::IoContext,
+    types::{type_variant::TypeVariant, NalaType},
 };
 
-pub fn get_len_block() -> Func {
-    let inner_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Any));
+pub fn get_len_block() -> FuncValue {
+    let inner_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any));
 
-    let outer_type = TypeLiteralVariant::Composite(
-        TypeLiteral::PrimitiveType(PrimitiveType::Array),
+    let outer_type = TypeVariant::Composite(
+        NalaType::PrimitiveType(PrimitiveType::Array),
         vec![inner_type],
     );
 
@@ -32,20 +32,20 @@ pub fn get_len_block() -> Func {
 
     let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
 
-    Func {
-        ident: "len".to_string(),
+    FuncValue {
         params,
         return_type,
         type_params: None,
+        closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_len)),
     }
 }
 
-pub fn get_slice_block() -> Func {
-    let inner_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Any));
+pub fn get_slice_block() -> FuncValue {
+    let inner_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any));
 
-    let outer_type = TypeLiteralVariant::Composite(
-        TypeLiteral::PrimitiveType(PrimitiveType::Array),
+    let outer_type = TypeVariant::Composite(
+        NalaType::PrimitiveType(PrimitiveType::Array),
         vec![inner_type],
     );
 
@@ -56,12 +56,12 @@ pub fn get_slice_block() -> Func {
 
     let start_param = Param {
         ident: String::from("start"),
-        param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number)),
+        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
     };
 
     let end_param = Param {
         ident: String::from("end"),
-        param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number)),
+        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
     };
 
     let inner_return_type =
@@ -72,11 +72,11 @@ pub fn get_slice_block() -> Func {
         vec![inner_return_type],
     );
 
-    Func {
-        ident: "slice".to_string(),
+    FuncValue {
         params: vec![array_param, start_param, end_param],
         return_type,
         type_params: None,
+        closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_slice)),
     }
 }

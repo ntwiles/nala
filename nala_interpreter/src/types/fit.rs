@@ -31,7 +31,10 @@ pub fn fits_type(
             }
             NalaType::Struct(_fields) => todo!(), // TODO: Support generic structs.
             NalaType::Generic(_) => todo!(),
-            _ => unreachable!(), // The remaining primitive types aren't composite.
+            _ => Err(RuntimeError::new(&format!(
+                "Type `{outer}` does not support type arguments. Type `{outer}<{}>` is invalid.",
+                inner[0] // TODO: We're just assuming there's only one type arg, this will be wrong later.
+            )))?,
         },
         TypeVariant::Type(the_type) => match the_type {
             NalaType::PrimitiveType(PrimitiveType::Any) => Ok(true),

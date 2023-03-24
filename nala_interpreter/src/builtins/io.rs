@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use crate::{
     ast::{
-        funcs::*,
         terms::*,
         types::{
             primitive_type::PrimitiveType, type_literal::TypeLiteral,
@@ -12,45 +11,46 @@ use crate::{
     },
     errors::RuntimeError,
     io_context::IoContext,
+    types::{type_variant::TypeVariant, NalaType},
 };
 
-pub fn get_print_block() -> Func {
+pub fn get_print_block() -> FuncValue {
     let message_param = Param {
         ident: String::from("message"),
-        param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Any)),
+        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any)),
     };
 
     let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Void));
 
-    Func {
-        ident: "print".to_string(),
+    FuncValue {
         params: vec![message_param],
         return_type,
         type_params: None,
+        closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_print)),
     }
 }
 
-pub fn get_read_block() -> Func {
+pub fn get_read_block() -> FuncValue {
     let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String));
 
-    Func {
-        ident: "read".to_string(),
+    FuncValue {
         params: vec![],
         return_type,
         type_params: None,
+        closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_read)),
     }
 }
 
-pub fn get_readnum_block() -> Func {
+pub fn get_readnum_block() -> FuncValue {
     let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
 
-    Func {
-        ident: "readnum".to_string(),
+    FuncValue {
         params: vec![],
         return_type,
         type_params: None,
+        closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_readnum)),
     }
 }

@@ -49,7 +49,7 @@ pub enum Stmt {
     Enum(String, Option<String>, Vec<VariantDeclare>),
     Expr(Expr),
     For(String, Expr, Box<Stmts>),
-    Func(Func),
+    Func(FuncDeclare),
     IfElseChain(Box<IfElseChain>),
     Wiles(Expr, Box<Stmts>),
     Struct(String, Option<String>, Vec<StructLiteralField>),

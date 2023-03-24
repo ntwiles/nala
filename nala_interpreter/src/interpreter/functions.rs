@@ -3,27 +3,20 @@ use std::collections::HashMap;
 use super::{basic::*, variables::*};
 
 use crate::{
-    ast::{
-        funcs::*,
-        terms::*,
-        types::{
-            primitive_type::PrimitiveType, type_literal::TypeLiteral,
-            type_literal_variant::TypeLiteralVariant,
-        },
-        *,
-    },
+    ast::{funcs::*, terms::*, types::type_literal_variant::TypeLiteralVariant, *},
     errors::*,
     io_context::IoContext,
     scopes::{type_binding::TypeBinding, Scopes},
     types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
+    utils::accept_results,
 };
 
-pub fn eval_func(
-    func: Func,
+pub fn eval_func_declare(
+    func: FuncDeclare,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    let Func {
+    let FuncDeclare {
         ident,
         block,
         params,
@@ -31,7 +24,7 @@ pub fn eval_func(
         type_params,
     } = func;
 
-    check_param_types(&params, scopes, current_scope)?;
+    let params = check_param_types(&params, scopes, current_scope)?;
 
     let closure_scope = scopes.new_scope(Some(current_scope));
 
@@ -58,47 +51,71 @@ pub fn eval_func(
     )
 }
 
-fn check_param_types(
-    params: &Vec<Param>,
+pub fn eval_builtin_declare(
+    ident: String,
+    func: FuncValue,
     scopes: &mut Scopes,
     current_scope: usize,
-) -> Result<(), RuntimeError> {
-    let mut results = params
-        .iter()
-        .map(|p| check_param_type(&p.param_type, scopes, current_scope));
+) -> Result<Value, RuntimeError> {
+    let FuncValue {
+        block,
+        params,
+        return_type,
+        closure_scope: _,
+        type_params,
+    } = func;
 
-    if let Some(Err(err)) = results.find(|r| r.is_err()) {
-        Err(err)
-    } else {
-        Ok(())
-    }
+    let closure_scope = scopes.new_scope(Some(current_scope));
+
+    if let Some(type_param) = &type_params {
+        scopes.add_type_binding(
+            &type_param,
+            closure_scope,
+            TypeBinding::Generic(type_param.clone()),
+        )?;
+    };
+
+    scopes.add_binding(
+        &ident,
+        Value::Func(FuncValue {
+            block,
+            params,
+            return_type,
+            type_params,
+            closure_scope,
+        }),
+        None,
+        current_scope,
+        false,
+    )
+}
+
+// TODO: These aren't really doing checking anymore, they're just converting the literal types to regular types.
+fn check_param_types(
+    params: &Vec<ParamDeclare>,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<Vec<Param>, RuntimeError> {
+    let results = params
+        .iter()
+        .map(|p| check_param_type(&p.ident, &p.param_type, scopes, current_scope))
+        .collect();
+
+    return accept_results(results);
 }
 
 fn check_param_type(
+    ident: &str,
     param_type: &TypeLiteralVariant,
     scopes: &mut Scopes,
     current_scope: usize,
-) -> Result<(), RuntimeError> {
-    if let TypeLiteralVariant::Composite(outer, inner) = param_type {
-        match outer {
-            TypeLiteral::PrimitiveType(outer) => match outer {
-                PrimitiveType::Array => Ok(()),
-                PrimitiveType::Func => Ok(()),
-                _ => Err(type_args_not_supported_error(outer.to_string(), inner)),
-            },
-            TypeLiteral::UserDefined(ident) => {
-                let binding = scopes.get_type(&ident, current_scope)?;
+) -> Result<Param, RuntimeError> {
+    let param_type = TypeVariant::from_literal(param_type.clone(), scopes, current_scope)?;
 
-                if binding.get_generic_ident().is_some() {
-                    Ok(())
-                } else {
-                    Err(type_args_not_supported_error(outer.to_string(), inner))
-                }
-            }
-        }
-    } else {
-        Ok(())
-    }
+    Ok(Param {
+        ident: ident.to_string(),
+        param_type,
+    })
 }
 
 pub fn eval_call(
@@ -191,13 +208,11 @@ fn handle_args(
     for (i, param) in params.iter().enumerate() {
         let arg = args.get(i).unwrap();
 
-        let param_type = TypeVariant::from_literal(param.param_type.clone(), scopes, call_scope)?;
-
-        if !fits_type(arg, &param_type, scopes, current_scope)? {
+        if !fits_type(arg, &param.param_type, scopes, current_scope)? {
             return Err(wrong_arg_type_for_param_error(
                 arg,
                 infer_type(&arg, scopes, current_scope)?.to_string(),
-                param_type.to_string(),
+                param.param_type.to_string(),
             ));
         }
 
@@ -206,18 +221,6 @@ fn handle_args(
     }
 
     Ok(param_args)
-}
-
-fn type_args_not_supported_error(outer: String, inner: &Vec<TypeLiteralVariant>) -> RuntimeError {
-    let inner = inner
-        .iter()
-        .map(|i| i.to_string())
-        .collect::<Vec<String>>()
-        .join(", ");
-
-    RuntimeError::new(&format!(
-        "Type `{outer}` does not support type arguments. Type `{outer}<{inner}>` is invalid."
-    ))
 }
 
 fn wrong_arg_type_for_param_error(

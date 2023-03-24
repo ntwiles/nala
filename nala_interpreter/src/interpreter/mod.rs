@@ -84,8 +84,8 @@ fn load_builtin_constants(scopes: &mut Scopes, top_scope: usize, ctx: &mut impl 
 }
 
 fn load_builtin_functions(scopes: &mut Scopes, top_scope: usize) -> Result<(), RuntimeError> {
-    for func in get_builtins(scopes, top_scope)?.into_iter() {
-        if let Err(e) = eval_func(func, scopes, top_scope) {
+    for (ident, func) in get_builtins(scopes, top_scope)?.into_iter() {
+        if let Err(e) = eval_builtin_declare(ident, func, scopes, top_scope) {
             panic!("Error loading builtin functions: {0}", e.message)
         }
     }

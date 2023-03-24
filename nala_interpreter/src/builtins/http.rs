@@ -8,7 +8,6 @@ use serde_json;
 
 use crate::{
     ast::{
-        funcs::*,
         terms::*,
         types::{
             primitive_type::PrimitiveType, type_literal::TypeLiteral,
@@ -22,7 +21,7 @@ use crate::{
     types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
 };
 
-pub fn get_http_block(scopes: &mut Scopes, scope: usize) -> Result<Func, RuntimeError> {
+pub fn get_http_block(scopes: &mut Scopes, scope: usize) -> Result<FuncValue, RuntimeError> {
     // TODO: Once we have generic function implemented we can let require that users pass the return type.
     let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Any));
 
@@ -41,18 +40,23 @@ pub fn get_http_block(scopes: &mut Scopes, scope: usize) -> Result<Func, Runtime
         },
     ];
 
-    scopes.add_type_binding("HttpOptions", scope, TypeBinding::Struct(options_fields))?;
+    // TODO: Should we be binding this type here?
+    scopes.add_type_binding(
+        "HttpOptions",
+        scope,
+        TypeBinding::Struct(options_fields.clone()),
+    )?;
 
     let params = vec![Param {
         ident: String::from("options"),
-        param_type: TypeLiteralVariant::Type(TypeLiteral::UserDefined("HttpOptions".to_string())),
+        param_type: TypeVariant::Type(NalaType::Struct(options_fields)),
     }];
 
-    Ok(Func {
-        ident: "http".to_string(),
+    Ok(FuncValue {
         params,
         return_type,
         type_params: None,
+        closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_http)),
     })
 }

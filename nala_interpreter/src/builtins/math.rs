@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use crate::{
     ast::{
-        funcs::*,
         terms::*,
         types::{
             primitive_type::PrimitiveType, type_literal::TypeLiteral,
@@ -12,21 +11,22 @@ use crate::{
     },
     errors::RuntimeError,
     io_context::IoContext,
+    types::{type_variant::TypeVariant, NalaType},
 };
 
-pub fn get_floor_block() -> Func {
+pub fn get_floor_block() -> FuncValue {
     let num_param = Param {
         ident: String::from("num"),
-        param_type: TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number)),
+        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
     };
 
     let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
 
-    Func {
-        ident: "floor".to_string(),
+    FuncValue {
         params: vec![num_param],
         return_type,
         type_params: None,
+        closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_floor)),
     }
 }

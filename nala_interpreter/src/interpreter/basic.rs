@@ -66,7 +66,7 @@ fn eval_stmt(
         ),
         Stmt::Expr(expr) => eval_expr(expr, scopes, current_scope, ctx),
         Stmt::For(ident, expr, block) => eval_for(ident, &expr, block, scopes, current_scope, ctx),
-        Stmt::Func(func) => eval_func(func.clone(), scopes, current_scope),
+        Stmt::Func(func) => eval_func_declare(func.clone(), scopes, current_scope),
         Stmt::IfElseChain(chain) => eval_if_else_chain(chain, scopes, current_scope, ctx),
         Stmt::Match(the_match) => eval_match(the_match, scopes, current_scope, ctx),
         Stmt::Struct(ident, type_params, fields) => eval_struct(

@@ -29,12 +29,8 @@ pub fn infer_type(
             return_type,
             ..
         }) => {
-            let param_types = params
-                .into_iter()
-                .map(|p| TypeVariant::from_literal(p.clone().param_type, scopes, current_scope))
-                .collect();
-
-            let mut param_types = accept_results(param_types)?;
+            let mut param_types: Vec<TypeVariant> =
+                params.into_iter().map(|p| p.clone().param_type).collect();
 
             param_types.push(TypeVariant::from_literal(
                 return_type.clone(),
