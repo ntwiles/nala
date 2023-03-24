@@ -15,7 +15,6 @@ pub enum PrimitiveType {
     Func,
     Number,
     String,
-    Symbol,
     Void,
     Any,
 }
@@ -29,7 +28,6 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Func => "Func",
             PrimitiveType::Number => "Number",
             PrimitiveType::String => "String",
-            PrimitiveType::Symbol => "<Symbol>",
             PrimitiveType::Void => "Void",
             PrimitiveType::Any => "Any",
         };
