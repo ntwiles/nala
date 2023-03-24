@@ -41,11 +41,11 @@ Stmt: ast::Stmt = {
     <c:IfElseChain> => ast::Stmt::IfElseChain(Box::new(c)),
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
-    "func" <s:Symbol> "(" <p:Params> ")" ":" <r:TypeVariant> <b:Block> => 
-        ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, return_type: r, block: Box::new(ast::FuncVariant::Nala(b))}),
+    "func" <s:Symbol> <t:TypeParams?> "(" <p:Params> ")" ":" <r:TypeVariant> <b:Block> => 
+        ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, return_type: r, type_params: t, block: Box::new(ast::FuncVariant::Nala(b))}),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
-    "struct" <s:Symbol> <t:TypeArgs?> "{" <ff:StructFields> "}" => ast::Stmt::Struct(s, t, ff),
-    "enum" <s:Symbol> <t:TypeArgs?> "{" <v:VariantsDeclare> "}" => ast::Stmt::Enum(s, t, v),
+    "struct" <s:Symbol> <t:TypeArgs?> "{" <ff:StructFields> "}" => ast::Stmt::Struct(s, t, ff), // TODO: TypeParams instead of TypeArgs
+    "enum" <s:Symbol> <t:TypeArgs?> "{" <v:VariantsDeclare> "}" => ast::Stmt::Enum(s, t, v), // TODO: TypeParams instead of TypeArgs
     <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <Expr> ";" => ast::Stmt::Expr(<>),
     <Match> => ast::Stmt::Match(<>)
@@ -53,6 +53,10 @@ Stmt: ast::Stmt = {
 
 TypeDeclaration: ast::types::type_literal_variant::TypeLiteralVariant = {
     ":" <TypeVariant> => <>
+};
+
+TypeParams: String = {
+    "<" <s:Symbol> ">" => s
 };
 
 TypeArgs: ast::types::TypeArgs = {

@@ -5,6 +5,7 @@ pub struct Func {
     pub ident: String,
     pub params: Vec<Param>,
     pub return_type: TypeLiteralVariant,
+    pub type_params: Option<String>,
     pub block: Box<FuncVariant>,
 }
 

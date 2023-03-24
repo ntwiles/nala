@@ -26,6 +26,7 @@ pub fn get_void_block() -> Func {
         ident: "void".to_string(),
         params: vec![param],
         return_type,
+        type_params: None,
         block: Box::new(FuncVariant::Builtin(builtin_void)),
     }
 }

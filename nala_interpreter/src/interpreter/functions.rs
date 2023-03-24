@@ -28,6 +28,7 @@ pub fn eval_func(
         block,
         params,
         return_type,
+        type_params: _,
     } = func;
 
     check_param_types(&params, scopes, current_scope)?;

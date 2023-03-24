@@ -26,6 +26,7 @@ pub fn get_print_block() -> Func {
         ident: "print".to_string(),
         params: vec![message_param],
         return_type,
+        type_params: None,
         block: Box::new(FuncVariant::Builtin(builtin_print)),
     }
 }
@@ -37,6 +38,7 @@ pub fn get_read_block() -> Func {
         ident: "read".to_string(),
         params: vec![],
         return_type,
+        type_params: None,
         block: Box::new(FuncVariant::Builtin(builtin_read)),
     }
 }
@@ -48,6 +50,7 @@ pub fn get_readnum_block() -> Func {
         ident: "readnum".to_string(),
         params: vec![],
         return_type,
+        type_params: None,
         block: Box::new(FuncVariant::Builtin(builtin_readnum)),
     }
 }

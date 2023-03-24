@@ -52,6 +52,7 @@ pub fn get_http_block(scopes: &mut Scopes, scope: usize) -> Result<Func, Runtime
         ident: "http".to_string(),
         params,
         return_type,
+        type_params: None,
         block: Box::new(FuncVariant::Builtin(builtin_http)),
     })
 }

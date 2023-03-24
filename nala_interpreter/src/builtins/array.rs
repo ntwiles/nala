@@ -36,6 +36,7 @@ pub fn get_len_block() -> Func {
         ident: "len".to_string(),
         params,
         return_type,
+        type_params: None,
         block: Box::new(FuncVariant::Builtin(builtin_len)),
     }
 }
@@ -75,6 +76,7 @@ pub fn get_slice_block() -> Func {
         ident: "slice".to_string(),
         params: vec![array_param, start_param, end_param],
         return_type,
+        type_params: None,
         block: Box::new(FuncVariant::Builtin(builtin_slice)),
     }
 }
