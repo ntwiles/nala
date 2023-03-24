@@ -28,3 +28,19 @@ fn it_allows_generic_enum_variant_assign() {
     assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["Some(1)"]);
 }
+
+#[test]
+fn it_allows_generic_func_declare() {
+    let mut ctx = TestContext::new();
+
+    let nala = r#"
+        func foo<T>(value: T): Void {
+            print(value);
+        }
+
+        print('test');
+    "#;
+
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["test"]);
+}

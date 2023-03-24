@@ -24,8 +24,6 @@ pub fn eval_func_declare(
         type_params,
     } = func;
 
-    let params = check_param_types(&params, scopes, current_scope)?;
-
     let closure_scope = scopes.new_scope(Some(current_scope));
 
     if let Some(type_param) = &type_params {
@@ -36,6 +34,7 @@ pub fn eval_func_declare(
         )?;
     };
 
+    let params = check_param_types(&params, scopes, closure_scope)?;
     let return_type = TypeVariant::from_literal(return_type, scopes, current_scope)?;
 
     scopes.add_binding(

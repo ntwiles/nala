@@ -79,8 +79,8 @@ fn it_errors_if_not_enough_info_for_inference() {
 //     Baz
 // }
 
-// func foo<T>(param: MyEnum<T> ): Void {
-//     print(MyEnum::Foo(param));
+// func foo<T>(param: MyEnum<T> ): MyEnum<Number> {
+//     param;
 // }
 
 // foo(MyEnum::Bar(7));

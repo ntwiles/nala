@@ -160,13 +160,14 @@ impl fmt::Debug for Value {
                 ..
             }) => {
                 let data = if let Some(data) = data {
-                    format!("({0})", data)
+                    format!("({0:?})", data)
                 } else {
                     "".to_string()
                 };
 
                 write!(f, "{variant_ident}{data}")
             }
+            Value::Void => write!(f, "<Void>"),
             value => todo!("Implement Debug for Value {value}"),
         }
     }
@@ -227,7 +228,7 @@ impl fmt::Display for Value {
 
                 write!(f, "{variant_ident}{data}")
             }
-            Value::Void => write!(f, "Void"),
+            Value::Void => write!(f, "<Void>"),
         }
     }
 }
