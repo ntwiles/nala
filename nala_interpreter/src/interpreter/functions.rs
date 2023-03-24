@@ -36,6 +36,8 @@ pub fn eval_func_declare(
         )?;
     };
 
+    let return_type = TypeVariant::from_literal(return_type, scopes, current_scope)?;
+
     scopes.add_binding(
         &ident,
         Value::Func(FuncValue {
@@ -145,9 +147,6 @@ pub fn eval_call(
                     FuncVariant::Nala(stmts) => eval_stmts(&stmts, scopes, call_scope, ctx)?,
                     FuncVariant::Builtin(func) => func(args, ctx)?,
                 };
-
-                let expected_return_type =
-                    TypeVariant::from_literal(expected_return_type, scopes, current_scope)?;
 
                 if fits_type(&return_value, &expected_return_type, scopes, current_scope)? {
                     Ok(return_value)

@@ -3,10 +3,7 @@ use std::collections::HashMap;
 use crate::{
     ast::{
         terms::{FuncValue, Param, Value},
-        types::{
-            primitive_type::PrimitiveType, type_literal::TypeLiteral,
-            type_literal_variant::TypeLiteralVariant,
-        },
+        types::primitive_type::PrimitiveType,
         FuncVariant,
     },
     errors::RuntimeError,
@@ -20,7 +17,7 @@ pub fn get_void_block() -> FuncValue {
         param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
     };
 
-    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Void));
+    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void));
 
     FuncValue {
         params: vec![param],

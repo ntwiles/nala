@@ -32,11 +32,7 @@ pub fn infer_type(
             let mut param_types: Vec<TypeVariant> =
                 params.into_iter().map(|p| p.clone().param_type).collect();
 
-            param_types.push(TypeVariant::from_literal(
-                return_type.clone(),
-                scopes,
-                current_scope,
-            )?);
+            param_types.push(return_type.clone());
 
             TypeVariant::Composite(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
         }

@@ -23,9 +23,7 @@ pub fn fits_type(
                 fits_array(inner, value, scopes, current_scope)
             }
             NalaType::PrimitiveType(PrimitiveType::Break) => todo!(),
-            NalaType::PrimitiveType(PrimitiveType::Func) => {
-                fits_func(inner, value, scopes, current_scope)
-            }
+            NalaType::PrimitiveType(PrimitiveType::Func) => fits_func(inner, value),
             NalaType::Enum(enum_ident, variants) => {
                 fits_enum(value, inner, enum_ident, variants, scopes, current_scope)
             }
@@ -79,17 +77,9 @@ fn fits_array(
     }
 }
 
-fn fits_func(
-    inner: &Vec<TypeVariant>,
-    value: &Value,
-    scopes: &mut Scopes,
-    current_scope: usize,
-) -> Result<bool, RuntimeError> {
+fn fits_func(inner: &Vec<TypeVariant>, value: &Value) -> Result<bool, RuntimeError> {
     if let Value::Func(FuncValue { return_type, .. }) = value {
-        Ok(
-            TypeVariant::from_literal(return_type.clone(), scopes, current_scope)?
-                == inner.last().unwrap().clone(),
-        )
+        Ok(return_type == &inner.last().unwrap().clone())
     } else {
         Ok(false)
     }

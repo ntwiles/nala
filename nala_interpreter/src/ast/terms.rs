@@ -25,7 +25,7 @@ pub enum Term {
 pub struct FuncValue {
     pub block: Box<FuncVariant>,
     pub params: Vec<Param>,
-    pub return_type: TypeLiteralVariant,
+    pub return_type: TypeVariant,
     pub type_params: Option<String>,
     pub closure_scope: usize,
 }

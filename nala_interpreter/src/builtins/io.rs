@@ -1,14 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    ast::{
-        terms::*,
-        types::{
-            primitive_type::PrimitiveType, type_literal::TypeLiteral,
-            type_literal_variant::TypeLiteralVariant,
-        },
-        *,
-    },
+    ast::{terms::*, types::primitive_type::PrimitiveType, *},
     errors::RuntimeError,
     io_context::IoContext,
     types::{type_variant::TypeVariant, NalaType},
@@ -20,7 +13,7 @@ pub fn get_print_block() -> FuncValue {
         param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any)),
     };
 
-    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Void));
+    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void));
 
     FuncValue {
         params: vec![message_param],
@@ -32,7 +25,7 @@ pub fn get_print_block() -> FuncValue {
 }
 
 pub fn get_read_block() -> FuncValue {
-    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::String));
+    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String));
 
     FuncValue {
         params: vec![],
@@ -44,7 +37,7 @@ pub fn get_read_block() -> FuncValue {
 }
 
 pub fn get_readnum_block() -> FuncValue {
-    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
+    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number));
 
     FuncValue {
         params: vec![],

@@ -7,14 +7,7 @@ use reqwest;
 use serde_json;
 
 use crate::{
-    ast::{
-        terms::*,
-        types::{
-            primitive_type::PrimitiveType, type_literal::TypeLiteral,
-            type_literal_variant::TypeLiteralVariant,
-        },
-        *,
-    },
+    ast::{terms::*, types::primitive_type::PrimitiveType, *},
     errors::RuntimeError,
     io_context::IoContext,
     scopes::{type_binding::TypeBinding, Scopes},
@@ -22,8 +15,7 @@ use crate::{
 };
 
 pub fn get_http_block(scopes: &mut Scopes, scope: usize) -> Result<FuncValue, RuntimeError> {
-    // TODO: Once we have generic function implemented we can let require that users pass the return type.
-    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Any));
+    let return_type = TypeVariant::Type(NalaType::Generic(String::from("T")));
 
     let options_fields = vec![
         StructField {

@@ -1,14 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    ast::{
-        terms::*,
-        types::{
-            primitive_type::PrimitiveType, type_literal::TypeLiteral,
-            type_literal_variant::TypeLiteralVariant,
-        },
-        *,
-    },
+    ast::{terms::*, types::primitive_type::PrimitiveType, *},
     errors::RuntimeError,
     io_context::IoContext,
     types::{type_variant::TypeVariant, NalaType},
@@ -20,7 +13,7 @@ pub fn get_floor_block() -> FuncValue {
         param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
     };
 
-    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
+    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number));
 
     FuncValue {
         params: vec![num_param],

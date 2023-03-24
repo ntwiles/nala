@@ -4,14 +4,7 @@ use std::{
 };
 
 use crate::{
-    ast::{
-        terms::*,
-        types::{
-            primitive_type::PrimitiveType, type_literal::TypeLiteral,
-            type_literal_variant::TypeLiteralVariant,
-        },
-        *,
-    },
+    ast::{terms::*, types::primitive_type::PrimitiveType, *},
     errors::RuntimeError,
     io_context::IoContext,
     types::{type_variant::TypeVariant, NalaType},
@@ -30,7 +23,7 @@ pub fn get_len_block() -> FuncValue {
         param_type: outer_type,
     }];
 
-    let return_type = TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Number));
+    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number));
 
     FuncValue {
         params,
@@ -64,11 +57,10 @@ pub fn get_slice_block() -> FuncValue {
         param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
     };
 
-    let inner_return_type =
-        TypeLiteralVariant::Type(TypeLiteral::PrimitiveType(PrimitiveType::Any));
+    let inner_return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Any));
 
-    let return_type = TypeLiteralVariant::Composite(
-        TypeLiteral::PrimitiveType(PrimitiveType::Array),
+    let return_type = TypeVariant::Composite(
+        NalaType::PrimitiveType(PrimitiveType::Array),
         vec![inner_return_type],
     );
 
