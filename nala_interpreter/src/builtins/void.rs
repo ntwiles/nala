@@ -1,13 +1,10 @@
 use std::collections::HashMap;
 
 use crate::{
-    ast::{
-        terms::{FuncValue, Param, Value},
-        types::primitive_type::PrimitiveType,
-        FuncVariant,
-    },
+    ast::{terms::Value, types::primitive_type::PrimitiveType, FuncVariant},
     errors::RuntimeError,
     io_context::IoContext,
+    resolved::func_value::{FuncValue, Param},
     types::{type_variant::TypeVariant, NalaType},
 };
 

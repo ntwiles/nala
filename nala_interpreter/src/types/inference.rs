@@ -2,10 +2,11 @@ use std::sync::{Arc, Mutex};
 
 use crate::{
     ast::{
-        terms::{EnumVariantValue, FuncValue, Value},
+        terms::{EnumVariantValue, Value},
         types::{primitive_type::PrimitiveType, variant_declare::VariantDeclare},
     },
     errors::RuntimeError,
+    resolved::func_value::FuncValue,
     scopes::Scopes,
     utils::accept_results,
 };

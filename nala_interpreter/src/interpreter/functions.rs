@@ -3,9 +3,15 @@ use std::collections::HashMap;
 use super::{basic::*, variables::*};
 
 use crate::{
-    ast::{funcs::*, terms::*, types::type_literal_variant::TypeLiteralVariant, *},
+    ast::{
+        funcs::{Call, FuncDeclare, ParamDeclare},
+        terms::*,
+        types::type_literal_variant::TypeLiteralVariant,
+        *,
+    },
     errors::*,
     io_context::IoContext,
+    resolved::func_value::{FuncValue, Param},
     scopes::{type_binding::TypeBinding, Scopes},
     types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
     utils::accept_results,

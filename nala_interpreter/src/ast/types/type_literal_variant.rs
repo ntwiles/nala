@@ -2,6 +2,7 @@ use std::fmt;
 
 use super::type_literal::TypeLiteral;
 
+// TODO: Rename to TypeVariantLiteral
 #[derive(Eq, Debug, Clone)]
 pub enum TypeLiteralVariant {
     Composite(TypeLiteral, Vec<TypeLiteralVariant>),

@@ -10,6 +10,7 @@ use crate::{
     ast::{terms::*, types::primitive_type::PrimitiveType, *},
     errors::RuntimeError,
     io_context::IoContext,
+    resolved::func_value::{FuncValue, Param},
     scopes::{type_binding::TypeBinding, Scopes},
     types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
 };

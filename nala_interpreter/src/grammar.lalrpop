@@ -185,7 +185,7 @@ Call: ast::funcs::Call = {
     <Value> => ast::funcs::Call::Value(<>),
 };
 
-// TODO: This uses Rust-style turbofish just to avoid a conflict. Do we really need to do that?
+// TODO: This uses Rust-style turbofish just to avoid a parse conflict. Do we really need to do that?
 CallTypeArgs: ast::types::type_literal_variant::TypeLiteralVariant = {
     "::<" <t:TypeVariant> ">" => <>,
 }

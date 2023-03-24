@@ -4,9 +4,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use super::*;
-
-use crate::types::type_variant::TypeVariant;
+use crate::resolved::func_value::FuncValue;
 
 #[derive(Debug, Clone)]
 pub enum SymbolOrTerm {
@@ -20,29 +18,14 @@ pub enum Term {
     Value(Value),
 }
 
-// TODO: This should not be part of the AST because it user TypeVariant instead of TypeLiteralVariant.
-#[derive(Debug, Clone)]
-pub struct FuncValue {
-    pub block: Box<FuncVariant>,
-    pub params: Vec<Param>,
-    pub return_type: TypeVariant,
-    pub type_params: Option<String>,
-    pub closure_scope: usize,
-}
-
-// TODO: This should not be part of the AST because it user TypeVariant instead of TypeLiteralVariant.
-#[derive(Debug, Clone)]
-pub struct Param {
-    pub ident: String,
-    pub param_type: TypeVariant,
-}
-
 #[derive(Debug, Clone)]
 pub struct EnumVariantValue {
     pub enum_ident: String,
     pub variant_ident: String,
     pub data: Option<Box<Value>>,
 }
+
+// TODO: Move this out of AST, this is a resolved value;
 
 #[derive(Clone)]
 pub enum Value {
