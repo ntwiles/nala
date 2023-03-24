@@ -20,9 +20,10 @@ pub enum Term {
 
 #[derive(Debug, Clone)]
 pub struct FuncValue {
+    pub block: Box<FuncVariant>,
     pub params: Vec<Param>,
     pub return_type: TypeLiteralVariant,
-    pub block: Box<FuncVariant>,
+    pub type_params: Option<String>,
     pub closure_scope: usize,
 }
 

@@ -14,7 +14,7 @@ use crate::{
     },
     errors::*,
     io_context::IoContext,
-    scopes::Scopes,
+    scopes::{type_binding::TypeBinding, Scopes},
     types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
 };
 
@@ -28,19 +28,28 @@ pub fn eval_func(
         block,
         params,
         return_type,
-        type_params: _,
+        type_params,
     } = func;
 
     check_param_types(&params, scopes, current_scope)?;
 
     let closure_scope = scopes.new_scope(Some(current_scope));
 
+    if let Some(type_param) = &type_params {
+        scopes.add_type_binding(
+            &type_param,
+            closure_scope,
+            TypeBinding::Generic(type_param.clone()),
+        )?;
+    };
+
     scopes.add_binding(
         &ident,
         Value::Func(FuncValue {
+            block,
             params,
             return_type,
-            block,
+            type_params,
             closure_scope,
         }),
         None,
@@ -106,6 +115,7 @@ pub fn eval_call(
                 params,
                 block,
                 closure_scope,
+                type_params: _,
                 return_type: expected_return_type,
             }) = block
             {
@@ -127,7 +137,7 @@ pub fn eval_call(
                     let arg = args.get(i).unwrap();
 
                     let param_type =
-                        TypeVariant::from_literal(param.param_type.clone(), scopes, current_scope)?;
+                        TypeVariant::from_literal(param.param_type.clone(), scopes, call_scope)?;
 
                     if !fits_type(arg, &param_type, scopes, current_scope)? {
                         return Err(wrong_arg_type_for_param_error(

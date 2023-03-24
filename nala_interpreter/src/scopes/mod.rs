@@ -131,7 +131,7 @@ impl Scopes {
         ident: &str,
         current_scope: usize,
         value: TypeBinding,
-    ) -> Result<Value, RuntimeError> {
+    ) -> Result<(), RuntimeError> {
         if self.type_binding_exists_local(ident, current_scope) {
             Err(RuntimeError::new(&format!(
                 "Binding for type {ident} already exists in local scope."
@@ -139,7 +139,7 @@ impl Scopes {
         } else {
             let scope = self.scopes.get_mut(current_scope).unwrap();
             scope.add_type_binding(ident, value);
-            Ok(Value::Void)
+            Ok(())
         }
     }
 

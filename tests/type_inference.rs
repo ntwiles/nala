@@ -69,3 +69,18 @@ fn it_errors_if_not_enough_info_for_inference() {
     assert!(result.is_err());
     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
+
+// TODO: Create test for the below case; passing MyEnum::Bar(7) should throw an error as there is not
+// enough information for type inference, but it doesn't.
+
+// enum MyEnum<T> {
+//     Foo(T),
+//     Bar(Number),
+//     Baz
+// }
+
+// func foo<T>(param: MyEnum<T> ): Void {
+//     print(MyEnum::Foo(param));
+// }
+
+// foo(MyEnum::Bar(7));
