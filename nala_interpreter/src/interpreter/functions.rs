@@ -5,13 +5,15 @@ use super::{basic::*, variables::*};
 use crate::{
     ast::{
         funcs::{Call, FuncDeclare, ParamDeclare},
-        terms::*,
         types::type_literal_variant::TypeLiteralVariant,
         *,
     },
     errors::*,
     io_context::IoContext,
-    resolved::func_value::{FuncValue, Param},
+    resolved::{
+        func_value::{FuncValue, Param},
+        value::Value,
+    },
     scopes::{type_binding::TypeBinding, Scopes},
     types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
     utils::accept_results,
@@ -163,7 +165,7 @@ pub fn eval_call(
             }
         }
         Call::PlaceExpression(place) => eval_place_expr(place, scopes, current_scope, ctx),
-        Call::Value(value) => Ok(value.clone()),
+        Call::ValueLiteral(value) => Ok(Value::from_literal(value.clone())),
     }
 }
 

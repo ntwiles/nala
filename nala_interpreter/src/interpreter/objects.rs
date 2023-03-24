@@ -4,10 +4,7 @@ use std::{
 };
 
 use crate::{
-    ast::{objects::*, terms::Value},
-    errors::RuntimeError,
-    io_context::IoContext,
-    scopes::*,
+    ast::objects::*, errors::RuntimeError, io_context::IoContext, resolved::value::Value, scopes::*,
 };
 
 use super::basic::eval_expr;

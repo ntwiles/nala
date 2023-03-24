@@ -182,7 +182,7 @@ pub Factor: ast::math::Factor = {
 Call: ast::funcs::Call = {
     <p:PlaceExpression> <t:CallTypeArgs?> "(" <e:Elems> ")" => ast::funcs::Call::Call(p, t, e),
     <PlaceExpression> => ast::funcs::Call::PlaceExpression(<>),
-    <Value> => ast::funcs::Call::Value(<>),
+    <ValueLiteral> => ast::funcs::Call::ValueLiteral(<>),
 };
 
 // TODO: This uses Rust-style turbofish just to avoid a parse conflict. Do we really need to do that?
@@ -190,9 +190,9 @@ CallTypeArgs: ast::types::type_literal_variant::TypeLiteralVariant = {
     "::<" <t:TypeVariant> ">" => <>,
 }
 
-Value: ast::terms::Value = {
-    Num => ast::terms::Value::Num(<>),
-    Str => ast::terms::Value::String(<>),
+ValueLiteral: ast::terms::ValueLiteral = {
+    Num => ast::terms::ValueLiteral::Number(<>),
+    Str => ast::terms::ValueLiteral::String(<>),
 }
 
 MemberAccess: ast::objects::MemberAccess = {
@@ -202,7 +202,7 @@ MemberAccess: ast::objects::MemberAccess = {
 
 Term: ast::terms::Term = {
     Symbol => ast::terms::Term::Identifier(<>),
-    Value => ast::terms::Term::Value(<>),
+    ValueLiteral => ast::terms::Term::ValueLiteral(<>),
 };
 
 Symbol: String = {

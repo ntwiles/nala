@@ -4,9 +4,10 @@ use std::{
 };
 
 use crate::{
-    ast::{arrays::*, terms::Value, Expr},
+    ast::{arrays::*, Expr},
     errors::RuntimeError,
     io_context::IoContext,
+    resolved::value::Value,
     scopes::Scopes,
     types::inference::infer_type,
 };

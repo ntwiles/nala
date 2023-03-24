@@ -1,5 +1,5 @@
 use crate::{
-    ast::terms::Value, errors::RuntimeError, scopes::Scopes, types::inference::infer_type,
+    errors::RuntimeError, resolved::value::Value, scopes::Scopes, types::inference::infer_type,
 };
 
 pub fn do_add(

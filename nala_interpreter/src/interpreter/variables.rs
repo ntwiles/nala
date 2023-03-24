@@ -3,24 +3,23 @@ use std::sync::Arc;
 use super::{arrays::eval_index, eval_expr, objects::*};
 
 use crate::{
-    ast::{objects::*, terms::*, types::type_literal_variant::TypeLiteralVariant, *},
+    ast::{objects::*, types::type_literal_variant::TypeLiteralVariant, *},
     errors::RuntimeError,
     io_context::IoContext,
+    resolved::value::Value,
     scopes::Scopes,
     types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
 };
 
+// TODO: Can this take ownership of value?
 pub fn eval_declare(
     ident: &String,
-    expr: &Expr,
+    value: &Value,
     declared_type: Option<TypeLiteralVariant>,
     is_mutable: bool,
     scopes: &mut Scopes,
     current_scope: usize,
-    ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
-    let value = eval_expr(expr, scopes, current_scope, ctx)?;
-
     if let Value::Void = value {
         return Err(RuntimeError::new(
             "Cannot declare a variable with a value of type Void.",

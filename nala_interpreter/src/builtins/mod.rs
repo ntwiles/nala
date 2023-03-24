@@ -7,7 +7,8 @@ mod void;
 use std::collections::HashMap;
 
 use crate::resolved::func_value::FuncValue;
-use crate::{ast::terms::*, errors::RuntimeError, io_context::IoContext, scopes::Scopes};
+use crate::resolved::value::Value;
+use crate::{errors::RuntimeError, io_context::IoContext, scopes::Scopes};
 
 use self::http::*;
 use self::io::*;

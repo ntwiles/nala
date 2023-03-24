@@ -1,10 +1,8 @@
 use crate::{
-    ast::{
-        terms::*,
-        types::{enum_variant::EnumVariantOrAddend, variant_declare::VariantDeclare},
-    },
+    ast::types::{enum_variant::EnumVariantOrAddend, variant_declare::VariantDeclare},
     errors::RuntimeError,
     io_context::IoContext,
+    resolved::value::{EnumVariantValue, Value},
     scopes::Scopes,
     types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
 };

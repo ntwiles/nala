@@ -20,6 +20,7 @@ use crate::{
     builtins::*,
     errors::RuntimeError,
     io_context::IoContext,
+    resolved::value::Value,
     scopes::*,
 };
 
@@ -31,7 +32,7 @@ pub fn eval_program(program: Program, ctx: &mut impl IoContext) -> Result<Value,
     let top_scope = scopes.new_scope(None);
 
     load_builtin_types(&mut scopes, top_scope)?;
-    load_builtin_constants(&mut scopes, top_scope, ctx);
+    load_builtin_constants(&mut scopes, top_scope);
     load_builtin_functions(&mut scopes, top_scope)?;
 
     match program {
@@ -47,7 +48,10 @@ pub fn eval_term(
 ) -> Result<Value, RuntimeError> {
     match term {
         Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope)?),
-        Term::Value(value) => Ok(value),
+        Term::ValueLiteral(value) => match value {
+            ValueLiteral::Number(value) => Ok(Value::Num(value)),
+            ValueLiteral::String(value) => Ok(Value::String(value)),
+        },
     }
 }
 
@@ -68,16 +72,14 @@ fn load_builtin_types(scopes: &mut Scopes, current_scope: usize) -> Result<(), R
     Ok(())
 }
 
-fn load_builtin_constants(scopes: &mut Scopes, top_scope: usize, ctx: &mut impl IoContext) {
+fn load_builtin_constants(scopes: &mut Scopes, top_scope: usize) {
     for (ident, value) in vec![
         (String::from("true"), Value::Bool(true)),
         (String::from("false"), Value::Bool(false)),
     ]
     .iter()
     {
-        let expr = Expr::from_value(value.clone());
-
-        if let Err(e) = eval_declare(ident, &expr, None, false, scopes, top_scope, ctx) {
+        if let Err(e) = eval_declare(ident, &value, None, false, scopes, top_scope) {
             panic!("Error loading builtin constants: {0}", e.message)
         }
     }

@@ -10,10 +10,7 @@ use super::{
 };
 
 use crate::{
-    ast::{terms::*, *},
-    errors::RuntimeError,
-    io_context::IoContext,
-    scopes::Scopes,
+    ast::*, errors::RuntimeError, io_context::IoContext, resolved::value::Value, scopes::Scopes,
 };
 
 pub fn eval_stmts(
@@ -50,12 +47,11 @@ fn eval_stmt(
         Stmt::Break(expr) => eval_break(expr, scopes, current_scope, ctx),
         Stmt::Declare(ident, expr, declared_type, is_mutable) => eval_declare(
             ident,
-            &expr,
+            &eval_expr(&expr, scopes, current_scope, ctx)?,
             declared_type.clone(),
             is_mutable.clone(),
             scopes,
             current_scope,
-            ctx,
         ),
         Stmt::Enum(ident, type_params, variants) => eval_enum(
             ident,

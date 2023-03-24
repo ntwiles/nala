@@ -1,4 +1,4 @@
-use super::terms::Value;
+use crate::resolved::value::Value;
 
 #[derive(Clone, Debug)]
 pub enum Pattern {

@@ -1,9 +1,7 @@
 use crate::{
-    ast::{
-        terms::Value,
-        types::{variant_declare::VariantDeclare, StructLiteralField},
-    },
+    ast::types::{variant_declare::VariantDeclare, StructLiteralField},
     errors::RuntimeError,
+    resolved::value::Value,
     scopes::{enum_binding::EnumBinding, type_binding::TypeBinding, Scopes},
     types::struct_field::StructField,
     utils::accept_results,

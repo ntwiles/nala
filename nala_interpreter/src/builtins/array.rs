@@ -4,10 +4,13 @@ use std::{
 };
 
 use crate::{
-    ast::{terms::*, types::primitive_type::PrimitiveType, *},
+    ast::{types::primitive_type::PrimitiveType, *},
     errors::RuntimeError,
     io_context::IoContext,
-    resolved::func_value::{FuncValue, Param},
+    resolved::{
+        func_value::{FuncValue, Param},
+        value::Value,
+    },
     types::{type_variant::TypeVariant, NalaType},
 };
 

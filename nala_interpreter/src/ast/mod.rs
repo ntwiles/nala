@@ -17,7 +17,6 @@ use self::branching::Match;
 use self::funcs::*;
 use self::math::*;
 use self::objects::*;
-use self::terms::Value;
 use self::types::enum_variant::EnumVariantOrAddend;
 use self::types::type_literal_variant::TypeLiteralVariant;
 use self::types::variant_declare::VariantDeclare;
@@ -72,14 +71,6 @@ pub enum Expr {
     Gt(Box<Expr>, Addend),
     Lt(Box<Expr>, Addend),
     Object(Object),
-}
-
-impl Expr {
-    pub fn from_value(value: Value) -> Self {
-        Expr::EnumVariant(EnumVariantOrAddend::Addend(Addend::Factor(Factor::Call(
-            Call::Value(value),
-        ))))
-    }
 }
 
 #[derive(Debug, Clone)]

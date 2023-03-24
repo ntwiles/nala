@@ -1,7 +1,8 @@
 use crate::{
-    ast::{terms::*, types::primitive_type::PrimitiveType},
+    ast::types::primitive_type::PrimitiveType,
     errors::*,
     interpreter::operations::errors::*,
+    resolved::value::Value,
     scopes::Scopes,
     types::{inference::infer_type, type_variant::TypeVariant, NalaType},
 };

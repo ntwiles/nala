@@ -2,8 +2,8 @@ extern crate nala_interpreter;
 extern crate regex;
 
 use nala_interpreter::{
-    ast::terms::Value, errors::RuntimeError, interpreter::eval_program, io_context::TestContext,
-    parser,
+    errors::RuntimeError, interpreter::eval_program, io_context::TestContext, parser,
+    resolved::value::Value,
 };
 
 pub fn parse_and_run(nala: &str, test_context: &mut TestContext) -> Result<Value, RuntimeError> {

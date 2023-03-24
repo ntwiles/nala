@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{ast::terms::Value, types::type_variant::TypeVariant};
+use crate::{resolved::value::Value, types::type_variant::TypeVariant};
 
 use super::{value_binding::ValueBinding, TypeBinding};
 

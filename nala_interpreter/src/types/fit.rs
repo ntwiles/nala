@@ -1,7 +1,7 @@
 use crate::{
-    ast::{terms::Value, types::primitive_type::PrimitiveType},
+    ast::types::primitive_type::PrimitiveType,
     errors::RuntimeError,
-    resolved::func_value::FuncValue,
+    resolved::{func_value::FuncValue, value::Value},
     scopes::Scopes,
 };
 

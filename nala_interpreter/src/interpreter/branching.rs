@@ -4,11 +4,11 @@ use std::sync::Arc;
 use crate::{
     ast::{
         branching::{Else, ElseIf, IfElseChain, Match, MatchCase},
-        terms::*,
         *,
     },
     errors::RuntimeError,
     io_context::IoContext,
+    resolved::value::Value,
     scopes::Scopes,
     types::inference::infer_type,
 };

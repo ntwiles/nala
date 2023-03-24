@@ -7,10 +7,13 @@ use reqwest;
 use serde_json;
 
 use crate::{
-    ast::{terms::*, types::primitive_type::PrimitiveType, *},
+    ast::{types::primitive_type::PrimitiveType, *},
     errors::RuntimeError,
     io_context::IoContext,
-    resolved::func_value::{FuncValue, Param},
+    resolved::{
+        func_value::{FuncValue, Param},
+        value::Value,
+    },
     scopes::{type_binding::TypeBinding, Scopes},
     types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
 };

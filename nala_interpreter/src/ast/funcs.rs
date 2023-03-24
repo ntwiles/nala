@@ -1,4 +1,4 @@
-use super::{terms::*, types::type_literal_variant::TypeLiteralVariant, *};
+use super::{terms::ValueLiteral, types::type_literal_variant::TypeLiteralVariant, *};
 
 #[derive(Debug, Clone)]
 pub struct FuncDeclare {
@@ -19,5 +19,5 @@ pub struct ParamDeclare {
 pub enum Call {
     Call(PlaceExpression, Option<TypeLiteralVariant>, Vec<Expr>),
     PlaceExpression(PlaceExpression),
-    Value(Value),
+    ValueLiteral(ValueLiteral),
 }

@@ -5,7 +5,7 @@ pub mod value_binding;
 
 use std::fmt;
 
-use crate::{ast::terms::*, errors::*, types::type_variant::TypeVariant};
+use crate::{errors::*, resolved::value::Value, types::type_variant::TypeVariant};
 
 use self::{scope::Scope, type_binding::TypeBinding, value_binding::ValueBinding};
 

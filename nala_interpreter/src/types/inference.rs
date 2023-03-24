@@ -1,12 +1,12 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    ast::{
-        terms::{EnumVariantValue, Value},
-        types::{primitive_type::PrimitiveType, variant_declare::VariantDeclare},
-    },
+    ast::types::{primitive_type::PrimitiveType, variant_declare::VariantDeclare},
     errors::RuntimeError,
-    resolved::func_value::FuncValue,
+    resolved::{
+        func_value::FuncValue,
+        value::{EnumVariantValue, Value},
+    },
     scopes::Scopes,
     utils::accept_results,
 };

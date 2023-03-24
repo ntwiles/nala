@@ -1,6 +1,7 @@
 use crate::{
-    ast::{terms::*, types::primitive_type::PrimitiveType},
+    ast::types::primitive_type::PrimitiveType,
     errors::RuntimeError,
+    resolved::value::{EnumVariantValue, Value},
     scopes::Scopes,
     types::{inference::infer_type, type_variant::TypeVariant, NalaType},
 };

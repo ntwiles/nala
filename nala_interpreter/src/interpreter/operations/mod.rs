@@ -5,11 +5,8 @@ pub mod gt;
 pub mod lt;
 
 use crate::{
-    ast::{math::*, terms::*},
-    errors::RuntimeError,
-    interpreter::eval_term,
-    io_context::IoContext,
-    scopes::Scopes,
+    ast::math::*, errors::RuntimeError, interpreter::eval_term, io_context::IoContext,
+    resolved::value::Value, scopes::Scopes,
 };
 
 use super::functions::*;
