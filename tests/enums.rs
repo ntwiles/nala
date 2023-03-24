@@ -78,19 +78,23 @@ fn it_runs_enum_variant_with_data() {
     assert_eq!(ctx.get_output(), vec!["Some('hello')"]);
 }
 
-// TODO: This is failing right now with a parse error.
-// #[test]
-// fn it_runs_enum_variant_with_explicit_builtin_type_no_data() {
-//     let mut ctx = TestContext::new();
+#[test]
+fn it_runs_enum_variant_with_explicit_builtin_type_no_data() {
+    let mut ctx = TestContext::new();
 
-//     let nala = r#"
-//         const isTrue: Boolean = Boolean::True;
-//         print(isTrue);
-//     "#;
+    let nala = r#"
+        enum Boolean {
+            True,
+            False,
+        }
 
-//     assert!(parse_and_run(nala, &mut ctx).is_ok());
-//     assert_eq!(ctx.get_output(), vec!["true"]);
-// }
+        const isTrue: Boolean = Boolean::True;
+        print(isTrue);
+    "#;
+
+    assert!(parse_and_run(nala, &mut ctx).is_ok());
+    assert_eq!(ctx.get_output(), vec!["True"]);
+}
 
 #[test]
 fn it_runs_enum_variant_with_explicit_custom_type_no_data() {
