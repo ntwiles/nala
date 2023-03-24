@@ -31,27 +31,29 @@ impl NalaType {
     ) -> Result<Self, RuntimeError> {
         match literal {
             TypeLiteral::PrimitiveType(t) => Ok(Self::PrimitiveType(t)),
-            TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
-                TypeBinding::Enum(binding) => {
-                    let variants = binding
-                        .variants
-                        .iter()
-                        .map(|v| {
-                            EnumVariant::from_variant_declare(
-                                v.clone(), // TODO: Find a way to avoid this clone.
-                                scopes,
-                                binding.closure_scope,
-                            )
-                        })
-                        .collect();
+            TypeLiteral::UserDefined(ident) => {
+                match scopes.get_type(&ident, current_scope)? {
+                    TypeBinding::Enum(binding) => {
+                        let variants = binding
+                            .variants
+                            .iter()
+                            .map(|v| {
+                                EnumVariant::from_variant_declare(
+                                    v.clone(), // TODO: Find a way to avoid this clone.
+                                    scopes,
+                                    binding.closure_scope,
+                                )
+                            })
+                            .collect();
 
-                    let variants = accept_results(variants)?;
+                        let variants = accept_results(variants)?;
 
-                    Ok(Self::Enum(ident, variants))
+                        Ok(Self::Enum(ident, variants))
+                    }
+                    TypeBinding::Struct(fields) => Ok(Self::Struct(fields)),
+                    TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
                 }
-                TypeBinding::Struct(fields) => Ok(Self::Struct(fields)),
-                TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
-            },
+            }
         }
     }
 

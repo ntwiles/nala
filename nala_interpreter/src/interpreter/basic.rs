@@ -57,9 +57,9 @@ fn eval_stmt(
             current_scope,
             ctx,
         ),
-        Stmt::Enum(ident, type_args, variants) => eval_enum(
+        Stmt::Enum(ident, type_params, variants) => eval_enum(
             ident,
-            type_args.clone(),
+            type_params.clone(),
             variants.clone(),
             scopes,
             current_scope,
@@ -69,9 +69,9 @@ fn eval_stmt(
         Stmt::Func(func) => eval_func(func.clone(), scopes, current_scope),
         Stmt::IfElseChain(chain) => eval_if_else_chain(chain, scopes, current_scope, ctx),
         Stmt::Match(the_match) => eval_match(the_match, scopes, current_scope, ctx),
-        Stmt::Struct(ident, type_args, fields) => eval_struct(
+        Stmt::Struct(ident, type_params, fields) => eval_struct(
             ident,
-            type_args.clone(),
+            type_params.clone(),
             fields.clone(),
             scopes,
             current_scope,

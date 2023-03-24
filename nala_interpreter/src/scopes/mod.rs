@@ -3,11 +3,12 @@ mod scope;
 pub mod type_binding;
 pub mod value_binding;
 
+use std::fmt;
+
 use crate::{ast::terms::*, errors::*, types::type_variant::TypeVariant};
 
 use self::{scope::Scope, type_binding::TypeBinding, value_binding::ValueBinding};
 
-#[derive(Debug)]
 pub struct Scopes {
     scopes: Vec<Scope>,
 }
@@ -139,6 +140,7 @@ impl Scopes {
         } else {
             let scope = self.scopes.get_mut(current_scope).unwrap();
             scope.add_type_binding(ident, value);
+
             Ok(())
         }
     }
@@ -161,6 +163,16 @@ impl Scopes {
             .unwrap()
             .get_binding(&ident)
             .is_some()
+    }
+}
+
+impl fmt::Debug for Scopes {
+    fn fmt(self: &Self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        for (i, scope) in self.scopes.iter().enumerate() {
+            writeln!(f, "Scope {i}: {scope:?}")?;
+        }
+
+        Ok(())
     }
 }
 

@@ -110,6 +110,7 @@ impl fmt::Debug for Value {
 
                 write!(f, "[{items}]")
             }
+            Value::Bool(b) => write!(f, "{}", b),
             Value::Func(FuncValue {
                 params,
                 return_type,

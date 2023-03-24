@@ -1,7 +1,3 @@
-use std::fmt::{Display, Formatter, Result};
-
-use crate::types::type_variant::TypeVariant;
-
 use self::type_literal_variant::TypeLiteralVariant;
 
 pub mod enum_variant;
@@ -27,23 +23,6 @@ impl StructLiteralField {
         Self {
             ident: ident.to_owned(),
             value,
-        }
-    }
-}
-
-// TODO: Maybe we need a separate type TypeParams which is exclusively for generics
-// when declaring a type.
-#[derive(Debug, Eq, Clone, PartialEq)]
-pub enum TypeArgs {
-    Generic(String),
-    Concrete(Box<TypeVariant>),
-}
-
-impl Display for TypeArgs {
-    fn fmt(&self, f: &mut Formatter) -> Result {
-        match self {
-            TypeArgs::Generic(s) => write!(f, "{}", s),
-            TypeArgs::Concrete(i) => write!(f, "{}", i),
         }
     }
 }

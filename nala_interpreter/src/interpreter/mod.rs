@@ -13,7 +13,7 @@ use crate::{
         terms::*,
         types::{
             type_literal::TypeLiteral, type_literal_variant::TypeLiteralVariant,
-            variant_declare::VariantDeclare, TypeArgs,
+            variant_declare::VariantDeclare,
         },
         *,
     },
@@ -52,7 +52,7 @@ pub fn eval_term(
 }
 
 fn load_builtin_types(scopes: &mut Scopes, current_scope: usize) -> Result<(), RuntimeError> {
-    let type_args = Some(TypeArgs::Generic(String::from("T")));
+    let type_params = Some(String::from("T"));
     let variants = vec![
         VariantDeclare::Data(
             String::from("Some"),
@@ -61,7 +61,7 @@ fn load_builtin_types(scopes: &mut Scopes, current_scope: usize) -> Result<(), R
         VariantDeclare::Empty(String::from("None")),
     ];
 
-    if let Err(e) = eval_enum("Option", type_args, variants, scopes, current_scope) {
+    if let Err(e) = eval_enum("Option", type_params, variants, scopes, current_scope) {
         panic!("Error loading builtin types: {0}", e.message)
     }
 

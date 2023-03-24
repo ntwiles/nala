@@ -1,7 +1,7 @@
 use crate::{
     ast::{
         terms::Value,
-        types::{variant_declare::VariantDeclare, StructLiteralField, TypeArgs},
+        types::{variant_declare::VariantDeclare, StructLiteralField},
     },
     errors::RuntimeError,
     scopes::{enum_binding::EnumBinding, type_binding::TypeBinding, Scopes},
@@ -11,7 +11,7 @@ use crate::{
 
 pub fn eval_struct(
     ident: &str,
-    _type_args: Option<TypeArgs>,
+    _type_params: Option<String>,
     fields: Vec<StructLiteralField>,
     scopes: &mut Scopes,
     current_scope: usize,
@@ -30,30 +30,20 @@ pub fn eval_struct(
 
 pub fn eval_enum(
     ident: &str,
-    type_args: Option<TypeArgs>,
+    type_params: Option<String>,
     variants: Vec<VariantDeclare>,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
     let closure_scope = scopes.new_scope(Some(current_scope));
 
-    if let Some(type_arg) = &type_args {
-        match type_arg {
-            TypeArgs::Concrete(_the_type) => todo!(),
-            TypeArgs::Generic(ident) => {
-                scopes.add_type_binding(
-                    &ident,
-                    closure_scope,
-                    TypeBinding::Generic(ident.clone()),
-                )?;
-            }
-        }
+    if let Some(type_param) = &type_params {
+        scopes.add_type_binding(
+            &type_param,
+            closure_scope,
+            TypeBinding::Generic(type_param.clone()),
+        )?;
     }
-
-    let generic_ident = match type_args {
-        Some(TypeArgs::Generic(ident)) => Some(ident),
-        _ => None,
-    };
 
     scopes
         .add_type_binding(
@@ -62,7 +52,7 @@ pub fn eval_enum(
             TypeBinding::Enum(EnumBinding {
                 variants,
                 closure_scope,
-                generic_ident,
+                generic_ident: type_params,
             }),
         )
         .map(|_| Value::Void)

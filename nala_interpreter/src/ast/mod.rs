@@ -22,7 +22,6 @@ use self::types::enum_variant::EnumVariantOrAddend;
 use self::types::type_literal_variant::TypeLiteralVariant;
 use self::types::variant_declare::VariantDeclare;
 use self::types::StructLiteralField;
-use self::types::TypeArgs;
 
 #[derive(Debug)]
 pub enum Program {
@@ -47,13 +46,13 @@ pub enum Stmt {
     Assign(PlaceExpression, Expr),
     Break(Expr),
     Declare(String, Expr, Option<TypeLiteralVariant>, bool),
-    Enum(String, Option<TypeArgs>, Vec<VariantDeclare>),
+    Enum(String, Option<String>, Vec<VariantDeclare>),
     Expr(Expr),
     For(String, Expr, Box<Stmts>),
     Func(Func),
     IfElseChain(Box<IfElseChain>),
     Wiles(Expr, Box<Stmts>),
-    Struct(String, Option<TypeArgs>, Vec<StructLiteralField>),
+    Struct(String, Option<String>, Vec<StructLiteralField>),
     Match(Match),
 }
 

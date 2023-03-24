@@ -5,7 +5,7 @@ use crate::ast;
 grammar;
 
 match {
-    "{", "}", "(", ")", "[", "]", ";", ":", ".", ",", "::", "=>",
+    "{", "}", "(", ")", "[", "]", ";", ":", ".", ",", "::", "::<", "=>",
     "const", "mut", "if", "elif", "else", "for", "in", "wiles", "func", 
     "break", "struct", "enum", "match",
     "=", "==", ">", "<", "+", "-", "*", "/",
@@ -44,8 +44,8 @@ Stmt: ast::Stmt = {
     "func" <s:Symbol> <t:TypeParams?> "(" <p:Params> ")" ":" <r:TypeVariant> <b:Block> => 
         ast::Stmt::Func(ast::funcs::Func{ ident: s, params: p, return_type: r, type_params: t, block: Box::new(ast::FuncVariant::Nala(b))}),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
-    "struct" <s:Symbol> <t:TypeArgs?> "{" <ff:StructFields> "}" => ast::Stmt::Struct(s, t, ff), // TODO: TypeParams instead of TypeArgs
-    "enum" <s:Symbol> <t:TypeArgs?> "{" <v:VariantsDeclare> "}" => ast::Stmt::Enum(s, t, v), // TODO: TypeParams instead of TypeArgs
+    "struct" <s:Symbol> <t:TypeParams?> "{" <ff:StructFields> "}" => ast::Stmt::Struct(s, t, ff), 
+    "enum" <s:Symbol> <t:TypeParams?> "{" <v:VariantsDeclare> "}" => ast::Stmt::Enum(s, t, v), 
     <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
     <Expr> ";" => ast::Stmt::Expr(<>),
     <Match> => ast::Stmt::Match(<>)
@@ -59,8 +59,8 @@ TypeParams: String = {
     "<" <s:Symbol> ">" => s
 };
 
-TypeArgs: ast::types::TypeArgs = {
-    "<" <s:Symbol> ">" => ast::types::TypeArgs::Generic(s)
+TypeArgs: ast::types::type_literal_variant::TypeLiteralVariant = {
+    "<" <t:TypeVariant> ">" => <>
 };
 
 IfElseChain: ast::branching::IfElseChain = { 
@@ -180,10 +180,15 @@ pub Factor: ast::math::Factor = {
 };
 
 Call: ast::funcs::Call = {
-    <p:PlaceExpression> "(" <e:Elems> ")" => ast::funcs::Call::Call(p, e),
+    <p:PlaceExpression> <t:CallTypeArgs?> "(" <e:Elems> ")" => ast::funcs::Call::Call(p, e),
     <PlaceExpression> => ast::funcs::Call::PlaceExpression(<>),
     <Value> => ast::funcs::Call::Value(<>),
 };
+
+// TODO: This uses Rust-style turbofish just to avoid a conflict. Do we really need to do that?
+CallTypeArgs: ast::types::type_literal_variant::TypeLiteralVariant = {
+    "::<" <t:TypeVariant> ">" => <>,
+}
 
 Value: ast::terms::Value = {
     Num => ast::terms::Value::Num(<>),
