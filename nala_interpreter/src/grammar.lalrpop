@@ -180,7 +180,7 @@ pub Factor: ast::math::Factor = {
 };
 
 Call: ast::funcs::Call = {
-    <p:PlaceExpression> <t:CallTypeArgs?> "(" <e:Elems> ")" => ast::funcs::Call::Call(p, e),
+    <p:PlaceExpression> <t:CallTypeArgs?> "(" <e:Elems> ")" => ast::funcs::Call::Call(p, t, e),
     <PlaceExpression> => ast::funcs::Call::PlaceExpression(<>),
     <Value> => ast::funcs::Call::Value(<>),
 };

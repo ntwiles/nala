@@ -17,7 +17,7 @@ pub struct Param {
 
 #[derive(Debug, Clone)]
 pub enum Call {
-    Call(PlaceExpression, Vec<Expr>),
+    Call(PlaceExpression, Option<TypeLiteralVariant>, Vec<Expr>),
     PlaceExpression(PlaceExpression),
     Value(Value),
 }

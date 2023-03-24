@@ -1,3 +1,4 @@
+// TODO: Consider making this a builtin function.
 func indexOf<T>(haystack: Array<String>, needle: T ): Option<Number> {
     mut i = 0;
 

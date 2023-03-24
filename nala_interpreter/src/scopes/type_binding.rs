@@ -1,4 +1,8 @@
-use crate::{errors::RuntimeError, types::struct_field::StructField};
+use crate::{
+    ast::types::primitive_type::PrimitiveType,
+    errors::RuntimeError,
+    types::{struct_field::StructField, type_variant::TypeVariant},
+};
 
 use super::enum_binding::EnumBinding;
 
@@ -7,9 +11,22 @@ pub enum TypeBinding {
     Enum(EnumBinding),
     Struct(Vec<StructField>),
     Generic(String),
+    PrimitiveType(PrimitiveType),
 }
 
 impl TypeBinding {
+    pub fn from_type(type_variant: TypeVariant) -> Self {
+        match type_variant {
+            TypeVariant::Composite(_outer, _inner) => todo!(),
+            TypeVariant::Type(the_type) => match the_type {
+                crate::types::NalaType::Enum(_ident, _variants) => todo!(),
+                crate::types::NalaType::Struct(_fields) => todo!(),
+                crate::types::NalaType::Generic(_ident) => todo!(),
+                crate::types::NalaType::PrimitiveType(primitive) => Self::PrimitiveType(primitive),
+            },
+        }
+    }
+
     pub fn as_enum(&self) -> Result<EnumBinding, RuntimeError> {
         match self {
             TypeBinding::Enum(binding) => Ok(binding.clone()),

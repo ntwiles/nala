@@ -52,6 +52,7 @@ impl NalaType {
                     }
                     TypeBinding::Struct(fields) => Ok(Self::Struct(fields)),
                     TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
+                    TypeBinding::PrimitiveType(primitive) => Ok(Self::PrimitiveType(primitive)),
                 }
             }
         }
