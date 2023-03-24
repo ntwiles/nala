@@ -44,3 +44,18 @@ fn it_allows_generic_func_declare() {
     assert!(parse_and_run(nala, &mut ctx).is_ok());
     assert_eq!(ctx.get_output(), vec!["test"]);
 }
+
+// TODO: In the following example, T will be inferred to be type String (the type of 'Howard'). However,
+// we return a type Option<Number>, and no type checking is done to discover that error. This should be fixed.
+// func find<T>(haystack: Array<String>, needle: T ): T {
+//     for item in haystack {
+//         if (item == needle) {
+//             break(Option::Some(7));
+//         }
+//     }
+
+//     Option::None;
+// }
+
+// const found = find([ 'Jimmy', 'Kim', 'Howard', 'Lalo' ], 'Howard');
+// print(found);

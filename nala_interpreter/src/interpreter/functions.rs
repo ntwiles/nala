@@ -43,7 +43,7 @@ pub fn eval_func_declare(
     };
 
     let params = check_param_types(&params, scopes, closure_scope)?;
-    let return_type = TypeVariant::from_literal(return_type, scopes, current_scope)?;
+    let return_type = TypeVariant::from_literal(return_type, scopes, closure_scope)?;
 
     scopes.add_binding(
         &ident,
