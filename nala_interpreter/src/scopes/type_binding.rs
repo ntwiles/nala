@@ -18,9 +18,9 @@ impl TypeBinding {
         match type_variant {
             TypeVariant::Composite(_outer, _inner) => todo!(),
             TypeVariant::Type(the_type) => match the_type {
-                crate::types::NalaType::Enum(_ident, _variants) => todo!(),
-                crate::types::NalaType::Struct(_fields) => todo!(),
-                crate::types::NalaType::Generic(_ident) => todo!(),
+                crate::types::NalaType::Enum(_ident, _variants) => todo!(), // We're missing fields like closure_scope.
+                crate::types::NalaType::Struct(_fields) => todo!(), // We're missing fields like closure_scope
+                crate::types::NalaType::Generic(ident) => Self::Generic(ident),
                 crate::types::NalaType::PrimitiveType(primitive) => Self::PrimitiveType(primitive),
             },
         }

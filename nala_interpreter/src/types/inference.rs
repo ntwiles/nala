@@ -3,6 +3,7 @@ use std::sync::{Arc, Mutex};
 use crate::{
     ast::types::primitive_type::PrimitiveType,
     errors::RuntimeError,
+    interpreter::enums::find_variant,
     resolved::{
         enum_variants::EnumVariant,
         func_value::FuncValue,
@@ -101,15 +102,7 @@ pub fn infer_variant(
         .as_enum()
         .unwrap();
 
-    let existing_variant = enum_type.variants.iter().find(|v| match v {
-        EnumVariant::Data(ident, _) => ident == variant_ident,
-        EnumVariant::Empty(ident) => ident == variant_ident,
-    });
-
-    let existing_variant = match existing_variant {
-        Some(v) => v,
-        None => todo!("Enum variant not found"),
-    };
+    let existing_variant = find_variant(&enum_type.variants, variant_ident)?;
 
     match existing_variant {
         EnumVariant::Data(_ident, data_type) => {

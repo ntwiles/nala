@@ -67,7 +67,10 @@ fn compare_variant(variant: &EnumVariant, name: &str) -> bool {
     }
 }
 
-fn find_variant(variants: &Vec<EnumVariant>, needle: &str) -> Result<EnumVariant, RuntimeError> {
+pub fn find_variant(
+    variants: &Vec<EnumVariant>,
+    needle: &str,
+) -> Result<EnumVariant, RuntimeError> {
     let result = variants.iter().find(|v| compare_variant(v, needle));
     match result {
         Some(variant) => Ok(variant.clone()),
