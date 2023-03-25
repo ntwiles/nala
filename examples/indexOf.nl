@@ -1,5 +1,5 @@
 // TODO: Consider making this a builtin function.
-func indexOf<T>(haystack: Array<String>, needle: T ): Option<Number> {
+func indexOf<T>(haystack: Array<T>, needle: T ): Option<Number> {
     mut i = 0;
 
     for item in haystack {

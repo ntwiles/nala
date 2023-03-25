@@ -42,7 +42,7 @@ pub fn eval_func_declare(
         )?;
     };
 
-    let params = check_param_types(&params, scopes, closure_scope)?;
+    let params = params_from_declares(&params, scopes, closure_scope)?;
     let return_type = TypeVariant::from_literal(return_type, scopes, closure_scope)?;
 
     scopes.add_binding(
@@ -99,21 +99,20 @@ pub fn eval_builtin_declare(
     )
 }
 
-// TODO: These aren't really doing checking anymore, they're just converting the literal types to regular types.
-fn check_param_types(
+fn params_from_declares(
     params: &Vec<ParamDeclare>,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Vec<Param>, RuntimeError> {
-    let results = params
-        .iter()
-        .map(|p| check_param_type(&p.ident, &p.param_type, scopes, current_scope))
-        .collect();
-
-    return accept_results(results);
+    accept_results(
+        params
+            .iter()
+            .map(|p| param_from_declare(&p.ident, &p.param_type, scopes, current_scope))
+            .collect(),
+    )
 }
 
-fn check_param_type(
+fn param_from_declare(
     ident: &str,
     param_type: &TypeVariantLiteral,
     scopes: &mut Scopes,
