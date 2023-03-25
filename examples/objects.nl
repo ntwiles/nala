@@ -37,5 +37,3 @@ message.punctuation[0] = '?';
 message.callback = callbackB;
 
 writeMessage(message);
-
-

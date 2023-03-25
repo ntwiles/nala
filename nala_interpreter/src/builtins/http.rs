@@ -14,7 +14,7 @@ use crate::{
         func_value::{FuncValue, Param},
         value::Value,
     },
-    scopes::{type_binding::TypeBinding, Scopes},
+    scopes::{struct_binding::StructBinding, type_binding::TypeBinding, Scopes},
     types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
 };
 
@@ -40,7 +40,11 @@ pub fn get_http_block(scopes: &mut Scopes, scope: usize) -> Result<FuncValue, Ru
     scopes.add_type_binding(
         "HttpOptions",
         scope,
-        TypeBinding::Struct(options_fields.clone()),
+        TypeBinding::Struct(StructBinding {
+            generic_ident: None,
+            fields: options_fields.clone(),
+            closure_scope: 0,
+        }),
     )?;
 
     let params = vec![Param {

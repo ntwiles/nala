@@ -50,7 +50,7 @@ impl NalaType {
 
                         Ok(Self::Enum(ident, variants))
                     }
-                    TypeBinding::Struct(fields) => Ok(Self::Struct(fields)),
+                    TypeBinding::Struct(binding) => Ok(Self::Struct(binding.fields)),
                     TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
                     TypeBinding::PrimitiveType(primitive) => Ok(Self::PrimitiveType(primitive)),
                 }

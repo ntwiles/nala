@@ -84,3 +84,13 @@ fn it_errors_if_not_enough_info_for_inference() {
 // }
 
 // foo(MyEnum::Bar(7));
+
+// TODO: Create test for the below case; the value being assigned here should resolve to type `Result<Number>`
+// and throw an error when assigning it to a variable of type `Result<String>`, but it doesn't currently.
+
+// struct Result<T> {
+//     status: String,
+//     data: T
+// }
+
+// const result: Result<String> = { status: 'ok', data: 1 };

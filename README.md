@@ -12,8 +12,7 @@ Nala is an interpreted, expression-oriented programming language with terse synt
 - [x] Comments (single-line, multi-line)
 - [x] Syntax highlighting (via VS Code extension)
 - [x] Pattern matching
-- [x] Generic Types (Enums only for now)
-- [x] Generic Functions
+- [x] Generic types and functions
 - [x] Console I/O
 - [ ] Network I/O (Started)
 - [ ] Filesystem I/O

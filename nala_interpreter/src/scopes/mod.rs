@@ -1,5 +1,6 @@
 pub mod enum_binding;
 mod scope;
+pub mod struct_binding;
 pub mod type_binding;
 pub mod value_binding;
 

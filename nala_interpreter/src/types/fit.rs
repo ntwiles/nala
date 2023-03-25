@@ -25,7 +25,7 @@ pub fn fits_type(
             NalaType::Enum(enum_ident, variants) => {
                 fits_enum(value, inner, enum_ident, variants, scopes, current_scope)
             }
-            NalaType::Struct(_fields) => todo!(), // TODO: Support generic structs.
+            NalaType::Struct(fields) => fits_struct(fields, value, scopes, current_scope),
             NalaType::Generic(_) => todo!(),
             _ => Err(RuntimeError::new(&format!(
                 "Type `{outer}` does not support type arguments. Type `{outer}<{}>` is invalid.",

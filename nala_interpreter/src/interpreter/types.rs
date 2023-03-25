@@ -2,27 +2,47 @@ use crate::{
     ast::types::{variant_declare::VariantDeclare, StructLiteralField},
     errors::RuntimeError,
     resolved::value::Value,
-    scopes::{enum_binding::EnumBinding, type_binding::TypeBinding, Scopes},
+    scopes::{
+        enum_binding::EnumBinding, struct_binding::StructBinding, type_binding::TypeBinding, Scopes,
+    },
     types::struct_field::StructField,
     utils::accept_results,
 };
 
 pub fn eval_struct(
     ident: &str,
-    _type_params: Option<String>,
+    type_params: Option<String>,
     fields: Vec<StructLiteralField>,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
-    let binding = TypeBinding::Struct(accept_results(
+    let closure_scope = scopes.new_scope(Some(current_scope));
+
+    if let Some(type_param) = &type_params {
+        scopes.add_type_binding(
+            &type_param,
+            closure_scope,
+            TypeBinding::Generic(type_param.clone()),
+        )?;
+    }
+
+    let fields = accept_results(
         fields
             .into_iter()
-            .map(|f| StructField::from_literal(f, scopes, current_scope))
+            .map(|f| StructField::from_literal(f, scopes, closure_scope))
             .collect(),
-    )?);
+    )?;
 
     scopes
-        .add_type_binding(&ident, current_scope, binding)
+        .add_type_binding(
+            &ident,
+            current_scope,
+            TypeBinding::Struct(StructBinding {
+                generic_ident: type_params,
+                closure_scope,
+                fields,
+            }),
+        )
         .map(|_| Value::Void)
 }
 
