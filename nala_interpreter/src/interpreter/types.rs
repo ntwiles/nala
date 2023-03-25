@@ -1,7 +1,7 @@
 use crate::{
     ast::types::{variant_declare::VariantDeclare, StructLiteralField},
     errors::RuntimeError,
-    resolved::{struct_field::StructField, value::Value},
+    resolved::{enum_variants::EnumVariant, struct_field::StructField, value::Value},
     scopes::{
         enum_binding::EnumBinding, struct_binding::StructBinding, type_binding::TypeBinding, Scopes,
     },
@@ -61,6 +61,13 @@ pub fn eval_enum(
             TypeBinding::Generic(type_param.clone()),
         )?;
     }
+
+    let variants = accept_results(
+        variants
+            .into_iter()
+            .map(|f| EnumVariant::from_literal(f, scopes, closure_scope))
+            .collect(),
+    )?;
 
     scopes
         .add_type_binding(

@@ -9,7 +9,6 @@ use crate::{
     errors::RuntimeError,
     resolved::{enum_variants::EnumVariant, struct_field::StructField},
     scopes::{type_binding::TypeBinding, Scopes},
-    utils::accept_results,
 };
 
 #[derive(Eq, Debug, Clone)]
@@ -28,30 +27,12 @@ impl NalaType {
     ) -> Result<Self, RuntimeError> {
         match literal {
             TypeLiteral::PrimitiveType(t) => Ok(Self::PrimitiveType(t)),
-            TypeLiteral::UserDefined(ident) => {
-                match scopes.get_type(&ident, current_scope)? {
-                    TypeBinding::Enum(binding) => {
-                        let variants = binding
-                            .variants
-                            .iter()
-                            .map(|v| {
-                                EnumVariant::from_variant_declare(
-                                    v.clone(), // TODO: Find a way to avoid this clone.
-                                    scopes,
-                                    binding.closure_scope,
-                                )
-                            })
-                            .collect();
-
-                        let variants = accept_results(variants)?;
-
-                        Ok(Self::Enum(ident, variants))
-                    }
-                    TypeBinding::Struct(binding) => Ok(Self::Struct(binding.fields)),
-                    TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
-                    TypeBinding::PrimitiveType(primitive) => Ok(Self::PrimitiveType(primitive)),
-                }
-            }
+            TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
+                TypeBinding::Enum(binding) => Ok(Self::Enum(ident, binding.variants)),
+                TypeBinding::Struct(binding) => Ok(Self::Struct(binding.fields)),
+                TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
+                TypeBinding::PrimitiveType(primitive) => Ok(Self::PrimitiveType(primitive)),
+            },
         }
     }
 

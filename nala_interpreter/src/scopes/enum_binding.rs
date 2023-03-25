@@ -1,8 +1,8 @@
-use crate::ast::types::variant_declare::VariantDeclare;
+use crate::resolved::enum_variants::EnumVariant;
 
 #[derive(Clone, Debug)]
 pub struct EnumBinding {
-    pub variants: Vec<VariantDeclare>,
+    pub variants: Vec<EnumVariant>,
     pub closure_scope: usize,
     pub generic_ident: Option<String>,
 }

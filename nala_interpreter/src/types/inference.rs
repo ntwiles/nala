@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    ast::types::{primitive_type::PrimitiveType, variant_declare::VariantDeclare},
+    ast::types::primitive_type::PrimitiveType,
     errors::RuntimeError,
     resolved::{
         enum_variants::EnumVariant,
@@ -10,7 +10,6 @@ use crate::{
         value::{EnumVariantValue, Value},
     },
     scopes::Scopes,
-    utils::accept_results,
 };
 
 use super::{fit::fits_type, type_variant::TypeVariant, NalaType};
@@ -103,8 +102,8 @@ pub fn infer_variant(
         .unwrap();
 
     let existing_variant = enum_type.variants.iter().find(|v| match v {
-        VariantDeclare::Data(ident, _) => ident == variant_ident,
-        VariantDeclare::Empty(ident) => ident == variant_ident,
+        EnumVariant::Data(ident, _) => ident == variant_ident,
+        EnumVariant::Empty(ident) => ident == variant_ident,
     });
 
     let existing_variant = match existing_variant {
@@ -113,18 +112,15 @@ pub fn infer_variant(
     };
 
     match existing_variant {
-        VariantDeclare::Data(_ident, data_type) => {
-            let expected_data_type =
-                TypeVariant::from_literal(data_type.clone(), scopes, enum_type.closure_scope)?;
-
+        EnumVariant::Data(_ident, data_type) => {
             let data = match data {
                 Some(d) => d,
                 None => todo!("Expected data but none was supplied error."),
             };
 
-            if fits_type(data, &expected_data_type, scopes, current_scope)? {
+            if fits_type(data, &data_type, scopes, current_scope)? {
                 if let Some(generic_ident) = enum_type.get_generic_ident() {
-                    let inner_type = if let Some(ident) = expected_data_type.get_generic_ident() {
+                    let inner_type = if let Some(ident) = data_type.get_generic_ident() {
                         if ident == generic_ident {
                             infer_type(data, scopes, current_scope)?
                         } else {
@@ -134,49 +130,21 @@ pub fn infer_variant(
                         TypeVariant::Type(NalaType::Generic(generic_ident))
                     };
 
-                    let variants = enum_type
-                        .variants
-                        .iter()
-                        .map(|v| {
-                            EnumVariant::from_variant_declare(
-                                v.clone(), // TODO: Find a way to avoid this clone.
-                                scopes,
-                                enum_type.closure_scope,
-                            )
-                        })
-                        .collect();
-
-                    let variants = accept_results(variants)?;
-
                     Ok(TypeVariant::Composite(
-                        NalaType::Enum(enum_ident.to_owned(), variants),
+                        NalaType::Enum(enum_ident.to_owned(), enum_type.variants),
                         vec![inner_type],
                     ))
                 } else {
-                    let variants = enum_type
-                        .variants
-                        .iter()
-                        .map(|v| {
-                            EnumVariant::from_variant_declare(
-                                v.clone(), // TODO: Find a way to avoid this clone.
-                                scopes,
-                                enum_type.closure_scope,
-                            )
-                        })
-                        .collect();
-
-                    let variants = accept_results(variants)?;
-
                     Ok(TypeVariant::Type(NalaType::Enum(
                         enum_ident.to_owned(),
-                        variants,
+                        enum_type.variants,
                     )))
                 }
             } else {
                 todo!("")
             }
         }
-        VariantDeclare::Empty(_ident) => {
+        EnumVariant::Empty(_ident) => {
             if enum_type.get_generic_ident().is_some() {
                 // TODO: I don't think we want to error here, we're moved towards letting inferrence
                 // happen for generic types and erroring instead on assignment or call.
@@ -184,23 +152,9 @@ pub fn infer_variant(
                     "Not enough information to infer type of generic enum variant."
                 )))
             } else {
-                let variants = enum_type
-                    .variants
-                    .iter()
-                    .map(|v| {
-                        EnumVariant::from_variant_declare(
-                            v.clone(), // TODO: Find a way to avoid this clone.
-                            scopes,
-                            enum_type.closure_scope,
-                        )
-                    })
-                    .collect();
-
-                let variants = accept_results(variants)?;
-
                 Ok(TypeVariant::Type(NalaType::Enum(
                     enum_ident.to_owned(),
-                    variants,
+                    enum_type.variants,
                 )))
             }
         }

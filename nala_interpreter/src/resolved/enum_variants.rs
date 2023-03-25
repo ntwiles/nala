@@ -6,11 +6,11 @@ use crate::{
 #[derive(Eq, Debug, Clone, PartialEq)]
 pub enum EnumVariant {
     Empty(String),
-    Data(String, TypeVariant), // Use something other than TypeLiteralVariant here.
+    Data(String, TypeVariant),
 }
 
 impl EnumVariant {
-    pub fn from_variant_declare(
+    pub fn from_literal(
         declare: VariantDeclare,
         scopes: &mut Scopes,
         current_scope: usize,
