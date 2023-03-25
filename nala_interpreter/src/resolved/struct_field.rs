@@ -7,14 +7,16 @@ use crate::{
     types::{type_variant::TypeVariant, NalaType},
 };
 
+use super::from_literal::FromLiteral;
+
 #[derive(Eq, Debug, Clone)]
 pub struct StructField {
     pub ident: String,
     pub value_type: TypeVariant,
 }
 
-impl StructField {
-    pub fn from_literal(
+impl FromLiteral<StructLiteralField> for StructField {
+    fn from_literal(
         field: StructLiteralField,
         scopes: &mut Scopes,
         current_scope: usize,

@@ -11,6 +11,7 @@ use crate::{
     errors::*,
     io_context::IoContext,
     resolved::{
+        from_literal::FromLiteral,
         func_value::{FuncValue, Param},
         value::Value,
     },
@@ -164,7 +165,7 @@ pub fn eval_call(
             }
         }
         Call::PlaceExpression(place) => eval_place_expr(place, scopes, current_scope, ctx),
-        Call::ValueLiteral(value) => Ok(Value::from_literal(value.clone())),
+        Call::ValueLiteral(value) => Ok(Value::from_literal(value.clone(), scopes, current_scope)?),
     }
 }
 

@@ -1,8 +1,8 @@
 use std::fmt;
 
 use crate::{
-    ast::types::type_literal_variant::TypeVariantLiteral, errors::RuntimeError, scopes::Scopes,
-    utils::accept_results,
+    ast::types::type_literal_variant::TypeVariantLiteral, errors::RuntimeError,
+    resolved::from_literal::FromLiteral, scopes::Scopes, utils::accept_results,
 };
 
 use super::NalaType;
@@ -14,7 +14,19 @@ pub enum TypeVariant {
 }
 
 impl TypeVariant {
-    pub fn from_literal(
+    pub fn get_generic_ident(&self) -> Option<String> {
+        match self {
+            TypeVariant::Composite(_outer, inner) => inner
+                .iter()
+                .find(|i| i.get_generic_ident().is_some())
+                .map(|i| i.get_generic_ident().unwrap()),
+            TypeVariant::Type(t) => t.get_generic_ident(),
+        }
+    }
+}
+
+impl FromLiteral<TypeVariantLiteral> for TypeVariant {
+    fn from_literal(
         literal: TypeVariantLiteral,
         scopes: &mut Scopes,
         current_scope: usize,
@@ -38,16 +50,6 @@ impl TypeVariant {
                 scopes,
                 current_scope,
             )?)),
-        }
-    }
-
-    pub fn get_generic_ident(&self) -> Option<String> {
-        match self {
-            TypeVariant::Composite(_outer, inner) => inner
-                .iter()
-                .find(|i| i.get_generic_ident().is_some())
-                .map(|i| i.get_generic_ident().unwrap()),
-            TypeVariant::Type(t) => t.get_generic_ident(),
         }
     }
 }

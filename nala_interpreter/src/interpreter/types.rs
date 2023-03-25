@@ -1,7 +1,10 @@
 use crate::{
     ast::types::{variant_declare::VariantDeclare, StructLiteralField},
     errors::RuntimeError,
-    resolved::{enum_variants::EnumVariant, struct_field::StructField, value::Value},
+    resolved::{
+        enum_variants::EnumVariant, from_literal::FromLiteral, struct_field::StructField,
+        value::Value,
+    },
     scopes::{
         enum_binding::EnumBinding, struct_binding::StructBinding, type_binding::TypeBinding, Scopes,
     },

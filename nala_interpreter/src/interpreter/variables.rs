@@ -6,7 +6,7 @@ use crate::{
     ast::{objects::*, types::type_literal_variant::TypeVariantLiteral, *},
     errors::RuntimeError,
     io_context::IoContext,
-    resolved::value::Value,
+    resolved::{from_literal::FromLiteral, value::Value},
     scopes::Scopes,
     types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
 };

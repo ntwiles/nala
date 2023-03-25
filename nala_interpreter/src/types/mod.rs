@@ -7,7 +7,7 @@ use std::fmt;
 use crate::{
     ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
     errors::RuntimeError,
-    resolved::{enum_variants::EnumVariant, struct_field::StructField},
+    resolved::{enum_variants::EnumVariant, from_literal::FromLiteral, struct_field::StructField},
     scopes::{type_binding::TypeBinding, Scopes},
 };
 
@@ -20,22 +20,6 @@ pub enum NalaType {
 }
 
 impl NalaType {
-    pub fn from_literal(
-        literal: TypeLiteral,
-        scopes: &mut Scopes,
-        current_scope: usize,
-    ) -> Result<Self, RuntimeError> {
-        match literal {
-            TypeLiteral::PrimitiveType(t) => Ok(Self::PrimitiveType(t)),
-            TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
-                TypeBinding::Enum(binding) => Ok(Self::Enum(ident, binding.variants)),
-                TypeBinding::Struct(binding) => Ok(Self::Struct(binding.fields)),
-                TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
-                TypeBinding::PrimitiveType(primitive) => Ok(Self::PrimitiveType(primitive)),
-            },
-        }
-    }
-
     pub fn get_generic_ident(&self) -> Option<String> {
         match self {
             Self::Enum(_, _) => None,
@@ -50,6 +34,24 @@ impl NalaType {
                 None
             }
             Self::Generic(ident) => Some(ident.clone()),
+        }
+    }
+}
+
+impl FromLiteral<TypeLiteral> for NalaType {
+    fn from_literal(
+        literal: TypeLiteral,
+        scopes: &mut Scopes,
+        current_scope: usize,
+    ) -> Result<Self, RuntimeError> {
+        match literal {
+            TypeLiteral::PrimitiveType(t) => Ok(Self::PrimitiveType(t)),
+            TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
+                TypeBinding::Enum(binding) => Ok(Self::Enum(ident, binding.variants)),
+                TypeBinding::Struct(binding) => Ok(Self::Struct(binding.fields)),
+                TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
+                TypeBinding::PrimitiveType(primitive) => Ok(Self::PrimitiveType(primitive)),
+            },
         }
     }
 }
