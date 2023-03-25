@@ -1,13 +1,13 @@
 use crate::{
     ast::types::primitive_type::PrimitiveType,
     errors::RuntimeError,
-    resolved::{func_value::FuncValue, value::Value},
+    resolved::{
+        enum_variants::EnumVariant, func_value::FuncValue, struct_field::StructField, value::Value,
+    },
     scopes::Scopes,
 };
 
-use super::{
-    enum_variants::EnumVariant, struct_field::StructField, type_variant::TypeVariant, NalaType,
-};
+use super::{type_variant::TypeVariant, NalaType};
 
 pub fn fits_type(
     value: &Value,

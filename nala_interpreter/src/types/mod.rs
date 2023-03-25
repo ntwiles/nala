@@ -1,7 +1,5 @@
-mod enum_variants;
 pub mod fit;
 pub mod inference;
-pub mod struct_field;
 pub mod type_variant;
 
 use std::fmt;
@@ -9,11 +7,10 @@ use std::fmt;
 use crate::{
     ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
     errors::RuntimeError,
+    resolved::{enum_variants::EnumVariant, struct_field::StructField},
     scopes::{type_binding::TypeBinding, Scopes},
     utils::accept_results,
 };
-
-use self::{enum_variants::EnumVariant, struct_field::StructField};
 
 #[derive(Eq, Debug, Clone)]
 pub enum NalaType {

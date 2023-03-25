@@ -4,9 +4,8 @@ use crate::{
     ast::types::{StructLiteralField, StructLiteralFieldValue},
     errors::RuntimeError,
     scopes::Scopes,
+    types::{type_variant::TypeVariant, NalaType},
 };
-
-use super::{type_variant::TypeVariant, NalaType};
 
 #[derive(Eq, Debug, Clone)]
 pub struct StructField {

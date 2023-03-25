@@ -12,9 +12,10 @@ use crate::{
     io_context::IoContext,
     resolved::{
         func_value::{FuncValue, Param},
+        struct_field::StructField,
         value::Value,
     },
-    types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
+    types::{type_variant::TypeVariant, NalaType},
 };
 
 pub fn get_http_block() -> FuncValue {

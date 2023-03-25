@@ -4,17 +4,16 @@ use crate::{
     ast::types::{primitive_type::PrimitiveType, variant_declare::VariantDeclare},
     errors::RuntimeError,
     resolved::{
+        enum_variants::EnumVariant,
         func_value::FuncValue,
+        struct_field::StructField,
         value::{EnumVariantValue, Value},
     },
     scopes::Scopes,
     utils::accept_results,
 };
 
-use super::{
-    enum_variants::EnumVariant, fit::fits_type, struct_field::StructField,
-    type_variant::TypeVariant, NalaType,
-};
+use super::{fit::fits_type, type_variant::TypeVariant, NalaType};
 
 pub fn infer_type(
     value: &Value,

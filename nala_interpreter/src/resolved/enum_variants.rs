@@ -1,6 +1,7 @@
-use crate::{ast::types::variant_declare::VariantDeclare, errors::RuntimeError, scopes::Scopes};
-
-use super::type_variant::TypeVariant;
+use crate::{
+    ast::types::variant_declare::VariantDeclare, errors::RuntimeError, scopes::Scopes,
+    types::type_variant::TypeVariant,
+};
 
 #[derive(Eq, Debug, Clone, PartialEq)]
 pub enum EnumVariant {

@@ -1,4 +1,4 @@
-use crate::types::struct_field::StructField;
+use crate::resolved::struct_field::StructField;
 
 #[derive(Clone, Debug)]
 pub struct StructBinding {
