@@ -14,11 +14,10 @@ use crate::{
         func_value::{FuncValue, Param},
         value::Value,
     },
-    scopes::{struct_binding::StructBinding, type_binding::TypeBinding, Scopes},
     types::{struct_field::StructField, type_variant::TypeVariant, NalaType},
 };
 
-pub fn get_http_block(scopes: &mut Scopes, scope: usize) -> Result<FuncValue, RuntimeError> {
+pub fn get_http_block() -> FuncValue {
     let return_type = TypeVariant::Type(NalaType::Generic(String::from("T")));
 
     let options_fields = vec![
@@ -36,34 +35,23 @@ pub fn get_http_block(scopes: &mut Scopes, scope: usize) -> Result<FuncValue, Ru
         },
     ];
 
-    // TODO: Should we be binding this type here?
-    scopes.add_type_binding(
-        "HttpOptions",
-        scope,
-        TypeBinding::Struct(StructBinding {
-            generic_ident: None,
-            fields: options_fields.clone(),
-            closure_scope: 0,
-        }),
-    )?;
-
     let params = vec![Param {
         ident: String::from("options"),
         param_type: TypeVariant::Type(NalaType::Struct(options_fields)),
     }];
 
-    Ok(FuncValue {
+    FuncValue {
         params,
         return_type,
         type_params: None,
         closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_http)),
-    })
+    }
 }
 
 fn builtin_http(
     args: HashMap<String, Value>,
-    _context: &mut dyn IoContext,
+    _ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     let options = args.get("options").unwrap();
 
