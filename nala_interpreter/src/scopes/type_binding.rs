@@ -1,49 +1,30 @@
 use crate::{
-    ast::types::primitive_type::PrimitiveType, errors::RuntimeError,
-    resolved::struct_field::StructField, types::type_variant::TypeVariant,
+    errors::RuntimeError, resolved::struct_field::StructField, types::type_variant::TypeVariant,
 };
 
-use super::enum_binding::EnumBinding;
+use super::{enum_binding::EnumBinding, type_binding_variant::TypeBindingVariant};
 
-#[derive(Clone, Debug)]
-pub enum TypeBinding {
-    Enum(EnumBinding),
-    Struct(Vec<StructField>),
-    Generic(String),
-    PrimitiveType(PrimitiveType),
+#[derive(Debug, Clone)]
+pub struct TypeBinding {
+    pub variant: TypeBindingVariant,
 }
 
 impl TypeBinding {
     pub fn from_type(type_variant: TypeVariant) -> Self {
-        match type_variant {
-            TypeVariant::Composite(_composite) => todo!(),
-            TypeVariant::Type(the_type) => match the_type {
-                crate::types::NalaType::Enum(_ident, _variants) => todo!(), // We're missing fields like closure_scope.
-                crate::types::NalaType::Struct(fields) => Self::Struct(fields),
-                crate::types::NalaType::Generic(ident) => Self::Generic(ident),
-                crate::types::NalaType::PrimitiveType(primitive) => Self::PrimitiveType(primitive),
-            },
-        }
+        let variant = TypeBindingVariant::from_type(type_variant.clone(), None);
+
+        Self { variant }
     }
 
     pub fn as_enum(&self) -> Result<EnumBinding, RuntimeError> {
-        match self {
-            TypeBinding::Enum(binding) => Ok(binding.clone()),
-            _ => Err(RuntimeError::new("Expected an enum type.")),
-        }
+        self.variant.as_enum()
     }
 
     pub fn as_struct(&self) -> Result<Vec<StructField>, RuntimeError> {
-        match self {
-            TypeBinding::Struct(fields) => Ok(fields.clone()),
-            _ => Err(RuntimeError::new("Expected a struct type.")),
-        }
+        self.variant.as_struct()
     }
 
     pub fn get_generic_ident(&self) -> Option<String> {
-        match self {
-            TypeBinding::Enum(binding) => binding.generic_ident.clone(),
-            _ => None,
-        }
+        self.variant.get_generic_ident()
     }
 }

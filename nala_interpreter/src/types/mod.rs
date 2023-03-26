@@ -9,7 +9,7 @@ use crate::{
     ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
     errors::RuntimeError,
     resolved::{enum_variants::EnumVariant, from_literal::FromLiteral, struct_field::StructField},
-    scopes::{type_binding::TypeBinding, Scopes},
+    scopes::{type_binding_variant::TypeBindingVariant, Scopes},
 };
 
 use self::type_variant::TypeVariant;
@@ -67,10 +67,10 @@ impl FromLiteral<TypeLiteral> for NalaType {
         match literal {
             TypeLiteral::PrimitiveType(t) => Ok(Self::PrimitiveType(t)),
             TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
-                TypeBinding::Enum(binding) => Ok(Self::Enum(ident, binding.variants)),
-                TypeBinding::Struct(fields) => Ok(Self::Struct(fields)),
-                TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
-                TypeBinding::PrimitiveType(primitive) => Ok(Self::PrimitiveType(primitive)),
+                TypeBindingVariant::Enum(binding) => Ok(Self::Enum(ident, binding.variants)),
+                TypeBindingVariant::Struct(fields) => Ok(Self::Struct(fields)),
+                TypeBindingVariant::Generic(ident) => Ok(Self::Generic(ident)),
+                TypeBindingVariant::PrimitiveType(primitive) => Ok(Self::PrimitiveType(primitive)),
             },
         }
     }
