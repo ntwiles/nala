@@ -1,3 +1,4 @@
+pub mod composite_type;
 pub mod fit;
 pub mod inference;
 pub mod type_variant;
@@ -11,6 +12,8 @@ use crate::{
     scopes::{type_binding::TypeBinding, Scopes},
 };
 
+use self::type_variant::TypeVariant;
+
 #[derive(Eq, Debug, Clone)]
 pub enum NalaType {
     Enum(String, Vec<EnumVariant>),
@@ -20,6 +23,23 @@ pub enum NalaType {
 }
 
 impl NalaType {
+    pub fn make_concrete(self, generic_ident: &str, concrete_type: &TypeVariant) -> Self {
+        match self {
+            Self::Generic(_) => unreachable!(),
+            Self::Enum(_, _) => todo!(),
+            Self::PrimitiveType(prim) => Self::PrimitiveType(prim),
+            Self::Struct(fields) => Self::Struct(
+                fields
+                    .into_iter()
+                    .map(|StructField { ident, value_type }| StructField {
+                        ident,
+                        value_type: value_type.make_concrete(generic_ident, concrete_type),
+                    })
+                    .collect(),
+            ),
+        }
+    }
+
     pub fn get_generic_ident(&self) -> Option<String> {
         match self {
             Self::Enum(_, _) => None,
@@ -48,7 +68,7 @@ impl FromLiteral<TypeLiteral> for NalaType {
             TypeLiteral::PrimitiveType(t) => Ok(Self::PrimitiveType(t)),
             TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
                 TypeBinding::Enum(binding) => Ok(Self::Enum(ident, binding.variants)),
-                TypeBinding::Struct(binding) => Ok(Self::Struct(binding.fields)),
+                TypeBinding::Struct(fields) => Ok(Self::Struct(fields)),
                 TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
                 TypeBinding::PrimitiveType(primitive) => Ok(Self::PrimitiveType(primitive)),
             },

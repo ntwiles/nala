@@ -7,7 +7,7 @@ use crate::{
     scopes::Scopes,
 };
 
-use super::{type_variant::TypeVariant, NalaType};
+use super::{composite_type::CompositeType, type_variant::TypeVariant, NalaType};
 
 pub fn fits_type(
     value: &Value,
@@ -16,7 +16,7 @@ pub fn fits_type(
     current_scope: usize,
 ) -> Result<bool, RuntimeError> {
     match type_variant {
-        TypeVariant::Composite(outer, inner) => match outer {
+        TypeVariant::Composite(CompositeType { outer, inner, .. }) => match outer {
             NalaType::PrimitiveType(PrimitiveType::Array) => {
                 fits_array(inner, value, scopes, current_scope)
             }

@@ -1,14 +1,14 @@
 use crate::{
     ast::types::primitive_type::PrimitiveType, errors::RuntimeError,
-    types::type_variant::TypeVariant,
+    resolved::struct_field::StructField, types::type_variant::TypeVariant,
 };
 
-use super::{enum_binding::EnumBinding, struct_binding::StructBinding};
+use super::enum_binding::EnumBinding;
 
 #[derive(Clone, Debug)]
 pub enum TypeBinding {
     Enum(EnumBinding),
-    Struct(StructBinding),
+    Struct(Vec<StructField>),
     Generic(String),
     PrimitiveType(PrimitiveType),
 }
@@ -16,10 +16,10 @@ pub enum TypeBinding {
 impl TypeBinding {
     pub fn from_type(type_variant: TypeVariant) -> Self {
         match type_variant {
-            TypeVariant::Composite(_outer, _inner) => todo!(),
+            TypeVariant::Composite(_composite) => todo!(),
             TypeVariant::Type(the_type) => match the_type {
                 crate::types::NalaType::Enum(_ident, _variants) => todo!(), // We're missing fields like closure_scope.
-                crate::types::NalaType::Struct(_fields) => todo!(), // We're missing fields like closure_scope
+                crate::types::NalaType::Struct(fields) => Self::Struct(fields),
                 crate::types::NalaType::Generic(ident) => Self::Generic(ident),
                 crate::types::NalaType::PrimitiveType(primitive) => Self::PrimitiveType(primitive),
             },
@@ -33,9 +33,9 @@ impl TypeBinding {
         }
     }
 
-    pub fn as_struct(&self) -> Result<StructBinding, RuntimeError> {
+    pub fn as_struct(&self) -> Result<Vec<StructField>, RuntimeError> {
         match self {
-            TypeBinding::Struct(binding) => Ok(binding.clone()),
+            TypeBinding::Struct(fields) => Ok(fields.clone()),
             _ => Err(RuntimeError::new("Expected a struct type.")),
         }
     }

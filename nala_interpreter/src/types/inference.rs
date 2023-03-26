@@ -13,7 +13,7 @@ use crate::{
     scopes::Scopes,
 };
 
-use super::{fit::fits_type, type_variant::TypeVariant, NalaType};
+use super::{composite_type::CompositeType, fit::fits_type, type_variant::TypeVariant, NalaType};
 
 pub fn infer_type(
     value: &Value,
@@ -34,7 +34,10 @@ pub fn infer_type(
 
             param_types.push(return_type.clone());
 
-            TypeVariant::Composite(NalaType::PrimitiveType(PrimitiveType::Func), param_types)
+            TypeVariant::Composite(CompositeType {
+                outer: NalaType::PrimitiveType(PrimitiveType::Func),
+                inner: param_types,
+            })
         }
         Value::Num(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
         Value::Object(fields) => {
@@ -77,10 +80,10 @@ fn infer_array(
         )))?
     };
 
-    Ok(TypeVariant::Composite(
-        NalaType::PrimitiveType(PrimitiveType::Array),
-        vec![elem_type],
-    ))
+    Ok(TypeVariant::Composite(CompositeType {
+        outer: NalaType::PrimitiveType(PrimitiveType::Array),
+        inner: vec![elem_type],
+    }))
 }
 
 pub fn infer_variant(
@@ -123,10 +126,10 @@ pub fn infer_variant(
                         TypeVariant::Type(NalaType::Generic(generic_ident))
                     };
 
-                    Ok(TypeVariant::Composite(
-                        NalaType::Enum(enum_ident.to_owned(), enum_type.variants),
-                        vec![inner_type],
-                    ))
+                    Ok(TypeVariant::Composite(CompositeType {
+                        outer: NalaType::Enum(enum_ident.to_owned(), enum_type.variants),
+                        inner: vec![inner_type],
+                    }))
                 } else {
                     Ok(TypeVariant::Type(NalaType::Enum(
                         enum_ident.to_owned(),

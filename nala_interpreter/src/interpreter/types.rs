@@ -5,9 +5,7 @@ use crate::{
         enum_variants::EnumVariant, from_literal::FromLiteral, struct_field::StructField,
         value::Value,
     },
-    scopes::{
-        enum_binding::EnumBinding, struct_binding::StructBinding, type_binding::TypeBinding, Scopes,
-    },
+    scopes::{enum_binding::EnumBinding, type_binding::TypeBinding, Scopes},
     utils::accept_results,
 };
 
@@ -36,15 +34,7 @@ pub fn eval_struct(
     )?;
 
     scopes
-        .add_type_binding(
-            &ident,
-            current_scope,
-            TypeBinding::Struct(StructBinding {
-                generic_ident: type_params,
-                closure_scope,
-                fields,
-            }),
-        )
+        .add_type_binding(&ident, current_scope, TypeBinding::Struct(fields))
         .map(|_| Value::Void)
 }
 
@@ -78,7 +68,6 @@ pub fn eval_enum(
             current_scope,
             TypeBinding::Enum(EnumBinding {
                 variants,
-                closure_scope,
                 generic_ident: type_params,
             }),
         )

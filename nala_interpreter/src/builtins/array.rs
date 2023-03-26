@@ -11,16 +11,16 @@ use crate::{
         func_value::{FuncValue, Param},
         value::Value,
     },
-    types::{type_variant::TypeVariant, NalaType},
+    types::{composite_type::CompositeType, type_variant::TypeVariant, NalaType},
 };
 
 pub fn get_len_block() -> FuncValue {
     let inner_type = TypeVariant::Type(NalaType::Generic(String::from("T")));
 
-    let outer_type = TypeVariant::Composite(
-        NalaType::PrimitiveType(PrimitiveType::Array),
-        vec![inner_type],
-    );
+    let outer_type = TypeVariant::Composite(CompositeType {
+        outer: NalaType::PrimitiveType(PrimitiveType::Array),
+        inner: vec![inner_type],
+    });
 
     let params = vec![Param {
         ident: String::from("array"),
@@ -41,10 +41,10 @@ pub fn get_len_block() -> FuncValue {
 pub fn get_slice_block() -> FuncValue {
     let inner_type = TypeVariant::Type(NalaType::Generic(String::from("T")));
 
-    let outer_type = TypeVariant::Composite(
-        NalaType::PrimitiveType(PrimitiveType::Array),
-        vec![inner_type],
-    );
+    let outer_type = TypeVariant::Composite(CompositeType {
+        outer: NalaType::PrimitiveType(PrimitiveType::Array),
+        inner: vec![inner_type],
+    });
 
     let array_param = Param {
         ident: String::from("array"),
@@ -63,10 +63,10 @@ pub fn get_slice_block() -> FuncValue {
 
     let inner_return_type = TypeVariant::Type(NalaType::Generic(String::from("T")));
 
-    let return_type = TypeVariant::Composite(
-        NalaType::PrimitiveType(PrimitiveType::Array),
-        vec![inner_return_type],
-    );
+    let return_type = TypeVariant::Composite(CompositeType {
+        outer: NalaType::PrimitiveType(PrimitiveType::Array),
+        inner: vec![inner_return_type],
+    });
 
     FuncValue {
         params: vec![array_param, start_param, end_param],
