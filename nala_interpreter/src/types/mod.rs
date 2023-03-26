@@ -80,7 +80,7 @@ impl NalaType {
         }
     }
 
-    pub fn get_generic_ident(&self) -> Option<String> {
+    pub fn get_type_param(&self) -> Option<String> {
         match self {
             Self::Enum(_ident, _variants, type_param) => type_param.clone(),
             Self::PrimitiveType(_) => None,

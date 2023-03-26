@@ -113,7 +113,7 @@ pub fn infer_variant(
 
             if fits_type(data, &data_type, scopes, current_scope)? {
                 if let Some(generic_ident) = generic_ident {
-                    let inner_type = if let Some(ident) = data_type.get_generic_ident() {
+                    let inner_type = if let Some(ident) = data_type.get_type_param() {
                         if ident == generic_ident {
                             infer_type(data, scopes, current_scope)?
                         } else {

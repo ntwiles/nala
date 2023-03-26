@@ -14,13 +14,13 @@ pub enum TypeVariant {
 }
 
 impl TypeVariant {
-    pub fn get_generic_ident(&self) -> Option<String> {
+    pub fn get_type_param(&self) -> Option<String> {
         match self {
             TypeVariant::Composite(CompositeType { inner, .. }) => inner
                 .iter()
-                .find(|i| i.get_generic_ident().is_some())
-                .map(|i| i.get_generic_ident().unwrap()),
-            TypeVariant::Type(t) => t.get_generic_ident(),
+                .find(|i| i.get_type_param().is_some())
+                .map(|i| i.get_type_param().unwrap()),
+            TypeVariant::Type(t) => t.get_type_param(),
         }
     }
 
@@ -67,11 +67,11 @@ impl FromLiteral<TypeVariantLiteral> for TypeVariant {
                         .collect(),
                 )?;
 
-                let composite = if let Some(type_params) = outer.get_generic_ident() {
+                let composite = if let Some(type_param) = outer.get_type_param() {
                     let concrete_type = inner[0].clone();
 
                     let composite = TypeVariant::Composite(CompositeType { outer, inner });
-                    composite.make_concrete(&type_params, &concrete_type)
+                    composite.make_concrete(&type_param, &concrete_type)
                 } else {
                     TypeVariant::Composite(CompositeType { outer, inner })
                 };
