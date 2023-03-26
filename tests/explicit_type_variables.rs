@@ -47,7 +47,7 @@ fn it_handles_declare_with_explicit_generic_type() {
 
 #[test]
 fn it_handles_declare_with_unfit_value() {
-    let expected_message = rgx!("Tried to declare variable `foo` with explicit type `String` but value does not fit that type.");
+    let expected_message = rgx!("Tried to declare variable `foo` with explicit type `String` but value `7` does not fit that type.");
 
     let nala = r#"
         const foo: String = 7;
@@ -62,7 +62,7 @@ fn it_handles_declare_with_unfit_value() {
 #[test]
 
 fn it_errors_when_given_wrong_array_type() {
-    let expected_message = rgx!("Tried to declare variable `foo` with explicit type `Array<String>` but value does not fit that type.");
+    let expected_message = "Tried to declare variable `foo` with explicit type `Array<String>` but value `[7, ]` does not fit that type.";
 
     let nala = r#"
         const foo: Array<String> = [7];
@@ -71,12 +71,12 @@ fn it_errors_when_given_wrong_array_type() {
     let result = parse_and_run(nala, &mut TestContext::new());
 
     assert!(result.is_err());
-    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
+    assert_eq!(expected_message, &result.clone().unwrap_err().message)
 }
 
 #[test]
-fn it_handles_declare_with_unfit_value_for_generic() {
-    let expected_message = rgx!("Tried to declare variable `foo` with explicit type `Foo<String>` but value does not fit that type.");
+fn it_handles_declare_with_unfit_value_for_generic_enum() {
+    let expected_message = "Tried to declare variable `foo` with explicit type `Foo<String>` but value `Bar(7)` does not fit that type.";
 
     let nala = r#"
         enum Foo<T> {
@@ -90,5 +90,23 @@ fn it_handles_declare_with_unfit_value_for_generic() {
     let result = parse_and_run(nala, &mut TestContext::new());
 
     assert!(result.is_err());
-    assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
+    assert_eq!(expected_message, &result.clone().unwrap_err().message)
+}
+
+#[test]
+fn it_handles_declare_with_unfit_value_for_generic_struct() {
+    let expected_message = "Tried to declare variable `foo` with explicit type `Foo<String>` but value `{ value: 7,  }` does not fit that type.";
+
+    let nala = r#"
+        struct Foo<T> {
+            value: T,
+        }
+
+        const foo: Foo<String> = { value: 7 };
+    "#;
+
+    let result = parse_and_run(nala, &mut TestContext::new());
+
+    assert!(result.is_err());
+    assert_eq!(expected_message, &result.clone().unwrap_err().message)
 }

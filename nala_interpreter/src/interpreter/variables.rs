@@ -25,13 +25,13 @@ pub fn eval_declare(
         ));
     }
 
-    if let Some(declared_type) = declared_type {
+    if let Some(declared_type_literal) = declared_type {
         let declared_type =
-            TypeVariant::from_literal(declared_type.clone(), scopes, current_scope)?;
+            TypeVariant::from_literal(declared_type_literal.clone(), scopes, current_scope)?;
 
         if !fits_type(&value, &declared_type, scopes, current_scope)? {
             return Err(RuntimeError::new(&format!(
-                "Tried to declare variable `{ident}` with explicit type `{declared_type}` but value does not fit that type.",
+                "Tried to declare variable `{ident}` with explicit type `{declared_type_literal}` but value `{value}` does not fit that type.",
             )));
         }
 
