@@ -66,9 +66,9 @@ impl Scopes {
         self: &Self,
         ident: &str,
         starting_scope: usize,
-    ) -> Result<TypeBindingVariant, RuntimeError> {
+    ) -> Result<TypeBinding, RuntimeError> {
         match self.get_maybe_type(ident, starting_scope) {
-            Some(value) => Ok(value.variant.clone()),
+            Some(value) => Ok(value.clone()),
             None => Err(not_found_in_scope_error(ident)),
         }
     }
@@ -137,6 +137,7 @@ impl Scopes {
         ident: &str,
         current_scope: usize,
         variant: TypeBindingVariant,
+        generic_ident: Option<String>,
     ) -> Result<(), RuntimeError> {
         if self.type_binding_exists_local(ident, current_scope) {
             Err(RuntimeError::new(&format!(
@@ -144,7 +145,13 @@ impl Scopes {
             )))
         } else {
             let scope = self.scopes.get_mut(current_scope).unwrap();
-            scope.add_type_binding(ident, TypeBinding { variant });
+            scope.add_type_binding(
+                ident,
+                TypeBinding {
+                    variant,
+                    generic_ident,
+                },
+            );
 
             Ok(())
         }

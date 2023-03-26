@@ -66,12 +66,16 @@ impl FromLiteral<TypeLiteral> for NalaType {
     ) -> Result<Self, RuntimeError> {
         match literal {
             TypeLiteral::PrimitiveType(t) => Ok(Self::PrimitiveType(t)),
-            TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
-                TypeBindingVariant::Enum(binding) => Ok(Self::Enum(ident, binding.variants)),
-                TypeBindingVariant::Struct(fields) => Ok(Self::Struct(fields)),
-                TypeBindingVariant::Generic(ident) => Ok(Self::Generic(ident)),
-                TypeBindingVariant::PrimitiveType(primitive) => Ok(Self::PrimitiveType(primitive)),
-            },
+            TypeLiteral::UserDefined(ident) => {
+                match scopes.get_type(&ident, current_scope)?.variant {
+                    TypeBindingVariant::Enum(binding) => Ok(Self::Enum(ident, binding.variants)),
+                    TypeBindingVariant::Struct(fields) => Ok(Self::Struct(fields)),
+                    TypeBindingVariant::Generic(ident) => Ok(Self::Generic(ident)),
+                    TypeBindingVariant::PrimitiveType(primitive) => {
+                        Ok(Self::PrimitiveType(primitive))
+                    }
+                }
+            }
         }
     }
 }

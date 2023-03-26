@@ -23,6 +23,7 @@ pub fn eval_struct(
             &type_param,
             closure_scope,
             TypeBindingVariant::Generic(type_param.clone()),
+            None, // TODO: Is this correct?
         )?;
     }
 
@@ -34,7 +35,12 @@ pub fn eval_struct(
     )?;
 
     scopes
-        .add_type_binding(&ident, current_scope, TypeBindingVariant::Struct(fields))
+        .add_type_binding(
+            &ident,
+            current_scope,
+            TypeBindingVariant::Struct(fields),
+            type_params,
+        )
         .map(|_| Value::Void)
 }
 
@@ -52,6 +58,7 @@ pub fn eval_enum(
             &type_param,
             closure_scope,
             TypeBindingVariant::Generic(type_param.clone()),
+            None,
         )?;
     }
 
@@ -66,10 +73,8 @@ pub fn eval_enum(
         .add_type_binding(
             &ident,
             current_scope,
-            TypeBindingVariant::Enum(EnumBinding {
-                variants,
-                generic_ident: type_params,
-            }),
+            TypeBindingVariant::Enum(EnumBinding { variants }),
+            type_params,
         )
         .map(|_| Value::Void)
 }

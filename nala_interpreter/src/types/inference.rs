@@ -100,7 +100,7 @@ pub fn infer_variant(
     // TODO: This appears to be the only reason that infer_type needs to accept
     // scopes and current_scope. Another clue that maybe enum variant values should
     // contain type information.
-    let enum_type = scopes
+    let (generic_ident, enum_type) = scopes
         .get_type(&enum_ident, current_scope)?
         .as_enum()
         .unwrap();
@@ -115,7 +115,7 @@ pub fn infer_variant(
             };
 
             if fits_type(data, &data_type, scopes, current_scope)? {
-                if let Some(generic_ident) = enum_type.get_generic_ident() {
+                if let Some(generic_ident) = generic_ident {
                     let inner_type = if let Some(ident) = data_type.get_generic_ident() {
                         if ident == generic_ident {
                             infer_type(data, scopes, current_scope)?
@@ -141,7 +141,7 @@ pub fn infer_variant(
             }
         }
         EnumVariant::Empty(_ident) => {
-            if enum_type.get_generic_ident().is_some() {
+            if generic_ident.is_some() {
                 // TODO: I don't think we want to error here, we're moved towards letting inferrence
                 // happen for generic types and erroring instead on assignment or call.
                 Err(RuntimeError::new(&format!(

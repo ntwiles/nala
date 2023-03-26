@@ -35,11 +35,13 @@ pub fn eval_func_declare(
 
     let closure_scope = scopes.new_scope(Some(current_scope));
 
+    // TODO: This snippet is really weird, make sure this makes sense.
     if let Some(type_param) = &type_params {
         scopes.add_type_binding(
             &type_param,
             closure_scope,
             TypeBindingVariant::Generic(type_param.clone()),
+            Some(type_param.clone()),
         )?;
     };
 
@@ -77,11 +79,13 @@ pub fn eval_builtin_declare(
 
     let closure_scope = scopes.new_scope(Some(current_scope));
 
+    // TODO: This snippet is really weird, make sure this makes sense.
     if let Some(type_param) = &type_params {
         scopes.add_type_binding(
             &type_param,
             closure_scope,
             TypeBindingVariant::Generic(type_param.clone()),
+            None,
         )?;
     };
 
@@ -183,9 +187,9 @@ fn handle_type_args(
         }
 
         let type_arg = TypeVariant::from_literal(type_arg.clone(), &mut Scopes::new(), 0)?;
-        let type_binding = TypeBindingVariant::from_type(type_arg, type_params.clone());
+        let type_binding = TypeBindingVariant::from_type(type_arg);
 
-        scopes.add_type_binding(&type_params.unwrap(), call_scope, type_binding)?;
+        scopes.add_type_binding(&type_params.unwrap(), call_scope, type_binding, None)?;
     }
 
     Ok(())

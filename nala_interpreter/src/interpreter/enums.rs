@@ -21,7 +21,8 @@ pub fn eval_enum_variant(
     match variant {
         EnumVariantOrAddend::Addend(addend) => eval_addend(addend, scopes, current_scope, ctx),
         EnumVariantOrAddend::EnumVariant(enum_ident, variant_ident, data) => {
-            let enum_type = scopes.get_type(enum_ident, current_scope)?.as_enum()?;
+            let (_enum_type_param, enum_type) =
+                scopes.get_type(enum_ident, current_scope)?.as_enum()?;
 
             let existing_variant = find_variant(&enum_type.variants, variant_ident)?;
 
