@@ -6,7 +6,7 @@ use super::{enum_binding::EnumBinding, type_binding_variant::TypeBindingVariant}
 
 #[derive(Debug, Clone)]
 pub struct TypeBinding {
-    pub type_param: Option<String>, // TODO: Rename type_param.
+    pub type_param: Option<String>,
     pub variant: TypeBindingVariant,
 }
 
