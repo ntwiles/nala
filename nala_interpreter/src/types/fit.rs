@@ -22,10 +22,12 @@ pub fn fits_type(
             }
             NalaType::PrimitiveType(PrimitiveType::Break) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Func) => fits_func(inner, value),
-            NalaType::Enum(enum_ident, variants) => {
+            NalaType::Enum(enum_ident, variants, _type_param) => {
                 fits_enum(value, inner, enum_ident, variants, scopes, current_scope)
             }
-            NalaType::Struct(fields) => fits_struct(fields, value, scopes, current_scope),
+            NalaType::Struct(fields, _type_param) => {
+                fits_struct(fields, value, scopes, current_scope)
+            }
             NalaType::Generic(_) => todo!(),
             _ => Err(RuntimeError::new(&format!(
                 "Type `{outer}` does not support type arguments. Type `{outer}<{}>` is invalid.",
@@ -37,9 +39,11 @@ pub fn fits_type(
             NalaType::PrimitiveType(PrimitiveType::Number) => Ok(value.is_number()),
             NalaType::PrimitiveType(PrimitiveType::String) => Ok(value.is_string()),
             NalaType::PrimitiveType(PrimitiveType::Void) => Ok(value.is_void()),
-            NalaType::Struct(fields) => fits_struct(fields, value, scopes, current_scope),
+            NalaType::Struct(fields, _type_param) => {
+                fits_struct(fields, value, scopes, current_scope)
+            }
             NalaType::Generic(_ident) => Ok(true),
-            NalaType::Enum(enum_ident, variants) => fits_enum(
+            NalaType::Enum(enum_ident, variants, _type_param) => fits_enum(
                 value,
                 &vec![type_variant.clone()],
                 enum_ident,

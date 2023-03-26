@@ -52,7 +52,7 @@ pub fn infer_type(
                 })
                 .collect();
 
-            TypeVariant::Type(NalaType::Struct(fields))
+            TypeVariant::Type(NalaType::Struct(fields, None))
         }
         Value::String(_) => TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
         Value::Variant(variant) => infer_variant(variant, scopes, current_scope)?,
@@ -100,10 +100,7 @@ pub fn infer_variant(
     // TODO: This appears to be the only reason that infer_type needs to accept
     // scopes and current_scope. Another clue that maybe enum variant values should
     // contain type information.
-    let (generic_ident, enum_type) = scopes
-        .get_type(&enum_ident, current_scope)?
-        .as_enum()
-        .unwrap();
+    let (generic_ident, enum_type) = scopes.get_type(&enum_ident, current_scope)?.as_enum()?;
 
     let existing_variant = find_variant(&enum_type.variants, variant_ident)?;
 
@@ -123,17 +120,22 @@ pub fn infer_variant(
                             unreachable!("This is currently unreachable because we don't support multiple generic types.")
                         }
                     } else {
-                        TypeVariant::Type(NalaType::Generic(generic_ident))
+                        TypeVariant::Type(NalaType::Generic(generic_ident.clone()))
                     };
 
                     Ok(TypeVariant::Composite(CompositeType {
-                        outer: NalaType::Enum(enum_ident.to_owned(), enum_type.variants),
+                        outer: NalaType::Enum(
+                            enum_ident.to_owned(),
+                            enum_type.variants,
+                            Some(generic_ident),
+                        ),
                         inner: vec![inner_type],
                     }))
                 } else {
                     Ok(TypeVariant::Type(NalaType::Enum(
                         enum_ident.to_owned(),
                         enum_type.variants,
+                        None,
                     )))
                 }
             } else {
@@ -151,6 +153,7 @@ pub fn infer_variant(
                 Ok(TypeVariant::Type(NalaType::Enum(
                     enum_ident.to_owned(),
                     enum_type.variants,
+                    None,
                 )))
             }
         }

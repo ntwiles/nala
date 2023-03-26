@@ -38,7 +38,7 @@ pub fn get_http_block() -> FuncValue {
 
     let params = vec![Param {
         ident: String::from("options"),
-        param_type: TypeVariant::Type(NalaType::Struct(options_fields)),
+        param_type: TypeVariant::Type(NalaType::Struct(options_fields, None)),
     }];
 
     FuncValue {

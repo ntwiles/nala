@@ -60,18 +60,17 @@ impl FromLiteral<TypeVariantLiteral> for TypeVariant {
             TypeVariantLiteral::Composite(outer, inner) => {
                 let outer = NalaType::from_literal(outer, scopes, current_scope)?;
 
-                let inner = inner
-                    .into_iter()
-                    .map(|l| TypeVariant::from_literal(l, scopes, current_scope))
-                    .collect();
-
-                let inner = accept_results(inner)?;
+                let inner = accept_results(
+                    inner
+                        .into_iter()
+                        .map(|l| TypeVariant::from_literal(l, scopes, current_scope))
+                        .collect(),
+                )?;
 
                 let composite = if let Some(type_params) = outer.get_generic_ident() {
                     let concrete_type = inner[0].clone();
 
                     let composite = TypeVariant::Composite(CompositeType { outer, inner });
-
                     composite.make_concrete(&type_params, &concrete_type)
                 } else {
                     TypeVariant::Composite(CompositeType { outer, inner })

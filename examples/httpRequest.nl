@@ -4,6 +4,11 @@
  * There's no way of setting headers yet, for example.
  */
 
+struct Result<T> {
+    statusCode: String,
+    body: Array<T>,
+}
+
 struct HouseHead {
     firstName: String,
     lastName: String,
@@ -14,11 +19,6 @@ struct HouseInfo {
     heads: Array<HouseHead>,
     ghost: String,
     founder: String,
-}
-
-struct Result {
-    statusCode: String,
-    body: Array<HouseInfo>,
 }
 
 func printHouseInfo(house: HouseInfo): Void {
@@ -36,11 +36,10 @@ func printHouseInfo(house: HouseInfo): Void {
 
 print('Making GET request...');
 
-const result = http({
+const result: Result<HouseInfo> = http({
     method: 'GET',
     url: 'https://wizard-world-api.herokuapp.com/Houses',
 });
-
 
 print('Result Status: ' + result.statusCode);
 print('');

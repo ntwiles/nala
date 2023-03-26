@@ -18,10 +18,10 @@ impl TypeBindingVariant {
         match type_variant {
             TypeVariant::Composite(_composite) => todo!(),
             TypeVariant::Type(the_type) => match the_type {
-                crate::types::NalaType::Enum(_ident, variants) => {
+                crate::types::NalaType::Enum(_ident, variants, _type_param) => {
                     Self::Enum(EnumBinding { variants })
                 }
-                crate::types::NalaType::Struct(fields) => Self::Struct(fields),
+                crate::types::NalaType::Struct(fields, _type_param) => Self::Struct(fields),
                 crate::types::NalaType::Generic(ident) => Self::Generic(ident),
                 crate::types::NalaType::PrimitiveType(primitive) => Self::PrimitiveType(primitive),
             },
