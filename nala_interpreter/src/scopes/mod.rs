@@ -137,7 +137,7 @@ impl Scopes {
         ident: &str,
         current_scope: usize,
         variant: TypeBindingVariant,
-        generic_ident: Option<String>,
+        type_param: Option<String>,
     ) -> Result<(), RuntimeError> {
         if self.type_binding_exists_local(ident, current_scope) {
             Err(RuntimeError::new(&format!(
@@ -149,7 +149,7 @@ impl Scopes {
                 ident,
                 TypeBinding {
                     variant,
-                    generic_ident,
+                    type_param,
                 },
             );
 

@@ -6,29 +6,29 @@ use super::{enum_binding::EnumBinding, type_binding_variant::TypeBindingVariant}
 
 #[derive(Debug, Clone)]
 pub struct TypeBinding {
+    pub type_param: Option<String>, // TODO: Rename type_param.
     pub variant: TypeBindingVariant,
-    pub generic_ident: Option<String>, // TODO: Rename type_param.
 }
 
 impl TypeBinding {
-    pub fn from_type(type_variant: TypeVariant, generic_ident: Option<String>) -> Self {
-        let variant = TypeBindingVariant::from_type(type_variant.clone());
+    pub fn from_type(variant: TypeVariant, type_param: Option<String>) -> Self {
+        let variant = TypeBindingVariant::from_type(variant.clone());
 
         Self {
+            type_param,
             variant,
-            generic_ident,
         }
     }
 
     pub fn as_enum(&self) -> Result<(Option<String>, EnumBinding), RuntimeError> {
-        Ok((self.generic_ident.clone(), self.variant.as_enum()?))
+        Ok((self.type_param.clone(), self.variant.as_enum()?))
     }
 
     pub fn as_struct(&self) -> Result<Vec<StructField>, RuntimeError> {
         self.variant.as_struct()
     }
 
-    pub fn get_generic_ident(&self) -> Option<String> {
-        self.generic_ident.clone()
+    pub fn get_type_param(&self) -> Option<String> {
+        self.type_param.clone()
     }
 }
