@@ -14,38 +14,43 @@ pub enum TypeVariant {
 }
 
 impl TypeVariant {
-    pub fn get_type_param(&self) -> Option<String> {
+    pub fn find_generic_type_param(&self) -> Option<String> {
         match self {
             TypeVariant::Composite(CompositeType { inner, .. }) => inner
                 .iter()
-                .find(|i| i.get_type_param().is_some())
-                .map(|i| i.get_type_param().unwrap()),
-            TypeVariant::Type(t) => t.get_type_param(),
+                .find(|i| i.find_generic_type_param().is_some())
+                .map(|i| i.find_generic_type_param().unwrap()),
+            TypeVariant::Type(t) => t.find_generic_type_param(),
         }
     }
 
-    pub fn make_concrete(self, generic_ident: &str, concrete_type: &TypeVariant) -> Self {
-        match self {
-            TypeVariant::Composite(CompositeType { outer, inner, .. }) => {
-                TypeVariant::Composite(CompositeType {
-                    outer: outer.make_concrete(generic_ident, concrete_type),
-                    inner: inner
-                        .into_iter()
-                        .map(|i| i.make_concrete(generic_ident, concrete_type))
-                        .collect(),
-                })
-            }
-            TypeVariant::Type(t) => {
-                if let NalaType::Generic(ident) = t.clone() {
-                    if ident == generic_ident {
-                        return concrete_type.clone();
+    pub fn make_concrete(self, generic_ident: Option<String>, concrete_type: &TypeVariant) -> Self {
+        if let Some(generic_ident) = generic_ident {
+            match self {
+                TypeVariant::Composite(CompositeType { outer, inner, .. }) => {
+                    TypeVariant::Composite(CompositeType {
+                        outer: outer.make_concrete(Some(generic_ident.clone()), concrete_type),
+                        inner: inner
+                            .into_iter()
+                            .map(|i| i.make_concrete(Some(generic_ident.clone()), concrete_type))
+                            .collect(),
+                        generic_type_param: None,
+                    })
+                }
+                TypeVariant::Type(t) => {
+                    if let NalaType::Generic(ident) = t.clone() {
+                        if ident == generic_ident {
+                            return concrete_type.clone();
+                        } else {
+                            TypeVariant::Type(t)
+                        }
                     } else {
                         TypeVariant::Type(t)
                     }
-                } else {
-                    TypeVariant::Type(t)
                 }
             }
+        } else {
+            self
         }
     }
 }
@@ -67,16 +72,17 @@ impl FromLiteral<TypeVariantLiteral> for TypeVariant {
                         .collect(),
                 )?;
 
-                let composite = if let Some(type_param) = outer.get_type_param() {
-                    let concrete_type = inner[0].clone();
+                let generic_type_param = outer.find_generic_type_param();
 
-                    let composite = TypeVariant::Composite(CompositeType { outer, inner });
-                    composite.make_concrete(&type_param, &concrete_type)
-                } else {
-                    TypeVariant::Composite(CompositeType { outer, inner })
-                };
+                let concrete_type = inner[0].clone();
 
-                Ok(composite)
+                let composite = TypeVariant::Composite(CompositeType {
+                    outer,
+                    inner,
+                    generic_type_param: generic_type_param.clone(),
+                });
+
+                Ok(composite.make_concrete(generic_type_param, &concrete_type))
             }
             TypeVariantLiteral::Type(t) => Ok(TypeVariant::Type(NalaType::from_literal(
                 t,

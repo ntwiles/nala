@@ -1,6 +1,8 @@
 use crate::{
-    ast::types::primitive_type::PrimitiveType, errors::RuntimeError,
-    resolved::struct_field::StructField, types::type_variant::TypeVariant,
+    ast::types::primitive_type::PrimitiveType,
+    errors::RuntimeError,
+    resolved::struct_field::StructField,
+    types::{type_variant::TypeVariant, NalaType},
 };
 
 use super::enum_binding::EnumBinding;
@@ -10,24 +12,20 @@ pub enum TypeBinding {
     Enum(EnumBinding, Option<String>),
     Struct(Vec<StructField>, Option<String>),
     Generic(String),
-    PrimitiveType(PrimitiveType, Option<String>),
+    PrimitiveType(PrimitiveType),
 }
 
 impl TypeBinding {
-    pub fn from_type(type_variant: TypeVariant) -> Self {
+    pub fn from_type(type_variant: TypeVariant, generic_type_param: Option<String>) -> Self {
         match type_variant {
             TypeVariant::Composite(_composite) => todo!(),
             TypeVariant::Type(the_type) => match the_type {
-                crate::types::NalaType::Enum(_ident, variants, type_param) => {
-                    Self::Enum(EnumBinding { variants }, type_param)
+                NalaType::Enum(_ident, variants) => {
+                    Self::Enum(EnumBinding { variants }, generic_type_param)
                 }
-                crate::types::NalaType::Struct(fields, type_param) => {
-                    Self::Struct(fields, type_param)
-                }
-                crate::types::NalaType::Generic(ident) => Self::Generic(ident),
-                crate::types::NalaType::PrimitiveType(primitive, type_param) => {
-                    Self::PrimitiveType(primitive, type_param)
-                }
+                NalaType::Struct(fields) => Self::Struct(fields, generic_type_param),
+                NalaType::Generic(ident) => Self::Generic(ident),
+                NalaType::PrimitiveType(primitive) => Self::PrimitiveType(primitive),
             },
         }
     }
@@ -51,7 +49,7 @@ impl TypeBinding {
             Self::Enum(_, type_param) => Ok(type_param.clone()),
             Self::Struct(_, type_param) => Ok(type_param.clone()),
             Self::Generic(_) => Ok(None),
-            Self::PrimitiveType(_, type_param) => Ok(type_param.clone()),
+            Self::PrimitiveType(_) => Ok(None),
         }
     }
 }

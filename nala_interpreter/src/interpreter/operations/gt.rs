@@ -19,7 +19,7 @@ pub fn eval_gt(
             Value::Num(right) => Ok(Value::Bool(left > right)),
             right => Err(oper_not_implemented_for_error(
                 ">",
-                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number, None)),
+                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
                 &infer_type(&right, scopes, current_scope)?,
             )),
         },
@@ -27,7 +27,7 @@ pub fn eval_gt(
             Value::String(right) => Ok(Value::Bool(left > right)),
             right => Err(oper_not_implemented_for_error(
                 ">",
-                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String, None)),
+                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
                 &infer_type(&right, scopes, current_scope)?,
             )),
         },

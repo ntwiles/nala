@@ -61,7 +61,7 @@ pub fn type_from_field(
                 })
                 .collect();
 
-            Ok(TypeVariant::Type(NalaType::Struct(fields, None)))
+            Ok(TypeVariant::Type(NalaType::Struct(fields)))
         }
         StructLiteralFieldValue::Type(t) => TypeVariant::from_literal(t, scopes, current_scope),
     }

@@ -24,21 +24,21 @@ pub fn get_http_block() -> FuncValue {
     let options_fields = vec![
         StructField {
             ident: String::from("method"),
-            value_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String, None)),
+            value_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
         },
         StructField {
             ident: String::from("url"),
-            value_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String, None)),
+            value_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
         },
         StructField {
             ident: String::from("body"),
-            value_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String, None)),
+            value_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
         },
     ];
 
     let params = vec![Param {
         ident: String::from("options"),
-        param_type: TypeVariant::Type(NalaType::Struct(options_fields, None)),
+        param_type: TypeVariant::Type(NalaType::Struct(options_fields)),
     }];
 
     FuncValue {

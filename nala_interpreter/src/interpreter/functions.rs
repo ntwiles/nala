@@ -171,21 +171,21 @@ pub fn eval_call(
 
 fn handle_type_args(
     type_args: &Option<TypeVariantLiteral>,
-    type_params: Option<String>,
+    type_param: Option<String>,
     scopes: &mut Scopes,
     call_scope: usize,
 ) -> Result<(), RuntimeError> {
     if let Some(type_arg) = type_args {
-        if type_params.is_none() {
+        if type_param.is_none() {
             Err(RuntimeError::new(&format!(
                 "Tried to call function with type arguments, but function has no type parameters."
             )))?;
         }
 
         let type_arg = TypeVariant::from_literal(type_arg.clone(), &mut Scopes::new(), 0)?;
-        let type_binding = TypeBinding::from_type(type_arg);
+        let type_binding = TypeBinding::from_type(type_arg, type_param.clone());
 
-        scopes.add_type_binding(call_scope, &type_params.unwrap(), type_binding)?;
+        scopes.add_type_binding(call_scope, &type_param.unwrap(), type_binding)?;
     }
 
     Ok(())

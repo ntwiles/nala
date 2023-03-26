@@ -16,18 +16,20 @@ pub fn fits_type(
     current_scope: usize,
 ) -> Result<bool, RuntimeError> {
     match type_variant {
-        TypeVariant::Composite(CompositeType { outer, inner, .. }) => match outer {
-            NalaType::PrimitiveType(PrimitiveType::Array, _) => {
+        TypeVariant::Composite(CompositeType {
+            outer,
+            inner,
+            generic_type_param: _,
+        }) => match outer {
+            NalaType::PrimitiveType(PrimitiveType::Array) => {
                 fits_array(inner, value, scopes, current_scope)
             }
-            NalaType::PrimitiveType(PrimitiveType::Break, _) => todo!(),
-            NalaType::PrimitiveType(PrimitiveType::Func, _) => fits_func(inner, value),
-            NalaType::Enum(enum_ident, variants, _type_param) => {
+            NalaType::PrimitiveType(PrimitiveType::Break) => todo!(),
+            NalaType::PrimitiveType(PrimitiveType::Func) => fits_func(inner, value),
+            NalaType::Enum(enum_ident, variants) => {
                 fits_enum(value, inner, enum_ident, variants, scopes, current_scope)
             }
-            NalaType::Struct(fields, _type_param) => {
-                fits_struct(fields, value, scopes, current_scope)
-            }
+            NalaType::Struct(fields) => fits_struct(fields, value, scopes, current_scope),
             NalaType::Generic(_) => todo!(),
             _ => Err(RuntimeError::new(&format!(
                 "Type `{outer}` does not support type arguments. Type `{outer}<{}>` is invalid.",
@@ -35,15 +37,13 @@ pub fn fits_type(
             )))?,
         },
         TypeVariant::Type(the_type) => match the_type {
-            NalaType::PrimitiveType(PrimitiveType::Bool, _) => Ok(value.is_bool()),
-            NalaType::PrimitiveType(PrimitiveType::Number, _) => Ok(value.is_number()),
-            NalaType::PrimitiveType(PrimitiveType::String, _) => Ok(value.is_string()),
-            NalaType::PrimitiveType(PrimitiveType::Void, _) => Ok(value.is_void()),
-            NalaType::Struct(fields, _type_param) => {
-                fits_struct(fields, value, scopes, current_scope)
-            }
+            NalaType::PrimitiveType(PrimitiveType::Bool) => Ok(value.is_bool()),
+            NalaType::PrimitiveType(PrimitiveType::Number) => Ok(value.is_number()),
+            NalaType::PrimitiveType(PrimitiveType::String) => Ok(value.is_string()),
+            NalaType::PrimitiveType(PrimitiveType::Void) => Ok(value.is_void()),
+            NalaType::Struct(fields) => fits_struct(fields, value, scopes, current_scope),
             NalaType::Generic(_ident) => Ok(true),
-            NalaType::Enum(enum_ident, variants, _type_param) => fits_enum(
+            NalaType::Enum(enum_ident, variants) => fits_enum(
                 value,
                 &vec![type_variant.clone()],
                 enum_ident,

@@ -47,7 +47,7 @@ pub fn eval_declare(
         // know the type of the value so we don't have to run all this again.
         let inferred_type = infer_type(&value, scopes, current_scope)?;
 
-        if inferred_type.get_type_param().is_some() {
+        if inferred_type.find_generic_type_param().is_some() {
             return Err(RuntimeError::new(&format!(
                 "Can't assign value of type `{inferred_type}` because it's generic. Try declaring the type explicitly.",
             )));

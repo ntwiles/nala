@@ -14,10 +14,10 @@ use crate::{
 pub fn get_floor_block() -> FuncValue {
     let num_param = Param {
         ident: String::from("num"),
-        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number, None)),
+        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
     };
 
-    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number, None));
+    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number));
 
     FuncValue {
         params: vec![num_param],

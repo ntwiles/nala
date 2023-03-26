@@ -4,4 +4,5 @@ use super::{type_variant::TypeVariant, NalaType};
 pub struct CompositeType {
     pub outer: NalaType,
     pub inner: Vec<TypeVariant>,
+    pub generic_type_param: Option<String>,
 }
