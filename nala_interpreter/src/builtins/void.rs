@@ -14,10 +14,10 @@ use crate::{
 pub fn get_void_block() -> FuncValue {
     let param = Param {
         ident: String::from("_"),
-        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
+        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number, None)),
     };
 
-    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void));
+    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void, None));
 
     FuncValue {
         params: vec![param],

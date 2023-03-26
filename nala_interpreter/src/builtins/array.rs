@@ -18,7 +18,7 @@ pub fn get_len_block() -> FuncValue {
     let inner_type = TypeVariant::Type(NalaType::Generic(String::from("T")));
 
     let outer_type = TypeVariant::Composite(CompositeType {
-        outer: NalaType::PrimitiveType(PrimitiveType::Array),
+        outer: NalaType::PrimitiveType(PrimitiveType::Array, Some(String::from("T"))),
         inner: vec![inner_type],
     });
 
@@ -27,7 +27,7 @@ pub fn get_len_block() -> FuncValue {
         param_type: outer_type,
     }];
 
-    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number));
+    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number, None));
 
     FuncValue {
         params,
@@ -42,7 +42,7 @@ pub fn get_slice_block() -> FuncValue {
     let inner_type = TypeVariant::Type(NalaType::Generic(String::from("T")));
 
     let outer_type = TypeVariant::Composite(CompositeType {
-        outer: NalaType::PrimitiveType(PrimitiveType::Array),
+        outer: NalaType::PrimitiveType(PrimitiveType::Array, Some(String::from("T"))),
         inner: vec![inner_type],
     });
 
@@ -53,18 +53,18 @@ pub fn get_slice_block() -> FuncValue {
 
     let start_param = Param {
         ident: String::from("start"),
-        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
+        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number, None)),
     };
 
     let end_param = Param {
         ident: String::from("end"),
-        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
+        param_type: TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number, None)),
     };
 
     let inner_return_type = TypeVariant::Type(NalaType::Generic(String::from("T")));
 
     let return_type = TypeVariant::Composite(CompositeType {
-        outer: NalaType::PrimitiveType(PrimitiveType::Array),
+        outer: NalaType::PrimitiveType(PrimitiveType::Array, Some(String::from("T"))),
         inner: vec![inner_return_type],
     });
 

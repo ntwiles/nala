@@ -5,25 +5,24 @@ use crate::{
         enum_variants::EnumVariant, from_literal::FromLiteral, struct_field::StructField,
         value::Value,
     },
-    scopes::{enum_binding::EnumBinding, type_binding_variant::TypeBindingVariant, Scopes},
+    scopes::{enum_binding::EnumBinding, type_binding::TypeBinding, Scopes},
     utils::accept_results,
 };
 
 pub fn eval_struct(
     ident: &str,
-    type_params: Option<String>,
+    type_param: Option<String>,
     fields: Vec<StructLiteralField>,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
     let closure_scope = scopes.new_scope(Some(current_scope));
 
-    if let Some(type_param) = &type_params {
+    if let Some(type_param) = &type_param {
         scopes.add_type_binding(
-            &type_param,
             closure_scope,
-            TypeBindingVariant::Generic(type_param.clone()),
-            None, // TODO: Is this correct?
+            &type_param,
+            TypeBinding::Generic(type_param.clone()),
         )?;
     }
 
@@ -36,29 +35,27 @@ pub fn eval_struct(
 
     scopes
         .add_type_binding(
-            &ident,
             current_scope,
-            TypeBindingVariant::Struct(fields),
-            type_params,
+            &ident,
+            TypeBinding::Struct(fields, type_param),
         )
         .map(|_| Value::Void)
 }
 
 pub fn eval_enum(
     ident: &str,
-    type_params: Option<String>,
+    type_param: Option<String>,
     variants: Vec<VariantDeclare>,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<Value, RuntimeError> {
     let closure_scope = scopes.new_scope(Some(current_scope));
 
-    if let Some(type_param) = &type_params {
+    if let Some(type_param) = &type_param {
         scopes.add_type_binding(
-            &type_param,
             closure_scope,
-            TypeBindingVariant::Generic(type_param.clone()),
-            None,
+            &type_param,
+            TypeBinding::Generic(type_param.clone()),
         )?;
     }
 
@@ -71,10 +68,9 @@ pub fn eval_enum(
 
     scopes
         .add_type_binding(
-            &ident,
             current_scope,
-            TypeBindingVariant::Enum(EnumBinding { variants }),
-            type_params,
+            &ident,
+            TypeBinding::Enum(EnumBinding { variants }, type_param),
         )
         .map(|_| Value::Void)
 }

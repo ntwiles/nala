@@ -17,7 +17,7 @@ pub fn get_print_block() -> FuncValue {
         param_type: TypeVariant::Type(NalaType::Generic(String::from("T"))),
     };
 
-    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void));
+    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void, None));
 
     FuncValue {
         params: vec![message_param],
@@ -29,7 +29,7 @@ pub fn get_print_block() -> FuncValue {
 }
 
 pub fn get_read_block() -> FuncValue {
-    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String));
+    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String, None));
 
     FuncValue {
         params: vec![],
@@ -41,7 +41,7 @@ pub fn get_read_block() -> FuncValue {
 }
 
 pub fn get_readnum_block() -> FuncValue {
-    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number));
+    let return_type = TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number, None));
 
     FuncValue {
         params: vec![],

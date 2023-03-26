@@ -36,7 +36,7 @@ fn num_lt(
             let right_type = infer_type(&right, scopes, current_scope)?;
             Err(oper_not_implemented_for_error(
                 "<",
-                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
+                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number, None)),
                 &right_type,
             ))?
         }
@@ -57,7 +57,7 @@ fn string_lt(
             let right_type = infer_type(&right, scopes, current_scope)?;
             Err(oper_not_implemented_for_error(
                 "<",
-                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String)),
+                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String, None)),
                 &right_type,
             ))?
         }
@@ -78,7 +78,7 @@ fn bool_lt(
             let right_type = infer_type(&right, scopes, current_scope)?;
             Err(oper_not_implemented_for_error(
                 "<",
-                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool)),
+                &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool, None)),
                 &right_type,
             ))?
         }

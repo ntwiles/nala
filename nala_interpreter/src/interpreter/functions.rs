@@ -15,7 +15,7 @@ use crate::{
         func_value::{FuncValue, Param},
         value::Value,
     },
-    scopes::{type_binding_variant::TypeBindingVariant, Scopes},
+    scopes::{type_binding::TypeBinding, Scopes},
     types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
     utils::accept_results,
 };
@@ -35,13 +35,11 @@ pub fn eval_func_declare(
 
     let closure_scope = scopes.new_scope(Some(current_scope));
 
-    // TODO: This snippet is really weird, make sure this makes sense.
     if let Some(type_param) = &type_params {
         scopes.add_type_binding(
-            &type_param,
             closure_scope,
-            TypeBindingVariant::Generic(type_param.clone()),
-            Some(type_param.clone()),
+            &type_param,
+            TypeBinding::Generic(type_param.clone()),
         )?;
     };
 
@@ -79,13 +77,11 @@ pub fn eval_builtin_declare(
 
     let closure_scope = scopes.new_scope(Some(current_scope));
 
-    // TODO: This snippet is really weird, make sure this makes sense.
     if let Some(type_param) = &type_params {
         scopes.add_type_binding(
-            &type_param,
             closure_scope,
-            TypeBindingVariant::Generic(type_param.clone()),
-            None,
+            &type_param,
+            TypeBinding::Generic(type_param.clone()),
         )?;
     };
 
@@ -187,9 +183,9 @@ fn handle_type_args(
         }
 
         let type_arg = TypeVariant::from_literal(type_arg.clone(), &mut Scopes::new(), 0)?;
-        let type_binding = TypeBindingVariant::from_type(type_arg);
+        let type_binding = TypeBinding::from_type(type_arg);
 
-        scopes.add_type_binding(&type_params.unwrap(), call_scope, type_binding, None)?;
+        scopes.add_type_binding(call_scope, &type_params.unwrap(), type_binding)?;
     }
 
     Ok(())

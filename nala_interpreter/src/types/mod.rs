@@ -9,7 +9,7 @@ use crate::{
     ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
     errors::RuntimeError,
     resolved::{enum_variants::EnumVariant, from_literal::FromLiteral, struct_field::StructField},
-    scopes::{type_binding_variant::TypeBindingVariant, Scopes},
+    scopes::{type_binding::TypeBinding, Scopes},
 };
 
 use self::type_variant::TypeVariant;
@@ -17,7 +17,7 @@ use self::type_variant::TypeVariant;
 #[derive(Eq, Debug, Clone)]
 pub enum NalaType {
     Enum(String, Vec<EnumVariant>, Option<String>),
-    PrimitiveType(PrimitiveType),
+    PrimitiveType(PrimitiveType, Option<String>),
     Struct(Vec<StructField>, Option<String>),
     Generic(String),
 }
@@ -63,27 +63,10 @@ impl NalaType {
         }
     }
 
-    pub fn supports_type_params(&self) -> bool {
-        match self {
-            NalaType::Enum(_, _, type_param) => type_param.is_some(),
-            NalaType::PrimitiveType(primitive) => match primitive {
-                PrimitiveType::Array => true,
-                PrimitiveType::Bool => false,
-                PrimitiveType::Break => true,
-                PrimitiveType::Func => true,
-                PrimitiveType::Number => false,
-                PrimitiveType::String => false,
-                PrimitiveType::Void => false,
-            },
-            NalaType::Struct(_, type_param) => type_param.is_some(),
-            NalaType::Generic(_) => false,
-        }
-    }
-
     pub fn get_type_param(&self) -> Option<String> {
         match self {
             Self::Enum(_ident, _variants, type_param) => type_param.clone(),
-            Self::PrimitiveType(_) => None,
+            Self::PrimitiveType(_, type_param) => type_param.clone(),
             Self::Struct(_fields, type_param) => type_param.clone(),
             Self::Generic(ident) => Some(ident.clone()),
         }
@@ -97,23 +80,17 @@ impl FromLiteral<TypeLiteral> for NalaType {
         current_scope: usize,
     ) -> Result<Self, RuntimeError> {
         match literal {
-            TypeLiteral::PrimitiveType(t) => Ok(Self::PrimitiveType(t)),
-            TypeLiteral::UserDefined(ident) => {
-                let the_type = scopes.get_type(&ident, current_scope)?;
-
-                match the_type.variant {
-                    TypeBindingVariant::Enum(binding) => {
-                        Ok(Self::Enum(ident, binding.variants, the_type.type_param))
-                    }
-                    TypeBindingVariant::Struct(fields) => {
-                        Ok(Self::Struct(fields, the_type.type_param))
-                    }
-                    TypeBindingVariant::Generic(ident) => Ok(Self::Generic(ident)),
-                    TypeBindingVariant::PrimitiveType(primitive) => {
-                        Ok(Self::PrimitiveType(primitive))
-                    }
+            TypeLiteral::PrimitiveType(t) => Ok(Self::PrimitiveType(t, None)),
+            TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
+                TypeBinding::Enum(binding, type_param) => {
+                    Ok(Self::Enum(ident, binding.variants, type_param))
                 }
-            }
+                TypeBinding::Struct(fields, type_param) => Ok(Self::Struct(fields, type_param)),
+                TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
+                TypeBinding::PrimitiveType(primitive, type_param) => {
+                    Ok(Self::PrimitiveType(primitive, type_param))
+                }
+            },
         }
     }
 }
@@ -122,7 +99,7 @@ impl fmt::Display for NalaType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Self::Enum(enum_ident, _variant_ident, _type_param) => write!(f, "{enum_ident}"),
-            Self::PrimitiveType(primitive) => write!(f, "{}", primitive),
+            Self::PrimitiveType(primitive, _type_param) => write!(f, "{}", primitive),
             Self::Struct(fields, _type_param) => {
                 write!(f, "{{ ")?;
 
@@ -154,8 +131,8 @@ impl PartialEq for NalaType {
                     false
                 }
             }
-            Self::PrimitiveType(sp) => {
-                if let Self::PrimitiveType(op) = other {
+            Self::PrimitiveType(sp, _stp) => {
+                if let Self::PrimitiveType(op, _otp) = other {
                     sp == op
                 } else {
                     false

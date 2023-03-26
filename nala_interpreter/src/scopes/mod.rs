@@ -2,17 +2,13 @@ pub mod enum_binding;
 mod scope;
 pub mod struct_binding;
 pub mod type_binding;
-pub mod type_binding_variant;
 pub mod value_binding;
 
 use std::fmt;
 
 use crate::{errors::*, resolved::value::Value, types::type_variant::TypeVariant};
 
-use self::{
-    scope::Scope, type_binding::TypeBinding, type_binding_variant::TypeBindingVariant,
-    value_binding::ValueBinding,
-};
+use self::{scope::Scope, type_binding::TypeBinding, value_binding::ValueBinding};
 
 pub struct Scopes {
     scopes: Vec<Scope>,
@@ -134,10 +130,9 @@ impl Scopes {
 
     pub fn add_type_binding(
         self: &mut Self,
-        ident: &str,
         current_scope: usize,
-        variant: TypeBindingVariant,
-        type_param: Option<String>,
+        ident: &str,
+        binding: TypeBinding,
     ) -> Result<(), RuntimeError> {
         if self.type_binding_exists_local(ident, current_scope) {
             Err(RuntimeError::new(&format!(
@@ -145,13 +140,7 @@ impl Scopes {
             )))
         } else {
             let scope = self.scopes.get_mut(current_scope).unwrap();
-            scope.add_type_binding(
-                ident,
-                TypeBinding {
-                    variant,
-                    type_param,
-                },
-            );
+            scope.add_type_binding(ident, binding);
 
             Ok(())
         }

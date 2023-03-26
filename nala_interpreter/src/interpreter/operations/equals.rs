@@ -17,7 +17,7 @@ pub fn eval_equals(
     if infer_type(&left, scopes, current_scope)? != infer_type(&right, scopes, current_scope)? {
         Err(oper_not_implemented_for_error(
             "==",
-            &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number)),
+            &TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number, None)),
             &infer_type(&right, scopes, current_scope)?,
         ))?
     }
