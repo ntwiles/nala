@@ -3,7 +3,7 @@ use crate::{
     errors::RuntimeError,
     resolved::value::{EnumVariantValue, Value},
     scopes::Scopes,
-    types::{inference::infer_type, type_variant::TypeVariant, NalaType},
+    types::{inference::infer_type, nala_type::NalaType, type_variant::TypeVariant},
 };
 
 use super::errors::oper_not_implemented_for_error;

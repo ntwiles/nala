@@ -13,7 +13,9 @@ use crate::{
     scopes::Scopes,
 };
 
-use super::{composite_type::CompositeType, fit::fits_type, type_variant::TypeVariant, NalaType};
+use super::{
+    composite_type::CompositeType, fit::fits_type, nala_type::NalaType, type_variant::TypeVariant,
+};
 
 pub fn infer_type(
     value: &Value,

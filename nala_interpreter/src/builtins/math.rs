@@ -8,7 +8,7 @@ use crate::{
         func_value::{FuncValue, Param},
         value::Value,
     },
-    types::{type_variant::TypeVariant, NalaType},
+    types::{nala_type::NalaType, type_variant::TypeVariant},
 };
 
 pub fn get_floor_block() -> FuncValue {

@@ -11,7 +11,7 @@ use crate::{
         func_value::{FuncValue, Param},
         value::Value,
     },
-    types::{composite_type::CompositeType, type_variant::TypeVariant, NalaType},
+    types::{composite_type::CompositeType, nala_type::NalaType, type_variant::TypeVariant},
 };
 
 pub fn get_len_block() -> FuncValue {

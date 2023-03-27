@@ -5,7 +5,7 @@ use crate::{
     resolved::from_literal::FromLiteral, scopes::Scopes, utils::accept_results,
 };
 
-use super::{composite_type::CompositeType, NalaType};
+use super::{composite_type::CompositeType, nala_type::NalaType};
 
 #[derive(Eq, Debug, Clone)]
 pub enum TypeVariant {

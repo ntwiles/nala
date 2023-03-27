@@ -15,7 +15,7 @@ use crate::{
         struct_field::StructField,
         value::{EnumVariantValue, Value},
     },
-    types::{type_variant::TypeVariant, NalaType},
+    types::{nala_type::NalaType, type_variant::TypeVariant},
 };
 
 pub fn get_http_block() -> FuncValue {

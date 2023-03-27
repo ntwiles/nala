@@ -2,7 +2,7 @@ use crate::{
     ast::types::primitive_type::PrimitiveType,
     errors::RuntimeError,
     resolved::struct_field::StructField,
-    types::{type_variant::TypeVariant, NalaType},
+    types::{nala_type::NalaType, type_variant::TypeVariant},
 };
 
 use super::enum_binding::EnumBinding;

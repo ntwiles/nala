@@ -4,7 +4,7 @@ use crate::{
     interpreter::operations::errors::*,
     resolved::value::Value,
     scopes::Scopes,
-    types::{inference::infer_type, type_variant::TypeVariant, NalaType},
+    types::{inference::infer_type, nala_type::NalaType, type_variant::TypeVariant},
 };
 
 pub fn eval_lt(

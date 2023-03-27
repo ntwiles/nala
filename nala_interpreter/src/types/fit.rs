@@ -7,7 +7,7 @@ use crate::{
     scopes::Scopes,
 };
 
-use super::{composite_type::CompositeType, type_variant::TypeVariant, NalaType};
+use super::{composite_type::CompositeType, nala_type::NalaType, type_variant::TypeVariant};
 
 pub fn fits_type(
     value: &Value,

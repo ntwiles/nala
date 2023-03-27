@@ -4,7 +4,7 @@ use crate::{
     ast::types::{StructLiteralField, StructLiteralFieldValue},
     errors::RuntimeError,
     scopes::Scopes,
-    types::{type_variant::TypeVariant, NalaType},
+    types::{nala_type::NalaType, type_variant::TypeVariant},
 };
 
 use super::from_literal::FromLiteral;

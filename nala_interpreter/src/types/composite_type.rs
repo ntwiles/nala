@@ -1,4 +1,4 @@
-use super::{type_variant::TypeVariant, NalaType};
+use super::{nala_type::NalaType, type_variant::TypeVariant};
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub struct CompositeType {
