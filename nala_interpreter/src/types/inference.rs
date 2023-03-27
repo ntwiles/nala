@@ -143,9 +143,19 @@ pub fn infer_variant(
                 todo!("")
             }
         }
-        EnumVariant::Empty(_ident) => Ok(TypeVariant::Type(NalaType::Enum(
-            enum_ident.to_owned(),
-            enum_variants,
-        ))),
+        EnumVariant::Empty(_ident) => {
+            if let Some(generic_type_param) = generic_type_param {
+                Ok(TypeVariant::Composite(CompositeType {
+                    outer: NalaType::Enum(enum_ident.to_owned(), enum_variants),
+                    inner: vec![TypeVariant::generic(generic_type_param.clone())],
+                    generic_type_param: Some(generic_type_param),
+                }))
+            } else {
+                Ok(TypeVariant::Type(NalaType::Enum(
+                    enum_ident.to_owned(),
+                    enum_variants,
+                )))
+            }
+        }
     }
 }

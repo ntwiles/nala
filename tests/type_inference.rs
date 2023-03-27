@@ -38,10 +38,9 @@ fn it_errors_on_empty_array() {
     assert_eq!(expected_message, &result.clone().unwrap_err().message)
 }
 
-// TODO: This should read Option<T>, not Option.
 #[test]
 fn it_errors_if_no_info_for_inference() {
-    let expected_message = rgx!("Can't assign value of type `Option` because its concrete type cannot be determined. Try declaring the type explicitly.");
+    let expected_message = rgx!("Can't assign value of type `Option<T>` because its concrete type cannot be determined. Try declaring the type explicitly.");
 
     let nala = r#"
         const foo = Option::None;
