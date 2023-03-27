@@ -70,21 +70,6 @@ fn it_errors_if_not_enough_info_for_inference() {
     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
 
-// TODO: Create test for the below case; passing MyEnum::Bar(7) should throw an error as there is not
-// enough information for type inference, but it doesn't.
-
-// enum MyEnum<T> {
-//     Foo(T),
-//     Bar(Number),
-//     Baz
-// }
-
-// func foo<T>(param: MyEnum<T> ): MyEnum<Number> {
-//     param;
-// }
-
-// foo(MyEnum::Bar(7));
-
 // TODO: Create test for the below case; the value being assigned here should resolve to type `Result<Number>`
 // and throw an error when assigning it to a variable of type `Result<String>`, but it doesn't currently.
 

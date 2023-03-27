@@ -123,7 +123,13 @@ impl PartialEq for NalaType {
                     false
                 }
             }
-            Self::Generic(_ident) => todo!(),
+            Self::Generic(ident) => {
+                if let Self::Generic(oi) = other {
+                    ident == oi
+                } else {
+                    false
+                }
+            }
         }
     }
 }

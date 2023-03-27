@@ -116,7 +116,7 @@ pub fn infer_variant(
                 None => todo!("Expected data but none was supplied error."),
             };
 
-            if fits_type(data, &data_type, scopes, current_scope)? {
+            let inferred_type = if fits_type(data, &data_type, scopes, current_scope)? {
                 if let Some(generic_type_param) = generic_type_param {
                     let inner_type = if let Some(ident) = data_type.find_generic_type_param() {
                         if ident == generic_type_param {
@@ -128,20 +128,28 @@ pub fn infer_variant(
                         TypeVariant::Type(NalaType::Generic(generic_type_param.clone()))
                     };
 
-                    Ok(TypeVariant::Composite(CompositeType {
-                        outer: NalaType::Enum(enum_ident.to_owned(), enum_variants),
+                    let outer = NalaType::Enum(enum_ident.to_owned(), enum_variants);
+                    let outer = outer.make_concrete(Some(generic_type_param.clone()), &inner_type);
+
+                    let generic_type_param = if inner_type.find_generic_type_param().is_some() {
+                        Some(generic_type_param.clone())
+                    } else {
+                        None
+                    };
+
+                    TypeVariant::Composite(CompositeType {
+                        outer,
                         inner: vec![inner_type],
-                        generic_type_param: Some(generic_type_param),
-                    }))
+                        generic_type_param,
+                    })
                 } else {
-                    Ok(TypeVariant::Type(NalaType::Enum(
-                        enum_ident.to_owned(),
-                        enum_variants,
-                    )))
+                    TypeVariant::Type(NalaType::Enum(enum_ident.to_owned(), enum_variants))
                 }
             } else {
-                todo!("")
-            }
+                todo!()
+            };
+
+            Ok(inferred_type)
         }
         EnumVariant::Empty(_ident) => {
             if let Some(generic_type_param) = generic_type_param {

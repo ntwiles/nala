@@ -1,13 +1,14 @@
 use crate::{
     ast::types::primitive_type::PrimitiveType,
     errors::RuntimeError,
-    resolved::{
-        enum_variants::EnumVariant, func_value::FuncValue, struct_field::StructField, value::Value,
-    },
+    resolved::{func_value::FuncValue, struct_field::StructField, value::Value},
     scopes::Scopes,
 };
 
-use super::{composite_type::CompositeType, nala_type::NalaType, type_variant::TypeVariant};
+use super::{
+    composite_type::CompositeType, inference::infer_type, nala_type::NalaType,
+    type_variant::TypeVariant,
+};
 
 pub fn fits_type(
     value: &Value,
@@ -26,9 +27,7 @@ pub fn fits_type(
             }
             NalaType::PrimitiveType(PrimitiveType::Break) => todo!(),
             NalaType::PrimitiveType(PrimitiveType::Func) => fits_func(inner, value),
-            NalaType::Enum(enum_ident, variants) => {
-                fits_enum(value, inner, enum_ident, variants, scopes, current_scope)
-            }
+            NalaType::Enum(_, _) => fits_enum(value, type_variant, inner, scopes, current_scope),
             NalaType::Struct(fields) => fits_struct(fields, value, scopes, current_scope),
             NalaType::Generic(_) => todo!(),
             _ => Err(RuntimeError::new(&format!(
@@ -43,11 +42,10 @@ pub fn fits_type(
             NalaType::PrimitiveType(PrimitiveType::Void) => Ok(value.is_void()),
             NalaType::Struct(fields) => fits_struct(fields, value, scopes, current_scope),
             NalaType::Generic(_ident) => Ok(true),
-            NalaType::Enum(enum_ident, variants) => fits_enum(
+            NalaType::Enum(_, _) => fits_enum(
                 value,
+                type_variant,
                 &vec![type_variant.clone()],
-                enum_ident,
-                variants,
                 scopes,
                 current_scope,
             ),
@@ -88,18 +86,35 @@ fn fits_func(inner: &Vec<TypeVariant>, value: &Value) -> Result<bool, RuntimeErr
 
 fn fits_enum(
     value: &Value,
+    enum_type: &TypeVariant,
     expected_data_types: &Vec<TypeVariant>,
-    enum_ident: &str,
-    variants: &Vec<EnumVariant>,
     scopes: &mut Scopes,
     current_scope: usize,
 ) -> Result<bool, RuntimeError> {
-    if let Value::Variant(value) = value {
-        match find_variant(&value.variant_ident, variants) {
-            Some(EnumVariant::Data(_, _)) => Ok(enum_ident == value.enum_ident
-                && data_fits(&expected_data_types[0], &value.data, scopes, current_scope)?),
-            Some(EnumVariant::Empty(_)) => Ok(enum_ident == value.enum_ident),
-            None => Ok(false),
+    if let Value::Variant(variant) = value {
+        let value_type = infer_type(value, scopes, current_scope)?;
+
+        match enum_type {
+            TypeVariant::Composite(enum_type) => {
+                if let TypeVariant::Composite(value_type) = value_type {
+                    let outer_fits = enum_outer_fits(&enum_type.outer, &value_type.outer)?;
+
+                    let generic_params_match = value_type.generic_type_param.is_some()
+                        || value_type.generic_type_param == enum_type.generic_type_param;
+
+                    let data_fits = enum_data_fits(
+                        &expected_data_types[0],
+                        &variant.data,
+                        scopes,
+                        current_scope,
+                    )?;
+
+                    Ok(outer_fits && generic_params_match && data_fits)
+                } else {
+                    Ok(false)
+                }
+            }
+            enum_type => Ok(enum_type == &value_type),
         }
     } else {
         Ok(false)
@@ -132,7 +147,7 @@ fn fits_struct(
     }
 }
 
-fn data_fits(
+fn enum_data_fits(
     expected_type: &TypeVariant,
     data: &Option<Box<Value>>,
     scopes: &mut Scopes,
@@ -145,12 +160,15 @@ fn data_fits(
     }
 }
 
-fn find_variant<'a>(
-    variant_ident: &str,
-    variants: &'a Vec<EnumVariant>,
-) -> Option<&'a EnumVariant> {
-    variants.iter().find(|v| match v {
-        EnumVariant::Data(ident, _) => ident == variant_ident,
-        EnumVariant::Empty(ident) => ident == variant_ident,
-    })
+fn enum_outer_fits(enum_outer: &NalaType, value_outer: &NalaType) -> Result<bool, RuntimeError> {
+    match enum_outer {
+        NalaType::Enum(outer_ident, _) => {
+            if let NalaType::Enum(value_ident, _) = value_outer {
+                Ok(outer_ident == value_ident)
+            } else {
+                Ok(false)
+            }
+        }
+        _ => unreachable!("Enum outer type should always be an enum."),
+    }
 }
