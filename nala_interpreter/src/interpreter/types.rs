@@ -7,8 +7,6 @@ use crate::{
     utils::accept_results,
 };
 
-// TODO: This has duplicated code for generating fields because this needs to happen after binding
-// generic type params. Fix this.
 pub fn eval_struct(
     ident: &str,
     type_param: Option<String>,
@@ -18,49 +16,44 @@ pub fn eval_struct(
 ) -> Result<Value, RuntimeError> {
     let closure_scope = scopes.new_scope(Some(current_scope));
 
-    if let Some(type_param) = &type_param {
+    let binding = if let Some(type_param) = &type_param {
         scopes.add_type_binding(
             closure_scope,
             &type_param,
             TypeVariant::generic(type_param.clone()),
         )?;
 
-        let fields = accept_results(
-            fields
-                .into_iter()
-                .map(|f| StructField::from_literal(f, scopes, closure_scope))
-                .collect(),
-        )?;
-
-        scopes.add_type_binding(
-            current_scope,
-            &ident,
-            TypeVariant::Composite(CompositeType {
-                outer: NalaType::Struct(fields),
-                inner: vec![TypeVariant::generic(type_param.clone())],
-                generic_type_param: Some(type_param.clone()),
-            }),
-        )?;
+        TypeVariant::Composite(CompositeType {
+            outer: NalaType::Struct(fields_from_literals(fields, scopes, closure_scope)?),
+            inner: vec![TypeVariant::generic(type_param.clone())],
+            generic_type_param: Some(type_param.clone()),
+        })
     } else {
-        let fields = accept_results(
-            fields
-                .into_iter()
-                .map(|f| StructField::from_literal(f, scopes, closure_scope))
-                .collect(),
-        )?;
-
-        scopes.add_type_binding(
-            current_scope,
-            &ident,
-            TypeVariant::Type(NalaType::Struct(fields)),
-        )?;
+        TypeVariant::Type(NalaType::Struct(fields_from_literals(
+            fields,
+            scopes,
+            closure_scope,
+        )?))
     };
+
+    scopes.add_type_binding(current_scope, &ident, binding)?;
 
     Ok(Value::Void)
 }
 
-// TODO: This has duplicated code for generating fields because this needs to happen after binding
-// generic type params. Fix this.
+fn fields_from_literals(
+    fields: Vec<StructLiteralField>,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<Vec<StructField>, RuntimeError> {
+    accept_results(
+        fields
+            .into_iter()
+            .map(|f| StructField::from_literal(f, scopes, current_scope))
+            .collect(),
+    )
+}
+
 pub fn eval_enum(
     ident: &str,
     type_param: Option<String>,
@@ -70,43 +63,41 @@ pub fn eval_enum(
 ) -> Result<Value, RuntimeError> {
     let closure_scope = scopes.new_scope(Some(current_scope));
 
-    if let Some(type_param) = &type_param {
+    let binding = if let Some(type_param) = &type_param {
         scopes.add_type_binding(
             closure_scope,
             &type_param,
             TypeVariant::generic(type_param.clone()),
         )?;
 
-        let variants = accept_results(
-            variants
-                .into_iter()
-                .map(|f| EnumVariant::from_literal(f, scopes, closure_scope))
-                .collect(),
-        )?;
-
-        scopes.add_type_binding(
-            current_scope,
-            &ident,
-            TypeVariant::Composite(CompositeType {
-                outer: NalaType::Enum(ident.to_string(), variants),
-                inner: vec![TypeVariant::generic(type_param.clone())],
-                generic_type_param: Some(type_param.clone()),
-            }),
-        )?;
+        TypeVariant::Composite(CompositeType {
+            outer: NalaType::Enum(
+                ident.to_string(),
+                variants_from_literals(variants, scopes, closure_scope)?,
+            ),
+            inner: vec![TypeVariant::generic(type_param.clone())],
+            generic_type_param: Some(type_param.clone()),
+        })
     } else {
-        let variants = accept_results(
-            variants
-                .into_iter()
-                .map(|f| EnumVariant::from_literal(f, scopes, closure_scope))
-                .collect(),
-        )?;
+        let variants = variants_from_literals(variants, scopes, closure_scope)?;
 
-        scopes.add_type_binding(
-            current_scope,
-            &ident,
-            TypeVariant::Type(NalaType::Enum(ident.to_string(), variants)),
-        )?;
+        TypeVariant::Type(NalaType::Enum(ident.to_string(), variants))
     };
 
+    scopes.add_type_binding(current_scope, &ident, binding)?;
+
     Ok(Value::Void)
+}
+
+fn variants_from_literals(
+    variants: Vec<VariantDeclare>,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<Vec<EnumVariant>, RuntimeError> {
+    accept_results(
+        variants
+            .into_iter()
+            .map(|f| EnumVariant::from_literal(f, scopes, current_scope))
+            .collect(),
+    )
 }

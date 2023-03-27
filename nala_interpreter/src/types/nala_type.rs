@@ -31,7 +31,6 @@ impl NalaType {
                     })
                     .collect(),
             ),
-
             Self::Struct(fields) => Self::Struct(
                 fields
                     .into_iter()

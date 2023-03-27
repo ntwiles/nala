@@ -101,9 +101,6 @@ pub fn infer_variant(
         data,
     } = variant;
 
-    // TODO: This appears to be the only reason that infer_type needs to accept
-    // scopes and current_scope. Another clue that maybe enum variant values should
-    // contain type information.
     let (enum_variants, generic_type_param) =
         scopes.get_type(&enum_ident, current_scope)?.as_enum()?;
 
