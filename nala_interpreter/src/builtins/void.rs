@@ -22,7 +22,7 @@ pub fn get_void_block() -> FuncValue {
     FuncValue {
         params: vec![param],
         return_type,
-        type_params: None,
+        type_param: None,
         closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_void)),
     }

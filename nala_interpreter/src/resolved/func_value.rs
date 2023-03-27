@@ -7,7 +7,7 @@ pub struct FuncValue {
     pub block: Box<FuncVariant>,
     pub params: Vec<Param>,
     pub return_type: TypeVariant,
-    pub type_params: Option<String>,
+    pub type_param: Option<String>,
     pub closure_scope: usize,
 }
 

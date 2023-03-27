@@ -5,7 +5,7 @@ pub struct FuncDeclare {
     pub ident: String,
     pub params: Vec<ParamDeclare>,
     pub return_type: TypeVariantLiteral,
-    pub type_params: Option<String>,
+    pub type_param: Option<String>,
     pub block: Box<FuncVariant>,
 }
 

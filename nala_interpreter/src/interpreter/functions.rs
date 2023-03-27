@@ -29,12 +29,12 @@ pub fn eval_func_declare(
         block,
         params,
         return_type,
-        type_params,
+        type_param,
     } = func;
 
     let closure_scope = scopes.new_scope(Some(current_scope));
 
-    if let Some(type_param) = &type_params {
+    if let Some(type_param) = &type_param {
         scopes.add_type_binding(
             closure_scope,
             &type_param,
@@ -51,7 +51,7 @@ pub fn eval_func_declare(
             block,
             params,
             return_type,
-            type_params,
+            type_param,
             closure_scope,
         }),
         None,
@@ -71,12 +71,12 @@ pub fn eval_builtin_declare(
         params,
         return_type,
         closure_scope: _,
-        type_params,
+        type_param,
     } = func;
 
     let closure_scope = scopes.new_scope(Some(current_scope));
 
-    if let Some(type_param) = &type_params {
+    if let Some(type_param) = &type_param {
         scopes.add_type_binding(
             closure_scope,
             &type_param,
@@ -90,7 +90,7 @@ pub fn eval_builtin_declare(
             block,
             params,
             return_type,
-            type_params,
+            type_param,
             closure_scope,
         }),
         None,
@@ -140,18 +140,25 @@ pub fn eval_call(
                 params,
                 block,
                 closure_scope,
-                type_params,
+                type_param,
                 return_type: expected_return_type,
             }) = block
             {
                 let call_scope = scopes.new_scope(Some(closure_scope));
 
-                handle_type_args(type_args, type_params, scopes, call_scope)?;
+                handle_type_args(type_args, type_param.clone(), scopes, call_scope)?;
                 let args = handle_args(args, params, scopes, call_scope, current_scope, ctx)?;
 
                 let return_value = match *block {
                     FuncVariant::Nala(stmts) => eval_stmts(&stmts, scopes, call_scope, ctx)?,
                     FuncVariant::Builtin(func) => func(args, ctx)?,
+                };
+
+                let expected_return_type = if let Some(type_param) = type_param {
+                    let concrete_type = scopes.get_type(&type_param, call_scope)?;
+                    expected_return_type.make_concrete(Some(type_param), &concrete_type)
+                } else {
+                    expected_return_type
                 };
 
                 if fits_type(&return_value, &expected_return_type, scopes, current_scope)? {
@@ -217,6 +224,11 @@ fn handle_args(
                 infer_type(&arg, scopes, current_scope)?.to_string(),
                 param.param_type.to_string(),
             ));
+        }
+
+        if let Some(param_generic_ident) = param.param_type.find_generic_type_param() {
+            let concrete_type = infer_type(&arg, scopes, current_scope)?;
+            scopes.update_type_binding(call_scope, &param_generic_ident, concrete_type)?;
         }
 
         scopes.add_binding(&param.ident, arg.clone(), None, call_scope, false)?;

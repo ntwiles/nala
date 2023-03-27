@@ -143,6 +143,22 @@ impl Scopes {
         }
     }
 
+    // TODO: This is used periodically throughout function calls to make sure that our concreetions
+    // are up to date and our types are most fully inferred. This is really ugly as bindings should
+    // only be written to during explicit declarations or mutations. I think the fix is to not try to
+    // bind generic types to scope but to keep them locally on the instanced versions of the types.
+    pub fn update_type_binding(
+        self: &mut Self,
+        current_scope: usize,
+        ident: &str,
+        binding: TypeVariant,
+    ) -> Result<(), RuntimeError> {
+        let scope = self.scopes.get_mut(current_scope).unwrap();
+        scope.add_type_binding(ident, binding);
+
+        Ok(())
+    }
+
     pub fn binding_exists(self: &Self, ident: &str, current_scope: usize) -> bool {
         self.get_maybe_value(ident, current_scope).is_some()
     }

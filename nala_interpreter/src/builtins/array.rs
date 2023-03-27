@@ -33,7 +33,7 @@ pub fn get_len_block() -> FuncValue {
     FuncValue {
         params,
         return_type,
-        type_params: None,
+        type_param: None,
         closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_len)),
     }
@@ -74,7 +74,7 @@ pub fn get_slice_block() -> FuncValue {
     FuncValue {
         params: vec![array_param, start_param, end_param],
         return_type,
-        type_params: None,
+        type_param: None,
         closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_slice)),
     }

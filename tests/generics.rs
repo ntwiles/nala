@@ -45,12 +45,22 @@ fn it_allows_generic_func_declare() {
     assert_eq!(ctx.get_output(), vec!["test"]);
 }
 
-// TODO: In the following example, `T` will be inferred to be type `String` (the type of `'test'`). However,
-// we return value `8` of type `Number`, and no type checking is done to catch that error. This should be fixed.
-//
-// func foo<T>( arg: T ): T {
-//     8;
-// }
+#[test]
+fn it_errors_when_returning_wrong_type_for_resolved_generic() {
+    let expected_message =
+        "Tried to return value `8` of type `Number` where value of type `String` was expected.";
 
-// const found = foo('test');
-// print(found);
+    let nala = r#"
+        func foo<T>( arg: T ): T {
+            8;
+        }
+        
+        const found = foo('test');
+        print(found);
+    "#;
+
+    let result = parse_and_run(nala, &mut TestContext::new());
+
+    assert!(result.is_err());
+    assert_eq!(expected_message, &result.clone().unwrap_err().message);
+}

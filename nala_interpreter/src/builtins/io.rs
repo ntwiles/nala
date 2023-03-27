@@ -22,7 +22,7 @@ pub fn get_print_block() -> FuncValue {
     FuncValue {
         params: vec![message_param],
         return_type,
-        type_params: None,
+        type_param: None,
         closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_print)),
     }
@@ -34,7 +34,7 @@ pub fn get_read_block() -> FuncValue {
     FuncValue {
         params: vec![],
         return_type,
-        type_params: None,
+        type_param: None,
         closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_read)),
     }
@@ -46,7 +46,7 @@ pub fn get_readnum_block() -> FuncValue {
     FuncValue {
         params: vec![],
         return_type,
-        type_params: None,
+        type_param: None,
         closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_readnum)),
     }

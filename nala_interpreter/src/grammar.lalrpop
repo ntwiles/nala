@@ -42,7 +42,7 @@ Stmt: ast::Stmt = {
     "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
     "func" <s:Symbol> <t:TypeParams?> "(" <p:Params> ")" ":" <r:TypeVariant> <b:Block> => 
-        ast::Stmt::Func(ast::funcs::FuncDeclare { ident: s, params: p, return_type: r, type_params: t, block: Box::new(ast::FuncVariant::Nala(b))}),
+        ast::Stmt::Func(ast::funcs::FuncDeclare { ident: s, params: p, return_type: r, type_param: t, block: Box::new(ast::FuncVariant::Nala(b))}),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
     "struct" <s:Symbol> <t:TypeParams?> "{" <ff:StructFields> "}" => ast::Stmt::Struct(s, t, ff), 
     "enum" <s:Symbol> <t:TypeParams?> "{" <v:VariantsDeclare> "}" => ast::Stmt::Enum(s, t, v), 

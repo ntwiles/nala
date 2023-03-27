@@ -44,7 +44,7 @@ pub fn get_http_block() -> FuncValue {
     FuncValue {
         params,
         return_type,
-        type_params: None,
+        type_param: None,
         closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_http)),
     }

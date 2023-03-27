@@ -22,7 +22,7 @@ pub fn get_floor_block() -> FuncValue {
     FuncValue {
         params: vec![num_param],
         return_type,
-        type_params: None,
+        type_param: None,
         closure_scope: 0,
         block: Box::new(FuncVariant::Builtin(builtin_floor)),
     }
