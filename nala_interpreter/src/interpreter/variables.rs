@@ -30,8 +30,9 @@ pub fn eval_declare(
             TypeVariant::from_literal(declared_type_literal.clone(), scopes, current_scope)?;
 
         if !fits_type(&value, &declared_type, scopes, current_scope)? {
+            let value_type = infer_type(&value, scopes, current_scope)?;
             return Err(RuntimeError::new(&format!(
-                "Tried to declare variable `{ident}` with explicit type `{declared_type_literal}` but value `{value}` does not fit that type.",
+                "Tried to declare variable `{ident}` with explicit type `{declared_type_literal}` but value `{value}` of type `{value_type}` does not fit that type.",
             )));
         }
 
