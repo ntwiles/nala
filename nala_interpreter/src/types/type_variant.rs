@@ -78,6 +78,48 @@ impl TypeVariant {
         }
     }
 
+    /**
+     * TODO: This is really bad. This will error if called on a type that does not support composite
+     * This has to be done because our TypeLiteral representing enum outer cannot be easily processed
+     * into a NalaType like one might expect, but instead has to be processed into a TypeVariant. This
+     * is because we could have a TypeLiteral::UserDefined() which will resolve into a TypeVariant (as
+     * that's how types are currently stored in scope).
+     *
+     * A potential solution is to move UserDefined up one level so that it is a TypeLiteralVariant
+     * in the AST instead of a TypeLiteral.
+     */
+
+    fn from_outer_literal_type(
+        literal: TypeLiteral,
+        inner: Vec<TypeVariant>,
+        scopes: &mut Scopes,
+        current_scope: usize,
+    ) -> Result<Self, RuntimeError> {
+        match literal.clone() {
+            TypeLiteral::PrimitiveType(t) => Ok(match t {
+                PrimitiveType::Array => TypeVariant::Composite(CompositeType {
+                    outer: NalaType::PrimitiveType(PrimitiveType::Array),
+                    inner,
+                    generic_type_param: None,
+                }),
+
+                PrimitiveType::Break => {
+                    TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Break))
+                }
+                PrimitiveType::Func => TypeVariant::Composite(CompositeType {
+                    outer: NalaType::PrimitiveType(PrimitiveType::Func),
+                    inner,
+                    generic_type_param: None,
+                }),
+                _ => Err(RuntimeError::new(&format!(
+                    "Type `{literal}` does not support type arguments. Type `{literal}<{}>` is invalid.",
+                    inner[0]
+                )))?,
+            }),
+            TypeLiteral::UserDefined(ident) => scopes.get_type(&ident, current_scope),
+        }
+    }
+
     fn from_literal_type(
         literal: TypeLiteral,
         inner: Vec<TypeVariant>,
@@ -130,7 +172,8 @@ impl TypeVariant {
                         .collect(),
                 )?;
 
-                let outer = Self::from_literal_type(outer, inner.clone(), scopes, current_scope)?;
+                let outer =
+                    Self::from_outer_literal_type(outer, inner.clone(), scopes, current_scope)?;
 
                 let generic_type_param = outer.find_generic_type_param();
 

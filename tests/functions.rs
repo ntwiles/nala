@@ -89,28 +89,6 @@ fn it_runs_func_return() {
     assert_eq!(ctx.get_output(), vec!["Function returns work!"]);
 }
 
-// TODO: This test is dumb, but it does point out that we don't fail when declaring a function param
-// of type Bool<String>, which we should. Fix this.
-
-// #[test]
-// fn it_errors_when_passing_primitive_when_nested_is_expected() {
-//     let expected_message =
-//         rgx!("Type `Bool` does not support type arguments. Type `Bool<String>` is invalid.");
-
-//     let nala = r#"
-//         func bad(arg: Bool<String>): Void {
-//             print('break');
-//         }
-
-//         bad(false);
-//     "#;
-
-//     let result = parse_and_run(nala, &mut TestContext::new());
-
-//     assert!(result.is_err());
-//     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
-// }
-
 #[test]
 fn it_errors_when_calling_func_with_wrong_num_args() {
     let expected_message =
