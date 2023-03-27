@@ -21,10 +21,10 @@ pub fn eval_enum_variant(
     match variant {
         EnumVariantOrAddend::Addend(addend) => eval_addend(addend, scopes, current_scope, ctx),
         EnumVariantOrAddend::EnumVariant(enum_ident, variant_ident, data) => {
-            let (enum_type, _enum_type_param) =
+            let (enum_variants, _enum_type_param) =
                 scopes.get_type(enum_ident, current_scope)?.as_enum()?;
 
-            let existing_variant = find_variant(&enum_type.variants, variant_ident)?;
+            let existing_variant = find_variant(&enum_variants, variant_ident)?;
 
             let data = if let Some(data) = data {
                 let data = eval_expr(data, scopes, current_scope, ctx)?;

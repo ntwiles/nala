@@ -3,16 +3,14 @@ use crate::{
     types::type_variant::TypeVariant,
 };
 
-use super::from_literal::FromLiteral;
-
 #[derive(Eq, Debug, Clone, PartialEq)]
 pub enum EnumVariant {
     Empty(String),
     Data(String, TypeVariant),
 }
 
-impl FromLiteral<VariantDeclare> for EnumVariant {
-    fn from_literal(
+impl EnumVariant {
+    pub fn from_literal(
         declare: VariantDeclare,
         scopes: &mut Scopes,
         current_scope: usize,

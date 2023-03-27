@@ -6,7 +6,7 @@ use crate::{
     ast::{objects::*, types::type_literal_variant::TypeVariantLiteral, *},
     errors::RuntimeError,
     io_context::IoContext,
-    resolved::{from_literal::FromLiteral, value::Value},
+    resolved::value::Value,
     scopes::Scopes,
     types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
 };
@@ -44,8 +44,6 @@ pub fn eval_declare(
         )
     } else {
         let inferred_type = infer_type(&value, scopes, current_scope)?;
-
-        println!("Inferred type: {}", inferred_type);
 
         if inferred_type.find_generic_type_param().is_some() {
             return Err(RuntimeError::new(&format!(

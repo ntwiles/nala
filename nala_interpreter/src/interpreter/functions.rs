@@ -11,11 +11,10 @@ use crate::{
     errors::*,
     io_context::IoContext,
     resolved::{
-        from_literal::FromLiteral,
         func_value::{FuncValue, Param},
         value::Value,
     },
-    scopes::{type_binding::TypeBinding, Scopes},
+    scopes::Scopes,
     types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
     utils::accept_results,
 };
@@ -39,7 +38,7 @@ pub fn eval_func_declare(
         scopes.add_type_binding(
             closure_scope,
             &type_param,
-            TypeBinding::Generic(type_param.clone()),
+            TypeVariant::generic(type_param.clone()),
         )?;
     };
 
@@ -81,7 +80,7 @@ pub fn eval_builtin_declare(
         scopes.add_type_binding(
             closure_scope,
             &type_param,
-            TypeBinding::Generic(type_param.clone()),
+            TypeVariant::generic(type_param.clone()),
         )?;
     };
 
@@ -165,7 +164,7 @@ pub fn eval_call(
             }
         }
         Call::PlaceExpression(place) => eval_place_expr(place, scopes, current_scope, ctx),
-        Call::ValueLiteral(value) => Ok(Value::from_literal(value.clone(), scopes, current_scope)?),
+        Call::ValueLiteral(value) => Ok(Value::from_literal(value.clone())?),
     }
 }
 
@@ -183,9 +182,7 @@ fn handle_type_args(
         }
 
         let type_arg = TypeVariant::from_literal(type_arg.clone(), &mut Scopes::new(), 0)?;
-        let type_binding = TypeBinding::from_type(type_arg, type_param.clone());
-
-        scopes.add_type_binding(call_scope, &type_param.unwrap(), type_binding)?;
+        scopes.add_type_binding(call_scope, &type_param.unwrap(), type_arg)?;
     }
 
     Ok(())

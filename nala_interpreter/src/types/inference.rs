@@ -104,9 +104,10 @@ pub fn infer_variant(
     // TODO: This appears to be the only reason that infer_type needs to accept
     // scopes and current_scope. Another clue that maybe enum variant values should
     // contain type information.
-    let (enum_type, generic_type_param) = scopes.get_type(&enum_ident, current_scope)?.as_enum()?;
+    let (enum_variants, generic_type_param) =
+        scopes.get_type(&enum_ident, current_scope)?.as_enum()?;
 
-    let existing_variant = find_variant(&enum_type.variants, variant_ident)?;
+    let existing_variant = find_variant(&enum_variants, variant_ident)?;
 
     match existing_variant {
         EnumVariant::Data(_ident, data_type) => {
@@ -128,14 +129,14 @@ pub fn infer_variant(
                     };
 
                     Ok(TypeVariant::Composite(CompositeType {
-                        outer: NalaType::Enum(enum_ident.to_owned(), enum_type.variants),
+                        outer: NalaType::Enum(enum_ident.to_owned(), enum_variants),
                         inner: vec![inner_type],
                         generic_type_param: Some(generic_type_param),
                     }))
                 } else {
                     Ok(TypeVariant::Type(NalaType::Enum(
                         enum_ident.to_owned(),
-                        enum_type.variants,
+                        enum_variants,
                     )))
                 }
             } else {
@@ -144,7 +145,7 @@ pub fn infer_variant(
         }
         EnumVariant::Empty(_ident) => Ok(TypeVariant::Type(NalaType::Enum(
             enum_ident.to_owned(),
-            enum_type.variants,
+            enum_variants,
         ))),
     }
 }

@@ -8,7 +8,7 @@ use std::fmt;
 
 use crate::{errors::*, resolved::value::Value, types::type_variant::TypeVariant};
 
-use self::{scope::Scope, type_binding::TypeBinding, value_binding::ValueBinding};
+use self::{scope::Scope, value_binding::ValueBinding};
 
 pub struct Scopes {
     scopes: Vec<Scope>,
@@ -37,7 +37,7 @@ impl Scopes {
         }
     }
 
-    fn get_maybe_type(self: &Self, ident: &str, current_scope: usize) -> Option<&TypeBinding> {
+    fn get_maybe_type(self: &Self, ident: &str, current_scope: usize) -> Option<&TypeVariant> {
         let scope = self.scopes.get(current_scope).unwrap();
 
         scope.get_type_binding(ident).or_else(|| {
@@ -62,7 +62,7 @@ impl Scopes {
         self: &Self,
         ident: &str,
         starting_scope: usize,
-    ) -> Result<TypeBinding, RuntimeError> {
+    ) -> Result<TypeVariant, RuntimeError> {
         match self.get_maybe_type(ident, starting_scope) {
             Some(value) => Ok(value.clone()),
             None => Err(not_found_in_scope_error(ident)),
@@ -132,7 +132,7 @@ impl Scopes {
         self: &mut Self,
         current_scope: usize,
         ident: &str,
-        binding: TypeBinding,
+        binding: TypeVariant,
     ) -> Result<(), RuntimeError> {
         if self.type_binding_exists_local(ident, current_scope) {
             Err(RuntimeError::new(&format!(

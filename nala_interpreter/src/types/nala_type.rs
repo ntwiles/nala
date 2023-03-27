@@ -1,10 +1,8 @@
 use std::fmt;
 
 use crate::{
-    ast::types::{primitive_type::PrimitiveType, type_literal::TypeLiteral},
-    errors::RuntimeError,
-    resolved::{enum_variants::EnumVariant, from_literal::FromLiteral, struct_field::StructField},
-    scopes::{type_binding::TypeBinding, Scopes},
+    ast::types::primitive_type::PrimitiveType,
+    resolved::{enum_variants::EnumVariant, struct_field::StructField},
 };
 
 use super::type_variant::TypeVariant;
@@ -67,24 +65,6 @@ impl NalaType {
 
             Self::Generic(ident) => Some(ident.clone()),
             Self::PrimitiveType(_) => None,
-        }
-    }
-}
-
-impl FromLiteral<TypeLiteral> for NalaType {
-    fn from_literal(
-        literal: TypeLiteral,
-        scopes: &mut Scopes,
-        current_scope: usize,
-    ) -> Result<Self, RuntimeError> {
-        match literal {
-            TypeLiteral::PrimitiveType(t) => Ok(Self::PrimitiveType(t)),
-            TypeLiteral::UserDefined(ident) => match scopes.get_type(&ident, current_scope)? {
-                TypeBinding::Enum(binding, _type_param) => Ok(Self::Enum(ident, binding.variants)),
-                TypeBinding::Struct(fields, _type_param) => Ok(Self::Struct(fields)),
-                TypeBinding::Generic(ident) => Ok(Self::Generic(ident)),
-                TypeBinding::PrimitiveType(primitive) => Ok(Self::PrimitiveType(primitive)),
-            },
         }
     }
 }

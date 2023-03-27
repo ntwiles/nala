@@ -4,9 +4,9 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::{ast::terms::ValueLiteral, errors::RuntimeError, scopes::Scopes};
+use crate::{ast::terms::ValueLiteral, errors::RuntimeError};
 
-use super::{from_literal::FromLiteral, func_value::FuncValue};
+use super::func_value::FuncValue;
 
 #[derive(Debug, Clone)]
 pub struct EnumVariantValue {
@@ -76,10 +76,8 @@ impl Value {
             None
         }
     }
-}
 
-impl FromLiteral<ValueLiteral> for Value {
-    fn from_literal(literal: ValueLiteral, _: &mut Scopes, _: usize) -> Result<Self, RuntimeError> {
+    pub fn from_literal(literal: ValueLiteral) -> Result<Self, RuntimeError> {
         match literal {
             ValueLiteral::Number(num) => Ok(Value::Num(num)),
             ValueLiteral::String(string) => Ok(Value::String(string)),

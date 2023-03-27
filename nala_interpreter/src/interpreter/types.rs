@@ -1,14 +1,14 @@
 use crate::{
     ast::types::{variant_declare::VariantDeclare, StructLiteralField},
     errors::RuntimeError,
-    resolved::{
-        enum_variants::EnumVariant, from_literal::FromLiteral, struct_field::StructField,
-        value::Value,
-    },
-    scopes::{enum_binding::EnumBinding, type_binding::TypeBinding, Scopes},
+    resolved::{enum_variants::EnumVariant, struct_field::StructField, value::Value},
+    scopes::Scopes,
+    types::{composite_type::CompositeType, nala_type::NalaType, type_variant::TypeVariant},
     utils::accept_results,
 };
 
+// TODO: This has duplicated code for generating fields because this needs to happen after binding
+// generic type params. Fix this.
 pub fn eval_struct(
     ident: &str,
     type_param: Option<String>,
@@ -22,26 +22,45 @@ pub fn eval_struct(
         scopes.add_type_binding(
             closure_scope,
             &type_param,
-            TypeBinding::Generic(type_param.clone()),
+            TypeVariant::generic(type_param.clone()),
         )?;
-    }
 
-    let fields = accept_results(
-        fields
-            .into_iter()
-            .map(|f| StructField::from_literal(f, scopes, closure_scope))
-            .collect(),
-    )?;
+        let fields = accept_results(
+            fields
+                .into_iter()
+                .map(|f| StructField::from_literal(f, scopes, closure_scope))
+                .collect(),
+        )?;
 
-    scopes
-        .add_type_binding(
+        scopes.add_type_binding(
             current_scope,
             &ident,
-            TypeBinding::Struct(fields, type_param),
-        )
-        .map(|_| Value::Void)
+            TypeVariant::Composite(CompositeType {
+                outer: NalaType::Struct(fields),
+                inner: vec![TypeVariant::generic(type_param.clone())],
+                generic_type_param: Some(type_param.clone()),
+            }),
+        )?;
+    } else {
+        let fields = accept_results(
+            fields
+                .into_iter()
+                .map(|f| StructField::from_literal(f, scopes, closure_scope))
+                .collect(),
+        )?;
+
+        scopes.add_type_binding(
+            current_scope,
+            &ident,
+            TypeVariant::Type(NalaType::Struct(fields)),
+        )?;
+    };
+
+    Ok(Value::Void)
 }
 
+// TODO: This has duplicated code for generating fields because this needs to happen after binding
+// generic type params. Fix this.
 pub fn eval_enum(
     ident: &str,
     type_param: Option<String>,
@@ -55,22 +74,39 @@ pub fn eval_enum(
         scopes.add_type_binding(
             closure_scope,
             &type_param,
-            TypeBinding::Generic(type_param.clone()),
+            TypeVariant::generic(type_param.clone()),
         )?;
-    }
 
-    let variants = accept_results(
-        variants
-            .into_iter()
-            .map(|f| EnumVariant::from_literal(f, scopes, closure_scope))
-            .collect(),
-    )?;
+        let variants = accept_results(
+            variants
+                .into_iter()
+                .map(|f| EnumVariant::from_literal(f, scopes, closure_scope))
+                .collect(),
+        )?;
 
-    scopes
-        .add_type_binding(
+        scopes.add_type_binding(
             current_scope,
             &ident,
-            TypeBinding::Enum(EnumBinding { variants }, type_param),
-        )
-        .map(|_| Value::Void)
+            TypeVariant::Composite(CompositeType {
+                outer: NalaType::Enum(ident.to_string(), variants),
+                inner: vec![TypeVariant::generic(type_param.clone())],
+                generic_type_param: Some(type_param.clone()),
+            }),
+        )?;
+    } else {
+        let variants = accept_results(
+            variants
+                .into_iter()
+                .map(|f| EnumVariant::from_literal(f, scopes, closure_scope))
+                .collect(),
+        )?;
+
+        scopes.add_type_binding(
+            current_scope,
+            &ident,
+            TypeVariant::Type(NalaType::Enum(ident.to_string(), variants)),
+        )?;
+    };
+
+    Ok(Value::Void)
 }

@@ -2,13 +2,13 @@ use std::collections::HashMap;
 
 use crate::{resolved::value::Value, types::type_variant::TypeVariant};
 
-use super::{value_binding::ValueBinding, TypeBinding};
+use super::value_binding::ValueBinding;
 
 #[derive(Debug)]
 pub struct Scope {
     pub parent: Option<usize>,
     bindings: HashMap<String, ValueBinding>,
-    type_bindings: HashMap<String, TypeBinding>,
+    type_bindings: HashMap<String, TypeVariant>,
 }
 
 impl Scope {
@@ -37,7 +37,7 @@ impl Scope {
         );
     }
 
-    pub fn add_type_binding(self: &mut Self, ident: &str, value: TypeBinding) {
+    pub fn add_type_binding(self: &mut Self, ident: &str, value: TypeVariant) {
         self.type_bindings.insert(ident.to_owned(), value);
     }
 
@@ -49,7 +49,7 @@ impl Scope {
         }
     }
 
-    pub fn get_type_binding(self: &Self, ident: &str) -> Option<&TypeBinding> {
+    pub fn get_type_binding(self: &Self, ident: &str) -> Option<&TypeVariant> {
         if let Some(binding) = self.type_bindings.get(ident) {
             Some(binding)
         } else {

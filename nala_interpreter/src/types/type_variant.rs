@@ -1,8 +1,14 @@
 use std::fmt;
 
 use crate::{
-    ast::types::type_literal_variant::TypeVariantLiteral, errors::RuntimeError,
-    resolved::from_literal::FromLiteral, scopes::Scopes, utils::accept_results,
+    ast::types::{
+        primitive_type::PrimitiveType, type_literal::TypeLiteral,
+        type_literal_variant::TypeVariantLiteral,
+    },
+    errors::RuntimeError,
+    resolved::enum_variants::EnumVariant,
+    scopes::Scopes,
+    utils::accept_results,
 };
 
 use super::{composite_type::CompositeType, nala_type::NalaType};
@@ -14,6 +20,10 @@ pub enum TypeVariant {
 }
 
 impl TypeVariant {
+    pub fn generic(ident: String) -> Self {
+        TypeVariant::Type(NalaType::Generic(ident))
+    }
+
     pub fn find_generic_type_param(&self) -> Option<String> {
         match self {
             TypeVariant::Composite(CompositeType { inner, .. }) => inner
@@ -21,6 +31,20 @@ impl TypeVariant {
                 .find(|i| i.find_generic_type_param().is_some())
                 .map(|i| i.find_generic_type_param().unwrap()),
             TypeVariant::Type(t) => t.find_generic_type_param(),
+        }
+    }
+
+    pub fn as_enum(&self) -> Result<(Vec<EnumVariant>, Option<String>), RuntimeError> {
+        match self {
+            Self::Composite(composite) => {
+                if let NalaType::Enum(_ident, variants) = &composite.outer {
+                    Ok((variants.clone(), composite.generic_type_param.clone()))
+                } else {
+                    Err(RuntimeError::new("Expected an enum type."))
+                }
+            }
+            Self::Type(NalaType::Enum(_ident, variants)) => Ok((variants.clone(), None)),
+            _ => Err(RuntimeError::new("Expected an enum type.")),
         }
     }
 
@@ -53,42 +77,70 @@ impl TypeVariant {
             self
         }
     }
-}
 
-impl FromLiteral<TypeVariantLiteral> for TypeVariant {
-    fn from_literal(
+    fn from_literal_type(
+        literal: TypeLiteral,
+        inner: Vec<TypeVariant>,
+        scopes: &mut Scopes,
+        current_scope: usize,
+    ) -> Result<Self, RuntimeError> {
+        match literal {
+            TypeLiteral::PrimitiveType(t) => Ok(match t {
+                PrimitiveType::Array => TypeVariant::Composite(CompositeType {
+                    outer: NalaType::PrimitiveType(PrimitiveType::Array),
+                    inner,
+                    generic_type_param: None,
+                }),
+                PrimitiveType::Bool => {
+                    TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Bool))
+                }
+                PrimitiveType::Break => {
+                    TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Break))
+                }
+                PrimitiveType::Func => TypeVariant::Composite(CompositeType {
+                    outer: NalaType::PrimitiveType(PrimitiveType::Func),
+                    inner,
+                    generic_type_param: None,
+                }),
+                PrimitiveType::Number => {
+                    TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Number))
+                }
+                PrimitiveType::String => {
+                    TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::String))
+                }
+                PrimitiveType::Void => {
+                    TypeVariant::Type(NalaType::PrimitiveType(PrimitiveType::Void))
+                }
+            }),
+            TypeLiteral::UserDefined(ident) => scopes.get_type(&ident, current_scope),
+        }
+    }
+
+    pub fn from_literal(
         literal: TypeVariantLiteral,
         scopes: &mut Scopes,
         current_scope: usize,
     ) -> Result<Self, RuntimeError> {
         match literal {
             TypeVariantLiteral::Composite(outer, inner) => {
-                let outer = NalaType::from_literal(outer, scopes, current_scope)?;
-
                 let inner = accept_results(
                     inner
                         .into_iter()
-                        .map(|l| TypeVariant::from_literal(l, scopes, current_scope))
+                        .map(|l| Self::from_literal(l, scopes, current_scope))
                         .collect(),
                 )?;
+
+                let outer = Self::from_literal_type(outer, inner.clone(), scopes, current_scope)?;
 
                 let generic_type_param = outer.find_generic_type_param();
 
                 let concrete_type = inner[0].clone();
 
-                let composite = TypeVariant::Composite(CompositeType {
-                    outer,
-                    inner,
-                    generic_type_param: generic_type_param.clone(),
-                });
-
-                Ok(composite.make_concrete(generic_type_param, &concrete_type))
+                Ok(outer.make_concrete(generic_type_param, &concrete_type))
             }
-            TypeVariantLiteral::Type(t) => Ok(TypeVariant::Type(NalaType::from_literal(
-                t,
-                scopes,
-                current_scope,
-            )?)),
+            TypeVariantLiteral::Type(t) => {
+                Self::from_literal_type(t, vec![], scopes, current_scope)
+            }
         }
     }
 }
