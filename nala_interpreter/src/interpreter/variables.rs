@@ -67,8 +67,6 @@ pub fn eval_assign(
         PlaceExpression::Index(place, index_expr) => match &**place {
             PlaceExpression::Index(_, _) => todo!(),
             PlaceExpression::MemberAccess(member_access) => {
-                // TODO: What is going on here? This is labeled as member access
-                // but it looks like an array index.
                 let array = eval_member_access(None, member_access, scopes, current_scope, ctx)?;
 
                 let index =

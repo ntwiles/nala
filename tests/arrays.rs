@@ -147,3 +147,20 @@ fn it_errors_when_declaring_array_multiple_types() {
     assert!(result.is_err());
     assert_regex_match!(expected_message, &result.clone().unwrap_err().message)
 }
+
+// TODO: This fails with a parse error. Need to fix.
+// #[test]
+// fn it_allows_member_access_after_array_index_in_assign() {
+//     let mut ctx = TestContext::new();
+
+//     let nala = r#"
+//     const foo = [{
+//         bar: 'baz'
+//     }];
+
+//     foo[0].bar = 'qux';
+//     "#;
+
+//     assert!(parse_and_run(nala, &mut ctx).is_ok());
+//     assert_eq!(ctx.get_output(), vec!["foo"]);
+// }
