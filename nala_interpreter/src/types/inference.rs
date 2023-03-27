@@ -142,19 +142,9 @@ pub fn infer_variant(
                 todo!("")
             }
         }
-        EnumVariant::Empty(_ident) => {
-            if generic_type_param.is_some() {
-                // TODO: I don't think we want to error here, we're moved towards letting inferrence
-                // happen for generic types and erroring instead on assignment or call.
-                Err(RuntimeError::new(&format!(
-                    "Not enough information to infer type of generic enum variant."
-                )))
-            } else {
-                Ok(TypeVariant::Type(NalaType::Enum(
-                    enum_ident.to_owned(),
-                    enum_type.variants,
-                )))
-            }
-        }
+        EnumVariant::Empty(_ident) => Ok(TypeVariant::Type(NalaType::Enum(
+            enum_ident.to_owned(),
+            enum_type.variants,
+        ))),
     }
 }

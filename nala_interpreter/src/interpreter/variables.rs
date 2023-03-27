@@ -43,13 +43,13 @@ pub fn eval_declare(
             is_mutable,
         )
     } else {
-        // PERFORMANCE: A possible optimization could be to cache this on the binding once we
-        // know the type of the value so we don't have to run all this again.
         let inferred_type = infer_type(&value, scopes, current_scope)?;
+
+        println!("Inferred type: {}", inferred_type);
 
         if inferred_type.find_generic_type_param().is_some() {
             return Err(RuntimeError::new(&format!(
-                "Can't assign value of type `{inferred_type}` because it's generic. Try declaring the type explicitly.",
+                "Can't assign value of type `{inferred_type}` because its concrete type cannot be determined. Try declaring the type explicitly.",
             )));
         } else {
             scopes.add_binding(&ident, value, None, current_scope, is_mutable)

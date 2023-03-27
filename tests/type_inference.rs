@@ -40,7 +40,7 @@ fn it_errors_on_empty_array() {
 
 #[test]
 fn it_errors_if_no_info_for_inference() {
-    let expected_message = rgx!("Not enough information to infer type of generic enum variant.");
+    let expected_message = rgx!("Can't assign value of type `Option` because its concrete type cannot be determined. Try declaring the type explicitly.");
 
     let nala = r#"
         const foo = Option::None;
@@ -53,7 +53,7 @@ fn it_errors_if_no_info_for_inference() {
 
 #[test]
 fn it_errors_if_not_enough_info_for_inference() {
-    let expected_message = rgx!("Can't assign value of type `What<T>` because it's generic. Try declaring the type explicitly.");
+    let expected_message = rgx!("Can't assign value of type `What<T>` because its concrete type cannot be determined. Try declaring the type explicitly.");
 
     let nala = r#"
         enum What<T> {
