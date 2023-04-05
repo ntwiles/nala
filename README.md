@@ -5,15 +5,16 @@ Nala is an interpreted, expression-oriented programming language with terse synt
 
 ## Features
 
-- [x] Structural type system with type inference
+- [x] Structural dynamic type system with type inference
 - [x] Sum types (via enums)
+- [x] Generic types and functions
+- [x] Pattern matching
+- [x] Syntax highlighting (via VS Code extension)
 - [x] Object literals and member access
 - [x] Basic control flow
 - [x] Comments (single-line, multi-line)
-- [x] Syntax highlighting (via VS Code extension)
-- [x] Pattern matching
-- [x] Generic types and functions
 - [x] Console I/O
+- [ ] Static type system
 - [ ] Network I/O (Started)
 - [ ] Filesystem I/O
 - [ ] Error recovery
