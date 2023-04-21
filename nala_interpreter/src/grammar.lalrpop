@@ -91,7 +91,7 @@ Else: ast::branching::Else = {
 
 PlaceExpression: ast::PlaceExpression = {
     <p:PlaceExpression> "[" <e:Expr> "]" => ast::PlaceExpression::Index(Box::new(p), Box::new(e)),
-    <MemberAccess> => ast::PlaceExpression::MemberAccess(Box::new(<>)),
+    <p:PlaceExpression> "." <s:Symbol> => ast::PlaceExpression::MemberAccess(Box::new(p), s),
     <Symbol> => ast::PlaceExpression::Symbol(<>),
 };
 
@@ -193,11 +193,6 @@ CallTypeArgs: ast::types::type_literal_variant::TypeVariantLiteral = {
 ValueLiteral: ast::terms::ValueLiteral = {
     Num => ast::terms::ValueLiteral::Number(<>),
     Str => ast::terms::ValueLiteral::String(<>),
-}
-
-MemberAccess: ast::objects::MemberAccess = {
-    <p:MemberAccess> "." <c:Symbol> => ast::objects::MemberAccess::MemberAccesses(Box::new(p), c),
-    <p:Symbol> "." <c:Symbol> => ast::objects::MemberAccess::MemberAccess(p, c),
 }
 
 Term: ast::terms::Term = {

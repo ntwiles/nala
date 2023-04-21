@@ -3,7 +3,7 @@ use std::sync::Arc;
 use super::{arrays::eval_index, eval_expr, objects::*};
 
 use crate::{
-    ast::{objects::*, types::type_literal_variant::TypeVariantLiteral, *},
+    ast::{types::type_literal_variant::TypeVariantLiteral, *},
     errors::RuntimeError,
     io_context::IoContext,
     resolved::value::Value,
@@ -66,8 +66,9 @@ pub fn eval_assign(
     match variable {
         PlaceExpression::Index(place, index_expr) => match &**place {
             PlaceExpression::Index(_, _) => todo!(),
-            PlaceExpression::MemberAccess(member_access) => {
-                let array = eval_member_access(None, member_access, scopes, current_scope, ctx)?;
+            PlaceExpression::MemberAccess(place_expression, member) => {
+                let parent_obj = eval_place_expr(place_expression, scopes, current_scope, ctx)?;
+                let array = eval_member_access(&parent_obj, member)?;
 
                 let index =
                     if let Value::Num(index) = eval_expr(index_expr, scopes, current_scope, ctx)? {
@@ -128,21 +129,13 @@ pub fn eval_assign(
                 )))?
             }
         }
-        PlaceExpression::MemberAccess(member_access) => {
-            let (parent, child) = match &**member_access {
-                MemberAccess::MemberAccesses(parents, child) => (
-                    eval_member_access(None, &*parents, scopes, current_scope, ctx)?,
-                    child,
-                ),
-                MemberAccess::MemberAccess(parent, child) => {
-                    (scopes.get_value(&parent, current_scope)?, child)
-                }
-            };
+        PlaceExpression::MemberAccess(place_expression, member) => {
+            let parent = eval_place_expr(place_expression, scopes, current_scope, ctx)?;
 
             if let Value::Object(parent) = parent {
                 let parent = Arc::clone(&parent);
                 let mut parent = parent.lock().unwrap();
-                parent.insert(child.to_string(), value.clone());
+                parent.insert(member.to_string(), value.clone());
             } else {
                 todo!()
             };
@@ -164,8 +157,9 @@ pub fn eval_place_expr(
             eval_index(&array, expr, scopes, current_scope, ctx)
         }
         PlaceExpression::Symbol(ident) => scopes.get_value(ident, current_scope),
-        PlaceExpression::MemberAccess(member_access) => {
-            eval_member_access(None, member_access, scopes, current_scope, ctx)
+        PlaceExpression::MemberAccess(place_expression, member_access) => {
+            let object = eval_place_expr(place_expression, scopes, current_scope, ctx)?;
+            eval_member_access(&object, member_access)
         }
     }
 }

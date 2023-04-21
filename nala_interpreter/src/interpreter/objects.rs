@@ -9,53 +9,21 @@ use crate::{
 
 use super::basic::eval_expr;
 
-pub fn eval_member_access(
-    parent_obj: Option<Arc<Mutex<HashMap<String, Value>>>>,
-    member_access: &MemberAccess,
-    scopes: &mut Scopes,
-    current_scope: usize,
-    ctx: &mut dyn IoContext,
-) -> Result<Value, RuntimeError> {
-    match member_access {
-        MemberAccess::MemberAccesses(parents, child) => {
-            let object = eval_member_access(parent_obj, parents, scopes, current_scope, ctx)?;
-
-            if let Value::Object(reference) = object {
-                let object = Arc::clone(&reference);
-                let object = object.lock().unwrap();
-                if object.contains_key(child) {
-                    Ok(object[child].clone())
-                } else {
-                    Err(RuntimeError::new(&format!(
-                        "Member `{child}` does not exist on object."
-                    )))
-                }
-            } else {
-                Err(RuntimeError::new(&format!(
-                    "Cannot access member `{child}` of non-Object `{object}`."
-                )))
-            }
+pub fn eval_member_access(object: &Value, field: &String) -> Result<Value, RuntimeError> {
+    if let Value::Object(reference) = object {
+        let object = Arc::clone(&reference);
+        let object = object.lock().unwrap();
+        if object.contains_key(field) {
+            Ok(object[field].clone())
+        } else {
+            Err(RuntimeError::new(&format!(
+                "Member `{field}` does not exist on parent object." // TODO: Get the identifier for the object.
+            )))
         }
-        MemberAccess::MemberAccess(parent, child) => {
-            let object = match parent_obj {
-                Some(_parent_obj) => todo!(),
-                None => scopes.get_value(parent, current_scope)?,
-            };
-
-            if let Value::Object(reference) = object {
-                let object = Arc::clone(&reference);
-                let object = object.lock().unwrap();
-                if object.contains_key(child) {
-                    Ok(object[child].clone())
-                } else {
-                    Err(RuntimeError::new(&format!(
-                        "Member `{child}` does not exist on object `{parent}`"
-                    )))
-                }
-            } else {
-                todo!()
-            }
-        }
+    } else {
+        Err(RuntimeError::new(&format!(
+            "Tried to access member `{field}` of non-Object `{object}`."
+        )))
     }
 }
 

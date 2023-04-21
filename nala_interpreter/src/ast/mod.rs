@@ -77,5 +77,5 @@ pub enum Expr {
 pub enum PlaceExpression {
     Symbol(String),
     Index(Box<PlaceExpression>, Box<Expr>),
-    MemberAccess(Box<MemberAccess>),
+    MemberAccess(Box<PlaceExpression>, String),
 }
