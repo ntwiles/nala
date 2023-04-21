@@ -1,28 +1,30 @@
 ![Last Commit](https://img.shields.io/github/last-commit/ntwiles/nala)
 ![File Count](https://img.shields.io/github/directory-file-count/ntwiles/nala)
 
-Nala is an interpreted, expression-oriented programming language with terse syntax designed for quick use in prototyping console applications and in manipulating data.
+Nala is an expression-oriented general purpose interpreted programming language designed with ease of use for 
+functional programmers in mind.
+
 
 ## Features
+- Structural dynamic type system with 
+- Type inference
+- Sum types (via enums)
+- Generic types and functions
+- Pattern matching
+- Syntax highlighting (via VS Code extension)
 
-- [x] Structural dynamic type system with type inference
-- [x] Sum types (via enums)
-- [x] Generic types and functions
-- [x] Pattern matching
-- [x] Syntax highlighting (via VS Code extension)
-- [x] Object literals and member access
-- [x] Basic control flow
-- [x] Comments (single-line, multi-line)
-- [x] Console I/O
-- [ ] Static type system
-- [ ] Network I/O (Started)
-- [ ] Filesystem I/O
-- [ ] Error recovery
-- [ ] Function pipelines
-- [ ] Async / await
-- [ ] Garbage collection
-- [ ] Module and package systems
-- [ ] String interpolation
+## Roadmap
+- Migrate to static type system
+- Network I/O (Started)
+- Filesystem I/O
+- Error recovery
+- Automatic function currying
+- Function pipeline support?
+- Async / await support
+- Garbage collection
+- Module and package systems
+- String interpolation
+- Full language support via LSP server.
 
 ## Usage
 
