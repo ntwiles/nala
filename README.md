@@ -6,7 +6,7 @@ functional programmers in mind.
 
 
 ## Features
-- Structural dynamic type system with 
+- Structural dynamic type system
 - Type inference
 - Sum types (via enums)
 - Generic types and functions
