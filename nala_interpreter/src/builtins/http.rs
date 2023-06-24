@@ -88,34 +88,32 @@ fn builtin_http(
         client.send()
     };
 
-    let mut fields = HashMap::<String, Value>::new();
-
-    match response {
+    let fields = match response {
         Ok(response) => {
-            fields.insert(
-                String::from("statusCode"),
-                Value::String(response.status().to_string()),
-            );
+            let status_code = build_some(Value::String(response.status().to_string()));
 
-            let value = response.json::<serde_json::Value>().unwrap();
-            fields.insert(String::from("body"), build_value(value));
+            let body = match response.json::<serde_json::Value>() {
+                Ok(value) => build_some(build_value(value)),
+                Err(_) => build_none(),
+            };
+
+            HashMap::from([
+                (String::from("statusCode"), status_code),
+                (String::from("body"), body),
+            ])
         }
         Err(error) => {
-            // TODO: Status is optional because the error might not have been generated from a response.
-            // Defaulting to an empty string probably isn't the best way to handle that case. We should
-            // make Option a builtin type so that we can leverage it here.
-            fields.insert(
-                String::from("statusCode"),
-                Value::String(
-                    error
-                        .status()
-                        .map(|code| code.to_string())
-                        .unwrap_or("".to_string())
-                        .to_string(),
-                ),
-            );
+            let status_code = error
+                .status()
+                .map(|code| build_some(Value::String(code.to_string())))
+                .unwrap_or(build_none());
+
+            HashMap::from([
+                (String::from("statusCode"), status_code),
+                (String::from("body"), build_none()),
+            ])
         }
-    }
+    };
 
     Ok(Value::Object(Arc::new(Mutex::new(fields))))
 }
@@ -125,15 +123,7 @@ fn build_value(value: serde_json::Value) -> Value {
         serde_json::Value::Array(items) => Value::Array(Arc::new(Mutex::new(
             items.into_iter().map(build_value).collect::<Vec<Value>>(),
         ))),
-        serde_json::Value::Null => {
-            let variant = EnumVariantValue {
-                enum_ident: String::from("Option"),
-                variant_ident: String::from("None"),
-                data: None,
-            };
-
-            Value::Variant(variant)
-        }
+        serde_json::Value::Null => build_none(),
         serde_json::Value::Bool(value) => Value::Bool(value),
         serde_json::Value::Number(_) => todo!(),
         serde_json::Value::String(value) => Value::String(value),
@@ -144,4 +134,25 @@ fn build_value(value: serde_json::Value) -> Value {
                 .collect(),
         ))),
     }
+}
+
+// TODO: Build_none and build_some should be put somewhere besides this file.
+fn build_some(data: Value) -> Value {
+    let variant = EnumVariantValue {
+        enum_ident: String::from("Option"),
+        variant_ident: String::from("Some"),
+        data: Some(Box::new(data)),
+    };
+
+    Value::Variant(variant)
+}
+
+fn build_none() -> Value {
+    let variant = EnumVariantValue {
+        enum_ident: String::from("Option"),
+        variant_ident: String::from("None"),
+        data: None,
+    };
+
+    Value::Variant(variant)
 }

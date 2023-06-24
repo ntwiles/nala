@@ -4,9 +4,11 @@
  * There's no way of setting headers yet, for example.
  */
 
-struct Result<T> {
-    statusCode: String,
-    body: Array<T>,
+
+// TODO: Make this a builtin type.
+struct HttpResult<T> {
+    statusCode: Option<String>,
+    body: Option<T>,
 }
 
 struct HouseHead {
@@ -34,18 +36,42 @@ func printHouseInfo(house: HouseInfo): Void {
     print('');
 }
 
-print('Making GET request...');
+func doRequest(url: String): Void {
+    const result: HttpResult<Array<HouseInfo>> = http({
+        method: 'GET',
+        url: url,
+    });
 
-const result: Result<HouseInfo> = http({
-    method: 'GET',
-    url: 'https://wizard-world-api.herokuapp.com/Houses',
-});
+    match (result.statusCode) {
+        Option::Some(statusCode) => { 
+            print('Result Status: ' + statusCode); 
 
-print('Result Status: ' + result.statusCode);
-print('');
+            match (result.body) {
+                Option::Some(body) => {
+                    print('');
 
-for house in result.body {
-    // TODO: Is seems as though this `house` value doesn't always get checked for 
-    // fit against the `HouseInfo` type. This seems to somehow change per run.
-    printHouseInfo(house);
+                    for house in body {
+                        // TODO: Is seems as though this `house` value doesn't always get checked for 
+                        // fit against the `HouseInfo` type. This seems to somehow change per run.
+                        printHouseInfo(house);
+                    }
+                }
+                Option::None => {
+                    print('No body in response.');
+                }
+            }
+        }
+        Option::None => { print('Could not complete request.'); }
+    }
 }
+
+print('Making GET request with (hopeful) success response...');
+doRequest('https://wizard-world-api.herokuapp.com/Houses');
+print('----------------------------------------------');
+
+print('Making GET request with (hopeful) error response...');
+doRequest('https://wizard-world-api.herokuapp.com/GiveMeAnError');
+print('----------------------------------------------');
+
+print('Making unsuccessful GET request...');
+doRequest('https://foo.bar/baz');
