@@ -9,14 +9,8 @@ mod types;
 mod variables;
 
 use crate::{
-    ast::{
-        terms::*,
-        types::{
-            type_literal::TypeLiteral, type_literal_variant::TypeVariantLiteral,
-            variant_declare::VariantDeclare,
-        },
-        *,
-    },
+    ast::{terms::*, *},
+    builtin_types::{get_builtin_enums, get_builtin_structs},
     builtins::*,
     errors::RuntimeError,
     io_context::IoContext,
@@ -24,7 +18,11 @@ use crate::{
     scopes::*,
 };
 
-use self::{functions::*, types::eval_enum, variables::*};
+use self::{
+    functions::*,
+    types::{eval_enum, eval_struct},
+    variables::*,
+};
 use basic::*;
 
 pub fn eval_program(program: Program, ctx: &mut impl IoContext) -> Result<Value, RuntimeError> {
@@ -56,18 +54,22 @@ pub fn eval_term(
 }
 
 fn load_builtin_types(scopes: &mut Scopes, current_scope: usize) -> Result<(), RuntimeError> {
-    let type_param = Some(String::from("T"));
+    // TODO: This is going to quickly become problematic. Even with only two builtin types,
+    // HttpResult<T> is dependent on Option<T> and needs to be loaded first. In this very simple
+    // case, we can fix this just by loading enums before we load structs, but this is not a general
+    // solution. This will/should probably remain unsolved until implementing a package/module
+    // system.
 
-    let variants = vec![
-        VariantDeclare::Data(
-            String::from("Some"),
-            TypeVariantLiteral::Type(TypeLiteral::UserDefined(String::from("T"))),
-        ),
-        VariantDeclare::Empty(String::from("None")),
-    ];
+    for (ident, type_param, variants) in get_builtin_enums() {
+        if let Err(e) = eval_enum(&ident, type_param, variants, scopes, current_scope) {
+            panic!("Error loading builtin enums: {0}", e.message)
+        }
+    }
 
-    if let Err(e) = eval_enum("Option", type_param, variants, scopes, current_scope) {
-        panic!("Error loading builtin types: {0}", e.message)
+    for (ident, type_param, fields) in get_builtin_structs() {
+        if let Err(e) = eval_struct(&ident, type_param, fields, scopes, current_scope) {
+            panic!("Error loading builtin structs: {0}", e.message)
+        }
     }
 
     Ok(())

@@ -2,14 +2,12 @@
  *
  * TODO: These three `options` fields (method, url, body) are currently the only ones available. 
  * There's no way of setting headers yet, for example.
+ *
+ * struct HttpResult<T> {
+ *    statusCode: Option<String>,
+ *    body: Option<T>,
+ * }
  */
-
-
-// TODO: Make this a builtin type.
-struct HttpResult<T> {
-    statusCode: Option<String>,
-    body: Option<T>,
-}
 
 struct HouseHead {
     firstName: String,
@@ -51,8 +49,6 @@ func doRequest(url: String): Void {
                     print('');
 
                     for house in body {
-                        // TODO: Is seems as though this `house` value doesn't always get checked for 
-                        // fit against the `HouseInfo` type. This seems to somehow change per run.
                         printHouseInfo(house);
                     }
                 }

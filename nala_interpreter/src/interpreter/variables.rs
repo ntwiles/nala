@@ -12,7 +12,7 @@ use crate::{
 };
 
 pub fn eval_declare(
-    ident: &String,
+    ident: &str,
     value: Value,
     declared_type: Option<TypeVariantLiteral>,
     is_mutable: bool,

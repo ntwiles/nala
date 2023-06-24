@@ -7,6 +7,7 @@ extern crate serde_json;
 use std::fs;
 
 pub mod ast;
+mod builtin_types;
 mod builtins;
 pub mod errors;
 pub mod interpreter;
