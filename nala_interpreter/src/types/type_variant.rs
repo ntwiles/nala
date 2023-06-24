@@ -34,6 +34,17 @@ impl TypeVariant {
         }
     }
 
+    pub fn as_composite(self) -> Option<CompositeType> {
+        match self {
+            Self::Composite(composite) => Some(composite),
+            _ => None,
+        }
+    }
+
+    // TODO: Should this be returning a result? Maybe this should just be returning an Option as
+    // above. If we're only calling this in places where we think we can safely assume that the
+    // value is an enum, then we should be unwrapping and panicking rather than showing the user a
+    // runtime error.
     pub fn as_enum(&self) -> Result<(Vec<EnumVariant>, Option<String>), RuntimeError> {
         match self {
             Self::Composite(composite) => {

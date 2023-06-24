@@ -17,6 +17,11 @@ use super::{
     composite_type::CompositeType, fit::fits_type, nala_type::NalaType, type_variant::TypeVariant,
 };
 
+// TODO: There are most likely cases where infer_type is called on the same value multiple times, which
+// is wasteful. Maybe it would be a good idea to cache the results of infer_type in the value itself?
+// probably the best way to do that would be to not return a TypeVariant anymore, but instead return
+// a new version of the type which has the type variant already filled in. That way, it's less likely
+// that we'll miss a case where we don't update the value with the cached inferred type.
 pub fn infer_type(
     value: &Value,
     scopes: &mut Scopes,
@@ -74,6 +79,11 @@ fn infer_array(
     let items = items.lock().unwrap();
 
     let elem_type = if items.len() > 0 {
+        // TODO: Inferring the type based on the first element isn't the right idea. Instead, we
+        // should infer using the most informative element. For example, if the first element is
+        // Option::None, we will infer Array<Option<T>> here, but the second element might have been
+        // Option::Some(1), in which case we might have been able to infer Array<Option<Number>> had
+        // we kept looking.
         let first = items.first();
         infer_type(first.unwrap(), scopes, current_scope)?
     } else {

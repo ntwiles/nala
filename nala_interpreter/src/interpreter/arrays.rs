@@ -9,7 +9,7 @@ use crate::{
     io_context::IoContext,
     resolved::value::Value,
     scopes::Scopes,
-    types::inference::infer_type,
+    types::{fit::fits_type, inference::infer_type},
 };
 
 use super::basic::*;
@@ -52,7 +52,15 @@ pub fn eval_array(
         for value in values.clone() {
             let second_type = infer_type(&value, scopes, current_scope)?;
 
-            if second_type != first_type {
+            // TODO: This partially works. In the case of generic values like Option, if the first
+            // value is a Some, we'll be able to infer a concrete type for the generic, and later
+            // None values in the array will fit that type. However if the first type is None, we
+            // won't be able to infer a type and this will fail.
+            //
+            // NOTE: There's a related issue mentioned in inference.rs:77 that involves type inference
+            // for the array as a whole. If we get that working, maybe we can leverage that here to
+            // be lazy and just compare each value here to that inferred type.
+            if !fits_type(&value, &first_type, scopes, current_scope)? {
                 return Err(RuntimeError::new(
                     &format!("Arrays can contain elements of only a single type. Found elements of types `{first_type}` and `{second_type}`.",
                 )));

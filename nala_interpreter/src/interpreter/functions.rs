@@ -15,7 +15,9 @@ use crate::{
         value::Value,
     },
     scopes::Scopes,
-    types::{fit::fits_type, inference::infer_type, type_variant::TypeVariant},
+    types::{
+        fit::fits_type, inference::infer_type, nala_type::NalaType, type_variant::TypeVariant,
+    },
     utils::accept_results,
 };
 
@@ -226,16 +228,47 @@ fn handle_args(
             ));
         }
 
-        if let Some(param_generic_ident) = param.param_type.find_generic_type_param() {
-            let concrete_type = infer_type(&arg, scopes, current_scope)?;
-            scopes.update_type_binding(call_scope, &param_generic_ident, concrete_type)?;
-        }
+        let arg_type = infer_type(&arg, scopes, current_scope)?;
+        resolve_generics(&param.param_type, arg_type, scopes, call_scope)?;
 
         scopes.add_binding(&param.ident, arg.clone(), None, call_scope, false)?;
         param_args.entry(param.ident.clone()).or_insert(arg.clone());
     }
 
     Ok(param_args)
+}
+
+fn resolve_generics(
+    param_type_variant: &TypeVariant,
+    arg_type: TypeVariant,
+    scopes: &mut Scopes,
+    current_scope: usize,
+) -> Result<(), RuntimeError> {
+    match param_type_variant {
+        TypeVariant::Composite(c) => {
+            if let Some(_) = c.generic_type_param {
+                let arg_inners = arg_type.as_composite().unwrap().inner;
+
+                for (i, param_inner) in c.inner.iter().enumerate() {
+                    let arg_inner = arg_inners.get(i).unwrap();
+                    resolve_generics(param_inner, arg_inner.clone(), scopes, current_scope)?;
+                }
+            }
+        }
+        TypeVariant::Type(t) => {
+            if let NalaType::Generic(ident) = t {
+                // TODO: This will overwrite type bindings made in previous passes, either from
+                // earlier args to the given Nala call, or from earlier type params to the same arg
+                // (in the case of composite types with multiple inner type args). This also won't
+                // throw any kind of error if the more recently bound type doesn't match up with the
+                // one bound earlier.
+
+                scopes.update_type_binding(current_scope, ident, arg_type)?;
+            }
+        }
+    };
+
+    Ok(())
 }
 
 fn wrong_arg_type_for_param_error(

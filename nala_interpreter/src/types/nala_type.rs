@@ -74,6 +74,10 @@ impl fmt::Display for NalaType {
             Self::Enum(enum_ident, _variant_ident) => write!(f, "{enum_ident}"),
             Self::PrimitiveType(primitive) => write!(f, "{}", primitive),
             Self::Struct(fields) => {
+                let mut fields = fields.clone();
+                fields.sort_by(|a, b| a.cmp(&b));
+
+                println!("Object entries: {:?}", fields);
                 write!(f, "{{ ")?;
 
                 write!(
