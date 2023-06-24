@@ -32,6 +32,7 @@ fn get_option_enum() -> Vec<VariantDeclare> {
     ]
 }
 
+// TODO: Make a helper function to simplify creating these structs.
 fn get_http_result_struct() -> Vec<StructLiteralField> {
     vec![
         StructLiteralField {
