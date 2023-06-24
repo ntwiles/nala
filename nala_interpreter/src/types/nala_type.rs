@@ -75,9 +75,8 @@ impl fmt::Display for NalaType {
             Self::PrimitiveType(primitive) => write!(f, "{}", primitive),
             Self::Struct(fields) => {
                 let mut fields = fields.clone();
-                fields.sort_by(|a, b| a.cmp(&b));
+                fields.sort_by(|a, b| a.ident.cmp(&b.ident));
 
-                println!("Object entries: {:?}", fields);
                 write!(f, "{{ ")?;
 
                 write!(

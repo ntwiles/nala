@@ -116,14 +116,16 @@ impl fmt::Debug for Value {
             }
             Value::Num(n) => write!(f, "{}", n),
             Value::Object(fields) => {
+                let fields = fields.lock().unwrap();
+                let mut fields: Vec<(&String, &Value)> = fields.iter().collect();
+                fields.sort_by(|a, b| a.0.cmp(&b.0));
+
                 write!(f, "{{ ")?;
 
                 write!(
                     f,
                     "{}",
                     fields
-                        .lock()
-                        .unwrap()
                         .iter()
                         .map(|(key, value)| format!("{}: {:?}", key, value))
                         .fold(String::new(), |a, b| a + &b + ", ")
