@@ -2,6 +2,7 @@ mod array;
 mod http;
 mod io;
 mod math;
+mod util;
 mod void;
 
 use std::collections::HashMap;

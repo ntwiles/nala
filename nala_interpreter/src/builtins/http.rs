@@ -13,10 +13,12 @@ use crate::{
     resolved::{
         func_value::{FuncValue, Param},
         struct_field::StructField,
-        value::{EnumVariantValue, Value},
+        value::Value,
     },
     types::{nala_type::NalaType, type_variant::TypeVariant},
 };
+
+use super::util::{build_none, build_some};
 
 pub fn get_http_block() -> FuncValue {
     let return_type = TypeVariant::Type(NalaType::Generic(String::from("T")));
@@ -134,25 +136,4 @@ fn build_value(value: serde_json::Value) -> Value {
                 .collect(),
         ))),
     }
-}
-
-// TODO: Build_none and build_some should be put somewhere besides this file.
-fn build_some(data: Value) -> Value {
-    let variant = EnumVariantValue {
-        enum_ident: String::from("Option"),
-        variant_ident: String::from("Some"),
-        data: Some(Box::new(data)),
-    };
-
-    Value::Variant(variant)
-}
-
-fn build_none() -> Value {
-    let variant = EnumVariantValue {
-        enum_ident: String::from("Option"),
-        variant_ident: String::from("None"),
-        data: None,
-    };
-
-    Value::Variant(variant)
 }
