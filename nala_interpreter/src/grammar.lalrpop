@@ -30,6 +30,7 @@ Block: Vec<ast::Stmt> = {
     "{" <Stmts> "}" => <>
 }
 
+// TODO: Make this Lines instead of Stmts to reflect expression orentiation.
 pub Stmts: Vec<ast::Stmt> = {
     <s:Stmt+> => s
 };

@@ -40,6 +40,7 @@ impl fmt::Debug for FuncVariant {
     }
 }
 
+// TODO: Make this Line instead of Stmt to reflect expression orientation.
 #[derive(Debug, Clone)]
 pub enum Stmt {
     Assign(PlaceExpression, Expr),

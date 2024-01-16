@@ -13,6 +13,7 @@ use crate::{
     ast::*, errors::RuntimeError, io_context::IoContext, resolved::value::Value, scopes::Scopes,
 };
 
+// TODO: Make this `eval_lines` instead of `eval_stmts` to reflect expression orentiation.
 pub fn eval_stmts(
     stmts: &Vec<Stmt>,
     scopes: &mut Scopes,
@@ -36,6 +37,7 @@ pub fn eval_stmts(
     Ok(last_result)
 }
 
+// TODO: Make this `eval_line` instead of `eval_stmt` to reflect expression orentiation.
 fn eval_stmt(
     stmt: &Stmt,
     scopes: &mut Scopes,
