@@ -26,21 +26,20 @@ pub Program: ast::Program = {
     <Stmts> => ast::Program::Stmts(<>)
 }
 
-Block: ast::Stmts = {
+Block: Vec<ast::Stmt> = {
     "{" <Stmts> "}" => <>
 }
 
-pub Stmts: ast::Stmts = {
-    <ss:Stmts> <s:Stmt> => ast::Stmts::Stmts(Box::new(ss), s),
-    Stmt => ast::Stmts::Stmt(<>),
+pub Stmts: Vec<ast::Stmt> = {
+    <s:Stmt+> => s
 };
 
 Stmt: ast::Stmt = {
     "const" <s:Symbol> <t:TypeDeclaration?> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, t, false),
     "mut" <s:Symbol> <t:TypeDeclaration?> "="  <e:Expr> ";" => ast::Stmt::Declare(s, e, t, true),
     <c:IfElseChain> => ast::Stmt::IfElseChain(Box::new(c)),
-    "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e, Box::new(b)),
-    "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e, Box::new(b)),
+    "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e,b),
+    "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e,b),
     "func" <s:Symbol> <t:TypeParams?> "(" <p:Params> ")" ":" <r:TypeVariant> <b:Block> => 
         ast::Stmt::Func(ast::funcs::FuncDeclare { ident: s, params: p, return_type: r, type_param: t, block: Box::new(ast::FuncVariant::Nala(b))}),
     "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),

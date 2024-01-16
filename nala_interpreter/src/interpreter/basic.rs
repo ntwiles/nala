@@ -14,23 +14,26 @@ use crate::{
 };
 
 pub fn eval_stmts(
-    stmts: &Stmts,
+    stmts: &Vec<Stmt>,
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
-    match stmts {
-        Stmts::Stmts(stmts, stmt) => {
-            let result = eval_stmts(&*stmts, scopes, current_scope, ctx)?;
+    // TODO: There's probably a neater way of implementing this function.
 
-            if let Value::Void = result {
-                eval_stmt(stmt, scopes, current_scope, ctx)
-            } else {
-                Ok(result)
-            }
+    let mut last_result = Value::Void;
+
+    for stmt in stmts.iter() {
+        last_result = eval_stmt(stmt, scopes, current_scope, ctx)?;
+
+        if let Value::Void = last_result {
+            continue;
+        } else {
+            return Ok(last_result);
         }
-        Stmts::Stmt(stmt) => eval_stmt(stmt, scopes, current_scope, ctx),
     }
+
+    Ok(last_result)
 }
 
 fn eval_stmt(

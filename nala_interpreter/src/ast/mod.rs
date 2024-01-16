@@ -24,13 +24,13 @@ use self::types::StructLiteralField;
 
 #[derive(Debug)]
 pub enum Program {
-    Block(Stmts),
-    Stmts(Stmts),
+    Block(Vec<Stmt>),
+    Stmts(Vec<Stmt>),
 }
 
 #[derive(Clone)]
 pub enum FuncVariant {
-    Nala(Stmts),
+    Nala(Vec<Stmt>),
     Builtin(BuiltinFunc),
 }
 
@@ -47,20 +47,12 @@ pub enum Stmt {
     Declare(String, Expr, Option<TypeVariantLiteral>, bool),
     Enum(String, Option<String>, Vec<VariantDeclare>),
     Expr(Expr),
-    For(String, Expr, Box<Stmts>),
+    For(String, Expr, Vec<Stmt>),
     Func(FuncDeclare),
     IfElseChain(Box<IfElseChain>),
-    Wiles(Expr, Box<Stmts>),
+    Wiles(Expr, Vec<Stmt>),
     Struct(String, Option<String>, Vec<StructLiteralField>),
     Match(Match),
-}
-
-// TODO: Implement this as a Vec<Stmt> instead of a linked list.
-// This should remain as a linked list in the grammar.
-#[derive(Debug, Clone)]
-pub enum Stmts {
-    Stmts(Box<Stmts>, Stmt),
-    Stmt(Stmt),
 }
 
 #[derive(Debug, Clone)]

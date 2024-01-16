@@ -67,7 +67,7 @@ fn eval_cond(
 pub fn eval_for(
     ident: &String,
     expr: &Expr,
-    block: &Stmts,
+    block: &Vec<Stmt>,
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
@@ -103,7 +103,7 @@ pub fn eval_for(
 
 pub fn eval_wiles(
     expr: &Expr,
-    block: &Stmts,
+    block: &Vec<Stmt>,
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
