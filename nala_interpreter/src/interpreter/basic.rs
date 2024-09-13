@@ -13,9 +13,8 @@ use crate::{
     ast::*, errors::RuntimeError, io_context::IoContext, resolved::value::Value, scopes::Scopes,
 };
 
-// TODO: Make this `eval_lines` instead of `eval_stmts` to reflect expression orentiation.
-pub fn eval_stmts(
-    stmts: &Vec<Stmt>,
+pub fn eval_lines(
+    lines: &Vec<Line>,
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
@@ -24,8 +23,8 @@ pub fn eval_stmts(
 
     let mut last_result = Value::Void;
 
-    for stmt in stmts.iter() {
-        last_result = eval_stmt(stmt, scopes, current_scope, ctx)?;
+    for line in lines.iter() {
+        last_result = eval_line(line, scopes, current_scope, ctx)?;
 
         if let Value::Void = last_result {
             continue;
@@ -37,20 +36,19 @@ pub fn eval_stmts(
     Ok(last_result)
 }
 
-// TODO: Make this `eval_line` instead of `eval_stmt` to reflect expression orentiation.
-fn eval_stmt(
-    stmt: &Stmt,
+fn eval_line(
+    line: &Line,
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
-    match stmt {
-        Stmt::Assign(ident, expr) => {
+    match line {
+        Line::Assign(ident, expr) => {
             let result = eval_expr(expr, scopes, current_scope, ctx)?;
             eval_assign(ident, &result, scopes, current_scope, ctx)
         }
-        Stmt::Break(expr) => eval_break(expr, scopes, current_scope, ctx),
-        Stmt::Declare(ident, expr, declared_type, is_mutable) => eval_declare(
+        Line::Break(expr) => eval_break(expr, scopes, current_scope, ctx),
+        Line::Declare(ident, expr, declared_type, is_mutable) => eval_declare(
             ident,
             eval_expr(&expr, scopes, current_scope, ctx)?,
             declared_type.clone(),
@@ -58,26 +56,26 @@ fn eval_stmt(
             scopes,
             current_scope,
         ),
-        Stmt::Enum(ident, type_params, variants) => eval_enum(
+        Line::Enum(ident, type_params, variants) => eval_enum(
             ident,
             type_params.clone(),
             variants.clone(),
             scopes,
             current_scope,
         ),
-        Stmt::Expr(expr) => eval_expr(expr, scopes, current_scope, ctx),
-        Stmt::For(ident, expr, block) => eval_for(ident, &expr, block, scopes, current_scope, ctx),
-        Stmt::Func(func) => eval_func_declare(func.clone(), scopes, current_scope),
-        Stmt::IfElseChain(chain) => eval_if_else_chain(chain, scopes, current_scope, ctx),
-        Stmt::Match(the_match) => eval_match(the_match, scopes, current_scope, ctx),
-        Stmt::Struct(ident, type_params, fields) => eval_struct(
+        Line::Expr(expr) => eval_expr(expr, scopes, current_scope, ctx),
+        Line::For(ident, expr, block) => eval_for(ident, &expr, block, scopes, current_scope, ctx),
+        Line::Func(func) => eval_func_declare(func.clone(), scopes, current_scope),
+        Line::IfElseChain(chain) => eval_if_else_chain(chain, scopes, current_scope, ctx),
+        Line::Match(the_match) => eval_match(the_match, scopes, current_scope, ctx),
+        Line::Struct(ident, type_params, fields) => eval_struct(
             ident,
             type_params.clone(),
             fields.clone(),
             scopes,
             current_scope,
         ),
-        Stmt::Wiles(expr, block) => eval_wiles(&expr, block, scopes, current_scope, ctx),
+        Line::Wiles(expr, block) => eval_wiles(&expr, block, scopes, current_scope, ctx),
     }
 }
 

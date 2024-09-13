@@ -23,32 +23,31 @@ match {
 
 pub Program: ast::Program = {
     <Block> => ast::Program::Block(<>),
-    <Stmts> => ast::Program::Stmts(<>)
+    <Lines> => ast::Program::Lines(<>)
 }
 
-Block: Vec<ast::Stmt> = {
-    "{" <Stmts> "}" => <>
+Block: Vec<ast::Line> = {
+    "{" <Lines> "}" => <>
 }
 
-// TODO: Make this Lines instead of Stmts to reflect expression orentiation.
-pub Stmts: Vec<ast::Stmt> = {
-    <s:Stmt+> => s
+pub Lines: Vec<ast::Line> = {
+    <s:Line+> => s
 };
 
-Stmt: ast::Stmt = {
-    "const" <s:Symbol> <t:TypeDeclaration?> "=" <e:Expr> ";" => ast::Stmt::Declare(s, e, t, false),
-    "mut" <s:Symbol> <t:TypeDeclaration?> "="  <e:Expr> ";" => ast::Stmt::Declare(s, e, t, true),
-    <c:IfElseChain> => ast::Stmt::IfElseChain(Box::new(c)),
-    "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Stmt::For(s,e,b),
-    "wiles" "(" <e:Expr> ")" <b:Block> => ast::Stmt::Wiles(e,b),
+Line: ast::Line = {
+    "const" <s:Symbol> <t:TypeDeclaration?> "=" <e:Expr> ";" => ast::Line::Declare(s, e, t, false),
+    "mut" <s:Symbol> <t:TypeDeclaration?> "="  <e:Expr> ";" => ast::Line::Declare(s, e, t, true),
+    <c:IfElseChain> => ast::Line::IfElseChain(Box::new(c)),
+    "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Line::For(s,e,b),
+    "wiles" "(" <e:Expr> ")" <b:Block> => ast::Line::Wiles(e,b),
     "func" <s:Symbol> <t:TypeParams?> "(" <p:Params> ")" ":" <r:TypeVariant> <b:Block> => 
-        ast::Stmt::Func(ast::funcs::FuncDeclare { ident: s, params: p, return_type: r, type_param: t, block: Box::new(ast::FuncVariant::Nala(b))}),
-    "break" "(" <Expr> ")" ";" => ast::Stmt::Break(<>),
-    "struct" <s:Symbol> <t:TypeParams?> "{" <ff:StructFields> "}" => ast::Stmt::Struct(s, t, ff), 
-    "enum" <s:Symbol> <t:TypeParams?> "{" <v:VariantsDeclare> "}" => ast::Stmt::Enum(s, t, v), 
-    <s:PlaceExpression> "=" <e:Expr> ";" => ast::Stmt::Assign(s, e),
-    <Expr> ";" => ast::Stmt::Expr(<>),
-    <Match> => ast::Stmt::Match(<>)
+        ast::Line::Func(ast::funcs::FuncDeclare { ident: s, params: p, return_type: r, type_param: t, block: Box::new(ast::FuncVariant::Nala(b))}),
+    "break" "(" <Expr> ")" ";" => ast::Line::Break(<>),
+    "struct" <s:Symbol> <t:TypeParams?> "{" <ff:StructFields> "}" => ast::Line::Struct(s, t, ff), 
+    "enum" <s:Symbol> <t:TypeParams?> "{" <v:VariantsDeclare> "}" => ast::Line::Enum(s, t, v), 
+    <s:PlaceExpression> "=" <e:Expr> ";" => ast::Line::Assign(s, e),
+    <Expr> ";" => ast::Line::Expr(<>),
+    <Match> => ast::Line::Match(<>)
 };
 
 TypeDeclaration: ast::types::type_literal_variant::TypeVariantLiteral = {

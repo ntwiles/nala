@@ -28,7 +28,7 @@ pub fn eval_if_else_chain(
 
     if eval_cond(cond, scopes, current_scope, ctx)? {
         let block_scope = scopes.new_scope(Some(current_scope));
-        return eval_stmts(&block, scopes, block_scope, ctx);
+        return eval_lines(&block, scopes, block_scope, ctx);
     }
 
     for else_if in else_ifs.iter() {
@@ -36,14 +36,14 @@ pub fn eval_if_else_chain(
 
         if eval_cond(cond, scopes, current_scope, ctx)? {
             let block_scope = scopes.new_scope(Some(current_scope));
-            return eval_stmts(block, scopes, block_scope, ctx);
+            return eval_lines(block, scopes, block_scope, ctx);
         }
     }
 
     if let Some(else_block) = else_block {
         let Else { block } = else_block;
         let block_scope = scopes.new_scope(Some(current_scope));
-        return eval_stmts(&block, scopes, block_scope, ctx);
+        return eval_lines(&block, scopes, block_scope, ctx);
     }
 
     Ok(Value::Void)
@@ -67,7 +67,7 @@ fn eval_cond(
 pub fn eval_for(
     ident: &String,
     expr: &Expr,
-    block: &Vec<Stmt>,
+    block: &Vec<Line>,
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
@@ -85,7 +85,7 @@ pub fn eval_for(
 
             scopes.add_binding(ident, item.clone(), None, block_scope, false)?;
 
-            loop_result = eval_stmts(&block, scopes, block_scope, ctx)?;
+            loop_result = eval_lines(&block, scopes, block_scope, ctx)?;
 
             if let Value::Break(value) = loop_result {
                 return Ok(*value);
@@ -103,7 +103,7 @@ pub fn eval_for(
 
 pub fn eval_wiles(
     expr: &Expr,
-    block: &Vec<Stmt>,
+    block: &Vec<Line>,
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
@@ -120,7 +120,7 @@ pub fn eval_wiles(
         };
 
         if condition {
-            let result = eval_stmts(block, scopes, current_scope, ctx)?;
+            let result = eval_lines(block, scopes, current_scope, ctx)?;
 
             if let Value::Break(value) = result {
                 return Ok(*value);
@@ -165,7 +165,7 @@ pub fn eval_match(
                 scopes.add_binding(ident, value.clone(), None, block_scope, false)?;
             }
 
-            return eval_stmts(&block, scopes, block_scope, ctx);
+            return eval_lines(&block, scopes, block_scope, ctx);
         }
     }
 

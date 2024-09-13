@@ -152,7 +152,7 @@ pub fn eval_call(
                 let args = handle_args(args, params, scopes, call_scope, current_scope, ctx)?;
 
                 let return_value = match *block {
-                    FuncVariant::Nala(stmts) => eval_stmts(&stmts, scopes, call_scope, ctx)?,
+                    FuncVariant::Nala(lines) => eval_lines(&lines, scopes, call_scope, ctx)?,
                     FuncVariant::Builtin(func) => func(args, ctx)?,
                 };
 

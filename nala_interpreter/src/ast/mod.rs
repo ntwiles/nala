@@ -24,13 +24,13 @@ use self::types::StructLiteralField;
 
 #[derive(Debug)]
 pub enum Program {
-    Block(Vec<Stmt>),
-    Stmts(Vec<Stmt>),
+    Block(Vec<Line>),
+    Lines(Vec<Line>),
 }
 
 #[derive(Clone)]
 pub enum FuncVariant {
-    Nala(Vec<Stmt>),
+    Nala(Vec<Line>),
     Builtin(BuiltinFunc),
 }
 
@@ -40,18 +40,17 @@ impl fmt::Debug for FuncVariant {
     }
 }
 
-// TODO: Make this Line instead of Stmt to reflect expression orientation.
 #[derive(Debug, Clone)]
-pub enum Stmt {
+pub enum Line {
     Assign(PlaceExpression, Expr),
     Break(Expr),
     Declare(String, Expr, Option<TypeVariantLiteral>, bool),
     Enum(String, Option<String>, Vec<VariantDeclare>),
     Expr(Expr),
-    For(String, Expr, Vec<Stmt>),
+    For(String, Expr, Vec<Self>),
     Func(FuncDeclare),
     IfElseChain(Box<IfElseChain>),
-    Wiles(Expr, Vec<Stmt>),
+    Wiles(Expr, Vec<Self>),
     Struct(String, Option<String>, Vec<StructLiteralField>),
     Match(Match),
 }

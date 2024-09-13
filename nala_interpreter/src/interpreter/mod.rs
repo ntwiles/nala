@@ -34,8 +34,8 @@ pub fn eval_program(program: Program, ctx: &mut impl IoContext) -> Result<Value,
     load_builtin_functions(&mut scopes, top_scope)?;
 
     match program {
-        Program::Block(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, ctx),
-        Program::Stmts(stmts) => eval_stmts(&stmts, &mut scopes, top_scope, ctx),
+        Program::Block(lines) => eval_lines(&lines, &mut scopes, top_scope, ctx),
+        Program::Lines(lines) => eval_lines(&lines, &mut scopes, top_scope, ctx),
     }
 }
 
