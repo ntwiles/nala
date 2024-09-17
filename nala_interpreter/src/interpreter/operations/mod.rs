@@ -14,25 +14,25 @@ use super::functions::*;
 use self::arithmatic::*;
 
 pub fn eval_addend(
-    addend: &Addend,
+    addend: &Addition,
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match addend {
-        Addend::Add(left, right) => {
+        Addition::Add(left, right) => {
             let left = eval_addend(left, scopes, current_scope, ctx)?;
             let right = eval_factor(right, scopes, current_scope, ctx)?;
 
             do_add(left, right, scopes, current_scope)
         }
-        Addend::Sub(left, right) => {
+        Addition::Sub(left, right) => {
             let left = eval_addend(left, scopes, current_scope, ctx)?;
             let right = eval_factor(right, scopes, current_scope, ctx)?;
 
             do_subtract(left, right, scopes, current_scope)
         }
-        Addend::Factor(factor) => eval_factor(factor, scopes, current_scope, ctx),
+        Addition::Factor(factor) => eval_factor(factor, scopes, current_scope, ctx),
     }
 }
 
@@ -87,21 +87,21 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_add_with_2_terms() {
-        let parsed = grammar::AddendParser::new().parse("7.0 + 4.0");
+        let parsed = grammar::AdditionParser::new().parse("7.0 + 4.0");
         let result = interpret!(&parsed.unwrap(), eval_addend).unwrap();
         assert_eq!(Value::Num(11.0), result);
     }
 
     #[test]
     pub fn it_evaluates_add_with_3_terms() {
-        let parsed = grammar::AddendParser::new().parse("3.0 + 5.0 + 4.0");
+        let parsed = grammar::AdditionParser::new().parse("3.0 + 5.0 + 4.0");
         let result = interpret!(&parsed.unwrap(), eval_addend).unwrap();
         assert_eq!(Value::Num(12.0), result);
     }
 
     #[test]
     pub fn it_evaluates_sub() {
-        let parsed = grammar::AddendParser::new().parse("5 - 3").unwrap();
+        let parsed = grammar::AdditionParser::new().parse("5 - 3").unwrap();
         let result = interpret!(&parsed, eval_addend).unwrap();
         assert_eq!(Value::Num(2.0), result);
     }

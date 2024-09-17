@@ -104,14 +104,14 @@ VariantDeclare: ast::types::variant_declare::VariantDeclare = {
 Elems = Comma<Expr>;
 
 Expr: ast::Expr = {
-    <l:Expr> "==" <r:EnumVariantOrAddend> => ast::Expr::Eq(Box::new(l), r),
+    <l:Expr> "==" <r:EnumVariantOrAddition> => ast::Expr::Eq(Box::new(l), r),
     Comparison,
 };
 
 Comparison: ast::Expr = {
-    <l:Comparison> ">" <r:Addend> => ast::Expr::Gt(Box::new(l), r),
-    <l:Comparison> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
-    EnumVariantOrAddend => ast::Expr::EnumVariant(<>),
+    <l:Comparison> ">" <r:Addition> => ast::Expr::Gt(Box::new(l), r),
+    <l:Comparison> "<" <r:Addition> => ast::Expr::Lt(Box::new(l), r),
+    EnumVariantOrAddition => ast::Expr::EnumVariant(<>),
     Array => ast::Expr::Array(<>),
     Object => ast::Expr::Object(<>),
 }
@@ -164,16 +164,16 @@ PrimitiveType: ast::types::primitive_type::PrimitiveType = {
     "Void" => ast::types::primitive_type::PrimitiveType::Void,
 }
 
-EnumVariantOrAddend: ast::types::enum_variant::EnumVariantOrAddend = {
-    <i:Identifier> "::" <ii:Identifier> "(" <e:Expr> ")" => ast::types::enum_variant::EnumVariantOrAddend::EnumVariant(i, ii, Some(Box::new(e))),
-    <i:Identifier> "::" <ii:Identifier> => ast::types::enum_variant::EnumVariantOrAddend::EnumVariant(i, ii, None),
-    Addend => ast::types::enum_variant::EnumVariantOrAddend::Addend(<>),
+EnumVariantOrAddition: ast::types::enum_variant::EnumVariantOrAddition = {
+    <i:Identifier> "::" <ii:Identifier> "(" <e:Expr> ")" => ast::types::enum_variant::EnumVariantOrAddition::EnumVariant(i, ii, Some(Box::new(e))),
+    <i:Identifier> "::" <ii:Identifier> => ast::types::enum_variant::EnumVariantOrAddition::EnumVariant(i, ii, None),
+    Addition => ast::types::enum_variant::EnumVariantOrAddition::Addition(<>),
 };
 
-pub Addend: ast::math::Addend = {
-    <l:Addend> "+" <r:Factor> => ast::math::Addend::Add(Box::new(l), r),
-    <l:Addend> "-" <r:Factor> => ast::math::Addend::Sub(Box::new(l), r),
-    Factor =>  ast::math::Addend::Factor(<>)
+pub Addition: ast::math::Addition = {
+    <l:Addition> "+" <r:Factor> => ast::math::Addition::Add(Box::new(l), r),
+    <l:Addition> "-" <r:Factor> => ast::math::Addition::Sub(Box::new(l), r),
+    Factor =>  ast::math::Addition::Factor(<>)
 };
 
 pub Factor: ast::math::Factor = {

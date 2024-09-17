@@ -1,5 +1,5 @@
 use crate::{
-    ast::types::enum_variant::EnumVariantOrAddend,
+    ast::types::enum_variant::EnumVariantOrAddition,
     errors::RuntimeError,
     io_context::IoContext,
     resolved::{
@@ -13,14 +13,14 @@ use crate::{
 use super::{basic::eval_expr, operations::eval_addend};
 
 pub fn eval_enum_variant(
-    variant: &EnumVariantOrAddend,
+    variant: &EnumVariantOrAddition,
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match variant {
-        EnumVariantOrAddend::Addend(addend) => eval_addend(addend, scopes, current_scope, ctx),
-        EnumVariantOrAddend::EnumVariant(enum_ident, variant_ident, data) => {
+        EnumVariantOrAddition::Addition(addend) => eval_addend(addend, scopes, current_scope, ctx),
+        EnumVariantOrAddition::EnumVariant(enum_ident, variant_ident, data) => {
             let (enum_variants, _enum_type_param) =
                 scopes.get_type(enum_ident, current_scope)?.as_enum()?;
 

@@ -17,7 +17,7 @@ use self::branching::Match;
 use self::funcs::*;
 use self::math::*;
 use self::objects::*;
-use self::types::enum_variant::EnumVariantOrAddend;
+use self::types::enum_variant::EnumVariantOrAddition;
 use self::types::type_literal_variant::TypeVariantLiteral;
 use self::types::variant_declare::VariantDeclare;
 use self::types::StructLiteralField;
@@ -58,10 +58,10 @@ pub enum Line {
 #[derive(Debug, Clone)]
 pub enum Expr {
     Array(Array),
-    EnumVariant(EnumVariantOrAddend),
-    Eq(Box<Expr>, EnumVariantOrAddend),
-    Gt(Box<Expr>, Addend),
-    Lt(Box<Expr>, Addend),
+    EnumVariant(EnumVariantOrAddition),
+    Eq(Box<Expr>, EnumVariantOrAddition),
+    Gt(Box<Expr>, Addition),
+    Lt(Box<Expr>, Addition),
     Object(Object),
 }
 

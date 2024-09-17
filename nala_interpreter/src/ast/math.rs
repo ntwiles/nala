@@ -1,9 +1,9 @@
 use super::{funcs::*, terms::*};
 
 #[derive(Debug, Clone)]
-pub enum Addend {
-    Add(Box<Addend>, Factor),
-    Sub(Box<Addend>, Factor),
+pub enum Addition {
+    Add(Box<Addition>, Factor),
+    Sub(Box<Addition>, Factor),
     Factor(Factor),
 }
 
