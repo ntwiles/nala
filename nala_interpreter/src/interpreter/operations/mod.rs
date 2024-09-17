@@ -9,10 +9,14 @@ use crate::{
     resolved::value::Value, scopes::Scopes,
 };
 
-use super::{arrays::eval_array, functions::*, objects::eval_object, Primary, Unary};
+use super::{
+    arrays::eval_array, enums::eval_enum_variant, functions::*, objects::eval_object, Primary,
+    Unary,
+};
 
 use self::arithmatic::*;
 
+// TODO: Rename to addition
 pub fn eval_addend(
     addend: &Addition,
     scopes: &mut Scopes,
@@ -36,6 +40,7 @@ pub fn eval_addend(
     }
 }
 
+// TODO: Rename to multiplication
 pub fn eval_factor(
     factor: &Multiplication,
     scopes: &mut Scopes,
@@ -81,6 +86,9 @@ pub fn eval_primary(
         Primary::Literal(value) => Ok(Value::from_literal(value.clone())?),
         Primary::Array(array) => eval_array(array, scopes, current_scope, ctx),
         Primary::Object(object) => eval_object(object, scopes, current_scope, ctx),
+        Primary::EnumVariant(enum_ident, variant_ident, data) => {
+            eval_enum_variant(enum_ident, variant_ident, data, scopes, current_scope, ctx)
+        }
     }
 }
 

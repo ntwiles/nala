@@ -104,21 +104,15 @@ VariantDeclare: ast::types::variant_declare::VariantDeclare = {
 Elems = Comma<Expr>;
 
 Expr: ast::Expr = {
-    <l:Expr> "==" <r:EnumVariantOrAddition> => ast::Expr::Eq(Box::new(l), r),
+    <l:Expr> "==" <r:Addition> => ast::Expr::Eq(Box::new(l), r),
     Comparison,
 };
 
 Comparison: ast::Expr = {
     <l:Comparison> ">" <r:Addition> => ast::Expr::Gt(Box::new(l), r),
     <l:Comparison> "<" <r:Addition> => ast::Expr::Lt(Box::new(l), r),
-    EnumVariantOrAddition => ast::Expr::EnumVariant(<>),
+    Addition => ast::Expr::Addition(<>),
 }
-
-EnumVariantOrAddition: ast::types::enum_variant::EnumVariantOrAddition = {
-    <i:Identifier> "::" <ii:Identifier> "(" <e:Expr> ")" => ast::types::enum_variant::EnumVariantOrAddition::EnumVariant(i, ii, Some(Box::new(e))),
-    <i:Identifier> "::" <ii:Identifier> => ast::types::enum_variant::EnumVariantOrAddition::EnumVariant(i, ii, None),
-    Addition => ast::types::enum_variant::EnumVariantOrAddition::Addition(<>),
-};
 
 pub Addition: ast::math::Addition = {
     <l:Addition> "+" <r:Multiplication> => ast::math::Addition::Add(Box::new(l), r),
@@ -142,7 +136,13 @@ Primary: ast::Primary = {
     Call => ast::Primary::Call(<>),
     Array => ast::Primary::Array(<>),
     Object => ast::Primary::Object(<>),
+    EnumVariant
 }
+
+EnumVariant: ast::Primary = {
+    <i:Identifier> "::" <ii:Identifier> "(" <e:Expr> ")" => ast::Primary::EnumVariant(i, ii, Some(Box::new(e))),
+    <i:Identifier> "::" <ii:Identifier> => ast::Primary::EnumVariant(i, ii, None),
+};
 
 Call: ast::funcs::Call = {
     <p:PlaceExpression> <t:CallTypeArgs?> "(" <e:Elems> ")" => ast::funcs::Call::Call(p, t, e),

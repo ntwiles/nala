@@ -1,6 +1,5 @@
 use super::{
     branching::*,
-    enums::eval_enum_variant,
     functions::*,
     operations::{equals::*, gt::*, lt::*, *},
     types::{eval_enum, eval_struct},
@@ -84,10 +83,10 @@ pub fn eval_expr(
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match expr {
-        Expr::EnumVariant(variant) => eval_enum_variant(variant, scopes, current_scope, ctx),
+        Expr::Addition(addition) => eval_addend(addition, scopes, current_scope, ctx),
         Expr::Eq(left, right) => {
             let left = eval_expr(left, scopes, current_scope, ctx)?;
-            let right = eval_enum_variant(right, scopes, current_scope, ctx)?;
+            let right = eval_addend(right, scopes, current_scope, ctx)?;
 
             eval_equals(left, right, scopes, current_scope)
         }

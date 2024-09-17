@@ -1,5 +1,4 @@
 use crate::{
-    ast::types::enum_variant::EnumVariantOrAddition,
     errors::RuntimeError,
     io_context::IoContext,
     resolved::{
@@ -10,55 +9,51 @@ use crate::{
     types::{fit::fits_type, inference::infer_type},
 };
 
-use super::{basic::eval_expr, operations::eval_addend};
+use super::basic::eval_expr;
 
 pub fn eval_enum_variant(
-    variant: &EnumVariantOrAddition,
+    enum_ident: &str,
+    variant_ident: &str,
+    data: &Option<Box<crate::ast::Expr>>,
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
-    match variant {
-        EnumVariantOrAddition::Addition(addend) => eval_addend(addend, scopes, current_scope, ctx),
-        EnumVariantOrAddition::EnumVariant(enum_ident, variant_ident, data) => {
-            let (enum_variants, _enum_type_param) =
-                scopes.get_type(enum_ident, current_scope)?.as_enum()?;
+    let (enum_variants, _enum_type_param) =
+        scopes.get_type(enum_ident, current_scope)?.as_enum()?;
 
-            let existing_variant = find_variant(&enum_variants, variant_ident)?;
+    let existing_variant = find_variant(&enum_variants, variant_ident)?;
 
-            let data = if let Some(data) = data {
-                let data = eval_expr(data, scopes, current_scope, ctx)?;
-                let data_type = infer_type(&data, scopes, current_scope)?;
+    let data = if let Some(data) = data {
+        let data = eval_expr(&data, scopes, current_scope, ctx)?;
+        let data_type = infer_type(&data, scopes, current_scope)?;
 
-                let expected_data_type = if let EnumVariant::Data(_, expected_data_type) =
-                    &existing_variant
-                {
-                    expected_data_type
-                } else {
-                    Err(RuntimeError::new(&format!(
-                        "Passed data `{data:?}` of type type `{data_type}` when no data was expected.",
-                    )))?
-                };
+        let expected_data_type = if let EnumVariant::Data(_, expected_data_type) = &existing_variant
+        {
+            expected_data_type
+        } else {
+            Err(RuntimeError::new(&format!(
+                "Passed data `{data:?}` of type type `{data_type}` when no data was expected.",
+            )))?
+        };
 
-                if !fits_type(&data, &expected_data_type, scopes, current_scope)? {
-                    return Err(RuntimeError::new(&format!(
-                        "Created variant with wrong data type. Expected `{expected_data_type}` but got `{0}`",
-                        infer_type(&data, scopes, current_scope)?,
-                    )));
-                }
-
-                Some(Box::new(data))
-            } else {
-                None
-            };
-
-            Ok(Value::Variant(EnumVariantValue {
-                enum_ident: enum_ident.to_owned(),
-                variant_ident: variant_ident.to_owned(),
-                data,
-            }))
+        if !fits_type(&data, &expected_data_type, scopes, current_scope)? {
+            return Err(RuntimeError::new(&format!(
+                "Created variant with wrong data type. Expected `{expected_data_type}` but got `{0}`",
+                infer_type(&data, scopes, current_scope)?,
+            )));
         }
-    }
+
+        Some(Box::new(data))
+    } else {
+        None
+    };
+
+    Ok(Value::Variant(EnumVariantValue {
+        enum_ident: enum_ident.to_owned(),
+        variant_ident: variant_ident.to_owned(),
+        data,
+    }))
 }
 
 fn compare_variant(variant: &EnumVariant, name: &str) -> bool {
