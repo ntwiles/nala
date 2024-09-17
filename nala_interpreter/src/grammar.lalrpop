@@ -117,7 +117,7 @@ Comparison: ast::Expr = {
 pub Addition: ast::math::Addition = {
     <l:Addition> "+" <r:Multiplication> => ast::math::Addition::Add(Box::new(l), r),
     <l:Addition> "-" <r:Multiplication> => ast::math::Addition::Sub(Box::new(l), r),
-    Multiplication =>  ast::math::Addition::Multiplication(<>)
+    Multiplication => ast::math::Addition::Multiplication(<>)
 };
 
 pub Multiplication: ast::math::Multiplication = {
@@ -147,6 +147,11 @@ EnumVariant: ast::Primary = {
 Call: ast::funcs::Call = {
     <p:PlaceExpression> <t:CallTypeArgs?> "(" <e:Elems> ")" => ast::funcs::Call::Call(p, t, e),
     <PlaceExpression> => ast::funcs::Call::PlaceExpression(<>),
+};
+
+Term: ast::terms::Term = {
+    Identifier => ast::terms::Term::Identifier(<>),
+    Literal => ast::terms::Term::Literal(<>),
 };
 
 KeyValuePairs = Comma<KeyValuePair>;
@@ -207,11 +212,6 @@ Literal: ast::terms::Literal = {
     Num => ast::terms::Literal::Number(<>),
     Str => ast::terms::Literal::String(<>),
 }
-
-Term: ast::terms::Term = {
-    Identifier => ast::terms::Term::Identifier(<>),
-    Literal => ast::terms::Term::Literal(<>),
-};
 
 Identifier: String = {
     r"[a-zA-Z_][a-zA-Z_0-9]*" => String::from_str(<>).unwrap()
