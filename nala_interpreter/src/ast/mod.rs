@@ -66,6 +66,11 @@ pub enum Expr {
 }
 
 #[derive(Debug, Clone)]
+pub enum Unary {
+    Call(Call),
+}
+
+#[derive(Debug, Clone)]
 pub enum PlaceExpression {
     Identifier(String),
     Index(Box<PlaceExpression>, Box<Expr>),

@@ -116,6 +116,36 @@ Comparison: ast::Expr = {
     Object => ast::Expr::Object(<>),
 }
 
+
+EnumVariantOrAddition: ast::types::enum_variant::EnumVariantOrAddition = {
+    <i:Identifier> "::" <ii:Identifier> "(" <e:Expr> ")" => ast::types::enum_variant::EnumVariantOrAddition::EnumVariant(i, ii, Some(Box::new(e))),
+    <i:Identifier> "::" <ii:Identifier> => ast::types::enum_variant::EnumVariantOrAddition::EnumVariant(i, ii, None),
+    Addition => ast::types::enum_variant::EnumVariantOrAddition::Addition(<>),
+};
+
+pub Addition: ast::math::Addition = {
+    <l:Addition> "+" <r:Multiplication> => ast::math::Addition::Add(Box::new(l), r),
+    <l:Addition> "-" <r:Multiplication> => ast::math::Addition::Sub(Box::new(l), r),
+    Multiplication =>  ast::math::Addition::Multiplication(<>)
+};
+
+pub Multiplication: ast::math::Multiplication = {
+    <l:Multiplication> "*" <t:Term> => ast::math::Multiplication::Mult(Box::new(l), t),
+    <l:Multiplication> "/" <t:Term> => ast::math::Multiplication::Div(Box::new(l), t), 
+    Unary => ast::math::Multiplication::Unary(<>),
+};
+
+// Placeholder for unary operators
+Unary: ast::Unary = {
+    Call => ast::Unary::Call(<>),
+}
+
+Call: ast::funcs::Call = {
+    <p:PlaceExpression> <t:CallTypeArgs?> "(" <e:Elems> ")" => ast::funcs::Call::Call(p, t, e),
+    <PlaceExpression> => ast::funcs::Call::PlaceExpression(<>),
+    <Literal> => ast::funcs::Call::Literal(<>),
+};
+
 KeyValuePairs = Comma<KeyValuePair>;
 
 KeyValuePair: ast::objects::KeyValuePair = {
@@ -164,29 +194,6 @@ PrimitiveType: ast::types::primitive_type::PrimitiveType = {
     "Void" => ast::types::primitive_type::PrimitiveType::Void,
 }
 
-EnumVariantOrAddition: ast::types::enum_variant::EnumVariantOrAddition = {
-    <i:Identifier> "::" <ii:Identifier> "(" <e:Expr> ")" => ast::types::enum_variant::EnumVariantOrAddition::EnumVariant(i, ii, Some(Box::new(e))),
-    <i:Identifier> "::" <ii:Identifier> => ast::types::enum_variant::EnumVariantOrAddition::EnumVariant(i, ii, None),
-    Addition => ast::types::enum_variant::EnumVariantOrAddition::Addition(<>),
-};
-
-pub Addition: ast::math::Addition = {
-    <l:Addition> "+" <r:Multiplication> => ast::math::Addition::Add(Box::new(l), r),
-    <l:Addition> "-" <r:Multiplication> => ast::math::Addition::Sub(Box::new(l), r),
-    Multiplication =>  ast::math::Addition::Multiplication(<>)
-};
-
-pub Multiplication: ast::math::Multiplication = {
-    <l:Multiplication> "*" <t:Term> => ast::math::Multiplication::Mult(Box::new(l), t),
-    <l:Multiplication> "/" <t:Term> => ast::math::Multiplication::Div(Box::new(l), t), 
-    Call => ast::math::Multiplication::Call(<>),
-};
-
-Call: ast::funcs::Call = {
-    <p:PlaceExpression> <t:CallTypeArgs?> "(" <e:Elems> ")" => ast::funcs::Call::Call(p, t, e),
-    <PlaceExpression> => ast::funcs::Call::PlaceExpression(<>),
-    <Literal> => ast::funcs::Call::Literal(<>),
-};
 
 // TODO: This uses Rust-style turbofish just to avoid a parse conflict. Do we really need to do that?
 CallTypeArgs: ast::types::type_literal_variant::TypeVariantLiteral = {

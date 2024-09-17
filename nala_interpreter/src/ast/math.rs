@@ -1,4 +1,4 @@
-use super::{funcs::*, terms::*};
+use super::{terms::*, Unary};
 
 #[derive(Debug, Clone)]
 pub enum Addition {
@@ -11,5 +11,5 @@ pub enum Addition {
 pub enum Multiplication {
     Mult(Box<Multiplication>, Term),
     Div(Box<Multiplication>, Term),
-    Call(Call),
+    Unary(Unary),
 }

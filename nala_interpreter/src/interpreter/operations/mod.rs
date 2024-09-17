@@ -9,7 +9,7 @@ use crate::{
     resolved::value::Value, scopes::Scopes,
 };
 
-use super::functions::*;
+use super::{functions::*, Unary};
 
 use self::arithmatic::*;
 
@@ -55,7 +55,18 @@ pub fn eval_factor(
 
             do_divide(left, right, scopes, current_scope)
         }
-        Multiplication::Call(call) => eval_call(call, scopes, current_scope, ctx),
+        Multiplication::Unary(unary) => eval_unary(unary, scopes, current_scope, ctx),
+    }
+}
+
+pub fn eval_unary(
+    unary: &Unary,
+    scopes: &mut Scopes,
+    current_scope: usize,
+    ctx: &mut dyn IoContext,
+) -> Result<Value, RuntimeError> {
+    match unary {
+        Unary::Call(call) => eval_call(call, scopes, current_scope, ctx),
     }
 }
 
