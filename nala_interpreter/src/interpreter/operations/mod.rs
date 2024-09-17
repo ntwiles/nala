@@ -9,7 +9,7 @@ use crate::{
     resolved::value::Value, scopes::Scopes,
 };
 
-use super::{functions::*, Unary};
+use super::{functions::*, Primary, Unary};
 
 use self::arithmatic::*;
 
@@ -66,7 +66,18 @@ pub fn eval_unary(
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match unary {
-        Unary::Call(call) => eval_call(call, scopes, current_scope, ctx),
+        Unary::Primary(primary) => eval_primary(primary, scopes, current_scope, ctx),
+    }
+}
+
+pub fn eval_primary(
+    primary: &Primary,
+    scopes: &mut Scopes,
+    current_scope: usize,
+    ctx: &mut dyn IoContext,
+) -> Result<Value, RuntimeError> {
+    match primary {
+        Primary::Call(call) => eval_call(call, scopes, current_scope, ctx),
     }
 }
 

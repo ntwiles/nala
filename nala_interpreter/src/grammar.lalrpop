@@ -137,7 +137,11 @@ pub Multiplication: ast::math::Multiplication = {
 
 // Placeholder for unary operators
 Unary: ast::Unary = {
-    Call => ast::Unary::Call(<>),
+    Primary => ast::Unary::Primary(<>),
+}
+
+Primary: ast::Primary = {
+    Call => ast::Primary::Call(<>),
 }
 
 Call: ast::funcs::Call = {

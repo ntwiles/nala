@@ -67,6 +67,11 @@ pub enum Expr {
 
 #[derive(Debug, Clone)]
 pub enum Unary {
+    Primary(Primary),
+}
+
+#[derive(Debug, Clone)]
+pub enum Primary {
     Call(Call),
 }
 
