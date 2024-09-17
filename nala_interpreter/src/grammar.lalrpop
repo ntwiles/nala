@@ -105,12 +105,16 @@ Elems = Comma<Expr>;
 
 Expr: ast::Expr = {
     <l:Expr> "==" <r:EnumVariantOrAddend> => ast::Expr::Eq(Box::new(l), r),
-    <l:Expr> ">" <r:Addend> => ast::Expr::Gt(Box::new(l), r),
-    <l:Expr> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
+    Comparison,
+};
+
+Comparison: ast::Expr = {
+    <l:Comparison> ">" <r:Addend> => ast::Expr::Gt(Box::new(l), r),
+    <l:Comparison> "<" <r:Addend> => ast::Expr::Lt(Box::new(l), r),
     EnumVariantOrAddend => ast::Expr::EnumVariant(<>),
     Array => ast::Expr::Array(<>),
     Object => ast::Expr::Object(<>),
-};
+}
 
 KeyValuePairs = Comma<KeyValuePair>;
 
