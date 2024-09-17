@@ -59,7 +59,6 @@ pub enum Line {
 
 #[derive(Debug, Clone)]
 pub enum Expr {
-    Array(Array),
     EnumVariant(EnumVariantOrAddition),
     Eq(Box<Expr>, EnumVariantOrAddition),
     Gt(Box<Expr>, Addition),
@@ -76,6 +75,7 @@ pub enum Unary {
 pub enum Primary {
     Call(Call),
     Literal(Literal),
+    Array(Array),
 }
 
 #[derive(Debug, Clone)]

@@ -1,5 +1,4 @@
 use super::{
-    arrays::*,
     branching::*,
     enums::eval_enum_variant,
     functions::*,
@@ -86,7 +85,6 @@ pub fn eval_expr(
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match expr {
-        Expr::Array(elems) => eval_array(elems, scopes, current_scope, ctx),
         Expr::EnumVariant(variant) => eval_enum_variant(variant, scopes, current_scope, ctx),
         Expr::Eq(left, right) => {
             let left = eval_expr(left, scopes, current_scope, ctx)?;

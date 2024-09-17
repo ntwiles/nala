@@ -9,7 +9,7 @@ use crate::{
     resolved::value::Value, scopes::Scopes,
 };
 
-use super::{functions::*, Primary, Unary};
+use super::{arrays::eval_array, functions::*, Primary, Unary};
 
 use self::arithmatic::*;
 
@@ -79,6 +79,7 @@ pub fn eval_primary(
     match primary {
         Primary::Call(call) => eval_call(call, scopes, current_scope, ctx),
         Primary::Literal(value) => Ok(Value::from_literal(value.clone())?),
+        Primary::Array(array) => eval_array(array, scopes, current_scope, ctx),
     }
 }
 
