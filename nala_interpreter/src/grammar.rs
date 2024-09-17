@@ -14879,7 +14879,7 @@ fn __action21<'input>(
     input: &'input str,
     (_, __0, _): (usize, String, usize),
 ) -> ast::PlaceExpression {
-    ast::PlaceExpression::Symbol(__0)
+    ast::PlaceExpression::Identifier(__0)
 }
 
 #[allow(unused_variables)]

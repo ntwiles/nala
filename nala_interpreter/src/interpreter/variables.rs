@@ -85,7 +85,7 @@ pub fn eval_assign(
                     Err(RuntimeError::new("Trying to index into a non-Array."))?
                 }
             }
-            PlaceExpression::Symbol(ident) => {
+            PlaceExpression::Identifier(ident) => {
                 if scopes.binding_exists(&ident, current_scope) {
                     let index_result = eval_expr(&index_expr, scopes, current_scope, ctx)?;
 
@@ -111,7 +111,7 @@ pub fn eval_assign(
                 }
             }
         },
-        PlaceExpression::Symbol(ident) => {
+        PlaceExpression::Identifier(ident) => {
             if let Value::Void = value {
                 Err(RuntimeError::new("Cannot assign a value of type Void."))?;
             }
@@ -156,7 +156,7 @@ pub fn eval_place_expr(
             let array = eval_place_expr(place, scopes, current_scope, ctx)?;
             eval_index(&array, expr, scopes, current_scope, ctx)
         }
-        PlaceExpression::Symbol(ident) => scopes.get_value(ident, current_scope),
+        PlaceExpression::Identifier(ident) => scopes.get_value(ident, current_scope),
         PlaceExpression::MemberAccess(place_expression, member_access) => {
             let object = eval_place_expr(place_expression, scopes, current_scope, ctx)?;
             eval_member_access(&object, member_access)

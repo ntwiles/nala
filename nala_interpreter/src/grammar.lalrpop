@@ -35,16 +35,16 @@ pub Lines: Vec<ast::Line> = {
 };
 
 Line: ast::Line = {
-    "const" <s:Symbol> <t:TypeDeclaration?> "=" <e:Expr> ";" => ast::Line::Declare(s, e, t, false),
-    "mut" <s:Symbol> <t:TypeDeclaration?> "="  <e:Expr> ";" => ast::Line::Declare(s, e, t, true),
+    "const" <i:Identifier> <t:TypeDeclaration?> "=" <e:Expr> ";" => ast::Line::Declare(i, e, t, false),
+    "mut" <i:Identifier> <t:TypeDeclaration?> "="  <e:Expr> ";" => ast::Line::Declare(i, e, t, true),
     <c:IfElseChain> => ast::Line::IfElseChain(Box::new(c)),
-    "for" <s:Symbol> "in" <e:Expr> <b:Block> => ast::Line::For(s,e,b),
+    "for" <i:Identifier> "in" <e:Expr> <b:Block> => ast::Line::For(i,e,b),
     "wiles" "(" <e:Expr> ")" <b:Block> => ast::Line::Wiles(e,b),
-    "func" <s:Symbol> <t:TypeParams?> "(" <p:Params> ")" ":" <r:TypeVariant> <b:Block> => 
-        ast::Line::Func(ast::funcs::FuncDeclare { ident: s, params: p, return_type: r, type_param: t, block: Box::new(ast::FuncVariant::Nala(b))}),
+    "func" <i:Identifier> <t:TypeParams?> "(" <p:Params> ")" ":" <r:TypeVariant> <b:Block> => 
+        ast::Line::Func(ast::funcs::FuncDeclare { ident: i, params: p, return_type: r, type_param: t, block: Box::new(ast::FuncVariant::Nala(b))}),
     "break" "(" <Expr> ")" ";" => ast::Line::Break(<>),
-    "struct" <s:Symbol> <t:TypeParams?> "{" <ff:StructFields> "}" => ast::Line::Struct(s, t, ff), 
-    "enum" <s:Symbol> <t:TypeParams?> "{" <v:VariantsDeclare> "}" => ast::Line::Enum(s, t, v), 
+    "struct" <i:Identifier> <t:TypeParams?> "{" <ff:StructFields> "}" => ast::Line::Struct(i, t, ff), 
+    "enum" <i:Identifier> <t:TypeParams?> "{" <v:VariantsDeclare> "}" => ast::Line::Enum(i, t, v), 
     <s:PlaceExpression> "=" <e:Expr> ";" => ast::Line::Assign(s, e),
     <Expr> ";" => ast::Line::Expr(<>),
     <Match> => ast::Line::Match(<>)
@@ -55,7 +55,7 @@ TypeDeclaration: ast::types::type_literal_variant::TypeVariantLiteral = {
 };
 
 TypeParams: String = {
-    "<" <s:Symbol> ">" => s
+    "<" <i:Identifier> ">" => i
 };
 
 TypeArgs: ast::types::type_literal_variant::TypeVariantLiteral = {
@@ -76,8 +76,8 @@ MatchCase: ast::branching::MatchCase = {
 };
 
 Pattern: ast::patterns::Pattern = {
-    <e:Symbol> "::" <v:Symbol> "(" <i:Symbol> ")" => ast::patterns::Pattern::Variant(e, v, Some(i)),
-    <e:Symbol> "::" <v:Symbol> => ast::patterns::Pattern::Variant(e, v, None),
+    <e:Identifier> "::" <v:Identifier> "(" <i:Identifier> ")" => ast::patterns::Pattern::Variant(e, v, Some(i)),
+    <e:Identifier> "::" <v:Identifier> => ast::patterns::Pattern::Variant(e, v, None),
 };
 
 ElseIf: ast::branching::ElseIf = {
@@ -90,15 +90,15 @@ Else: ast::branching::Else = {
 
 PlaceExpression: ast::PlaceExpression = {
     <p:PlaceExpression> "[" <e:Expr> "]" => ast::PlaceExpression::Index(Box::new(p), Box::new(e)),
-    <p:PlaceExpression> "." <s:Symbol> => ast::PlaceExpression::MemberAccess(Box::new(p), s),
-    <Symbol> => ast::PlaceExpression::Symbol(<>),
+    <p:PlaceExpression> "." <i:Identifier> => ast::PlaceExpression::MemberAccess(Box::new(p), i),
+    <Identifier> => ast::PlaceExpression::Identifier(<>),
 };
 
 VariantsDeclare = Comma<VariantDeclare>;
 
 VariantDeclare: ast::types::variant_declare::VariantDeclare = {
-    <Symbol> => ast::types::variant_declare::VariantDeclare::Empty(<>),
-    <s:Symbol> "(" <t:TypeVariant> ")" => ast::types::variant_declare::VariantDeclare::Data(s, t)
+    <Identifier> => ast::types::variant_declare::VariantDeclare::Empty(<>),
+    <i:Identifier> "(" <t:TypeVariant> ")" => ast::types::variant_declare::VariantDeclare::Data(i, t)
 };
 
 Elems = Comma<Expr>;
@@ -115,13 +115,13 @@ Expr: ast::Expr = {
 KeyValuePairs = Comma<KeyValuePair>;
 
 KeyValuePair: ast::objects::KeyValuePair = {
-    <s:Symbol> ":" <e:Expr> => ast::objects::KeyValuePair{ key: s, value: Box::new(e)}
+    <i:Identifier> ":" <e:Expr> => ast::objects::KeyValuePair{ key: i, value: Box::new(e)}
 }
 
 Params = Comma<Param>;
 
 Param: ast::funcs::ParamDeclare = {
-    <s:Symbol> ":" <t:TypeVariant> => ast::funcs::ParamDeclare { ident: s, param_type: t }
+    <i:Identifier> ":" <t:TypeVariant> => ast::funcs::ParamDeclare { ident: i, param_type: t }
 }
 
 Object: ast::objects::Object = {
@@ -135,8 +135,8 @@ Array: ast::arrays::Array = {
 StructFields = Comma<StructField>;
 
 StructField: ast::types::StructLiteralField = {
-    <s:Symbol> ":" <t:TypeVariant> => ast::types::StructLiteralField { ident: s, value: ast::types::StructLiteralFieldValue::Type(t) },
-    <s:Symbol> ":" "{" <ff:StructFields> "}" => ast::types::StructLiteralField { ident: s, value: ast::types::StructLiteralFieldValue::Nested(ff) }
+    <i:Identifier> ":" <t:TypeVariant> => ast::types::StructLiteralField { ident: i, value: ast::types::StructLiteralFieldValue::Type(t) },
+    <i:Identifier> ":" "{" <ff:StructFields> "}" => ast::types::StructLiteralField { ident: i, value: ast::types::StructLiteralFieldValue::Nested(ff) }
 }
 
 TypeVariants = Comma<TypeVariant>;
@@ -148,7 +148,7 @@ TypeVariant: ast::types::type_literal_variant::TypeVariantLiteral = {
 
 Type: ast::types::type_literal::TypeLiteral = {
     <PrimitiveType> => ast::types::type_literal::TypeLiteral::PrimitiveType(<>),
-    <Symbol> => ast::types::type_literal::TypeLiteral::UserDefined(<>),
+    <Identifier> => ast::types::type_literal::TypeLiteral::UserDefined(<>),
 }
 
 PrimitiveType: ast::types::primitive_type::PrimitiveType = {
@@ -161,8 +161,8 @@ PrimitiveType: ast::types::primitive_type::PrimitiveType = {
 }
 
 EnumVariantOrAddend: ast::types::enum_variant::EnumVariantOrAddend = {
-    <s:Symbol> "::" <ss:Symbol> "(" <e:Expr> ")" => ast::types::enum_variant::EnumVariantOrAddend::EnumVariant(s, ss, Some(Box::new(e))),
-    <s:Symbol> "::" <ss:Symbol> => ast::types::enum_variant::EnumVariantOrAddend::EnumVariant(s, ss, None),
+    <i:Identifier> "::" <ii:Identifier> "(" <e:Expr> ")" => ast::types::enum_variant::EnumVariantOrAddend::EnumVariant(i, ii, Some(Box::new(e))),
+    <i:Identifier> "::" <ii:Identifier> => ast::types::enum_variant::EnumVariantOrAddend::EnumVariant(i, ii, None),
     Addend => ast::types::enum_variant::EnumVariantOrAddend::Addend(<>),
 };
 
@@ -195,11 +195,11 @@ ValueLiteral: ast::terms::ValueLiteral = {
 }
 
 Term: ast::terms::Term = {
-    Symbol => ast::terms::Term::Identifier(<>),
+    Identifier => ast::terms::Term::Identifier(<>),
     ValueLiteral => ast::terms::Term::ValueLiteral(<>),
 };
 
-Symbol: String = {
+Identifier: String = {
     r"[a-zA-Z_][a-zA-Z_0-9]*" => String::from_str(<>).unwrap()
 };
 

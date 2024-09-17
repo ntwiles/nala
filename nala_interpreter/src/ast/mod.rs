@@ -67,7 +67,7 @@ pub enum Expr {
 
 #[derive(Debug, Clone)]
 pub enum PlaceExpression {
-    Symbol(String),
+    Identifier(String),
     Index(Box<PlaceExpression>, Box<Expr>),
     MemberAccess(Box<PlaceExpression>, String),
 }
