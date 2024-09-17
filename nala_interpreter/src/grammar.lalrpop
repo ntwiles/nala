@@ -141,13 +141,13 @@ Unary: ast::Unary = {
 }
 
 Primary: ast::Primary = {
+    Literal => ast::Primary::Literal(<>),
     Call => ast::Primary::Call(<>),
 }
 
 Call: ast::funcs::Call = {
     <p:PlaceExpression> <t:CallTypeArgs?> "(" <e:Elems> ")" => ast::funcs::Call::Call(p, t, e),
     <PlaceExpression> => ast::funcs::Call::PlaceExpression(<>),
-    <Literal> => ast::funcs::Call::Literal(<>),
 };
 
 KeyValuePairs = Comma<KeyValuePair>;

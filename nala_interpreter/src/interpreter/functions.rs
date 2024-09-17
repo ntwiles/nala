@@ -173,7 +173,6 @@ pub fn eval_call(
             }
         }
         Call::PlaceExpression(place) => eval_place_expr(place, scopes, current_scope, ctx),
-        Call::Literal(value) => Ok(Value::from_literal(value.clone())?),
     }
 }
 

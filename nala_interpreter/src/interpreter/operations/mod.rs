@@ -78,6 +78,7 @@ pub fn eval_primary(
 ) -> Result<Value, RuntimeError> {
     match primary {
         Primary::Call(call) => eval_call(call, scopes, current_scope, ctx),
+        Primary::Literal(value) => Ok(Value::from_literal(value.clone())?),
     }
 }
 

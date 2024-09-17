@@ -9,6 +9,8 @@ pub mod types;
 
 use std::fmt;
 
+use terms::Literal;
+
 use crate::builtins::BuiltinFunc;
 
 use self::arrays::*;
@@ -73,6 +75,7 @@ pub enum Unary {
 #[derive(Debug, Clone)]
 pub enum Primary {
     Call(Call),
+    Literal(Literal),
 }
 
 #[derive(Debug, Clone)]
