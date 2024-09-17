@@ -149,6 +149,8 @@ Call: ast::funcs::Call = {
     <PlaceExpression> => ast::funcs::Call::PlaceExpression(<>),
 };
 
+// TODO: This should be killed off and these two variants should be moved to Primary. This only hasn't
+// been done yet, because doing so creates a parser generator conflict we'll have to first work out.
 Term: ast::terms::Term = {
     Identifier => ast::terms::Term::Identifier(<>),
     Literal => ast::terms::Term::Literal(<>),
@@ -201,7 +203,6 @@ PrimitiveType: ast::types::primitive_type::PrimitiveType = {
     "String" => ast::types::primitive_type::PrimitiveType::String,
     "Void" => ast::types::primitive_type::PrimitiveType::Void,
 }
-
 
 // TODO: This uses Rust-style turbofish just to avoid a parse conflict. Do we really need to do that?
 CallTypeArgs: ast::types::type_literal_variant::TypeVariantLiteral = {
