@@ -63,7 +63,6 @@ pub enum Expr {
     Eq(Box<Expr>, EnumVariantOrAddition),
     Gt(Box<Expr>, Addition),
     Lt(Box<Expr>, Addition),
-    Object(Object),
 }
 
 #[derive(Debug, Clone)]
@@ -76,6 +75,7 @@ pub enum Primary {
     Call(Call),
     Literal(Literal),
     Array(Array),
+    Object(Object),
 }
 
 #[derive(Debug, Clone)]

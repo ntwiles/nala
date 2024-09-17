@@ -2,7 +2,6 @@ use super::{
     branching::*,
     enums::eval_enum_variant,
     functions::*,
-    objects::*,
     operations::{equals::*, gt::*, lt::*, *},
     types::{eval_enum, eval_struct},
     variables::*,
@@ -104,8 +103,6 @@ pub fn eval_expr(
 
             eval_lt(left, right, scopes, current_scope)
         }
-
-        Expr::Object(object) => eval_object(object, scopes, current_scope, ctx),
     }
 }
 

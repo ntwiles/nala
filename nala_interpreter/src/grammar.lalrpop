@@ -112,9 +112,7 @@ Comparison: ast::Expr = {
     <l:Comparison> ">" <r:Addition> => ast::Expr::Gt(Box::new(l), r),
     <l:Comparison> "<" <r:Addition> => ast::Expr::Lt(Box::new(l), r),
     EnumVariantOrAddition => ast::Expr::EnumVariant(<>),
-    Object => ast::Expr::Object(<>),
 }
-
 
 EnumVariantOrAddition: ast::types::enum_variant::EnumVariantOrAddition = {
     <i:Identifier> "::" <ii:Identifier> "(" <e:Expr> ")" => ast::types::enum_variant::EnumVariantOrAddition::EnumVariant(i, ii, Some(Box::new(e))),
@@ -143,6 +141,7 @@ Primary: ast::Primary = {
     Literal => ast::Primary::Literal(<>),
     Call => ast::Primary::Call(<>),
     Array => ast::Primary::Array(<>),
+    Object => ast::Primary::Object(<>),
 }
 
 Call: ast::funcs::Call = {
