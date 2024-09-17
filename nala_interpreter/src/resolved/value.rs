@@ -4,7 +4,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::{ast::terms::ValueLiteral, errors::RuntimeError};
+use crate::{ast::terms::Literal, errors::RuntimeError};
 
 use super::func_value::FuncValue;
 
@@ -77,10 +77,10 @@ impl Value {
         }
     }
 
-    pub fn from_literal(literal: ValueLiteral) -> Result<Self, RuntimeError> {
+    pub fn from_literal(literal: Literal) -> Result<Self, RuntimeError> {
         match literal {
-            ValueLiteral::Number(num) => Ok(Value::Num(num)),
-            ValueLiteral::String(string) => Ok(Value::String(string)),
+            Literal::Number(num) => Ok(Value::Num(num)),
+            Literal::String(string) => Ok(Value::String(string)),
         }
     }
 }

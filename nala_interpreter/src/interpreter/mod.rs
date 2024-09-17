@@ -46,9 +46,9 @@ pub fn eval_term(
 ) -> Result<Value, RuntimeError> {
     match term {
         Term::Identifier(ident) => Ok(scopes.get_value(&ident, current_scope)?),
-        Term::ValueLiteral(value) => match value {
-            ValueLiteral::Number(value) => Ok(Value::Num(value)),
-            ValueLiteral::String(value) => Ok(Value::String(value)),
+        Term::Literal(value) => match value {
+            Literal::Number(value) => Ok(Value::Num(value)),
+            Literal::String(value) => Ok(Value::String(value)),
         },
     }
 }

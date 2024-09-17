@@ -7,11 +7,11 @@ pub enum SymbolOrTerm {
 #[derive(Debug, Clone)]
 pub enum Term {
     Identifier(String),
-    ValueLiteral(ValueLiteral),
+    Literal(Literal),
 }
 
 #[derive(Debug, Clone)]
-pub enum ValueLiteral {
+pub enum Literal {
     Number(f32),
     String(String),
 }
