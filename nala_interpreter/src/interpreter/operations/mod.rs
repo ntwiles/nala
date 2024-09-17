@@ -32,30 +32,30 @@ pub fn eval_addend(
 
             do_subtract(left, right, scopes, current_scope)
         }
-        Addition::Factor(factor) => eval_factor(factor, scopes, current_scope, ctx),
+        Addition::Multiplication(factor) => eval_factor(factor, scopes, current_scope, ctx),
     }
 }
 
 pub fn eval_factor(
-    factor: &Factor,
+    factor: &Multiplication,
     scopes: &mut Scopes,
     current_scope: usize,
     ctx: &mut dyn IoContext,
 ) -> Result<Value, RuntimeError> {
     match factor {
-        Factor::Mult(left, right) => {
+        Multiplication::Mult(left, right) => {
             let left = eval_factor(left, scopes, current_scope, ctx)?;
             let right = eval_term(right.clone(), scopes, current_scope)?;
 
             do_multiply(left, right, scopes, current_scope)
         }
-        Factor::Div(left, right) => {
+        Multiplication::Div(left, right) => {
             let left = eval_factor(left, scopes, current_scope, ctx)?;
             let right = eval_term(right.clone(), scopes, current_scope)?;
 
             do_divide(left, right, scopes, current_scope)
         }
-        Factor::Call(call) => eval_call(call, scopes, current_scope, ctx),
+        Multiplication::Call(call) => eval_call(call, scopes, current_scope, ctx),
     }
 }
 
@@ -108,21 +108,27 @@ mod tests {
 
     #[test]
     pub fn it_evaluates_mult() {
-        let parsed = grammar::FactorParser::new().parse("5.0 * 3.0").unwrap();
+        let parsed = grammar::MultiplicationParser::new()
+            .parse("5.0 * 3.0")
+            .unwrap();
         let result = interpret!(&parsed, eval_factor).unwrap();
         assert_eq!(Value::Num(15.0), result);
     }
 
     #[test]
     pub fn it_evaluates_div() {
-        let parsed = grammar::FactorParser::new().parse("5.0 / 2.0").unwrap();
+        let parsed = grammar::MultiplicationParser::new()
+            .parse("5.0 / 2.0")
+            .unwrap();
         let result = interpret!(&parsed, eval_factor).unwrap();
         assert_eq!(Value::Num(2.5), result);
     }
 
     #[test]
     pub fn it_disallows_div_by_zero() {
-        let parsed = grammar::FactorParser::new().parse("5.0 / 0.0").unwrap();
+        let parsed = grammar::MultiplicationParser::new()
+            .parse("5.0 / 0.0")
+            .unwrap();
         let actual = interpret!(&parsed, eval_factor);
 
         assert!(matches!(actual, Err(_)));

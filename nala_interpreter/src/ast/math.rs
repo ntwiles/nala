@@ -2,14 +2,14 @@ use super::{funcs::*, terms::*};
 
 #[derive(Debug, Clone)]
 pub enum Addition {
-    Add(Box<Addition>, Factor),
-    Sub(Box<Addition>, Factor),
-    Factor(Factor),
+    Add(Box<Addition>, Multiplication),
+    Sub(Box<Addition>, Multiplication),
+    Multiplication(Multiplication),
 }
 
 #[derive(Debug, Clone)]
-pub enum Factor {
-    Mult(Box<Factor>, Term),
-    Div(Box<Factor>, Term),
+pub enum Multiplication {
+    Mult(Box<Multiplication>, Term),
+    Div(Box<Multiplication>, Term),
     Call(Call),
 }

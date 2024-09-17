@@ -171,15 +171,15 @@ EnumVariantOrAddition: ast::types::enum_variant::EnumVariantOrAddition = {
 };
 
 pub Addition: ast::math::Addition = {
-    <l:Addition> "+" <r:Factor> => ast::math::Addition::Add(Box::new(l), r),
-    <l:Addition> "-" <r:Factor> => ast::math::Addition::Sub(Box::new(l), r),
-    Factor =>  ast::math::Addition::Factor(<>)
+    <l:Addition> "+" <r:Multiplication> => ast::math::Addition::Add(Box::new(l), r),
+    <l:Addition> "-" <r:Multiplication> => ast::math::Addition::Sub(Box::new(l), r),
+    Multiplication =>  ast::math::Addition::Multiplication(<>)
 };
 
-pub Factor: ast::math::Factor = {
-    <l:Factor> "*" <t:Term> => ast::math::Factor::Mult(Box::new(l), t),
-    <l:Factor> "/" <t:Term> => ast::math::Factor::Div(Box::new(l), t), 
-    Call => ast::math::Factor::Call(<>),
+pub Multiplication: ast::math::Multiplication = {
+    <l:Multiplication> "*" <t:Term> => ast::math::Multiplication::Mult(Box::new(l), t),
+    <l:Multiplication> "/" <t:Term> => ast::math::Multiplication::Div(Box::new(l), t), 
+    Call => ast::math::Multiplication::Call(<>),
 };
 
 Call: ast::funcs::Call = {
