@@ -20,10 +20,9 @@ to variables.
 
 ## Implementation
 Nala is dynamically typed and uses a top-down recursive interpreter that operates directly on the
-Abstract Syntax Tree (AST). Types are inferred dynamically at runtime, and Nala uses a **structural
-type system** to enforce type equivalence during operations such as assignment. This means that type
-compatibility is determined by the structure of the types (i.e., the fields or elements they contain),
-rather than their explicit type names.
+Abstract Syntax Tree (AST). Types are inferred dynamically at runtime, and Nala uses a structural
+type system to enforce type equivalence. This means that type compatibility is determined by the 
+structure of the types (i.e., the fields or elements they contain), rather than their explicit type names.
 
 There is no separate semantic analysis stage, so many semantic errors (including type errors) are 
 caught only at runtime.
