@@ -32,7 +32,7 @@ caught only at runtime.
 Execute a Nala file with the following command. While the `.nl` extension is not required, it is recommended
 to ensure compatibility with syntax highlighting features.
 
-```
+```sh
 cargo run path/to/script.nl
 ```
 
