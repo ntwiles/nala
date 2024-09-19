@@ -29,7 +29,8 @@ caught only at runtime.
 
 ## Usage
 
-Parse and interpret in the console any `.nl` file with the following command:
+Execute a Nala file with the following command. While the `.nl` extension is not required, it is recommended
+to ensure compatibility with syntax highlighting features.
 
 ```
 cargo run path/to/script.nl
